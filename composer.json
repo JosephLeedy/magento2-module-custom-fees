@@ -1,0 +1,34 @@
+{
+  "name": "joseph-leedy/module-custom-fees",
+  "version": "0.1.0",
+  "description": "Adds configurable custom fees to orders",
+  "type": "magento2-module",
+  "require": {
+    "php": "^8.1",
+    "magento/framework": "~103.0.4"
+  },
+  "license": [
+    "OSL-3.0"
+  ],
+  "autoload": {
+    "files": [
+      "src/registration.php"
+    ],
+    "psr-4": {
+      "JosephLeedy\\CustomFees\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "JosephLeedy\\CustomFees\\Test\\": "test/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Joseph Leedy",
+      "email": "3091468+JosephLeedy@users.noreply.github.com",
+      "homepage": "https://github.com/JosephLeedy",
+      "role": "developer"
+    }
+  ]
+}
