@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<ruleset
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/PHPCSStandards/PHP_CodeSniffer/master/phpcs.xsd"
+    name="Magento 2 &amp; PSR-12 Combined Coding Standards"
+>
+    <description>Coding standards for Magento 2 extensions</description>
+    <arg name="extensions" value="php,phtml"/>
+    <arg name="colors"/>
+    <arg value="sp"/>
+    <file>src/</file>
+    <rule ref="PSR12"/>
+    <rule ref="Magento2">
+        <!-- Disable rules requiring type annotations made redundant by type hints and return types -->
+        <exclude name="Magento2.Annotation.MethodArguments.NoCommentBlock"/>
+        <exclude name="Magento2.Annotation.MethodArguments.ParamMissing"/>
+        <exclude name="Magento2.Annotation.MethodArguments.ArgumentMissing"/>
+        <exclude name="Magento2.Annotation.MethodAnnotationStructure.MethodAnnotation"/>
+        <exclude name="Magento2.Annotation.MethodAnnotationStructure.MethodArguments"/>
+        <exclude name="Magento2.Annotation.MethodAnnotationStructure.NoCommentBlock"/>
+        <exclude name="Magento2.Commenting.ClassPropertyPHPDocFormatting.Missing"/>
+        <!-- Suppress warning about PSR-12-style control structures -->
+        <exclude name="PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace"/>
+    </rule>
+</ruleset>
