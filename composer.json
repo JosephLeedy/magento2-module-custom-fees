@@ -42,7 +42,14 @@
   "config": {
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
+      "magento/composer-dependency-version-audit-plugin": true,
       "phpstan/extension-installer": true
     }
-  }
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://repo.magento.com/"
+    }
+  ]
 }
