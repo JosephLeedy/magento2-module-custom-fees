@@ -1,0 +1,8 @@
+parameters:
+	level: max
+	fileExtensions:
+		- php
+		- phtml
+	paths:
+		- src/
+	treatPhpDocTypesAsCertain: false
