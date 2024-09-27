@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <sales>
+            <totals_sort>
+                <custom_fees>15</custom_fees>
+            </totals_sort>
+            <custom_order_fees>
+                <custom_fees>[{"code":"example_fee","title":"Example Fee","value":"0.00"}]</custom_fees>
+            </custom_order_fees>
+        </sales>
+    </default>
+</config>

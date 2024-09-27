@@ -1,0 +1,8 @@
+"Custom Fees","Custom Fees"
+"Custom Order Fees","Custom Order Fees"
+"<strong>Note:</strong> Fee amount is relative to the store's base currency and will be converted to the customer's selected currency.","<strong>Note:</strong> Fee amount is relative to the store's base currency and will be converted to the customer's selected currency."
+"Fee Amount","Fee Amount"
+Code,Code
+"Fee Name","Fee Name"
+"Add Custom Fee","Add Custom Fee"
+"Could not get custom fees from configuration. Error: ""%1""","Could not get custom fees from configuration. Error: ""%1"""

@@ -1,0 +1,11 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method Magento\\\\Store\\\\Api\\\\Data\\\\StoreInterface\\:\\:getBaseCurrency\\(\\)\\.$#"
+			count: 1
+			path: src/Block/System/Config/Form/Field/CustomFees.php
+
+		-
+			message: "#^Call to an undefined method Magento\\\\Store\\\\Api\\\\Data\\\\WebsiteInterface\\:\\:getDefaultStore\\(\\)\\.$#"
+			count: 1
+			path: src/Block/System/Config/Form/Field/CustomFees.php
