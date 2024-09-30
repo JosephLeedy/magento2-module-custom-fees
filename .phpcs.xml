@@ -27,4 +27,7 @@
         <!-- Suppress warning about PER-CS 2.0-style constructors with promoted properties and empty bodies -->
         <severity>0</severity>
     </rule>
+    <rule ref="Magento2.PHP.FinalImplementation.FoundFinal">
+        <exclude-pattern>test/*</exclude-pattern>
+    </rule>
 </ruleset>
