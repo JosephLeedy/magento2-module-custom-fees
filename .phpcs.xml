@@ -9,6 +9,7 @@
     <arg name="colors"/>
     <arg value="sp"/>
     <file>src/</file>
+    <file>test/</file>
     <rule ref="PSR12"/>
     <rule ref="Magento2">
         <!-- Disable rules requiring type annotations made redundant by type hints and return types -->
