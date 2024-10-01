@@ -1,0 +1,10 @@
+<!-- ko if: isDisplayed() -->
+    <!-- ko foreach: getCustomFees() -->
+        <tr class="totals">
+            <th data-bind="text: title" class="mark" scope="row"></th>
+            <td class="amount" data-bind="attr: {'data-th': title}">
+                <span class="price" data-bind="text: formattedPrice"></span>
+            </td>
+        </tr>
+    <!-- /ko -->
+<!-- /ko -->
