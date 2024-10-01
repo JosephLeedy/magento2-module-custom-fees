@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="custom_order_fees" resource="default" engine="innodb" comment="Custom fees applied to an order">
+        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="Record identifier"/>
+        <column xsi:type="int" name="order_entity_id" unsigned="true" nullable="false" identity="false" comment="Related order identifier"/>
+        <column xsi:type="json" name="custom_fees" nullable="false" comment="All custom fees applied to the related order"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="FK_CUSTOM_ORDER_FEES_ORDER_ENTITY_ID_SALES_ORDER_ENTITY_ID" table="custom_order_fees" column="order_entity_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="unique" referenceId="UK_CUSTOM_ORDER_FEES_ORDER_ENTITY_ID">
+            <column name="order_entity_id"/>
+        </constraint>
+    </table>
+</schema>
