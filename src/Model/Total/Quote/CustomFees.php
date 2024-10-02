@@ -17,6 +17,7 @@ use Magento\Store\Api\Data\StoreInterface;
 use function array_map;
 use function array_walk;
 use function count;
+use function method_exists;
 
 class CustomFees extends AbstractTotal
 {
@@ -41,14 +42,17 @@ class CustomFees extends AbstractTotal
         }
 
         [$baseCustomFees, $localCustomFees] = $this->getCustomFees($quote->getStore());
+        $customFees = $baseCustomFees;
 
         array_walk(
             $baseCustomFees,
             /**
              * @param array{code: string, title: string, value: float} $baseCustomFee
              */
-            static function (array $baseCustomFee, string|int $key) use ($total): void {
+            static function (array $baseCustomFee, string|int $key) use ($total, &$customFees): void {
                 $total->setBaseTotalAmount($baseCustomFee['code'], $baseCustomFee['value']);
+
+                $customFees[$key]['base_value'] = $baseCustomFee['value'];
             }
         );
         array_walk(
@@ -56,10 +60,20 @@ class CustomFees extends AbstractTotal
             /**
              * @param array{code: string, title: string, value: float} $localCustomFee
              */
-            static function (array $localCustomFee, string|int $key) use ($total): void {
+            static function (array $localCustomFee, string|int $key) use ($total, &$customFees): void {
                 $total->setTotalAmount($localCustomFee['code'], $localCustomFee['value']);
+
+                $customFees[$key]['value'] = $localCustomFee['value'];
             }
         );
+
+        $cartExtension = $quote->getExtensionAttributes();
+
+        if ($cartExtension === null || !method_exists($cartExtension, 'setCustomFees')) {
+            return $this;
+        }
+
+        $cartExtension->setCustomFees($customFees);
 
         return $this;
     }
