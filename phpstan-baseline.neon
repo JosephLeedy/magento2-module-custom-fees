@@ -11,6 +11,26 @@ parameters:
 			path: src/Block/System/Config/Form/Field/CustomFees.php
 
 		-
+			message: "#^Parameter \\#1 \\$items of method Magento\\\\Framework\\\\Api\\\\SearchResultsInterface\\:\\:setItems\\(\\) expects array\\<Magento\\\\Framework\\\\Api\\\\ExtensibleDataInterface\\>, array\\<Magento\\\\Framework\\\\DataObject\\> given\\.$#"
+			count: 1
+			path: src/Model/CustomOrderFeesRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Magento\\\\Framework\\\\Model\\\\ResourceModel\\\\Db\\\\AbstractDb\\:\\:delete\\(\\) expects Magento\\\\Framework\\\\Model\\\\AbstractModel, JosephLeedy\\\\CustomFees\\\\Api\\\\Data\\\\CustomOrderFeesInterface given\\.$#"
+			count: 1
+			path: src/Model/CustomOrderFeesRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Magento\\\\Framework\\\\Model\\\\ResourceModel\\\\Db\\\\AbstractDb\\:\\:load\\(\\) expects Magento\\\\Framework\\\\Model\\\\AbstractModel, JosephLeedy\\\\CustomFees\\\\Api\\\\Data\\\\CustomOrderFeesInterface given\\.$#"
+			count: 2
+			path: src/Model/CustomOrderFeesRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of method Magento\\\\Framework\\\\Model\\\\ResourceModel\\\\Db\\\\AbstractDb\\:\\:save\\(\\) expects Magento\\\\Framework\\\\Model\\\\AbstractModel, JosephLeedy\\\\CustomFees\\\\Api\\\\Data\\\\CustomOrderFeesInterface given\\.$#"
+			count: 1
+			path: src/Model/CustomOrderFeesRepository.php
+
+		-
 			message: "#^Parameter \\#2 \\$scope of method Magento\\\\Framework\\\\Pricing\\\\PriceCurrencyInterface\\:\\:convert\\(\\) expects bool\\|int\\|Magento\\\\Framework\\\\App\\\\ScopeInterface\\|string\\|null, Magento\\\\Store\\\\Api\\\\Data\\\\StoreInterface given\\.$#"
 			count: 1
 			path: src/Model/Total/Quote/CustomFees.php
