@@ -3,4 +3,8 @@
     <preference for="JosephLeedy\CustomFees\Api\ConfigInterface" type="JosephLeedy\CustomFees\Model\Config"/>
     <preference for="JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface" type="JosephLeedy\CustomFees\Model\CustomOrderFeesRepository"/>
     <preference for="JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface" type="JosephLeedy\CustomFees\Model\CustomOrderFees"/>
+
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="add_custom_fees_to_order" type="JosephLeedy\CustomFees\Plugin\Sales\Api\OrderRepositoryInterfacePlugin"/>
+    </type>
 </config>
