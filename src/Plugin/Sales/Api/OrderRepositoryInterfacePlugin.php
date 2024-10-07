@@ -46,4 +46,31 @@ class OrderRepositoryInterfacePlugin
 
         return $result;
     }
+
+    public function afterSave(OrderRepositoryInterface $subject, OrderInterface $result): OrderInterface
+    {
+        $orderExtension = $result->getExtensionAttributes();
+
+        if (
+            $orderExtension === null
+            || !method_exists($orderExtension, 'getCustomOrderFees')
+            || $orderExtension->getCustomOrderFees() === null
+        ) {
+            return $result;
+        }
+
+        $customOrderFees = $orderExtension->getCustomOrderFees();
+
+        if (!$customOrderFees->hasDataChanges()) {
+            return $result;
+        }
+
+        if ($customOrderFees->getOrderId() === null && $result->getEntityId() !== null) {
+            $customOrderFees->setOrderId($result->getEntityId());
+        }
+
+        $this->customOrderFeesRepository->save($customOrderFees);
+
+        return $result;
+    }
 }

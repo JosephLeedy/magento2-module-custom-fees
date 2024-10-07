@@ -6,5 +6,6 @@
 
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="add_custom_fees_to_order" type="JosephLeedy\CustomFees\Plugin\Sales\Api\OrderRepositoryInterfacePlugin"/>
+        <plugin name="save_custom_order_fees" type="JosephLeedy\CustomFees\Plugin\Sales\Api\OrderRepositoryInterfacePlugin"/>
     </type>
 </config>

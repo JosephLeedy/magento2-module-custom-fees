@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Plugin\Sales\Api;
 
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface;
 use JosephLeedy\CustomFees\Plugin\Sales\Api\OrderRepositoryInterfacePlugin;
 use Magento\Framework\Interception\PluginList\PluginList;
 use Magento\Sales\Api\Data\OrderInterface;
@@ -82,5 +83,52 @@ final class OrderRepositoryInterfacePluginTest extends TestCase
             ?->getCustomFees();
 
         self::assertEquals($expectedCustomOrderFees, $actualCustomOrderFees);
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testSavesCustomFeesForAnOrder(): void
+    {
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(OrderInterface::class);
+        /** @var OrderResource $orderResource */
+        $orderResource = $objectManager->create(OrderResource::class);
+        /** @var OrderRepositoryInterface $orderRepository */
+        $orderRepository = $objectManager->create(OrderRepositoryInterface::class);
+        /** @var CustomOrderFeesInterface $customOrderFees */
+        $customOrderFees = $objectManager->create(CustomOrderFeesInterface::class);
+
+        // Load the order by its increment ID to avoid hard-coding the entity ID, which can change.
+        $orderResource->load($order, '100000001', 'increment_id');
+
+        /** @var int|string $orderId */
+        $orderId = $order->getEntityId();
+
+        $customOrderFees->setOrderId($orderId);
+        $customOrderFees->setCustomFees(
+            [
+                '_1726874777_074' => [
+                    'code' => 'test_fee_0',
+                    'title' => 'Test Fee',
+                    'base_value' => 5.00,
+                    'value' => 4.50
+                ],
+                '_1726874800_591' => [
+                    'code' => 'test_fee_1',
+                    'title' => 'Another Test Fee',
+                    'base_value' => 1.50,
+                    'value' => 1.35
+                ]
+            ]
+        );
+
+        $order->getExtensionAttributes()
+            ?->setCustomOrderFees($customOrderFees);
+
+        $orderRepository->save($order);
+
+        self::assertIsNumeric($customOrderFees->getId());
     }
 }
