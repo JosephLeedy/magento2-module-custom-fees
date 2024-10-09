@@ -17,7 +17,6 @@ use Magento\Store\Api\Data\StoreInterface;
 use function array_map;
 use function array_walk;
 use function count;
-use function method_exists;
 
 class CustomFees extends AbstractTotal
 {
@@ -69,7 +68,7 @@ class CustomFees extends AbstractTotal
 
         $cartExtension = $quote->getExtensionAttributes();
 
-        if ($cartExtension === null || !method_exists($cartExtension, 'setCustomFees')) {
+        if ($cartExtension === null) {
             return $this;
         }
 

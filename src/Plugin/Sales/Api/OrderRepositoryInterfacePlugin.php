@@ -9,8 +9,6 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 
-use function method_exists;
-
 class OrderRepositoryInterfacePlugin
 {
     public function __construct(
@@ -24,11 +22,7 @@ class OrderRepositoryInterfacePlugin
     ): OrderInterface {
         $orderExtension = $result->getExtensionAttributes();
 
-        if (
-            $orderExtension === null
-            || !method_exists($orderExtension, 'getCustomOrderFees')
-            || $orderExtension->getCustomOrderFees() !== null
-        ) {
+        if ($orderExtension === null || $orderExtension->getCustomOrderFees() !== null) {
             return $result;
         }
 
@@ -38,7 +32,7 @@ class OrderRepositoryInterfacePlugin
             $customOrderFees = null;
         }
 
-        if ($customOrderFees === null || !method_exists($orderExtension, 'setCustomOrderFees')) {
+        if ($customOrderFees === null) {
             return $result;
         }
 
@@ -51,11 +45,7 @@ class OrderRepositoryInterfacePlugin
     {
         $orderExtension = $result->getExtensionAttributes();
 
-        if (
-            $orderExtension === null
-            || !method_exists($orderExtension, 'getCustomOrderFees')
-            || $orderExtension->getCustomOrderFees() === null
-        ) {
+        if ($orderExtension === null || $orderExtension->getCustomOrderFees() === null) {
             return $result;
         }
 

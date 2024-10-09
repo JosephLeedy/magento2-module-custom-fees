@@ -11,8 +11,6 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 
-use function method_exists;
-
 /**
  * Observer for `sales_model_service_quote_submit_before` event
  *
@@ -33,13 +31,7 @@ class BeforeQuoteSubmitObserver implements ObserverInterface
         $quoteExtension = $quote->getExtensionAttributes();
         $orderExtension = $order->getExtensionAttributes();
 
-        if (
-            $quoteExtension === null
-            || $orderExtension === null
-            || !method_exists($quoteExtension, 'getCustomFees')
-            || !method_exists($orderExtension, 'setCustomOrderFees')
-            || $quoteExtension->getCustomFees() === null
-        ) {
+        if ($quoteExtension === null || $orderExtension === null || $quoteExtension->getCustomFees() === null) {
             return;
         }
 
