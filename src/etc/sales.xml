@@ -5,4 +5,9 @@
             <item name="custom_fees" instance="JosephLeedy\CustomFees\Model\Total\Quote\CustomFees" sort_order="250"/>
         </group>
     </section>
+    <section name="order_invoice">
+        <group name="totals">
+            <item name="custom_fees" instance="JosephLeedy\CustomFees\Model\Total\Invoice\CustomFees" sort_order="75"/>
+        </group>
+    </section>
 </config>

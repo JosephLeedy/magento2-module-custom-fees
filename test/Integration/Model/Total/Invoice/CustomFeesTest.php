@@ -1,0 +1,55 @@
+<?php
+
+declare(strict_types=1);
+
+namespace JosephLeedy\CustomFees\Test\Integration\Model\Total\Invoice;
+
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Invoice;
+use Magento\Sales\Model\ResourceModel\Order as OrderResource;
+use Magento\TestFramework\Helper\Bootstrap;
+use PHPUnit\Framework\TestCase;
+
+final class CustomFeesTest extends TestCase
+{
+    /**
+     * @magentoDataFixture JosephLeedy_CustomFees::Test/Integration/_files/invoice_with_custom_fees.php
+     */
+    public function testCollectsCustomFeesTotals(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var OrderResource $orderResource */
+        $orderResource = $objectManager->create(OrderResource::class);
+
+        $orderResource->load($order, '100000001', 'increment_id');
+
+        /** @var Invoice $invoice */
+        $invoice = $order->getInvoiceCollection()->getFirstItem();
+
+        self::assertEquals(106.50, $invoice->getGrandTotal());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/invoice.php
+     */
+    public function testDoesNotCollectsCustomFeesTotals(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var OrderResource $orderResource */
+        $orderResource = $objectManager->create(OrderResource::class);
+
+        $orderResource->load($order, '100000001', 'increment_id');
+
+        /** @var Invoice $invoice */
+        $invoice = $order->getInvoiceCollection()->getFirstItem();
+
+        self::assertEquals(100, $invoice->getGrandTotal());
+    }
+}
