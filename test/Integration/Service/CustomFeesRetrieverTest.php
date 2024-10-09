@@ -7,6 +7,7 @@ namespace JosephLeedy\CustomFees\Test\Integration\Service;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\ResourceModel\Order as OrderResource;
@@ -23,14 +24,16 @@ final class CustomFeesRetrieverTest extends TestCase
      */
     public function testRetrievesCustomFeesForOrder(string $source): void
     {
+        /** @var ObjectManagerInterface $objectManager */
         $objectManager = Bootstrap::getObjectManager();
         /** @var CustomFeesRetriever $customFeesRetriever */
         $customFeesRetriever = $objectManager->create(CustomFeesRetriever::class);
 
         if ($source === 'order_extension') {
+            /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
+            $searchCriteriaBuilder = $objectManager->create(SearchCriteriaBuilder::class);
             /** @var SearchCriteriaInterface $searchCriteria */
-            $searchCriteria = $objectManager->create(SearchCriteriaBuilder::class)
-                ->addFilter('increment_id', '100000001')
+            $searchCriteria = $searchCriteriaBuilder->addFilter('increment_id', '100000001')
                 ->create();
             /** @var OrderRepositoryInterface $orderRepository */
             $orderRepository = $objectManager->create(OrderRepositoryInterface::class);
@@ -72,6 +75,7 @@ final class CustomFeesRetrieverTest extends TestCase
      */
     public function testDoesNotRetrieveCustomFeesForOrder(string $condition): void
     {
+        /** @var ObjectManagerInterface $objectManager */
         $objectManager = Bootstrap::getObjectManager();
         /** @var CustomFeesRetriever $customFeesRetriever */
         $customFeesRetriever = $objectManager->create(CustomFeesRetriever::class);
