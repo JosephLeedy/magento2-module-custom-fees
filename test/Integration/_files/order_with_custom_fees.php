@@ -11,7 +11,7 @@ use Magento\Sales\Model\ResourceModel\Order as OrderResource;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\TestFramework\Workaround\Override\Fixture\Resolver;
 
-Resolver::getInstance()->requireDataFixture('Magento/Sales/_files/order.php');
+Resolver::getInstance()->requireDataFixture('JosephLeedy_CustomFees::Test/Integration/_files/order.php');
 
 $objectManager = Bootstrap::getObjectManager();
 /** @var Order $order */

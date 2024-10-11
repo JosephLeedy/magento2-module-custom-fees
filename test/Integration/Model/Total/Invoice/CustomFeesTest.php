@@ -30,11 +30,11 @@ final class CustomFeesTest extends TestCase
         /** @var Invoice $invoice */
         $invoice = $order->getInvoiceCollection()->getFirstItem();
 
-        self::assertEquals(106.50, $invoice->getGrandTotal());
+        self::assertEquals(26.50, $invoice->getGrandTotal());
     }
 
     /**
-     * @magentoDataFixture Magento/Sales/_files/invoice.php
+     * @magentoDataFixture JosephLeedy_CustomFees::Test/Integration/_files/invoice.php
      */
     public function testDoesNotCollectsCustomFeesTotals(): void
     {
@@ -50,6 +50,6 @@ final class CustomFeesTest extends TestCase
         /** @var Invoice $invoice */
         $invoice = $order->getInvoiceCollection()->getFirstItem();
 
-        self::assertEquals(100, $invoice->getGrandTotal());
+        self::assertEquals(20, $invoice->getGrandTotal());
     }
 }
