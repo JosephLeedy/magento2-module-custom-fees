@@ -51,13 +51,13 @@ final class CustomFeesRetrieverTest extends TestCase
         }
 
         $expectedCustomFees = [
-            '_1727299833_817' => [
+            '_1727299833817_817' => [
                 'code' => 'test_fee_0',
                 'title' => 'Test Fee',
                 'base_value' => 5.00,
                 'value' => 5.00
             ],
-            '_1727299843_197' => [
+            '_1727299843197_197' => [
                 'code' => 'test_fee_1',
                 'title' => 'Another Test Fee',
                 'base_value' => 1.50,
