@@ -14,6 +14,8 @@ use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
 use Magento\Quote\Model\Quote\Address\Total\CollectorInterface;
 use Magento\Store\Api\Data\StoreInterface;
 
+use function array_filter;
+use function array_key_exists;
 use function array_map;
 use function array_walk;
 use function count;
@@ -98,6 +100,10 @@ class CustomFees extends AbstractTotal
              * @return array{code: string, title: Phrase, value: float}
              */
             static function (array $customFee): array {
+                if (array_key_exists('code', $customFee) && $customFee['code'] === 'example_fee') {
+                    return [];
+                }
+
                 $customFee['title'] = __($customFee['title']);
 
                 return $customFee;
@@ -110,6 +116,10 @@ class CustomFees extends AbstractTotal
              * @return array{code: string, title: Phrase, value: float}
              */
             function (array $customFee) use ($store): array {
+                if (count($customFee) === 0) {
+                    return $customFee;
+                }
+
                 $customFee['value'] = $this->priceCurrency->convert($customFee['value'], $store);
 
                 return $customFee;
@@ -118,8 +128,8 @@ class CustomFees extends AbstractTotal
         );
 
         return [
-            $baseCustomFees,
-            $localCustomFees
+            array_filter($baseCustomFees),
+            array_filter($localCustomFees)
         ];
     }
 }
