@@ -13,6 +13,8 @@ use Magento\Quote\Api\Data\CartInterface;
 use Magento\Sales\Api\Data\OrderExtensionInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 
+use function count;
+
 /**
  * Observer for `sales_model_service_quote_submit_before` event
  *
@@ -32,17 +34,17 @@ class BeforeQuoteSubmitObserver implements ObserverInterface
         $order = $event->getData('order');
         /** @var CartExtensionInterface $quoteExtension */
         $quoteExtension = $quote->getExtensionAttributes();
+        /** @var array<string, array{code: string, title: string, base_value: float, value: float}>|null $customFees */
+        $customFees = $quoteExtension->getCustomFees();
         /** @var OrderExtensionInterface $orderExtension */
         $orderExtension = $order->getExtensionAttributes();
 
-        if ($quoteExtension->getCustomFees() === null) {
+        if ($customFees === null || count($customFees) === 0) {
             return;
         }
 
         /** @var CustomOrderFeesInterface $customOrderFees */
         $customOrderFees = $this->customOrderFeesFactory->create();
-        /** @var array<string, array{code: string, title: string, base_value: float, value: float}> $customFees */
-        $customFees = $quoteExtension->getCustomFees();
 
         $customOrderFees->setCustomFees($customFees);
 
