@@ -11,7 +11,7 @@ use Magento\TestFramework\Workaround\Override\Fixture\Resolver;
 
 $resolver = Resolver::getInstance();
 
-$resolver->requireDataFixture('JosephLeedy_CustomFees::Test/Integration/_files/invoice.php');
+$resolver->requireDataFixture('JosephLeedy_CustomFees::../test/Integration/_files/invoice.php');
 
 $objectManager = Bootstrap::getObjectManager();
 /** @var Order $order */

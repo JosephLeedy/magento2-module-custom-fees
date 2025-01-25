@@ -38,7 +38,7 @@ final class TotalsTest extends TestCase
         $resolver = Resolver::getInstance();
 
         $resolver->setCurrentFixtureType(DataFixture::ANNOTATION);
-        $resolver->requireDataFixture("JosephLeedy_CustomFees::Test/Integration/_files/$filename.php");
+        $resolver->requireDataFixture("JosephLeedy_CustomFees::../test/Integration/_files/$filename.php");
 
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = Bootstrap::getObjectManager();

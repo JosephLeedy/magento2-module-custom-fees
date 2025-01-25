@@ -20,7 +20,7 @@ final class CustomFeesRetrieverTest extends TestCase
 {
     /**
      * @dataProvider retrievesCustomFeesDataProvider
-     * @magentoDataFixture JosephLeedy_CustomFees::Test/Integration/_files/order_with_custom_fees.php
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees.php
      */
     public function testRetrievesCustomFeesForOrder(string $source): void
     {

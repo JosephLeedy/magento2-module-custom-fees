@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 final class CustomFeesTest extends TestCase
 {
     /**
-     * @magentoDataFixture JosephLeedy_CustomFees::Test/Integration/_files/invoice_with_custom_fees.php
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/invoice_with_custom_fees.php
      */
     public function testCollectsCustomFeesTotals(): void
     {
@@ -34,7 +34,7 @@ final class CustomFeesTest extends TestCase
     }
 
     /**
-     * @magentoDataFixture JosephLeedy_CustomFees::Test/Integration/_files/invoice.php
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/invoice.php
      */
     public function testDoesNotCollectsCustomFeesTotals(): void
     {

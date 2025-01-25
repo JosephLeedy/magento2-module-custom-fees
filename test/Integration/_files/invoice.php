@@ -12,7 +12,7 @@ use Magento\TestFramework\Workaround\Override\Fixture\Resolver;
 $resolver = Resolver::getInstance();
 
 $resolver->requireDataFixture('Magento/Sales/_files/default_rollback.php');
-$resolver->requireDataFixture('JosephLeedy_CustomFees::Test/Integration/_files/order.php');
+$resolver->requireDataFixture('JosephLeedy_CustomFees::../test/Integration/_files/order.php');
 
 /** @var ObjectManagerInterface $objectManager */
 $objectManager = Bootstrap::getObjectManager();

@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 final class ExtensionAttributesTest extends TestCase
 {
     /**
-     * @magentoDataFixture JosephLeedy_CustomFees::Test/Integration/_files/orders_with_custom_fees.php
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/orders_with_custom_fees.php
      */
     public function testOrderExtensionAttributeAddsCustomOrderFeesToMultipleOrders(): void
     {

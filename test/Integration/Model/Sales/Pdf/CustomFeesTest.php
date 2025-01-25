@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 final class CustomFeesTest extends TestCase
 {
     /**
-     * @magentoDataFixture JosephLeedy_CustomFees::Test/Integration/_files/order_with_custom_fees.php
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees.php
      */
     public function testGetTotalsForDisplayGetsTotals(): void
     {
@@ -62,7 +62,7 @@ final class CustomFeesTest extends TestCase
         $resolver = Resolver::getInstance();
 
         $resolver->setCurrentFixtureType(DataFixture::ANNOTATION);
-        $resolver->requireDataFixture("JosephLeedy_CustomFees::Test/Integration/_files/$filename.php");
+        $resolver->requireDataFixture("JosephLeedy_CustomFees::../test/Integration/_files/$filename.php");
 
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = Bootstrap::getObjectManager();
@@ -100,7 +100,7 @@ final class CustomFeesTest extends TestCase
         $resolver = Resolver::getInstance();
 
         $resolver->setCurrentFixtureType(DataFixture::ANNOTATION);
-        $resolver->requireDataFixture("JosephLeedy_CustomFees::Test/Integration/_files/$filename.php");
+        $resolver->requireDataFixture("JosephLeedy_CustomFees::../test/Integration/_files/$filename.php");
 
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = Bootstrap::getObjectManager();
