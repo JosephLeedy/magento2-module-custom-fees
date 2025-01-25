@@ -3,7 +3,7 @@
     <default>
         <sales>
             <totals_sort>
-                <custom_fees>15</custom_fees>
+                <custom_fees>50</custom_fees>
             </totals_sort>
             <custom_order_fees>
                 <custom_fees>[{"code":"example_fee","title":"Example Fee","value":"0.00"}]</custom_fees>

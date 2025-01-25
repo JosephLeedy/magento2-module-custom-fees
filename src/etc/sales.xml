@@ -2,17 +2,17 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Sales:etc/sales.xsd">
     <section name="quote">
         <group name="totals">
-            <item name="custom_fees" instance="JosephLeedy\CustomFees\Model\Total\Quote\CustomFees" sort_order="250"/>
+            <item name="custom_fees" instance="JosephLeedy\CustomFees\Model\Total\Quote\CustomFees" sort_order="500"/>
         </group>
     </section>
     <section name="order_invoice">
         <group name="totals">
-            <item name="custom_fees" instance="JosephLeedy\CustomFees\Model\Total\Invoice\CustomFees" sort_order="75"/>
+            <item name="custom_fees" instance="JosephLeedy\CustomFees\Model\Total\Invoice\CustomFees" sort_order="225"/>
         </group>
     </section>
     <section name="order_creditmemo">
         <group name="totals">
-            <item name="custom_fees" instance="JosephLeedy\CustomFees\Model\Total\Creditmemo\CustomFees" sort_order="75"/>
+            <item name="custom_fees" instance="JosephLeedy\CustomFees\Model\Total\Creditmemo\CustomFees" sort_order="275"/>
         </group>
     </section>
 </config>

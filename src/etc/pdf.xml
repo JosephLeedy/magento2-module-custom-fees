@@ -7,7 +7,7 @@
             <model>JosephLeedy\CustomFees\Model\Sales\Pdf\CustomFees</model>
             <font_size>7</font_size>
             <display_zero>false</display_zero>
-            <sort_order>150</sort_order>
+            <sort_order>450</sort_order>
         </total>
     </totals>
 </config>
