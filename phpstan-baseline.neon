@@ -31,11 +31,6 @@ parameters:
 			path: src/Model/CustomOrderFeesRepository.php
 
 		-
-			message: "#^Parameter \\#1 \\$customFees of method Magento\\\\Quote\\\\Api\\\\Data\\\\CartExtensionInterface\\:\\:setCustomFees\\(\\) expects array, array\\<array\\<string, float\\|Magento\\\\Framework\\\\Phrase\\|string\\>\\> given\\.$#"
-			count: 1
-			path: src/Model/Total/Quote/CustomFees.php
-
-		-
 			message: "#^Parameter \\#2 \\$scope of method Magento\\\\Framework\\\\Pricing\\\\PriceCurrencyInterface\\:\\:convert\\(\\) expects bool\\|int\\|Magento\\\\Framework\\\\App\\\\ScopeInterface\\|string\\|null, Magento\\\\Store\\\\Api\\\\Data\\\\StoreInterface given\\.$#"
 			count: 1
 			path: src/Model/Total/Quote/CustomFees.php
