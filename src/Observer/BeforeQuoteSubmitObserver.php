@@ -8,7 +8,9 @@ use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterfaceFactory;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Quote\Api\Data\CartExtensionInterface;
 use Magento\Quote\Api\Data\CartInterface;
+use Magento\Sales\Api\Data\OrderExtensionInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 
 /**
@@ -28,10 +30,12 @@ class BeforeQuoteSubmitObserver implements ObserverInterface
         $quote = $event->getData('quote');
         /** @var OrderInterface $order */
         $order = $event->getData('order');
+        /** @var CartExtensionInterface $quoteExtension */
         $quoteExtension = $quote->getExtensionAttributes();
+        /** @var OrderExtensionInterface $orderExtension */
         $orderExtension = $order->getExtensionAttributes();
 
-        if ($quoteExtension === null || $orderExtension === null || $quoteExtension->getCustomFees() === null) {
+        if ($quoteExtension->getCustomFees() === null) {
             return;
         }
 
