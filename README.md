@@ -59,8 +59,7 @@ If you experience any issues or errors while using this extension, please
 information, including a description of the issue or error, what you were doing
 when it occurred, what versions of Magento Open Source or Adobe Commerce and PHP
 are installed and any other pertinent details. I will do my best to respond to
-your request in a timely manner, typically within 24-48 business hours (Monday
-through Friday from 9:00AM—5:00PM U.S. Eastern Time, excluding holidays).
+your request in a timely manner.
 
 ## License
 
