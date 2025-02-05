@@ -10,6 +10,8 @@ document.
 
 ## [Unreleased]
 
+## [1.0.0]
+
 ### Added
 
 - Initial version of extension
@@ -18,3 +20,4 @@ document.
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [README]: ./README.md
 [Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/tree/main
+[1.0.0]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.0.0
