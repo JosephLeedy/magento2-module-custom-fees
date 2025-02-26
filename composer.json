@@ -20,7 +20,8 @@
     "phpstan/phpstan": "^1.12",
     "phpstan/extension-installer": "^1.4",
     "bitexpert/phpstan-magento": "^v0.32",
-    "phpunit/phpunit": "^9.6"
+    "phpunit/phpunit": "^9.6",
+    "php-parallel-lint/php-parallel-lint": "^1.4"
   },
   "license": [
     "OSL-3.0"
