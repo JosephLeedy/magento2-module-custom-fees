@@ -1,0 +1,50 @@
+name: Code Quality Checks
+
+on:
+  pull_request:
+
+  workflow_dispatch:
+
+jobs:
+  php-code-quality:
+    name: Check PHP Code Quality
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: composer, cs2pr
+          extensions: bcmath, gd
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMPOSER_AUTH_JSON: ${{ secrets.COMPOSER_AUTH_JSON }}
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Set up cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Check syntax
+        run: vendor/bin/parallel-lint --checkstyle src test | cs2pr
+
+      - name: Detect coding standard violations
+        run: vendor/bin/phpcs -q --report=checkstyle | cs2pr --graceful-warnings
+
+      - name: Analyze code for potential bugs
+        run: vendor/bin/phpstan analyse
