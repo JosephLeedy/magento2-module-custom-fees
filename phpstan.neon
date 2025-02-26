@@ -9,3 +9,4 @@ parameters:
 	paths:
 		- src/
 	treatPhpDocTypesAsCertain: false
+	reportUnmatchedIgnoredErrors: false
