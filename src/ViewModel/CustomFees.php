@@ -9,6 +9,8 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 
+use function array_column;
+
 class CustomFees implements ArgumentInterface
 {
     public function __construct(
@@ -32,6 +34,21 @@ class CustomFees implements ArgumentInterface
     {
         return (string)(
             $this->serializer->serialize($this->getCustomFees()) ?: '[]'
+        );
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getCustomFeeCodes(): array
+    {
+        return array_column($this->getCustomFees(), 'code');
+    }
+
+    public function getCustomFeeCodesAsJson(): string
+    {
+        return (string)(
+            $this->serializer->serialize($this->getCustomFeeCodes()) ?: '[]'
         );
     }
 }
