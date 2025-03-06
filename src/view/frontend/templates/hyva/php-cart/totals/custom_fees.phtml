@@ -18,21 +18,20 @@ $customFeesViewModel = $viewModels->require(CustomFeesViewModel::class);
              */
             customFees: <?= /* @noEscape */ $customFeesViewModel->getCustomFeesAsJson() ?>,
             /**
-             * @param {{code: string, title: string, value: number}} customFee
              * @param {{code: string, title: string, value: number}} segment
              * @returns {boolean}
              */
-            canDisplay(customFee, segment) {
-                return customFee.code === segment.code && customFee.value > 0;
+            canDisplay(segment) {
+                const isCustomFee = Object.values(this.customFees).some(customFee => customFee.code === segment.code);
+
+                return isCustomFee && segment.value > 0;
             },
         };
     }
 </script>
-<template x-data="initCustomFeesTotals()" x-for="customFee in customFees">
-    <template x-if="canDisplay(customFee, segment)">
-        <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
-            <div class="w-7/12 text-left md:w-auto" x-html="customFee.title"></div>
-            <div class="w-5/12 text-right md:w-auto" x-text="hyva.formatPrice(customFee.value)"></div>
-        </div>
-    </template>
+<template x-data="initCustomFeesTotals()" x-if="canDisplay(segment)">
+    <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+        <div class="w-7/12 text-left md:w-auto" x-html="segment.title"></div>
+        <div class="w-5/12 text-right md:w-auto" x-text="hyva.formatPrice(segment.value)"></div>
+    </div>
 </template>
