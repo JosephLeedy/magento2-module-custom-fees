@@ -1,0 +1,42 @@
+<?php
+
+declare(strict_types=1);
+
+use Hyva\Checkout\ViewModel\Checkout\Formatter as FormatterViewModel;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magento\Quote\Api\Data\TotalSegmentExtensionInterface;
+use Magento\Quote\Api\Data\TotalSegmentInterface;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+
+/** @var array{code: string, title: string, value: float, extension_attributes: TotalSegmentExtensionInterface} $customFeesSegment */
+$customFeesSegment = $block->getSegment();
+$customFeesSegmentExtension = $customFeesSegment['extension_attributes'] ?? null;
+/** @var FormatterViewModel $formatterViewModel */
+$formatterViewModel = $viewModels->require(FormatterViewModel::class);
+
+if ($customFeesSegmentExtension === null || $customFeesSegmentExtension->getCustomFeeSegments() === null):
+    return;
+endif;
+?>
+<?php
+/** @var TotalSegmentInterface $customFeeSegment */
+foreach ($customFeesSegmentExtension->getCustomFeeSegments() as $customFeeSegment):
+    if ($customFeeSegment->getValue() === 0):
+        continue;
+    endif;
+// phpcs:ignore Generic.WhiteSpace.ScopeIndent.IncorrectExact
+?>
+    <div class="flex gap-4 justify-between md:gap-0 custom-fee-<?= $escaper->escapeHtmlAttr($customFeeSegment->getCode()) ?>">
+        <span class="label">
+            <?= $escaper->escapeHtml($customFeeSegment->getTitle() ?? '') ?>
+        </span>
+        <span class="value">
+            <?= /* @noEscape */ $formatterViewModel->currency($customFeeSegment->getValue()) ?>
+        </span>
+    </div>
+<?php endforeach ?>

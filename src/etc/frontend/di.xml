@@ -7,4 +7,8 @@
             </argument>
         </arguments>
     </type>
+
+    <type name="Magento\Quote\Api\Data\TotalsInterface">
+        <plugin name="add_custom_fees_total_segment" type="JosephLeedy\CustomFees\Plugin\Quote\Api\Data\TotalsInterfacePlugin"/>
+    </type>
 </config>
