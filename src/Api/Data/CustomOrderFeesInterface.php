@@ -17,8 +17,15 @@ interface CustomOrderFeesInterface
     public const ORDER_ID = 'order_entity_id';
     public const CUSTOM_FEES = 'custom_fees';
 
+    /**
+     * @param int|string $orderId
+     * @return \JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface
+     */
     public function setOrderId(int|string $orderId): CustomOrderFeesInterface;
 
+    /**
+     * @return int|null
+     */
     public function getOrderId(): ?int;
 
     /**
@@ -39,5 +46,8 @@ interface CustomOrderFeesInterface
      */
     public function getCustomFees(): array;
 
+    /**
+     * @return \Magento\Sales\Api\Data\OrderInterface|null
+     */
     public function getOrder(): ?OrderInterface;
 }
