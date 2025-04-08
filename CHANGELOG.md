@@ -10,6 +10,14 @@ document.
 
 ## [Unreleased]
 
+## [1.0.1]
+
+### Fixed
+
+- Narrowed type for `custom_fees` Cart extension attribute to fix Swagger error
+- Added and updated method annotations in Custom Order Fees Interface to fix 
+  Swagger errors
+
 ## [1.0.0]
 
 ### Added
@@ -19,5 +27,6 @@ document.
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [README]: ./README.md
-[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/tree/main
+[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.0.1...HEAD
+[1.0.1]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.0.1
 [1.0.0]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.0.0
