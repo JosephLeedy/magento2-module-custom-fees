@@ -22,13 +22,20 @@ interface CustomOrderFeesInterface
     public function getOrderId(): ?int;
 
     /**
-     * @param string|array<string, array{code: string, title: string, base_value: float, value: float}> $customFees
+     * @param string|string[]|float[] $customFees
+     * @phpstan-param string|array<string, array{
+     *     code: string,
+     *     title: string,
+     *     base_value: float,
+     *     value: float
+     * }> $customFees
      * @throws InvalidArgumentException
      */
     public function setCustomFees(string|array $customFees): CustomOrderFeesInterface;
 
     /**
-     * @return array{}|array<string, array{code: string, title: string, base_value: float, value: float}>
+     * @return string[]|float[]
+     * @phpstan-return array{}|array<string, array{code: string, title: string, base_value: float, value: float}>
      */
     public function getCustomFees(): array;
 
