@@ -32,8 +32,8 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
         Context $context,
         Registry $registry,
         private readonly SerializerInterface $serializer,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
