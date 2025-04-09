@@ -10,6 +10,11 @@ document.
 
 ## [Unreleased]
 
+### Fixed
+
+- Mark constructor parameters as explicitly nullable in custom order fees model 
+  to fix deprecation errors thrown by PHP 8.4
+
 ## [1.0.1]
 
 ### Fixed
