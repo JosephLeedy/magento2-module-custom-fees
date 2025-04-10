@@ -10,10 +10,17 @@ document.
 
 ## [Unreleased]
 
+## [1.0.2]
+
 ### Fixed
 
 - Mark constructor parameters as explicitly nullable in custom order fees model 
   to fix deprecation errors thrown by PHP 8.4
+
+### Changed
+
+- Moved the _Custom Fees_ configuration field to be placed after the _Tax_ 
+  field in the _Totals Sort Order_ group
 
 ## [1.0.1]
 
@@ -32,6 +39,7 @@ document.
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [README]: ./README.md
-[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.0.1...HEAD
+[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.0.2...HEAD
+[1.0.2]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.0.2
 [1.0.1]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.0.1
 [1.0.0]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.0.0
