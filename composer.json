@@ -1,6 +1,6 @@
 {
   "name": "joseph-leedy/module-custom-fees",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Adds configurable custom fees to orders",
   "type": "magento2-module",
   "require": {
