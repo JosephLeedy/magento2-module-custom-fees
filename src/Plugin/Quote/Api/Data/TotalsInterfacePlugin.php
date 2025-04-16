@@ -34,6 +34,8 @@ class TotalsInterfacePlugin
     /**
      * Adds a total segment for custom fees in Hyvä Checkout
      *
+     * @param TotalSegmentInterface[]|null $result
+     * @return TotalSegmentInterface[]|null
      * @see TotalsInterface::getTotalSegments
      */
     public function afterGetTotalSegments(TotalsInterface $subject, ?array $result): ?array
