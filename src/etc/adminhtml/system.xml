@@ -3,7 +3,7 @@
     <system>
         <section id="sales">
             <group id="totals_sort">
-                <field id="custom_fees" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" canRestore="1">
+                <field id="custom_fees" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Custom Fees</label>
                     <validate>required-number validate-number</validate>
                 </field>

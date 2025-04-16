@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Api/etc/extension_attributes.xsd">
     <extension_attributes for="Magento\Quote\Api\Data\CartInterface">
-        <attribute code="custom_fees" type="array"/>
+        <attribute code="custom_fees" type="mixed[]"/>
     </extension_attributes>
     <extension_attributes for="Magento\Quote\Api\Data\TotalSegmentInterface">
         <attribute code="custom_fee_segments" type="Magento\Quote\Api\Data\TotalSegmentInterface[]"/>
