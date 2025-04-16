@@ -10,6 +10,11 @@ document.
 
 ## [Unreleased]
 
+### Fixed
+
+- Reorded custom fees totals to be placed _after_ tax totals on customer and 
+  guest order, invoice and credit memo pages in Hyvä frontend
+
 ## [1.0.0]
 
 ### Added

@@ -11,4 +11,8 @@
     <type name="Magento\Quote\Api\Data\TotalsInterface">
         <plugin name="add_custom_fees_total_segment" type="JosephLeedy\CustomFees\Plugin\Quote\Api\Data\TotalsInterfacePlugin"/>
     </type>
+
+    <type name="Magento\Sales\Block\Order\Totals">
+        <plugin name="reorder_custom_fees_total_segments_in_hyva" type="JosephLeedy\CustomFees\Plugin\Sales\Block\Order\TotalsPlugin"/>
+    </type>
 </config>
