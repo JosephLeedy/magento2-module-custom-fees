@@ -10,6 +10,11 @@ document.
 
 ## [Unreleased]
 
+### Added
+
+- Custom fees are now rendered on the _Cart_ page in the Hyvä frontend
+- Custom fees are now rendered on the _Checkout_ pages in the Hyvä frontend
+
 ### Fixed
 
 - Reorded custom fees totals to be placed _after_ tax totals on customer and 
