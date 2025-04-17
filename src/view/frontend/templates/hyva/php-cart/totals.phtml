@@ -17,7 +17,7 @@ $customFeesViewModel = $viewModels->require(CustomFees::class);
         const customFeesTotals = <?= /* @noEscape */ $customFeesViewModel->getCustomFeeCodesAsJson() ?>;
 
         window.initCartTotals = function () {
-            const instance = originalInitCartTotals.apply(null, arguments);
+            const instance = originalInitCartTotals.apply(this, arguments);
             const modifiedTotalsSort = instance.totalsSort;
             const position = modifiedTotalsSort['custom_fees'];
 
