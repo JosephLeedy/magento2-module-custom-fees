@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HyvaCsp;
 use JosephLeedy\CustomFees\ViewModel\CustomFees as CustomFeesViewModel;
 
+/** @var HyvaCsp $hyvaCsp */
 /** @var ViewModelRegistry $viewModels */
 
 /** @var CustomFeesViewModel $customFeesViewModel */
@@ -18,20 +20,41 @@ $customFeesViewModel = $viewModels->require(CustomFeesViewModel::class);
              */
             customFees: <?= /* @noEscape */ $customFeesViewModel->getCustomFeesAsJson() ?>,
             /**
-             * @param {{code: string, title: string, value: number}} segment
              * @returns {boolean}
              */
-            canDisplay(segment) {
-                const isCustomFee = Object.values(this.customFees).some(customFee => customFee.code === segment.code);
+            canDisplay() {
+                const isCustomFee = Object.values(this.customFees)
+                    .some(customFee => customFee.code === this.segment.code);
 
-                return isCustomFee && segment.value > 0;
+                return isCustomFee && this.segment.value > 0;
+            },
+            /**
+             * @returns {string}
+             */
+            getCustomFeeTitle()
+            {
+                return this.segment.title;
+            },
+            /**
+             * @returns {string}
+             */
+            getFormattedCustomFeeValue()
+            {
+                return hyva.formatPrice(this.segment.value);
             },
         };
     }
+
+    window.addEventListener(
+        'alpine:init',
+        () => Alpine.data('initCustomFeesTotals', initCustomFeesTotals),
+        {once: true}
+    );
 </script>
-<template x-data="initCustomFeesTotals()" x-if="canDisplay(segment)">
+<?php isset($hyvaCsp) && $hyvaCsp->registerInlineScript() ?>
+<template x-data="initCustomFeesTotals()" x-if="canDisplay">
     <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
-        <div class="w-7/12 text-left md:w-auto" x-html="segment.title"></div>
-        <div class="w-5/12 text-right md:w-auto" x-text="hyva.formatPrice(segment.value)"></div>
+        <div class="w-7/12 text-left md:w-auto" x-html="getCustomFeeTitle"></div>
+        <div class="w-5/12 text-right md:w-auto" x-text="getFormattedCustomFeeValue"></div>
     </div>
 </template>
