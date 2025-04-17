@@ -71,5 +71,10 @@ parameters:
 			path: src/view/frontend/templates/hyva/php-cart/totals/custom_fees.phtml
 
 		-
+			message: "#^Call to method registerInlineScript\\(\\) on an unknown class Hyva\\\\Theme\\\\ViewModel\\\\HyvaCsp\\.$#"
+			count: 1
+			path: src/view/frontend/templates/hyva/php-cart/totals/custom_fees.phtml
+
+		-
 			message: "#^Parameter \\#1 \\(array\\|string\\) of echo cannot be converted to string\\.$#"
 			path: *.phtml
