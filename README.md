@@ -82,8 +82,8 @@ improve and maintain this tool, please see the [CONTRIBUTING.md] file.
 
 ## Shout-Outs
 
-- A huge thanks to @pykettk, @Vinai and @hostep for reviewing the Hyvä 
-compatibility implementation in pull request #16 and suggesting changes! ❤️
+- A huge thanks to [@pykettk], [@Vinai] and [@hostep] for reviewing the Hyvä 
+compatibility implementation in [pull request #16] and suggesting changes! ❤️
 
 [Composer]: https://getcomposer.org
 [Packagist]: https://packagist.org
@@ -92,3 +92,7 @@ compatibility implementation in pull request #16 and suggesting changes! ❤️
 [LICENSE]: ./LICENSE
 [CHANGELOG.md]: ./CHANGELOG.md
 [CONTRIBUTING.md]: ./CONTRIBUTING.md
+[@pykettk]: https://github.com/pykettk
+[@Vinai]: https://github.com/Vinai
+[@hostep]: https://github.com/hostep
+[pull request #16]: https://github.com/JosephLeedy/magento2-module-custom-fees/pull/16
