@@ -7,5 +7,8 @@
         <referenceBlock name="checkout.cart.totals">
             <block name="custom_fees" template="JosephLeedy_CustomFees::hyva/php-cart/totals/custom_fees.phtml"/>
         </referenceBlock>
+        <referenceBlock name="checkout.cart.totals.scripts">
+            <block name="custom_fees.js" template="JosephLeedy_CustomFees::hyva/php-cart/totals/js/custom_fees-js.phtml"/>
+        </referenceBlock>
     </body>
 </page>
