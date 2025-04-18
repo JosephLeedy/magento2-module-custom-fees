@@ -1,15 +1,3 @@
-<?php
-
-declare(strict_types=1);
-
-use Hyva\Theme\Model\ViewModelRegistry;
-use JosephLeedy\CustomFees\ViewModel\CustomFees as CustomFeesViewModel;
-
-/** @var ViewModelRegistry $viewModels */
-
-/** @var CustomFeesViewModel $customFeesViewModel */
-$customFeesViewModel = $viewModels->require(CustomFeesViewModel::class);
-?>
 <div x-data="initCustomFeesTotalSegment">
     <template x-if="isCustomFeesTotalSegment">
         <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
