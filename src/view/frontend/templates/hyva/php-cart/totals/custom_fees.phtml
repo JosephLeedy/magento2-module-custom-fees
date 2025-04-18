@@ -10,7 +10,7 @@ use JosephLeedy\CustomFees\ViewModel\CustomFees as CustomFeesViewModel;
 /** @var CustomFeesViewModel $customFeesViewModel */
 $customFeesViewModel = $viewModels->require(CustomFeesViewModel::class);
 ?>
-<template x-data="initCustomFeesTotals()" x-if="canDisplay">
+<template x-data="initCustomFeesTotals" x-if="canDisplay">
     <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
         <div class="w-7/12 text-left md:w-auto" x-html="getCustomFeeTitle"></div>
         <div class="w-5/12 text-right md:w-auto" x-text="getFormattedCustomFeeValue"></div>
