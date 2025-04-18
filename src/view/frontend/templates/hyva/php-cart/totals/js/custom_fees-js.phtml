@@ -17,7 +17,7 @@ $customFeesViewModel = $viewModels->require(CustomFeesViewModel::class);
  */
 ?>
 <script>
-    function initCustomFeesTotals() {
+    function initCustomFeesTotalSegment() {
         return {
             /**
              *  @var {[{code: string, title: string, value: number}]}
@@ -26,7 +26,7 @@ $customFeesViewModel = $viewModels->require(CustomFeesViewModel::class);
             /**
              * @returns {boolean}
              */
-            canDisplay() {
+            isCustomFeesTotalSegment() {
                 const isCustomFee = Object.values(this.customFees)
                     .some(customFee => customFee.code === this.segment.code);
 
@@ -51,7 +51,7 @@ $customFeesViewModel = $viewModels->require(CustomFeesViewModel::class);
 
     window.addEventListener(
         'alpine:init',
-        () => Alpine.data('initCustomFeesTotals', initCustomFeesTotals),
+        () => Alpine.data('initCustomFeesTotalSegment', initCustomFeesTotalSegment),
         {once: true}
     );
 </script>
