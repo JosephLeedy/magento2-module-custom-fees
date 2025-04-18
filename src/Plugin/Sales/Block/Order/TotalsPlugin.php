@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Plugin\Sales\Block\Order;
 
+use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\TotalInterface;
 use Magento\Sales\Block\Order\Totals;
-use Magento\Sales\Model\Order;
 
 use function array_column;
 use function array_filter;
@@ -39,6 +39,9 @@ class TotalsPlugin
         'hyva_sales_order_printcreditmemo',
     ];
 
+    public function __construct(private readonly CustomFeesRetriever $customFeesRetriever)
+    {}
+
     /**
      * Ensure that custom fees totals are rendered after tax totals in Hyvä Sales Order frontend
      *
@@ -65,17 +68,13 @@ class TotalsPlugin
             return $result;
         }
 
-        /** @var Order $order */
-        $order = $subject->getOrder();
+        $customOrderFees = $this->customFeesRetriever->retrieve($subject->getOrder());
 
-        if (
-            $order->getExtensionAttributes()?->getCustomOrderFees() === null
-            || count($order->getExtensionAttributes()->getCustomOrderFees()->getCustomFees()) === 0
-        ) {
+        if (count($customOrderFees) === 0) {
             return $result;
         }
 
-        $customFeeCodes = array_column($order->getExtensionAttributes()->getCustomOrderFees()->getCustomFees(), 'code');
+        $customFeeCodes = array_column($customOrderFees, 'code');
         $customFees = array_filter(
             $result,
             static fn(string $totalCode): bool => in_array($totalCode, $customFeeCodes, true),

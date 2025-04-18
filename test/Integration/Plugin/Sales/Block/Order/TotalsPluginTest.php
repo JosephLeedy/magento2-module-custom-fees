@@ -376,10 +376,8 @@ final class TotalsPluginTest extends TestCase
      * @dataProvider orderDoesNotHaveCustomFeesDataProvider
      */
     public function testDoesNotReorderCustomFeesTotalSegmentsIfOrderDoesNotHaveCustomFees(
-        bool $hasCustomOrderFeesExtensionAttribute,
         bool $hasCustomOrderFees,
     ): void {
-        $customFees = [];
         $objectManager = Bootstrap::getObjectManager();
         /** @var OrderInterface&Order $order */
         $order = $objectManager->create(
@@ -415,9 +413,7 @@ final class TotalsPluginTest extends TestCase
                     'value' => 1.00,
                 ],
             ];
-        }
 
-        if ($hasCustomOrderFeesExtensionAttribute) {
             /** @var CustomOrderFeesInterface $customOrderFees */
             $customOrderFees = $objectManager->create(
                 CustomOrderFeesInterface::class,
@@ -464,16 +460,10 @@ final class TotalsPluginTest extends TestCase
     public function orderDoesNotHaveCustomFeesDataProvider(): array
     {
         return [
-            'extension attribute not set' => [
-                'hasCustomOrderFeesExtensionAttribute' => false,
-                'hasCustomOrderFees' => false,
-            ],
             'no custom order fees' => [
-                'hasCustomOrderFeesExtensionAttribute' => true,
                 'hasCustomOrderFees' => false,
             ],
             'no custom fees totals' => [
-                'hasCustomOrderFeesExtensionAttribute' => true,
                 'hasCustomOrderFees' => true,
             ],
         ];
