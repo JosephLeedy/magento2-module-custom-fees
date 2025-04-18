@@ -5,10 +5,7 @@
             <block class="Magento\Checkout\Block\Cart\Totals" name="checkout.cart.totals.custom-fees" after="checkout.cart.totals" template="JosephLeedy_CustomFees::hyva/php-cart/totals.phtml"/>
         </referenceContainer>
         <referenceBlock name="checkout.cart.totals">
-            <block name="custom_fees" template="JosephLeedy_CustomFees::hyva/php-cart/totals/custom_fees.phtml"/>
-        </referenceBlock>
-        <referenceBlock name="checkout.cart.totals.scripts">
-            <block name="custom_fees.js" template="JosephLeedy_CustomFees::hyva/php-cart/totals/js/custom_fees-js.phtml"/>
+            <block class="JosephLeedy\CustomFees\Block\Sales\Cart\Totals\CustomFees" name="custom_fees" template="JosephLeedy_CustomFees::hyva/php-cart/totals/custom_fees.phtml"/>
         </referenceBlock>
     </body>
 </page>

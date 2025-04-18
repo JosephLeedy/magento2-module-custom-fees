@@ -1,6 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Setter methods like \\$this\\(JosephLeedy\\\\CustomFees\\\\Block\\\\Sales\\\\Cart\\\\Totals\\\\CustomFees\\)\\:\\:setTemplate\\(\\) are deprecated in Block classes, use constructor arguments instead$#"
+			count: 1
+			path: src/Block/Sales/Cart/Totals/CustomFees.php
+
+		-
+			message: "#^Setter methods like Magento\\\\Framework\\\\View\\\\Element\\\\Template\\:\\:setTemplate\\(\\) are deprecated in Block classes, use constructor arguments instead$#"
+			count: 1
+			path: src/Block/Sales/Cart/Totals/CustomFees.php
+
+		-
 			message: "#^Call to an undefined method Magento\\\\Store\\\\Api\\\\Data\\\\StoreInterface\\:\\:getBaseCurrency\\(\\)\\.$#"
 			count: 1
 			path: src/Block/System/Config/Form/Field/CustomFees.php
@@ -69,6 +79,11 @@ parameters:
 			message: "#^Call to method registerInlineScript\\(\\) on an unknown class Hyva\\\\Theme\\\\ViewModel\\\\HyvaCsp\\.$#"
 			count: 1
 			path: src/view/frontend/templates/hyva/php-cart/totals.phtml
+
+		-
+			message: "#^Call to method require\\(\\) on an unknown class Hyva\\\\Theme\\\\Model\\\\ViewModelRegistry\\.$#"
+			count: 1
+			path: src/view/frontend/templates/hyva/php-cart/totals/custom_fees.phtml
 
 		-
 			message: "#^Call to method require\\(\\) on an unknown class Hyva\\\\Theme\\\\Model\\\\ViewModelRegistry\\.$#"
