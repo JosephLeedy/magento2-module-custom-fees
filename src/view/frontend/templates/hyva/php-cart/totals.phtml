@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HyvaCsp;
 use JosephLeedy\CustomFees\ViewModel\CustomFees;
 
+/** @var HyvaCsp $hyvaCsp */
 /** @var ViewModelRegistry $viewModels */
 
 /** @var CustomFees $customFeesViewModel */
@@ -35,3 +37,4 @@ $customFeesViewModel = $viewModels->require(CustomFees::class);
         };
     })();
 </script>
+<?php isset($hyvaCsp) && $hyvaCsp->registerInlineScript() ?>
