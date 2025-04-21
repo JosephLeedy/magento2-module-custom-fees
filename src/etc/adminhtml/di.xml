@@ -3,4 +3,7 @@
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <plugin name="add_custom_fees_to_order_grid_items" type="JosephLeedy\CustomFees\Plugin\Framework\View\Element\UiComponent\DataProvider\CollectionFactoryPlugin"/>
     </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
+        <plugin name="process_custom_order_fees" type="JosephLeedy\CustomFees\Plugin\Framework\View\Element\UiComponent\DataProvider\DataProviderPlugin"/>
+    </type>
 </config>
