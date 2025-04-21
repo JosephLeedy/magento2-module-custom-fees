@@ -10,6 +10,11 @@ document.
 
 ## [Unreleased]
 
+### Added
+
+- Custom fees are now rendered in columns in the Sales Order Grid in the Admin 
+  panel
+
 ## [1.0.2]
 
 ### Fixed
