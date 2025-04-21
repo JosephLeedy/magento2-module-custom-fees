@@ -13,3 +13,5 @@ Code,Code
 "Could not save custom fees for order with ID ""%1"". Error: ""%2""","Could not save custom fees for order with ID ""%1"". Error: ""%2"""
 "Could not delete custom fees for order with ID ""%1"". Error: ""%2""","Could not delete custom fees for order with ID ""%1"". Error: ""%2"""
 "Order with ID ""%1"" does not exist.","Order with ID ""%1"" does not exist."
+"%1 (Base)","%1 (Base)"
+"%1 (Purchased)","%1 (Purchased)"

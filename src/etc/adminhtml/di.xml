@@ -6,4 +6,7 @@
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
         <plugin name="process_custom_order_fees" type="JosephLeedy\CustomFees\Plugin\Framework\View\Element\UiComponent\DataProvider\DataProviderPlugin"/>
     </type>
+    <type name="Magento\Ui\Component\AbstractComponent">
+        <plugin name="add_custom_fees_columns_to_order_grid" type="JosephLeedy\CustomFees\Plugin\Ui\Component\AbstractComponentPlugin"/>
+    </type>
 </config>
