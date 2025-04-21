@@ -16,6 +16,8 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 
 class CustomOrderFees extends AbstractDb
 {
+    public const TABLE_NAME = 'custom_order_fees';
+
     /**
      * Mark `custom_fees` field as serializable
      *
@@ -73,7 +75,7 @@ class CustomOrderFees extends AbstractDb
      */
     protected function _construct(): void
     {
-        $this->_init('custom_order_fees', 'id');
+        $this->_init(self::TABLE_NAME, 'id');
 
         $this->_useIsObjectNew = true;
     }
