@@ -16,7 +16,7 @@ use Magento\Ui\Component\Listing\Columns;
 use PHPUnit\Framework\TestCase;
 
 #[AppArea('adminhtml')]
-class AbstractComponentPluginTest extends TestCase
+final class AbstractComponentPluginTest extends TestCase
 {
     public function testIsConfiguredCorrectly(): void
     {
