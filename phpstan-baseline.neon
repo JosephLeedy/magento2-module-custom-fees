@@ -31,6 +31,21 @@ parameters:
 			path: src/Model/CustomOrderFeesRepository.php
 
 		-
+			message: "#^PHPDoc tag @var with type string is not subtype of native type mixed\\.$#"
+			count: 1
+			path: src/Model/ResourceModel/Report/CustomOrderFees.php
+
+		-
+			message: "#^Parameter \\#2 \\$from of method Magento\\\\Reports\\\\Model\\\\ResourceModel\\\\Report\\\\AbstractReport\\:\\:_clearTableByDateRange\\(\\) expects string\\|null, DateTimeInterface\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Model/ResourceModel/Report/CustomOrderFees.php
+
+		-
+			message: "#^Parameter \\#3 \\$to of method Magento\\\\Reports\\\\Model\\\\ResourceModel\\\\Report\\\\AbstractReport\\:\\:_clearTableByDateRange\\(\\) expects string\\|null, DateTimeInterface\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Model/ResourceModel/Report/CustomOrderFees.php
+
+		-
 			message: "#^Parameter \\#1 \\$customFees of method Magento\\\\Quote\\\\Api\\\\Data\\\\CartExtensionInterface\\:\\:setCustomFees\\(\\) expects array\\<mixed\\>, array\\<array\\<string, float\\|Magento\\\\Framework\\\\Phrase\\|string\\>\\> given\\.$#"
 			count: 1
 			path: src/Model/Total/Quote/CustomFees.php
