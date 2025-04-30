@@ -73,6 +73,7 @@ class CustomOrderFees extends AbstractReport
                     $to
                 )
             );
+            // phpcs:disable Magento2.SQL.RawQuery.FoundRawSql
             $query = <<<SQL
             SELECT
                 $periodExpression AS period,
@@ -110,6 +111,7 @@ class CustomOrderFees extends AbstractReport
                 so.order_currency_code,
                 fee.title
             SQL;
+            // phpcs:enable
 
             if ($subSelect !== null) {
                 /** @var string $periodCondition */
