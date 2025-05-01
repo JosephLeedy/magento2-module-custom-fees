@@ -16,3 +16,17 @@ Code,Code
 "%1 (Base)","%1 (Base)"
 "%1 (Purchased)","%1 (Purchased)"
 "Unsupported database server version ""%1"".","Unsupported database server version ""%1""."
+"All Websites","All Websites"
+"Total Custom Order Fees Report","Total Custom Order Fees Report"
+"Show Report","Show Report"
+Interval,Interval
+Total,Total
+Title,Title
+Amount,Amount
+"Amount Paid","Amount Paid"
+"Amount Invoiced","Amount Invoiced"
+CSV,CSV
+"Excel XML","Excel XML"
+No,No
+Yes,Yes
+"Show Base Amount","Show Base Amount"
