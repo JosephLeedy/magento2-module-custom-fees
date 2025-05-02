@@ -68,15 +68,15 @@ class TotalsInterfacePlugin
         $customFeeCodes = array_column($customFees, 'code');
         $customFeesTotalSegments = array_filter(
             $result,
-            static fn (string $key): bool => in_array($key, $customFeeCodes, true),
-            ARRAY_FILTER_USE_KEY
+            static fn(string $key): bool => in_array($key, $customFeeCodes, true),
+            ARRAY_FILTER_USE_KEY,
         );
         $result = array_diff_key($result, $customFeesTotalSegments);
 
         $customFeesTotalSegmentExtension->setCustomFeeSegments($customFeesTotalSegments);
 
         $customFeesTotalSegment->setCode('custom_fees');
-        $customFeesTotalSegment->setTitle((string)__('Custom Fees'));
+        $customFeesTotalSegment->setTitle((string) __('Custom Fees'));
         $customFeesTotalSegment->setValue(0);
         $customFeesTotalSegment->setArea();
         $customFeesTotalSegment->setExtensionAttributes($customFeesTotalSegmentExtension);

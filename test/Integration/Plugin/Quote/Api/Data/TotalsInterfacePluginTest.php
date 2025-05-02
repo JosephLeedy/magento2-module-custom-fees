@@ -45,7 +45,7 @@ final class TotalsInterfacePluginTest extends TestCase
         '[{"code":"test_fee_0","title":"Test Fee","value":"4.00"},{"code":"test_fee_1",'
             . '"title":"Another Fee","value":"1.00"}]',
         ScopeInterface::SCOPE_STORE,
-        'default'
+        'default',
     )]
     public function testAddsCustomFeesTotalSegment(): void
     {
@@ -72,8 +72,8 @@ final class TotalsInterfacePluginTest extends TestCase
         $totals->setTotalSegments(
             [
                 'test_fee_0' => $testCustomFeeTotalSegment0,
-                'test_fee_1' => $testCustomFeeTotalSegment1
-            ]
+                'test_fee_1' => $testCustomFeeTotalSegment1,
+            ],
         );
 
         $layout->getLayout()->getUpdate()->addHandle('hyva_checkout');
@@ -85,9 +85,9 @@ final class TotalsInterfacePluginTest extends TestCase
         self::assertEquals(
             [
                 'test_fee_0' => $testCustomFeeTotalSegment0,
-                'test_fee_1' => $testCustomFeeTotalSegment1
+                'test_fee_1' => $testCustomFeeTotalSegment1,
             ],
-            $totalSegments['custom_fees']->getExtensionAttributes()?->getCustomFeeSegments()
+            $totalSegments['custom_fees']->getExtensionAttributes()?->getCustomFeeSegments(),
         );
     }
 
@@ -137,9 +137,9 @@ final class TotalsInterfacePluginTest extends TestCase
             [
                 'phrase' => __(
                     'Could not get custom fees from configuration. Error: "%1"',
-                    'Could not unserialize JSON string'
-                )
-            ]
+                    'Could not unserialize JSON string',
+                ),
+            ],
         );
         /** @var TotalsInterface $totals */
         $totals = $objectManager->create(TotalsInterface::class);
@@ -153,9 +153,9 @@ final class TotalsInterfacePluginTest extends TestCase
         $objectManager->configure(
             [
                 Config::class => [
-                    'shared' => true
-                ]
-            ]
+                    'shared' => true,
+                ],
+            ],
         );
         $objectManager->addSharedInstance($configStub, Config::class);
 
@@ -167,9 +167,9 @@ final class TotalsInterfacePluginTest extends TestCase
                     'code' => 'subtotal',
                     'title' => 'Subtotal',
                     'value' => '20.00',
-                    'area' => 'footer'
-                ]
-            ]
+                    'area' => 'footer',
+                ],
+            ],
         );
 
         $actualTotalSegments = $totals->getTotalSegments();
@@ -191,8 +191,8 @@ final class TotalsInterfacePluginTest extends TestCase
                         'code' => 'subtotal',
                         'title' => 'Subtotal',
                         'value' => '20.00',
-                        'area' => 'footer'
-                    ]
+                        'area' => 'footer',
+                    ],
                 ],
             ],
             'custom fees total segment already exists' => [
@@ -202,8 +202,8 @@ final class TotalsInterfacePluginTest extends TestCase
                         'code' => 'custom_fees',
                         'title' => 'Custom Fees',
                         'value' => '0.00',
-                        'area' => null
-                    ]
+                        'area' => null,
+                    ],
                 ],
             ],
         ];

@@ -39,8 +39,7 @@ class TotalsPlugin
         'hyva_sales_order_printcreditmemo',
     ];
 
-    public function __construct(private readonly CustomFeesRetriever $customFeesRetriever)
-    {}
+    public function __construct(private readonly CustomFeesRetriever $customFeesRetriever) {}
 
     /**
      * Ensure that custom fees totals are rendered after tax totals in Hyvä Sales Order frontend
@@ -78,7 +77,7 @@ class TotalsPlugin
         $customFees = array_filter(
             $result,
             static fn(string $totalCode): bool => in_array($totalCode, $customFeeCodes, true),
-            ARRAY_FILTER_USE_KEY
+            ARRAY_FILTER_USE_KEY,
         );
 
         if (count($customFees) === 0) {

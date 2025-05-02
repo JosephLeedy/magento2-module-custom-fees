@@ -32,7 +32,7 @@ class CustomFees implements ArgumentInterface
 
     public function getCustomFeesAsJson(): string
     {
-        return (string)(
+        return (string) (
             $this->serializer->serialize($this->getCustomFees()) ?: '[]'
         );
     }
@@ -47,7 +47,7 @@ class CustomFees implements ArgumentInterface
 
     public function getCustomFeeCodesAsJson(): string
     {
-        return (string)(
+        return (string) (
             $this->serializer->serialize($this->getCustomFeeCodes()) ?: '[]'
         );
     }

@@ -75,7 +75,7 @@ final class TotalsPluginTest extends TestCase
                         ],
                     ],
                 ],
-            ]
+            ],
         );
         /** @var OrderExtension $orderExtensionAttributes */
         $orderExtensionAttributes = $objectManager->create(
@@ -84,7 +84,7 @@ final class TotalsPluginTest extends TestCase
                 'data' => [
                     'custom_order_fees' => $customOrderFees,
                 ],
-            ]
+            ],
         );
         /** @var OrderInterface&Order $order */
         $order = $objectManager->create(
@@ -97,8 +97,8 @@ final class TotalsPluginTest extends TestCase
                     'grand_total' => 24.99,
                     'tax_amount' => 5.00,
                     'extension_attributes' => $orderExtensionAttributes,
-                ]
-            ]
+                ],
+            ],
         );
 
         $layout->getUpdate()->addHandle('hyva_sales_order_view');
@@ -161,7 +161,7 @@ final class TotalsPluginTest extends TestCase
                         ],
                     ],
                 ],
-            ]
+            ],
         );
         /** @var OrderExtension $orderExtensionAttributes */
         $orderExtensionAttributes = $objectManager->create(
@@ -170,7 +170,7 @@ final class TotalsPluginTest extends TestCase
                 'data' => [
                     'custom_order_fees' => $customOrderFees,
                 ],
-            ]
+            ],
         );
         /** @var OrderInterface&Order $order */
         $order = $objectManager->create(
@@ -182,8 +182,8 @@ final class TotalsPluginTest extends TestCase
                     'base_grand_total' => 24.99,
                     'grand_total' => 24.99,
                     'extension_attributes' => $orderExtensionAttributes,
-                ]
-            ]
+                ],
+            ],
         );
 
         $layout->getUpdate()->addHandle('hyva_sales_order_view');
@@ -235,7 +235,7 @@ final class TotalsPluginTest extends TestCase
                         ],
                     ],
                 ],
-            ]
+            ],
         );
         /** @var OrderExtension $orderExtensionAttributes */
         $orderExtensionAttributes = $objectManager->create(
@@ -244,7 +244,7 @@ final class TotalsPluginTest extends TestCase
                 'data' => [
                     'custom_order_fees' => $customOrderFees,
                 ],
-            ]
+            ],
         );
         /** @var OrderInterface&Order $order */
         $order = $objectManager->create(
@@ -257,14 +257,14 @@ final class TotalsPluginTest extends TestCase
                     'grand_total' => 24.99,
                     'extension_attributes' => $orderExtensionAttributes,
                     'tax_amount' => 5.00,
-                ]
-            ]
+                ],
+            ],
         );
         $getLayoutHandlesException = $objectManager->create(
             LocalizedException::class,
             [
                 'phrase' => __('Could not retrieve layout handles.'),
-            ]
+            ],
         );
         $updateStub = $this->createStub(ProcessorInterface::class);
         $layoutStub = $this->createStub(LayoutInterface::class);
@@ -326,7 +326,7 @@ final class TotalsPluginTest extends TestCase
                         ],
                     ],
                 ],
-            ]
+            ],
         );
         /** @var OrderExtension $orderExtensionAttributes */
         $orderExtensionAttributes = $objectManager->create(
@@ -335,7 +335,7 @@ final class TotalsPluginTest extends TestCase
                 'data' => [
                     'custom_order_fees' => $customOrderFees,
                 ],
-            ]
+            ],
         );
         /** @var OrderInterface&Order $order */
         $order = $objectManager->create(
@@ -348,8 +348,8 @@ final class TotalsPluginTest extends TestCase
                     'grand_total' => 24.99,
                     'extension_attributes' => $orderExtensionAttributes,
                     'tax_amount' => 5.00,
-                ]
-            ]
+                ],
+            ],
         );
 
         $layout->getUpdate()->addHandle('sales_order_view');
@@ -390,8 +390,8 @@ final class TotalsPluginTest extends TestCase
                     'base_grand_total' => 24.99,
                     'grand_total' => 24.99,
                     'tax_amount' => 5.00,
-                ]
-            ]
+                ],
+            ],
         );
         /** @var Totals $totalsBlock */
         $totalsBlock = $objectManager->create(Totals::class);
@@ -422,7 +422,7 @@ final class TotalsPluginTest extends TestCase
                     'data' => [
                         'custom_fees' => $customFees,
                     ],
-                ]
+                ],
             );
             /** @var OrderExtension $orderExtensionAttributes */
             $orderExtensionAttributes = $objectManager->create(
@@ -431,7 +431,7 @@ final class TotalsPluginTest extends TestCase
                     'data' => [
                         'custom_order_fees' => $customOrderFees,
                     ],
-                ]
+                ],
             );
 
             $order->setExtensionAttributes($orderExtensionAttributes);
