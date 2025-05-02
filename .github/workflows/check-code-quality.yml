@@ -30,7 +30,7 @@ jobs:
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      - name: Set up cache
+      - name: Set up Composer cache
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
