@@ -14,6 +14,8 @@ document.
 
 - Custom fees are now rendered in columns in the Sales Order Grid in the Admin 
   panel
+- A report summarizing the total amount of collected custom order fees can be 
+  generated from the Admin panel
 
 ## [1.0.2]
 
