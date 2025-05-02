@@ -23,6 +23,10 @@
         <!-- Suppress warning about PSR-12-style control structures -->
         <exclude name="PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace"/>
     </rule>
+    <rule ref="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine">
+        <!-- Suppress warning about single-line PER-CS 2.0-style constructors with promoted properties and empty bodies -->
+        <severity>0</severity>
+    </rule>
     <rule ref="Squiz.WhiteSpace.ScopeClosingBrace.ContentBefore">
         <!-- Suppress warning about PER-CS 2.0-style constructors with promoted properties and empty bodies -->
         <severity>0</severity>
