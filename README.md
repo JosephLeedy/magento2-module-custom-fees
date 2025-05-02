@@ -10,6 +10,8 @@ customers when orders are placed.
 - Custom fees are displayed for orders, invoices and credit memos in both the 
 frontend and backend
 - Custom fees can be refunded via Magento's credit memo functionality
+- Fully compatible with the [Hyvä] theme (Hyvä Default, Hyvä CSP, Hyvä Checkout 
+and Hyvä Checkout CSP)
 
 ## Requirements
 
@@ -83,8 +85,9 @@ improve and maintain this tool, please see the [CONTRIBUTING.md] file.
 ## Shout-Outs
 
 - A huge thanks to [@pykettk], [@Vinai] and [@hostep] for reviewing the Hyvä 
-compatibility implementation in [pull request #16] and suggesting changes! ❤️
+compatibility implementation in [pull request #16] and suggesting improvements!️
 
+[Hyvä]: https://hyva.io
 [Composer]: https://getcomposer.org
 [Packagist]: https://packagist.org
 [open an issue]: https://github.com/JosephLeedy/magento2-module-custom-fees/issues/new
