@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Test\Integration\Block\Adminhtml\CustomOrderFees\Report;
 
 use JosephLeedy\CustomFees\Block\Adminhtml\CustomOrderFees\Report\Grid;
+use Magento\Framework\App\Area;
 use Magento\Framework\DataObject;
 use Magento\TestFramework\Fixture\AppArea;
 use Magento\TestFramework\Fixture\DataFixture;
@@ -15,7 +16,7 @@ use Magento\Framework\View\LayoutInterface;
 use function array_keys;
 use function array_map;
 
-#[AppArea('adminhtml')]
+#[AppArea(Area::AREA_ADMINHTML)]
 final class GridTest extends TestCase
 {
     public function testAddsGridColumnsAndExportTypes(): void

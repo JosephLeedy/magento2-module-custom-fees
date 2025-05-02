@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Test\Integration\Model\ResourceModel\Report;
 
 use JosephLeedy\CustomFees\Model\ResourceModel\Report\CustomOrderFees;
+use Magento\Framework\App\Area;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\Exception\LocalizedException;
@@ -14,7 +15,7 @@ use Magento\TestFramework\Fixture\DataFixture;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
-#[AppArea('adminhtml')]
+#[AppArea(Area::AREA_ADMINHTML)]
 final class CustomOrderFeesTest extends TestCase
 {
     #[DataFixture('JosephLeedy_CustomFees::../test/Integration/_files/orders_with_custom_fees.php')]

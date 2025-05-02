@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Test\Integration\Model\ResourceModel\Report\CustomOrderFees;
 
 use JosephLeedy\CustomFees\Model\ResourceModel\Report\CustomOrderFees\Collection;
+use Magento\Framework\App\Area;
 use Magento\TestFramework\Fixture\AppArea;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
@@ -12,7 +13,7 @@ use Zend_Db_Expr;
 
 use function array_column;
 
-#[AppArea('adminhtml')]
+#[AppArea(Area::AREA_ADMINHTML)]
 final class CollectionTest extends TestCase
 {
     /**
