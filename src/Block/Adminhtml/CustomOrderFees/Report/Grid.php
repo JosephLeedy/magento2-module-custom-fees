@@ -137,7 +137,7 @@ class Grid extends AbstractGrid
         );
 
         $this->addExportType('*/*/customOrderFees_export_csv', (string) __('CSV'));
-        $this->addExportType('*/*/export_excel', (string) __('Excel XML'));
+        $this->addExportType('*/*/customOrderFees_export_excel', (string) __('Excel XML'));
 
         return parent::_prepareColumns();
     }
