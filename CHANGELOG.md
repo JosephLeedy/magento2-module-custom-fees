@@ -12,6 +12,10 @@ document.
 
 ### Added
 
+- Custom fees are now rendered in columns in the Sales Order Grid in the Admin
+  panel
+- A report summarizing the total amount of collected custom order fees can be
+  generated from the Admin panel
 - Custom fees are now rendered on the _Cart_ page in the Hyvä frontend
 - Custom fees are now rendered on the _Checkout_ pages in the Hyvä frontend
 

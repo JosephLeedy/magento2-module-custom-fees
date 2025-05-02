@@ -10,6 +10,7 @@ customers when orders are placed.
 - Custom fees are displayed for orders, invoices and credit memos in both the 
 frontend and backend
 - Custom fees can be refunded via Magento's credit memo functionality
+- Includes a report detailing all of charged custom fees for a given time period
 - Fully compatible with the [Hyvä] theme (Hyvä Default, Hyvä CSP, Hyvä Checkout 
 and Hyvä Checkout CSP)
 
@@ -17,6 +18,8 @@ and Hyvä Checkout CSP)
 
 - PHP 8.1 or greater
 - Magento Open Source 2.4.4 or greater _or_ Adobe Commerce 2.4.4 or greater
+- MySQL 8.0.4 or greater, MariaDB 10.6.0 or greater, _or_ a MySQL 8-compatible 
+database server (for generating reports)
 
 ## Installation
 
@@ -53,6 +56,16 @@ display order of the Custom Fees block in relation to other totals shown in the
 cart and checkout can be configured at `Stores > Settings > Configuration > 
 Sales > Sales > Checkout Totals Sort Order`. All settings for this extension 
 can be configured in the Global (Default), Website or Store scope.
+
+### Reporting
+
+To view a report of the collected custom order fees, go to `Reports > Sales > 
+Custom Order Fees` in the Magento Admin panel.
+
+**Note:** For performance reasons, the report generation process makes use of
+special database functions that are only available in MySQL 8.0.4+ or
+MariaDB 10.6.0+. Errors or unexpected behavior may occur when using incompatible
+database server software versions.
 
 ## Support
 

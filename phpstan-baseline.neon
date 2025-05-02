@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Call to an undefined method Magento\\\\Framework\\\\Model\\\\ResourceModel\\\\Db\\\\Collection\\\\AbstractCollection\\:\\:setPeriod\\(\\)\\.$#"
+			count: 1
+			path: src/Block/Adminhtml/CustomOrderFees/Report/Grid.php
+
+		-
 			message: "#^Setter methods like \\$this\\(JosephLeedy\\\\CustomFees\\\\Block\\\\Sales\\\\Cart\\\\Totals\\\\CustomFees\\)\\:\\:setTemplate\\(\\) are deprecated in Block classes, use constructor arguments instead$#"
 			count: 1
 			path: src/Block/Sales/Cart/Totals/CustomFees.php
@@ -21,6 +26,11 @@ parameters:
 			path: src/Block/System/Config/Form/Field/CustomFees.php
 
 		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Controller\\\\Adminhtml\\\\Report\\\\CustomOrderFees\\:\\:execute\\(\\) should return Magento\\\\Framework\\\\App\\\\ResponseInterface\\|Magento\\\\Framework\\\\Controller\\\\ResultInterface but return statement is missing\\.$#"
+			count: 1
+			path: src/Controller/Adminhtml/Report/CustomOrderFees.php
+
+		-
 			message: "#^Parameter \\#1 \\$items of method Magento\\\\Framework\\\\Api\\\\SearchResultsInterface\\:\\:setItems\\(\\) expects array\\<Magento\\\\Framework\\\\Api\\\\ExtensibleDataInterface\\>, array\\<Magento\\\\Framework\\\\DataObject\\> given\\.$#"
 			count: 1
 			path: src/Model/CustomOrderFeesRepository.php
@@ -39,6 +49,21 @@ parameters:
 			message: "#^Parameter \\#1 \\$object of method Magento\\\\Framework\\\\Model\\\\ResourceModel\\\\Db\\\\AbstractDb\\:\\:save\\(\\) expects Magento\\\\Framework\\\\Model\\\\AbstractModel, JosephLeedy\\\\CustomFees\\\\Api\\\\Data\\\\CustomOrderFeesInterface given\\.$#"
 			count: 1
 			path: src/Model/CustomOrderFeesRepository.php
+
+		-
+			message: "#^PHPDoc tag @var with type string is not subtype of native type mixed\\.$#"
+			count: 1
+			path: src/Model/ResourceModel/Report/CustomOrderFees.php
+
+		-
+			message: "#^Parameter \\#2 \\$from of method Magento\\\\Reports\\\\Model\\\\ResourceModel\\\\Report\\\\AbstractReport\\:\\:_clearTableByDateRange\\(\\) expects string\\|null, DateTimeInterface\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Model/ResourceModel/Report/CustomOrderFees.php
+
+		-
+			message: "#^Parameter \\#3 \\$to of method Magento\\\\Reports\\\\Model\\\\ResourceModel\\\\Report\\\\AbstractReport\\:\\:_clearTableByDateRange\\(\\) expects string\\|null, DateTimeInterface\\|string\\|null given\\.$#"
+			count: 1
+			path: src/Model/ResourceModel/Report/CustomOrderFees.php
 
 		-
 			message: "#^Parameter \\#1 \\$customFees of method Magento\\\\Quote\\\\Api\\\\Data\\\\CartExtensionInterface\\:\\:setCustomFees\\(\\) expects array\\<mixed\\>, array\\<array\\<string, float\\|Magento\\\\Framework\\\\Phrase\\|string\\>\\> given\\.$#"

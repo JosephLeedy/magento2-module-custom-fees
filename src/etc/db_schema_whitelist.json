@@ -10,5 +10,26 @@
       "FK_CUSTOM_ORDER_FEES_ORDER_ENTITY_ID_SALES_ORDER_ENTITY_ID": true,
       "UK_CUSTOM_ORDER_FEES_ORDER_ENTITY_ID": true
     }
+  },
+  "report_custom_order_fees_aggregated": {
+    "column": {
+      "id": true,
+      "period": true,
+      "store_id": true,
+      "fee_title": true,
+      "base_fee_amount": true,
+      "paid_fee_amount": true,
+      "paid_order_currency": true,
+      "invoiced_fee_amount": true
+    },
+    "index": {
+      "REPORT_CUSTOM_ORDER_FEES_AGGREGATED_PERIOD_STORE_ID_PAID_FEE_AMOUNT": true,
+      "REPORT_CUSTOM_ORDER_FEES_AGGRED_PERIOD_STORE_ID_PAID_FEE_AMOUNT": true,
+      "IDX_913FBD51E62C7A7A2399BBDE04A6D7DB": true
+    },
+    "constraint": {
+      "PRIMARY": true,
+      "REPORT_CUSTOM_ORDER_FEES_AGGREGATED_STORE_ID_STORE_STORE_ID": true
+    }
   }
 }

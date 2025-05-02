@@ -12,4 +12,25 @@
             <column name="order_entity_id"/>
         </constraint>
     </table>
+
+    <table name="report_custom_order_fees_aggregated" resource="default" engine="innodb" comment="Aggregated Custom Order Fees Report">
+        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="Report Identifier"/>
+        <column xsi:type="date" name="period" nullable="true" comment="Report Period"/>
+        <column xsi:type="smallint" name="store_id" nullable="true" unsigned="true" comment="Store Identifier"/>
+        <column xsi:type="varchar" name="fee_title" length="255" nullable="false" comment="Order Fee Title"/>
+        <column xsi:type="decimal" name="base_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Order Fee Amount"/>
+        <column xsi:type="decimal" name="paid_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Paid Order Fee Amount"/>
+        <column xsi:type="varchar" name="paid_order_currency" length="3" nullable="false" comment="Paid Order Currency Code"/>
+        <column xsi:type="decimal" name="invoiced_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Invoiced Order Fee Amount"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="FK_REPORT_CUSTOM_ORDER_FEES_AGGREGATED_STORE_ID_STORE_ENTITY_ID" table="report_custom_order_fees_aggregated" column="store_id" referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <index referenceId="IDX_REPORT_CUSTOM_ORDER_FEES_AGGREGATED_PERIOD_STORE_ID_PAID_FEE_AMOUNT_INVOICED_FEE_AMOUNT" indexType="btree">
+            <column name="period"/>
+            <column name="store_id"/>
+            <column name="paid_fee_amount"/>
+            <column name="invoiced_fee_amount"/>
+        </index>
+    </table>
 </schema>

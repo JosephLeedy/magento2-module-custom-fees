@@ -78,8 +78,19 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
 
     public function getCustomFees(): array
     {
-        /** @var array<string, array{code: string, title: string, base_value: float, value: float}>|null $customFees */
+        /**
+         * @var array<string, array{
+         *     code: string,
+         *     title: string,
+         *     base_value: float,
+         *     value: float
+         * }>|string|null $customFees
+         */
         $customFees = $this->getData(self::CUSTOM_FEES);
+
+        if (is_string($customFees)) {
+            $customFees = (array) $this->serializer->unserialize($customFees);
+        }
 
         return $customFees ?? [];
     }

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="JosephLeedy_CustomFees::custom_order_fees_report" title="Custom Order Fees" translate="title" module="JosephLeedy_CustomFees" sortOrder="65" parent="Magento_Reports::report_salesroot" action="custom_fees/report/customOrderFees" resource="JosephLeedy_CustomFees::custom_order_fees_report"/>
+    </menu>
+</config>
