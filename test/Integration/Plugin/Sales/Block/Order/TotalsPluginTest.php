@@ -7,6 +7,7 @@ namespace JosephLeedy\CustomFees\Test\Integration\Plugin\Sales\Block\Order;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface;
 use JosephLeedy\CustomFees\Block\Sales\Order\Totals as CustomFeesTotalsBlock;
 use JosephLeedy\CustomFees\Plugin\Sales\Block\Order\TotalsPlugin;
+use Magento\Framework\App\Area;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Interception\PluginList\PluginList;
 use Magento\Framework\View\Layout\ProcessorInterface;
@@ -25,7 +26,7 @@ use function __;
 use function array_keys;
 
 #[AppIsolation(true)]
-#[AppArea('frontend')]
+#[AppArea(Area::AREA_FRONTEND)]
 final class TotalsPluginTest extends TestCase
 {
     public function testIsConfiguredCorrectly(): void

@@ -7,6 +7,7 @@ namespace JosephLeedy\CustomFees\Test\Integration\Plugin\Quote\Api\Data;
 use JosephLeedy\CustomFees\Api\ConfigInterface;
 use JosephLeedy\CustomFees\Model\Config;
 use JosephLeedy\CustomFees\Plugin\Quote\Api\Data\TotalsInterfacePlugin;
+use Magento\Framework\App\Area;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Interception\PluginList\PluginList;
 use Magento\Framework\View\Result\Layout;
@@ -24,7 +25,7 @@ use PHPUnit\Framework\TestCase;
 use function is_array;
 
 #[AppIsolation(true)]
-#[AppArea('frontend')]
+#[AppArea(Area::AREA_FRONTEND)]
 final class TotalsInterfacePluginTest extends TestCase
 {
     public function testIsConfiguredCorrectly(): void
