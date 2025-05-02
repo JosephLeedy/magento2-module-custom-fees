@@ -37,6 +37,13 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
+      - name: Set up PHPStan cache
+        uses: actions/cache@v4
+        with:
+          path: .tmp/phpstan
+          key: ${{ runner.os }}-phpstan-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-phpstan-
+
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
