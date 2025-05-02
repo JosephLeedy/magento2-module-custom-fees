@@ -15,7 +15,6 @@ use Magento\Quote\Model\Quote\Address\Total\CollectorInterface;
 use Magento\Store\Api\Data\StoreInterface;
 
 use function array_filter;
-use function array_key_exists;
 use function array_map;
 use function array_walk;
 use function count;
@@ -100,7 +99,7 @@ class CustomFees extends AbstractTotal
              * @return array{code: string, title: Phrase, value: float}
              */
             static function (array $customFee): array {
-                if (array_key_exists('code', $customFee) && $customFee['code'] === 'example_fee') {
+                if ($customFee['code'] === 'example_fee') {
                     return [];
                 }
 
