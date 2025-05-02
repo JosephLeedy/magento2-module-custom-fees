@@ -11,6 +11,8 @@ customers when orders are placed.
 frontend and backend
 - Custom fees can be refunded via Magento's credit memo functionality
 - Includes a report detailing all of charged custom fees for a given time period
+- Fully compatible with the [Hyvä] theme (Hyvä Default, Hyvä CSP, Hyvä Checkout 
+and Hyvä Checkout CSP)
 
 ## Requirements
 
@@ -93,6 +95,12 @@ A full history of the extension can be found in the [CHANGELOG.md] file.
 We welcome and value your contribution. For more details on how you can help us
 improve and maintain this tool, please see the [CONTRIBUTING.md] file.
 
+## Shout-Outs
+
+- A huge thanks to [@pykettk], [@Vinai] and [@hostep] for reviewing the Hyvä 
+compatibility implementation in [pull request #16] and suggesting improvements!️
+
+[Hyvä]: https://hyva.io
 [Composer]: https://getcomposer.org
 [Packagist]: https://packagist.org
 [open an issue]: https://github.com/JosephLeedy/magento2-module-custom-fees/issues/new
@@ -100,3 +108,7 @@ improve and maintain this tool, please see the [CONTRIBUTING.md] file.
 [LICENSE]: ./LICENSE
 [CHANGELOG.md]: ./CHANGELOG.md
 [CONTRIBUTING.md]: ./CONTRIBUTING.md
+[@pykettk]: https://github.com/pykettk
+[@Vinai]: https://github.com/Vinai
+[@hostep]: https://github.com/hostep
+[pull request #16]: https://github.com/JosephLeedy/magento2-module-custom-fees/pull/16

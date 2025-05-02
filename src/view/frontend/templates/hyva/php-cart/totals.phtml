@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HyvaCsp;
+use JosephLeedy\CustomFees\ViewModel\CustomFees;
+
+/** @var HyvaCsp $hyvaCsp */
+/** @var ViewModelRegistry $viewModels */
+
+/** @var CustomFees $customFeesViewModel */
+$customFeesViewModel = $viewModels->require(CustomFees::class);
+?>
+<script>
+    (() => {
+        const originalInitCartTotals = initCartTotals;
+        /** @var {string[]} */
+        const customFeesTotals = <?= /* @noEscape */ $customFeesViewModel->getCustomFeeCodesAsJson() ?>;
+
+        window.initCartTotals = function () {
+            const instance = originalInitCartTotals.apply(this, arguments);
+            const modifiedTotalsSort = instance.totalsSort;
+            const position = modifiedTotalsSort['custom_fees'];
+
+            delete modifiedTotalsSort['custom_fees'];
+
+            customFeesTotals.forEach(
+                customFeesTotal => {
+                    modifiedTotalsSort[customFeesTotal] = position;
+                }
+            );
+
+            instance.totalsSort = modifiedTotalsSort;
+
+            return instance;
+        };
+    })();
+</script>
+<?php isset($hyvaCsp) && $hyvaCsp->registerInlineScript() ?>

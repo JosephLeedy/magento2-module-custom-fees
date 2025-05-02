@@ -6,6 +6,16 @@ parameters:
 			path: src/Block/Adminhtml/CustomOrderFees/Report/Grid.php
 
 		-
+			message: "#^Setter methods like \\$this\\(JosephLeedy\\\\CustomFees\\\\Block\\\\Sales\\\\Cart\\\\Totals\\\\CustomFees\\)\\:\\:setTemplate\\(\\) are deprecated in Block classes, use constructor arguments instead$#"
+			count: 1
+			path: src/Block/Sales/Cart/Totals/CustomFees.php
+
+		-
+			message: "#^Setter methods like Magento\\\\Framework\\\\View\\\\Element\\\\Template\\:\\:setTemplate\\(\\) are deprecated in Block classes, use constructor arguments instead$#"
+			count: 1
+			path: src/Block/Sales/Cart/Totals/CustomFees.php
+
+		-
 			message: "#^Call to an undefined method Magento\\\\Store\\\\Api\\\\Data\\\\StoreInterface\\:\\:getBaseCurrency\\(\\)\\.$#"
 			count: 1
 			path: src/Block/System/Config/Form/Field/CustomFees.php
@@ -64,3 +74,52 @@ parameters:
 			message: "#^Parameter \\#2 \\$scope of method Magento\\\\Framework\\\\Pricing\\\\PriceCurrencyInterface\\:\\:convert\\(\\) expects bool\\|int\\|Magento\\\\Framework\\\\App\\\\ScopeInterface\\|string\\|null, Magento\\\\Store\\\\Api\\\\Data\\\\StoreInterface given\\.$#"
 			count: 1
 			path: src/Model/Total/Quote/CustomFees.php
+
+		-
+			message: "#^Call to method require\\(\\) on an unknown class Hyva\\\\Theme\\\\Model\\\\ViewModelRegistry\\.$#"
+			count: 1
+			path: src/view/frontend/templates/hyva/checkout/price-summary/total-segments/custom_fees.phtml
+
+		-
+			message: "#^Class Hyva\\\\Checkout\\\\ViewModel\\\\Checkout\\\\Formatter not found\\.$#"
+			count: 1
+			path: src/view/frontend/templates/hyva/checkout/price-summary/total-segments/custom_fees.phtml
+
+		-
+			message: "#^PHPDoc tag \\@var for variable \\$formatterViewModel contains unknown class Hyva\\\\Checkout\\\\ViewModel\\\\Checkout\\\\Formatter\\.$#"
+			count: 1
+			path: src/view/frontend/templates/hyva/checkout/price-summary/total-segments/custom_fees.phtml
+
+		-
+			message: "#^Call to method currency\\(\\) on an unknown class Hyva\\\\Checkout\\\\ViewModel\\\\Checkout\\\\Formatter\\.$#"
+			count: 1
+			path: src/view/frontend/templates/hyva/checkout/price-summary/total-segments/custom_fees.phtml
+
+		-
+			message: "#^Call to method require\\(\\) on an unknown class Hyva\\\\Theme\\\\Model\\\\ViewModelRegistry\\.$#"
+			count: 1
+			path: src/view/frontend/templates/hyva/php-cart/totals.phtml
+
+		-
+			message: "#^Call to method registerInlineScript\\(\\) on an unknown class Hyva\\\\Theme\\\\ViewModel\\\\HyvaCsp\\.$#"
+			count: 1
+			path: src/view/frontend/templates/hyva/php-cart/totals.phtml
+
+		-
+			message: "#^Call to method require\\(\\) on an unknown class Hyva\\\\Theme\\\\Model\\\\ViewModelRegistry\\.$#"
+			count: 1
+			path: src/view/frontend/templates/hyva/php-cart/totals/custom_fees.phtml
+
+		-
+			message: "#^Call to method require\\(\\) on an unknown class Hyva\\\\Theme\\\\Model\\\\ViewModelRegistry\\.$#"
+			count: 1
+			path: src/view/frontend/templates/hyva/php-cart/totals/js/custom_fees-js.phtml
+
+		-
+			message: "#^Call to method registerInlineScript\\(\\) on an unknown class Hyva\\\\Theme\\\\ViewModel\\\\HyvaCsp\\.$#"
+			count: 1
+			path: src/view/frontend/templates/hyva/php-cart/totals/js/custom_fees-js.phtml
+
+		-
+			message: "#^Parameter \\#1 \\(array\\|string\\) of echo cannot be converted to string\\.$#"
+			path: *.phtml
