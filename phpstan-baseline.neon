@@ -16,6 +16,11 @@ parameters:
 			path: src/Block/System/Config/Form/Field/CustomFees.php
 
 		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Controller\\\\Adminhtml\\\\Report\\\\CustomOrderFees\\:\\:execute\\(\\) should return Magento\\\\Framework\\\\App\\\\ResponseInterface\\|Magento\\\\Framework\\\\Controller\\\\ResultInterface but return statement is missing\\.$#"
+			count: 1
+			path: src/Controller/Adminhtml/Report/CustomOrderFees.php
+
+		-
 			message: "#^Parameter \\#1 \\$items of method Magento\\\\Framework\\\\Api\\\\SearchResultsInterface\\:\\:setItems\\(\\) expects array\\<Magento\\\\Framework\\\\Api\\\\ExtensibleDataInterface\\>, array\\<Magento\\\\Framework\\\\DataObject\\> given\\.$#"
 			count: 1
 			path: src/Model/CustomOrderFeesRepository.php

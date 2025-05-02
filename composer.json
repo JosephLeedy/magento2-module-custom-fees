@@ -8,6 +8,7 @@
     "ext-json": "*",
     "ext-pcre": "*",
     "magento/framework": "~103.0.4",
+    "magento/module-backend": "~102.0.4",
     "magento/module-checkout": "~100.4.4",
     "magento/module-config": "~101.2.4",
     "magento/module-quote": "~101.2.4",
