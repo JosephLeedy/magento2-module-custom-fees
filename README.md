@@ -10,7 +10,7 @@ customers when orders are placed.
 - Custom fees are displayed for orders, invoices and credit memos in both the 
 frontend and backend
 - Custom fees can be refunded via Magento's credit memo functionality
-- Includes a report detailing all of charged custom fees for a given time period
+- Includes a report detailing all charged custom fees for a given time period
 - Fully compatible with the [Hyvä] theme (Hyvä Default, Hyvä CSP, Hyvä Checkout 
 and Hyvä Checkout CSP)
 
