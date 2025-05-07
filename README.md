@@ -7,6 +7,7 @@ customers when orders are placed.
 ## Features
 
 - Allows fees to be configured with a label and amount to be added to an order
+  - Custom fees configuration can be imported via a CSV spreadsheet
 - Custom fees are displayed for orders, invoices and credit memos in both the 
 frontend and backend
 - Custom fees can be refunded via Magento's credit memo functionality
@@ -56,6 +57,24 @@ display order of the Custom Fees block in relation to other totals shown in the
 cart and checkout can be configured at `Stores > Settings > Configuration > 
 Sales > Sales > Checkout Totals Sort Order`. All settings for this extension 
 can be configured in the Global (Default), Website or Store scope.
+
+#### Importing Custom Fees
+
+The Custom Fees configuration page allows fees to imported from a CSV 
+spreadsheet containing the following columns:
+
+| Column | Description                                                                             | Example       |
+|--------|-----------------------------------------------------------------------------------------|---------------|
+| code   | A unique code identifying the custom fee (allowed characters: "A-Z", "a-z", "0-9", "_") | example_fee   |
+| title  | A short label describing the custom fee                                                 | "Example Fee" |
+| value  | The amount of the custom fee, in the store's default currency                           | 5.00          |
+
+##### Example CSV Import Spreadsheet
+
+```csv
+code,title,value
+example_fee,"Example Fee",5.00
+```
 
 ### Reporting
 
