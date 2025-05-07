@@ -18,6 +18,7 @@
                 </field>
                 <field id="import_custom_fees" translate="label" type="file" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="0">
                     <label>Import Custom Fees</label>
+                    <frontend_model>JosephLeedy\CustomFees\Block\System\Config\Form\Field\ImportCustomFees</frontend_model>
                     <backend_model>JosephLeedy\CustomFees\Model\Config\Backend\File\ImportCustomFees</backend_model>
                 </field>
             </group>
