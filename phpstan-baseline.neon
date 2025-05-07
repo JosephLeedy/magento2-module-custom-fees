@@ -26,6 +26,11 @@ parameters:
 			path: src/Block/System/Config/Form/Field/CustomFees.php
 
 		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: src/Block/System/Config/Form/Field/ImportCustomFees.php
+
+		-
 			message: "#^Method JosephLeedy\\\\CustomFees\\\\Controller\\\\Adminhtml\\\\Report\\\\CustomOrderFees\\:\\:execute\\(\\) should return Magento\\\\Framework\\\\App\\\\ResponseInterface\\|Magento\\\\Framework\\\\Controller\\\\ResultInterface but return statement is missing\\.$#"
 			count: 1
 			path: src/Controller/Adminhtml/Report/CustomOrderFees.php

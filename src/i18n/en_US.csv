@@ -36,4 +36,5 @@ Sales,Sales
 "%1 (Purchased)","%1 (Purchased)"
 "<strong>Note:</strong> Fee amount is relative to the store's base currency and will be converted to the customer's selected currency.","<strong>Note:</strong> Fee amount is relative to the store's base currency and will be converted to the customer's selected currency."
 "Import Custom Fees","Import Custom Fees"
+"Import custom fees from a CSV spreadsheet. <a href=""{{exampleCsvUrl}}"">Example file</a>","Import custom fees from a CSV spreadsheet. <a href=""{{exampleCsvUrl}}"">Example file</a>"
 "All Websites","All Websites"
