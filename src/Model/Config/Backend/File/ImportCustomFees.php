@@ -29,8 +29,10 @@ use function array_filter;
 use function array_map;
 use function array_merge;
 use function array_slice;
+use function array_walk;
 use function count;
 use function pathinfo;
+use function preg_replace;
 use function usleep;
 
 use const PATHINFO_EXTENSION;
@@ -94,6 +96,7 @@ class ImportCustomFees extends File
 
         $this->validateCustomFeesFile($file);
         $this->replaceCustomFeeKeys();
+        $this->fixCustomFees();
 
         /**
          * @var array{
@@ -167,6 +170,7 @@ class ImportCustomFees extends File
             static fn(array $customFee): array => array_combine($rawCustomFees[0], $customFee),
             array_slice($rawCustomFees, 1),
         );
+
         $this->customFees = $customFees;
     }
 
@@ -187,5 +191,15 @@ class ImportCustomFees extends File
         }
 
         $this->customFees = $customFees;
+    }
+
+    private function fixCustomFees(): void
+    {
+        array_walk(
+            $this->customFees,
+            static function (array &$customFee): void {
+                $customFee['code'] = preg_replace('/[^A-z0-9_]+/', '_', $customFee['code']);
+            },
+        );
     }
 }
