@@ -15,6 +15,7 @@ CSV,CSV
 Code,Code
 "Fee Name","Fee Name"
 "Add Custom Fee","Add Custom Fee"
+"Replace Existing Custom Fees","Replace Existing Custom Fees"
 Sales,Sales
 "Custom Order Fees Report","Custom Order Fees Report"
 "This report requires MySQL 8.0.4 or greater, MariaDB 10.6.0 or greater OR a MySQL 8.0-compatible database server to generate properly. Your database server version ""%1"" is not compatible.","This report requires MySQL 8.0.4 or greater, MariaDB 10.6.0 or greater OR a MySQL 8.0-compatible database server to generate properly. Your database server version ""%1"" is not compatible."

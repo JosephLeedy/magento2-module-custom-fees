@@ -13,6 +13,7 @@ use Magento\Config\Model\Config\Backend\File\RequestData\RequestDataInterface;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\Writer;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\File\Csv;
@@ -24,7 +25,9 @@ use Magento\Framework\Serialize\SerializerInterface;
 use Magento\MediaStorage\Model\File\UploaderFactory;
 
 use function array_combine;
+use function array_filter;
 use function array_map;
+use function array_merge;
 use function array_slice;
 use function count;
 use function pathinfo;
@@ -56,6 +59,7 @@ class ImportCustomFees extends File
         private readonly Csv $csv,
         private readonly DateTimeImmutableFactory $dateTimeFactory,
         private readonly SerializerInterface $serializer,
+        private readonly RequestInterface $request,
         private readonly Writer $configWriter,
         ?AbstractResource $resource = null,
         ?AbstractDb $resourceCollection = null,
@@ -91,9 +95,44 @@ class ImportCustomFees extends File
         $this->validateCustomFeesFile($file);
         $this->replaceCustomFeeKeys();
 
+        /**
+         * @var array{
+         *     custom_order_fees?: array{
+         *         fields?: array{
+         *             import_custom_fees?: array{
+         *                 replace_existing?: int
+         *             }
+         *         }
+         *     }
+         * } $configGroups
+         */
+        $configGroups = $this->request->getParam('groups') ?? [];
+        $replaceExistingCustomFees =
+            (bool) ($configGroups['custom_order_fees']['fields']['import_custom_fees']['replace_existing'] ?? false);
+        $originalCustomFees = [];
+
+        if (!$replaceExistingCustomFees) {
+            /**
+             * @var array<string, array{code: string, title: string, value: float}> $originalCustomFees
+             */
+            $originalCustomFees = $this->serializer->unserialize(
+                (string) (
+                    $this->_config->getValue(
+                        ConfigInterface::CONFIG_PATH_CUSTOM_FEES,
+                        $this->getScope() ?? ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+                        $this->getScopeId() ?? 0,
+                    ) ?? '[]'
+                ),
+            );
+            $originalCustomFees = array_filter(
+                $originalCustomFees,
+                static fn(array $customFee): bool => $customFee['code'] !== 'example_fee',
+            );
+        }
+
         $this->configWriter->save(
             ConfigInterface::CONFIG_PATH_CUSTOM_FEES,
-            (string) ($this->serializer->serialize($this->customFees) ?: ''),
+            (string) ($this->serializer->serialize(array_merge($originalCustomFees, $this->customFees)) ?: ''),
             $this->getScope() ?? ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
             $this->getScopeId() ?? 0,
         );

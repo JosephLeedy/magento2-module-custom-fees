@@ -12,10 +12,15 @@ use JosephLeedy\CustomFees\Model\Config\Backend\File\ImportCustomFees;
 use Magento\Config\Model\Config\Backend\File\RequestData\RequestDataInterface;
 use Magento\Framework\App\Area;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\File\Csv;
+use Magento\Store\Model\ScopeInterface as StoreScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\TestFramework\Fixture\AppArea;
+use Magento\TestFramework\Fixture\AppIsolation;
+use Magento\TestFramework\Fixture\Config as ConfigFixture;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 use Zend_Db_Statement_Exception;
@@ -98,6 +103,207 @@ final class ImportCustomFeesTest extends TestCase
             ],
         ];
         $actualCustomFees = $this->getCustomFees();
+
+        self::assertSame($expectedCustomFees, $actualCustomFees);
+    }
+
+    #[AppIsolation(true)]
+    #[ConfigFixture(
+        ConfigInterface::CONFIG_PATH_CUSTOM_FEES,
+        '{"_1727299833817_817":{"code":"test_fee_0","title":"Test Fee","value":"4.00"},'
+            . '"_1727299843197_197":{"code":"test_fee_1","title":"Another Fee","value":"1.00"}}',
+        StoreScopeInterface::SCOPE_STORE,
+        'default',
+    )]
+    public function testImportsCustomFeesAndReplacesExistingConfiguration(): void
+    {
+        $requestDataStub = $this->createStub(RequestDataInterface::class);
+        $csvStub = $this->createStub(Csv::class);
+        $dateTimeImmutableFactoryStub = $this->createStub(DateTimeImmutableFactory::class);
+        $dateTimeImmutableStub = $this->createStub(DateTimeImmutable::class);
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var RequestInterface $request */
+        $request = $objectManager->get(RequestInterface::class);
+        /** @var StoreManagerInterface $storeManager */
+        $storeManager = $objectManager->get(StoreManagerInterface::class);
+        $storeId = $storeManager->getStore()->getId();
+        /** @var ImportCustomFees $importCustomFees */
+        $importCustomFees = $objectManager->create(
+            ImportCustomFees::class,
+            [
+                'requestData' => $requestDataStub,
+                'csv' => $csvStub,
+                'dateTimeFactory' => $dateTimeImmutableFactoryStub,
+                'request' => $request,
+            ],
+        );
+
+        $requestDataStub
+            ->method('getTmpName')
+            ->willReturn('/tmp/729d84ac');
+        $requestDataStub
+            ->method('getName')
+            ->willReturn('custom-fees.csv');
+
+        $csvStub
+            ->method('getData')
+            ->willReturn(
+                [
+                    [
+                        'code',
+                        'title',
+                        'value',
+                    ],
+                    [
+                        'processing_fee',
+                        'Processing Fee',
+                        '5.00',
+                    ],
+                    [
+                        'tariff',
+                        'Tariff',
+                        '20.00',
+                    ],
+                ],
+            );
+
+        $dateTimeImmutableFactoryStub
+            ->method('create')
+            ->willReturn($dateTimeImmutableStub);
+
+        $dateTimeImmutableStub
+            ->method('format')
+            ->willReturn('_1746639728881_881', '_1746639729624_624');
+
+        $request->setParams(
+            [
+                'groups' => [
+                    'custom_order_fees' => [
+                        'fields' => [
+                            'import_custom_fees' => [
+                                'replace_existing' => '1',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        );
+
+        $importCustomFees->setScope(StoreScopeInterface::SCOPE_STORES);
+        $importCustomFees->setScopeId($storeId);
+        $importCustomFees->setHasDataChanges(true);
+        $importCustomFees->save();
+
+        $expectedCustomFees = [
+            '_1746639728881_881' => [
+                'code' => 'processing_fee',
+                'title' => 'Processing Fee',
+                'value' => '5.00',
+            ],
+            '_1746639729624_624' => [
+                'code' => 'tariff',
+                'title' => 'Tariff',
+                'value' => '20.00',
+            ],
+        ];
+        $actualCustomFees = $this->getCustomFees(StoreScopeInterface::SCOPE_STORES, (int) $storeId);
+
+        self::assertSame($expectedCustomFees, $actualCustomFees);
+    }
+
+    #[AppIsolation(true)]
+    #[ConfigFixture(
+        ConfigInterface::CONFIG_PATH_CUSTOM_FEES,
+        '{"_1727299833817_817":{"code":"test_fee_0","title":"Test Fee","value":"4.00"},'
+            . '"_1727299843197_197":{"code":"test_fee_1","title":"Another Fee","value":"1.00"}}',
+        StoreScopeInterface::SCOPE_STORE,
+        'default',
+    )]
+    public function testImportsCustomFeesAndDoesNotReplaceExistingConfiguration(): void
+    {
+        $requestDataStub = $this->createStub(RequestDataInterface::class);
+        $csvStub = $this->createStub(Csv::class);
+        $dateTimeImmutableFactoryStub = $this->createStub(DateTimeImmutableFactory::class);
+        $dateTimeImmutableStub = $this->createStub(DateTimeImmutable::class);
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var StoreManagerInterface $storeManager */
+        $storeManager = $objectManager->get(StoreManagerInterface::class);
+        $storeId = $storeManager->getStore()->getId();
+        /** @var ImportCustomFees $importCustomFees */
+        $importCustomFees = $objectManager->create(
+            ImportCustomFees::class,
+            [
+                'requestData' => $requestDataStub,
+                'csv' => $csvStub,
+                'dateTimeFactory' => $dateTimeImmutableFactoryStub,
+            ],
+        );
+
+        $requestDataStub
+            ->method('getTmpName')
+            ->willReturn('/tmp/729d84ac');
+        $requestDataStub
+            ->method('getName')
+            ->willReturn('custom-fees.csv');
+
+        $csvStub
+            ->method('getData')
+            ->willReturn(
+                [
+                    [
+                        'code',
+                        'title',
+                        'value',
+                    ],
+                    [
+                        'processing_fee',
+                        'Processing Fee',
+                        '5.00',
+                    ],
+                    [
+                        'tariff',
+                        'Tariff',
+                        '20.00',
+                    ],
+                ],
+            );
+
+        $dateTimeImmutableFactoryStub
+            ->method('create')
+            ->willReturn($dateTimeImmutableStub);
+
+        $dateTimeImmutableStub
+            ->method('format')
+            ->willReturn('_1746639728881_881', '_1746639729624_624');
+
+        $importCustomFees->setScope(StoreScopeInterface::SCOPE_STORES);
+        $importCustomFees->setScopeId($storeId);
+        $importCustomFees->setHasDataChanges(true);
+        $importCustomFees->save();
+
+        $expectedCustomFees = [
+            '_1727299833817_817' => [
+                'code' => 'test_fee_0',
+                'title' => 'Test Fee',
+                'value' => '4.00',
+            ],
+            '_1727299843197_197' => [
+                'code' => 'test_fee_1',
+                'title' => 'Another Fee',
+                'value' => '1.00',
+            ],
+            '_1746639728881_881' => [
+                'code' => 'processing_fee',
+                'title' => 'Processing Fee',
+                'value' => '5.00',
+            ],
+            '_1746639729624_624' => [
+                'code' => 'tariff',
+                'title' => 'Tariff',
+                'value' => '20.00',
+            ],
+        ];
+        $actualCustomFees = $this->getCustomFees(StoreScopeInterface::SCOPE_STORES, (int) $storeId);
 
         self::assertSame($expectedCustomFees, $actualCustomFees);
     }
@@ -246,7 +452,7 @@ final class ImportCustomFeesTest extends TestCase
      * @return array{}|array<string, array{code: string, title: string, value: string}>
      * @throws Zend_Db_Statement_Exception
      */
-    private function getCustomFees(): array
+    private function getCustomFees(string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT, int $scopeId = 0): array
     {
         $objectManager = Bootstrap::getObjectManager();
         /** @var ResourceConnection $resourceConnection */
@@ -257,8 +463,8 @@ final class ImportCustomFeesTest extends TestCase
         $select = $connection
             ->select()
             ->from($resourceConnection->getTableName('core_config_data'), 'value')
-            ->where('scope = ?', ScopeConfigInterface::SCOPE_TYPE_DEFAULT)
-            ->where('scope_id = 0')
+            ->where('scope = ?', $scope)
+            ->where('scope_id = ?', $scopeId)
             ->where('path = ?', ConfigInterface::CONFIG_PATH_CUSTOM_FEES)
             ->limit(1);
         $rawCustomFees = $connection->query($select)->fetchColumn() ?: '[]';

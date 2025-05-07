@@ -11,6 +11,14 @@ use function str_replace;
 
 class ImportCustomFees extends Field
 {
+    protected function _getElementHtml(AbstractElement $element): string
+    {
+        $elementHtml = parent::_getElementHtml($element);
+        $elementHtml .= $this->renderReplaceExistingCheckbox($element);
+
+        return $elementHtml;
+    }
+
     protected function _renderValue(AbstractElement $element)
     {
         $element->setComment(
@@ -27,5 +35,26 @@ class ImportCustomFees extends Field
     protected function _isInheritCheckboxRequired(AbstractElement $element)
     {
         return false;
+    }
+
+    private function renderReplaceExistingCheckbox(AbstractElement $element): string
+    {
+        $label = __('Replace Existing Custom Fees');
+        $disabledAttribute = ((bool) $element->getData('disabled')) ? 'disabled' : '';
+        $inputName = str_replace('[value]', '[replace_existing]', (string) $element->getName());
+
+        return <<<HTML
+        <div>
+            <input
+                type="checkbox"
+                name="$inputName"
+                value="1"
+                class="checkbox"
+                id="{$element->getHtmlId()}_replace_existing"
+                $disabledAttribute
+            />
+            <label for="{$element->getHtmlId()}_replace_existing" class="$disabledAttribute">$label</label>
+        </div>
+        HTML;
     }
 }
