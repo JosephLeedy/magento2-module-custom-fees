@@ -16,6 +16,10 @@
                     <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
                     <comment><![CDATA[<strong>Note:</strong> Fee amount is relative to the store's base currency and will be converted to the customer's selected currency.]]></comment>
                 </field>
+                <field id="import_custom_fees" translate="label" type="file" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="0">
+                    <label>Import Custom Fees</label>
+                    <backend_model>JosephLeedy\CustomFees\Model\Config\Backend\File\ImportCustomFees</backend_model>
+                </field>
             </group>
         </section>
     </system>
