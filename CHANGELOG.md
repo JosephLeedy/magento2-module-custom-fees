@@ -14,6 +14,13 @@ document.
 
 - Configuration for custom fees can be imported from a CSV spreadsheet
 
+## [1.1.1]
+
+### Fixed
+
+- Softened dependency on Zend Framework 1 Database component to fix 
+  incompatibility with Magento 2.4.4 and 2.4.5
+
 ## [1.1.0]
 
 ### Added
@@ -59,7 +66,8 @@ document.
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [README]: ./README.md
-[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.1.1...HEAD
+[1.1.1]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.1.1
 [1.1.0]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.1.0
 [1.0.2]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.0.2
 [1.0.1]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.0.1
