@@ -1,3 +1,24 @@
+<p style="text-align: center;">
+    <a href="https://packagist.org/packages/joseph-leedy/module-custom-fees"
+        target="_blank" style="text-decoration: none;">
+        <img src="http://poser.pugx.org/joseph-leedy/module-custom-fees/v"
+            alt="Latest Stable Version">
+        <img src="http://poser.pugx.org/joseph-leedy/module-custom-fees/require/php" 
+            alt="PHP Version Required">
+        <img src="https://img.shields.io/badge/magento-2.4.4%2B-F46F25"
+            alt="Magento Version Required">
+        <img src="https://img.shields.io/badge/hyvä-compatible-0A23B9"
+            alt="Hyvä Compatibility">
+        <img src="http://poser.pugx.org/joseph-leedy/module-custom-fees/downloads"
+            alt="Total Downloads">
+    </a>
+    <a href="https://github.com/sponsors/JosephLeedy" target="_blank" 
+        style="text-decoration: none;">
+        <img alt="GitHub Sponsors"
+            src="https://img.shields.io/github/sponsors/JosephLeedy">
+    </a>
+</p>
+
 # Custom Fees for Magento 2
 _by Joseph Leedy_
 
