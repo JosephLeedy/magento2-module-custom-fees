@@ -41,6 +41,11 @@ parameters:
 			path: src/Model/Config/Backend/File/ImportCustomFees.php
 
 		-
+			message: "#^Call to an undefined method Magento\\\\Store\\\\Api\\\\Data\\\\WebsiteInterface\\:\\:getDefaultStore\\(\\)\\.$#"
+			count: 1
+			path: src/Model/Config/Backend/File/ImportCustomFees.php
+
+		-
 			message: "#^Parameter \\#1 \\$items of method Magento\\\\Framework\\\\Api\\\\SearchResultsInterface\\:\\:setItems\\(\\) expects array\\<Magento\\\\Framework\\\\Api\\\\ExtensibleDataInterface\\>, array\\<Magento\\\\Framework\\\\DataObject\\> given\\.$#"
 			count: 1
 			path: src/Model/CustomOrderFeesRepository.php
