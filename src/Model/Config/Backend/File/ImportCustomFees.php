@@ -23,6 +23,8 @@ use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Registry;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\MediaStorage\Model\File\UploaderFactory;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 use function array_combine;
 use function array_filter;
@@ -60,6 +62,7 @@ class ImportCustomFees extends File
         Filesystem $filesystem,
         private readonly Csv $csv,
         private readonly DateTimeImmutableFactory $dateTimeFactory,
+        private readonly StoreManagerInterface $storeManager,
         private readonly SerializerInterface $serializer,
         private readonly RequestInterface $request,
         private readonly Writer $configWriter,
@@ -195,10 +198,26 @@ class ImportCustomFees extends File
 
     private function fixCustomFees(): void
     {
+        try {
+            $store = match ($this->getScope()) {
+                ScopeConfigInterface::SCOPE_TYPE_DEFAULT => $this->storeManager->getStore(),
+                ScopeInterface::SCOPE_WEBSITES => $this
+                    ->storeManager
+                    ->getWebsite($this->getScopeId())
+                    ->getDefaultStore(),
+                ScopeInterface::SCOPE_STORES => $this->storeManager->getStore($this->getScopeId()),
+                default => null,
+            };
+        } catch (LocalizedException) {
+            $store = null;
+        }
+
         array_walk(
             $this->customFees,
-            static function (array &$customFee): void {
+            static function (array &$customFee) use ($store): void {
                 $customFee['code'] = preg_replace('/[^A-z0-9_]+/', '_', $customFee['code']);
+                $customFee['value'] = $store?->getBaseCurrency()->format($customFee['value'], ['display' => 1], false)
+                    ?? $customFee['value'];
             },
         );
     }
