@@ -10,6 +10,11 @@ document.
 
 ## [Unreleased]
 
+### Fixed
+
+- Softened dependency on Zend Framework 1 Database component to fix 
+  incompatibility with Magento 2.4.4 and 2.4.5
+
 ## [1.1.0]
 
 ### Added
