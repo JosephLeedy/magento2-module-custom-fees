@@ -15,10 +15,14 @@ CSV,CSV
 Code,Code
 "Fee Name","Fee Name"
 "Add Custom Fee","Add Custom Fee"
+"Replace Existing Custom Fees","Replace Existing Custom Fees"
 Sales,Sales
 "Custom Order Fees Report","Custom Order Fees Report"
 "This report requires MySQL 8.0.4 or greater, MariaDB 10.6.0 or greater OR a MySQL 8.0-compatible database server to generate properly. Your database server version ""%1"" is not compatible.","This report requires MySQL 8.0.4 or greater, MariaDB 10.6.0 or greater OR a MySQL 8.0-compatible database server to generate properly. Your database server version ""%1"" is not compatible."
 "Could not get custom fees from configuration. Error: ""%1""","Could not get custom fees from configuration. Error: ""%1"""
+"Custom Fees spreadsheet must be a CSV file.","Custom Fees spreadsheet must be a CSV file."
+"Could not read Custom Fees spreadsheet.","Could not read Custom Fees spreadsheet."
+"Invalid Custom Fees spreadsheet.","Invalid Custom Fees spreadsheet."
 "Invalid custom fees","Invalid custom fees"
 "Custom order fees with ID ""%1"" does not exist.","Custom order fees with ID ""%1"" does not exist."
 "Custom fees do not exist for order with ID ""%1"".","Custom fees do not exist for order with ID ""%1""."
@@ -32,4 +36,6 @@ Sales,Sales
 "%1 (Base)","%1 (Base)"
 "%1 (Purchased)","%1 (Purchased)"
 "<strong>Note:</strong> Fee amount is relative to the store's base currency and will be converted to the customer's selected currency.","<strong>Note:</strong> Fee amount is relative to the store's base currency and will be converted to the customer's selected currency."
+"Import Custom Fees","Import Custom Fees"
+"Import custom fees from a CSV spreadsheet. <a href=""{{exampleCsvUrl}}"">Example file</a>","Import custom fees from a CSV spreadsheet. <a href=""{{exampleCsvUrl}}"">Example file</a>"
 "All Websites","All Websites"

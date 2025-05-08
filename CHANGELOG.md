@@ -10,6 +10,10 @@ document.
 
 ## [Unreleased]
 
+### Added
+
+- Configuration for custom fees can be imported from a CSV spreadsheet
+
 ## [1.1.1]
 
 ### Fixed
