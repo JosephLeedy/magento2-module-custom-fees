@@ -1,19 +1,25 @@
-<p style="text-align: center;">
-    <a href="https://packagist.org/packages/joseph-leedy/module-custom-fees"
-        target="_blank" style="text-decoration: none;">
+<p align="center">
+    <a href="https://packagist.org/packages/joseph-leedy/module-custom-fees">
         <img src="http://poser.pugx.org/joseph-leedy/module-custom-fees/v"
             alt="Latest Stable Version">
+    </a>
+    <a href="https://packagist.org/packages/joseph-leedy/module-custom-fees">
         <img src="http://poser.pugx.org/joseph-leedy/module-custom-fees/require/php" 
             alt="PHP Version Required">
+    </a>
+    <a href="https://packagist.org/packages/joseph-leedy/module-custom-fees">
         <img src="https://img.shields.io/badge/magento-2.4.4%2B-F46F25"
             alt="Magento Version Required">
+    </a>
+    <a href="https://packagist.org/packages/joseph-leedy/module-custom-fees">
         <img src="https://img.shields.io/badge/hyvä-compatible-0A23B9"
             alt="Hyvä Compatibility">
+    </a>
+    <a href="https://packagist.org/packages/joseph-leedy/module-custom-fees">
         <img src="http://poser.pugx.org/joseph-leedy/module-custom-fees/downloads"
             alt="Total Downloads">
     </a>
-    <a href="https://github.com/sponsors/JosephLeedy" target="_blank" 
-        style="text-decoration: none;">
+    <a href="https://github.com/sponsors/JosephLeedy">
         <img alt="GitHub Sponsors"
             src="https://img.shields.io/github/sponsors/JosephLeedy">
     </a>
