@@ -1,0 +1,100 @@
+name: Run Integration Tests
+
+on:
+  pull_request:
+
+  workflow_dispatch:
+
+permissions:
+  pull-requests: write
+
+jobs:
+  run-integration-tests:
+    strategy:
+      matrix:
+        include:
+          - PHP_VERSION: php81-fpm
+            MAGENTO_VERSION: 2.4.5-p12
+            generate_coverage: false
+          - PHP_VERSION: php84-fpm
+            MAGENTO_VERSION: 2.4.8
+            generate_coverage: true
+
+    name: Magento ${{ matrix.MAGENTO_VERSION }} on ${{ matrix.PHP_VERSION }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 60
+
+    container:
+      image: michielgerritsen/magento-project-community-edition:${{ matrix.PHP_VERSION }}-magento${{ matrix.MAGENTO_VERSION }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup problem matchers for PHPUnit
+        run: echo "::add-matcher::${{ github.workspace }}/.github/workflows/problem-matchers/phpunit.json"
+
+      - name: Start services
+        run: /bin/bash /data/start-services
+
+      - name: Install Xdebug
+        if: matrix.generate_coverage
+        run: pecl install xdebug && echo "zend_extension=xdebug" >> /usr/local/etc/php/conf.d/00-xdebug.ini
+
+      - name: Copy extension to Magento codebase
+        run: mkdir /data/extensions/module-custom-fees && cp -r . /data/extensions/module-custom-fees
+
+      - name: Install extension
+        working-directory: /data
+        run: |
+          composer config repo.packagist false
+          composer require joseph-leedy/module-custom-fees:@dev
+
+      - name: Enable extension
+        working-directory: /data
+        run: php bin/magento module:enable JosephLeedy_CustomFees
+
+      - name: Install database schema
+        working-directory: /data
+        run: php bin/magento setup:upgrade
+
+      - name: Run tests
+        if: ${{ ! matrix.generate_coverage }}
+        working-directory: /data
+        run: php vendor/bin/phpunit -c /data/dev/tests/integration/phpunit.xml /data/vendor/joseph-leedy/module-custom-fees/test/Integration
+
+      - name: Run tests and generate coverage report
+        id: run-tests-with-coverage
+        if: matrix.generate_coverage
+        env:
+          XDEBUG_MODE: coverage
+        working-directory: /data
+        run: |
+          php vendor/bin/phpunit -c /data/dev/tests/integration/phpunit.xml --coverage-text=/data/coverage.txt --coverage-clover=/data/coverage.xml --coverage-filter=/data/vendor/joseph-leedy/module-custom-fees/src /data/vendor/joseph-leedy/module-custom-fees/test/Integration \
+          && {
+            echo 'phpunit_coverage<<EOF'
+            cat /data/coverage.txt
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Add coverage report to pull request
+        if: ${{ github.event_name == 'pull_request' && matrix.generate_coverage && steps.run-tests-with-coverage.outputs.phpunit_coverage }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${{ steps.run-tests-with-coverage.outputs.phpunit_coverage }}`
+            })
+
+      - name: Upload code coverage reports
+        if: matrix.generate_coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports-magento-${{ matrix.MAGENTO_VERSION }}
+          path: /data/coverage.*
+          if-no-files-found: warn
