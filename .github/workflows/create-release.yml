@@ -1,0 +1,27 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = `${{ github.ref_name }}`
+            const isPrerelease = /(alpha|beta|rc)/.test(tag)
+            github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              prerelease: isPrerelease,
+              generate_release_notes: true
+            })
