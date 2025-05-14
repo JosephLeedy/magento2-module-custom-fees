@@ -91,9 +91,9 @@ final class GridTest extends TestCase
         $totals = $grid->getTotals();
         $expectedTotalData = [
             'base_fee_amount' => '19.5',
-            'paid_fee_amount' => '9.1872, 6.5000',
+            'paid_fee_amount' => '6.5000, 9.1872',
             'invoiced_fee_amount' => '0.0000, 0.0000',
-            'paid_order_currency' => 'EUR, USD',
+            'paid_order_currency' => 'USD, EUR',
             'orig_data' => null,
         ];
         $actualTotalData = $totals->getData();
