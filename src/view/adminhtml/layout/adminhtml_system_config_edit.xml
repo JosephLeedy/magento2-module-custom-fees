@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="JosephLeedy_CustomFees::css/custom_fees_config.css"/>
+    </head>
+    <body>
+        <referenceBlock name="system.config.edit">
+            <!--<block class="JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\Advanced\Form" name="system_config_custom_fees_advanced_form"/>-->
+            <!--<uiComponent name="system_config_custom_fees_advanced_form"/>-->
+        </referenceBlock>
+    </body>
+</page>

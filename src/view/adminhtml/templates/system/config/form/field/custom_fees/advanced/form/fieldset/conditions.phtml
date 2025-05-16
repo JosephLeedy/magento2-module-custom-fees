@@ -1,0 +1,53 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Backend\Block\Widget\Form\Renderer\Fieldset;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Helper\SecureHtmlRenderer;
+
+/** @var Fieldset $block */
+/** @var SecureHtmlRenderer $secureRenderer */
+/** @var Escaper $escaper */
+
+$element = $block->getElement();
+/** @var string $jsObjectName */
+$jsObjectName = $block->getFieldSetId() ?? $element->getHtmlId();
+?>
+<div class="rule-tree">
+    <fieldset id="<?= $escaper->escapeHtmlAttr($jsObjectName) ?>" <?= /* @noEscape */ $element->serialize(['class']) ?> class="fieldset">
+        <legend class="legend"><span><?= $escaper->escapeHtml($element->getLegend()) ?></span></legend>
+        <br>
+        <?php if ($element->getComment()): ?>
+            <div class="messages">
+                <div class="message message-notice"><?= $escaper->escapeHtml($element->getComment()) ?></div>
+            </div>
+        <?php endif ?>
+        <div class="rule-tree-wrapper">
+            <?= $element->getChildrenHtml() ?>
+        </div>
+    </fieldset>
+</div>
+
+<?php
+$scriptString = <<<SCRIPT
+require(
+    [
+        'Magento_Rule/rules',
+        'prototype'
+    ],
+    function(VarienRulesForm) {
+        window.$jsObjectName = new VarienRulesForm('$jsObjectName', '{$block->getNewChildUrl()}');
+SCRIPT;
+
+if ($element->getReadonly()):
+    $scriptString .= /* @noEscape */ $element->getHtmlId() . '.setReadonly(true);' . PHP_EOL;
+endif;
+
+$scriptString .= <<<SCRIPT
+    }
+);
+SCRIPT;
+
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', [], $scriptString, false) ?>

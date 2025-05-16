@@ -1,0 +1,14 @@
+<?php
+
+declare(strict_types=1);
+
+use JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\Advanced;
+
+/** @var Advanced $block */
+
+$buttonId = $block->getButtonId();
+?>
+<input type="hidden" id="<?= $block->getInputId() ?>" name="<?= $block->getInputName() ?>" value="<?= $block->getColumnName() ?>">
+<button type="button" class="action-custom-fees-advanced-config" id="<?= $buttonId ?>" title="<?= __('Advanced Settings') ?>">
+    <span><?= __('Advanced') ?></span>
+</button>

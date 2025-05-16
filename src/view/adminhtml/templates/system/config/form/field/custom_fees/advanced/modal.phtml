@@ -1,0 +1,54 @@
+<?php
+
+declare(strict_types=1);
+
+use JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\Advanced\Modal;
+
+/** @var Modal $block */
+
+$modalId = $block->getModalId();
+$buttonId = $block->getButtonId();
+?>
+
+<div id="<?= $modalId ?>" class="system-config-custom-fees-advanced-modal">
+    <?= $block->getChildHtml() ?>
+</div>
+
+<script type="text/javascript">
+    require(
+        [
+            'jquery',
+            'Magento_Ui/js/modal/modal'
+        ],
+        function($, modal) {
+            const options = {
+                type: 'slide',
+                responsive: true,
+                innerScroll: true,
+                title: $.mage.__('Advanced Settings'),
+                buttons: [
+                    {
+                        text: $.mage.__('Close'),
+                        class: 'modal-close',
+                        click: function () {
+                            this.closeModal();
+                        }
+                    },
+                    {
+                        text: $.mage.__('Save'),
+                        class: 'primary',
+                        click: function () {
+                            this.closeModal();
+                        }
+                    },
+                ]
+            };
+
+            modal(options, $('#<?= $modalId ?>'));
+
+            $('#<?= $buttonId ?>').on('click', function() {
+                $('#<?= $modalId ?>').modal('openModal');
+            });
+        }
+    );
+</script>
