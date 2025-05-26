@@ -41,7 +41,7 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
 
     public function setOrderId(int|string $orderId): CustomOrderFeesInterface
     {
-        $this->setdata(self::ORDER_ID, (int)$orderId);
+        $this->setData(self::ORDER_ID, (int)$orderId);
 
         return $this;
     }

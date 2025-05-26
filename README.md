@@ -1,3 +1,13 @@
+<p align="center">
+    <a href="https://packagist.org/packages/joseph-leedy/module-custom-fees"><img src="http://poser.pugx.org/joseph-leedy/module-custom-fees/v" alt="Latest Stable Version"></a>
+    <a href="https://github.com/JosephLeedy/magento2-module-custom-fees/actions/workflows/run-integration-tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/JosephLeedy/magento2-module-custom-fees/run-integration-tests.yml?label=integration%20tests" alt="Integration Test Status"></a>
+    <a href="https://packagist.org/packages/joseph-leedy/module-custom-fees"><img src="http://poser.pugx.org/joseph-leedy/module-custom-fees/require/php" alt="PHP Version Required"></a>
+    <a href="https://packagist.org/packages/joseph-leedy/module-custom-fees"><img src="https://img.shields.io/badge/magento-2.4.4%2B-F46F25" alt="Magento Version Required"></a>
+    <a href="https://packagist.org/packages/joseph-leedy/module-custom-fees"><img src="https://img.shields.io/badge/hyvä-compatible-0A23B9" alt="Hyvä Compatibility"></a>
+    <a href="https://packagist.org/packages/joseph-leedy/module-custom-fees"><img src="http://poser.pugx.org/joseph-leedy/module-custom-fees/downloads" alt="Total Downloads"></a>
+    <a href="https://github.com/sponsors/JosephLeedy"><img alt="GitHub Sponsors" src="https://img.shields.io/github/sponsors/JosephLeedy"></a>
+</p>
+
 # Custom Fees for Magento 2
 _by Joseph Leedy_
 
