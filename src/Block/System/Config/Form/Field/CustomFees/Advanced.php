@@ -22,4 +22,9 @@ class Advanced extends Template
     {
         return 'custom-fees-advanced-button' . $this->getRowId();
     }
+
+    public function getModalId(): string
+    {
+        return 'custom-fees-advanced-modal' . $this->getRowId();
+    }
 }
