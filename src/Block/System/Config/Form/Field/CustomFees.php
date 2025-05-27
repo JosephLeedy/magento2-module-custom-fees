@@ -7,6 +7,7 @@ namespace JosephLeedy\CustomFees\Block\System\Config\Form\Field;
 use DomainException;
 use JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\Advanced;
 use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
+use Magento\Framework\DataObject;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Api\Data\StoreInterface;
 
@@ -55,6 +56,15 @@ class CustomFees extends AbstractFieldArray
 
         $this->_addAfter = false;
         $this->_addButtonLabel = (string)__('Add Custom Fee');
+    }
+
+    protected function _prepareArrayRow(DataObject $row): void
+    {
+        if ($row->hasData('advanced')) {
+            return;
+        }
+
+        $row->setData('advanced', '{}');
     }
 
     private function getStore(): ?StoreInterface
