@@ -34,4 +34,14 @@
 
 .system-config-custom-fees-advanced-modal {
     display: none;
+
+    .admin__collapsible-block-wrapper .admin__fieldset-wrapper-title .admin__collapsible-title {
+        &:before {
+            content: '\e615';
+        }
+
+        &.collapsed:before {
+            content: '\e616';
+        }
+    }
 }
