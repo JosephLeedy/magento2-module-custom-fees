@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Block\System\Config\Form\Field;
 
 use DomainException;
+use JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\Advanced;
 use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Api\Data\StoreInterface;
@@ -43,6 +44,13 @@ class CustomFees extends AbstractFieldArray
                 'label' => $valueColumnLabel,
                 'class' => 'required-entry validate-number validate-zero-or-greater'
             ]
+        );
+        $this->addColumn(
+            'advanced',
+            [
+                'label' => '&nbsp;',
+                'renderer' => $this->getLayout()->createBlock(Advanced::class),
+            ],
         );
 
         $this->_addAfter = false;

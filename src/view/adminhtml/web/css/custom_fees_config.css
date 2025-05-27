@@ -7,3 +7,27 @@
         width: 70%;
     }
 }
+
+.action-custom-fees-advanced-config {
+    &:before {
+        font-family: 'Admin Icons';
+        font-size: 2rem;
+        font-style: normal;
+        font-weight: normal;
+        content: '\e610';
+        line-height: 1;
+    }
+
+    &, &:hover, &:active, &:focus {
+        background-color: transparent;
+        border-color: transparent;
+        box-shadow: none;
+    }
+
+    padding-left: 0;
+    padding-right: 0;
+
+    span {
+        display: none;
+    }
+}
