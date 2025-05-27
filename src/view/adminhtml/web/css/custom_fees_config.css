@@ -1,0 +1,9 @@
+#sales_custom_order_fees {
+    .label {
+        width: 12%;
+    }
+
+    .value {
+        width: 70%;
+    }
+}
