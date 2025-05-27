@@ -26,6 +26,16 @@ parameters:
 			path: src/Block/System/Config/Form/Field/CustomFees.php
 
 		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Block\\\\System\\\\Config\\\\Form\\\\Field\\\\CustomFees\\\\Advanced\\\\Form\\:\\:getConfig\\(\\) should return array\\{conditions\\?\\: array\\{type\\: class\\-string, aggregator\\: string, value\\: '0'\\|'1', conditions\\: array\\<int, array\\{type\\: class\\-string, attribute\\: string, operator\\: string, value\\: string\\}\\>\\}\\} but returns array\\|float\\|int\\<min, \\-1\\>\\|int\\<1, max\\>\\|non\\-falsy\\-string\\|true\\.$#"
+			count: 1
+			path: src/Block/System/Config/Form/Field/CustomFees/Advanced/Form.php
+
+		-
+			message: "#^Setter methods like Magento\\\\Backend\\\\Block\\\\Widget\\\\Form\\\\Renderer\\\\Fieldset\\:\\:setTemplate\\(\\) are deprecated in Block classes, use constructor arguments instead$#"
+			count: 1
+			path: src/Block/System/Config/Form/Field/CustomFees/Advanced/Form.php
+
+		-
 			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: src/Block/System/Config/Form/Field/ImportCustomFees.php
