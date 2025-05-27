@@ -23,6 +23,7 @@ Sales,Sales
 "This report requires MySQL 8.0.4 or greater, MariaDB 10.6.0 or greater OR a MySQL 8.0-compatible database server to generate properly. Your database server version ""%1"" is not compatible.","This report requires MySQL 8.0.4 or greater, MariaDB 10.6.0 or greater OR a MySQL 8.0-compatible database server to generate properly. Your database server version ""%1"" is not compatible."
 "Row ID is required.","Row ID is required."
 "Could not get custom fees from configuration. Error: ""%1""","Could not get custom fees from configuration. Error: ""%1"""
+"Could not process advanced configuration for custom fee ""%1"". Error: ""%2""","Could not process advanced configuration for custom fee ""%1"". Error: ""%2"""
 "Custom Fees spreadsheet must be a CSV file.","Custom Fees spreadsheet must be a CSV file."
 "Could not read Custom Fees spreadsheet.","Could not read Custom Fees spreadsheet."
 "Invalid Custom Fees spreadsheet.","Invalid Custom Fees spreadsheet."
