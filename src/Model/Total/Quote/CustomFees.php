@@ -14,8 +14,6 @@ use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
 use Magento\Quote\Model\Quote\Address\Total\CollectorInterface;
 use Magento\Store\Api\Data\StoreInterface;
 
-use function array_filter;
-use function array_map;
 use function array_walk;
 use function count;
 
@@ -93,38 +91,22 @@ class CustomFees extends AbstractTotal
      */
     private function getCustomFees(StoreInterface $store): array
     {
-        $baseCustomFees = array_map(
-            /**
-             * @param array{code: string, title: string, value: float} $customFee
-             * @return array{code: string, title: Phrase, value: float}
-             */
-            static function (array $customFee): array {
-                if ($customFee['code'] === 'example_fee') {
-                    return [];
-                }
+        $baseCustomFees = [];
+        $localCustomFees = [];
 
-                $customFee['title'] = __($customFee['title']);
+        $customFees = $this->config->getCustomFees($store->getId());
 
-                return $customFee;
-            },
-            $this->config->getCustomFees($store->getId())
-        );
-        $localCustomFees = array_map(
-            /**
-             * @param array{code: string, title: Phrase, value: float} $customFee
-             * @return array{code: string, title: Phrase, value: float}
-             */
-            function (array $customFee) use ($store): array {
-                if (count($customFee) === 0) {
-                    return $customFee;
-                }
+        foreach ($customFees as $customFee) {
+            if ($customFee['code'] === 'example_fee') {
+                continue;
+            }
 
-                $customFee['value'] = $this->priceCurrency->convert($customFee['value'], $store);
-
-                return $customFee;
-            },
-            $baseCustomFees
-        );
+            $customFee['title'] = __($customFee['title']);
+            $baseCustomFees[] = $customFee;
+            $localCustomFees[] = [
+                'value' => $this->priceCurrency->convert($customFee['value'], $store),
+            ] + $customFee;
+        }
 
         return [
             array_filter($baseCustomFees),
