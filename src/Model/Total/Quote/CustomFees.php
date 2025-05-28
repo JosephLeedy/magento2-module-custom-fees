@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model\Total\Quote;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
@@ -13,6 +14,7 @@ use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
 use Magento\Quote\Model\Quote\Address\Total\CollectorInterface;
 use Magento\Store\Api\Data\StoreInterface;
+use Psr\Log\LoggerInterface;
 
 use function array_walk;
 use function count;
@@ -23,6 +25,7 @@ class CustomFees extends AbstractTotal
 
     public function __construct(
         private readonly ConfigInterface $config,
+        private readonly LoggerInterface $logger,
         private readonly PriceCurrencyInterface $priceCurrency,
     ) {
         $this->setCode(self::CODE);
@@ -94,7 +97,13 @@ class CustomFees extends AbstractTotal
         $baseCustomFees = [];
         $localCustomFees = [];
 
-        $customFees = $this->config->getCustomFees($store->getId());
+        try {
+            $customFees = $this->config->getCustomFees($store->getId());
+        } catch (LocalizedException $localizedException) {
+            $this->logger->critical($localizedException->getLogMessage(), ['exception' => $localizedException]);
+
+            return [$baseCustomFees, $localCustomFees];
+        }
 
         foreach ($customFees as $customFee) {
             if ($customFee['code'] === 'example_fee') {
