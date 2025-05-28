@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model\Total\Quote;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Service\RulesApplier;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
@@ -13,9 +14,9 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
 use Magento\Quote\Model\Quote\Address\Total\CollectorInterface;
-use Magento\Store\Api\Data\StoreInterface;
 use Psr\Log\LoggerInterface;
 
+use function array_key_exists;
 use function array_walk;
 use function count;
 
@@ -26,6 +27,7 @@ class CustomFees extends AbstractTotal
     public function __construct(
         private readonly ConfigInterface $config,
         private readonly LoggerInterface $logger,
+        private readonly RulesApplier $rulesApplier,
         private readonly PriceCurrencyInterface $priceCurrency,
     ) {
         $this->setCode(self::CODE);
@@ -42,7 +44,7 @@ class CustomFees extends AbstractTotal
             return $this;
         }
 
-        [$baseCustomFees, $localCustomFees] = $this->getCustomFees($quote->getStore());
+        [$baseCustomFees, $localCustomFees] = $this->getCustomFees($quote);
         $customFees = $baseCustomFees;
 
         array_walk(
@@ -84,7 +86,7 @@ class CustomFees extends AbstractTotal
      */
     public function fetch(Quote $quote, Total $total): array
     {
-        [, $localCustomFees] = $this->getCustomFees($quote->getStore());
+        [, $localCustomFees] = $this->getCustomFees($quote);
 
         return $localCustomFees;
     }
@@ -92,8 +94,9 @@ class CustomFees extends AbstractTotal
     /**
      * @return array{code: string, title: Phrase, value: float}[][]
      */
-    private function getCustomFees(StoreInterface $store): array
+    private function getCustomFees(Quote $quote): array
     {
+        $store = $quote->getStore();
         $baseCustomFees = [];
         $localCustomFees = [];
 
@@ -105,10 +108,26 @@ class CustomFees extends AbstractTotal
             return [$baseCustomFees, $localCustomFees];
         }
 
+        $quoteAddress = $quote->isVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
+
         foreach ($customFees as $customFee) {
             if ($customFee['code'] === 'example_fee') {
                 continue;
             }
+
+            if ($quoteAddress !== null && array_key_exists('conditions', $customFee['advanced'])) {
+                $isApplicable = $this->rulesApplier->isApplicable(
+                    $quoteAddress,
+                    $customFee['code'],
+                    $customFee['advanced']['conditions'],
+                );
+
+                if (!$isApplicable) {
+                    continue;
+                }
+            }
+
+            unset($customFee['advanced']);
 
             $customFee['title'] = __($customFee['title']);
             $baseCustomFees[] = $customFee;
