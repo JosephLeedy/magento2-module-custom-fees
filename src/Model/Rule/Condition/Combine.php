@@ -26,6 +26,7 @@ class Combine extends CoreCombineConditionModel
     public function __construct(
         Context $context,
         private readonly QuoteAddress $quoteAddressCondition,
+        private readonly Product $productCondition,
         array $data = [],
     ) {
         parent::__construct($context, $data);
@@ -38,6 +39,16 @@ class Combine extends CoreCombineConditionModel
      */
     public function getNewChildSelectOptions(): array
     {
+        /** @var array<string, Phrase> $productAttributeOptions */
+        $productAttributeOptions = $this->productCondition->loadAttributeOptions()->getAttributeOption();
+        $productAttributes = array_map(
+            static fn(string $code, Phrase|string $label): array => [
+                'value' => Product::class . '|' . $code,
+                'label' => $label,
+            ],
+            array_keys($productAttributeOptions),
+            array_values($productAttributeOptions),
+        );
         /** @var array<string, Phrase> $quoteAddressAttributesOptions */
         $quoteAddressAttributesOptions = $this->quoteAddressCondition->loadAttributeOptions()->getAttributeOption();
         $quoteAddressAttributes = array_map(
@@ -54,6 +65,10 @@ class Combine extends CoreCombineConditionModel
                 [
                     'value' => self::class,
                     'label' => __('Conditions Combination'),
+                ],
+                [
+                    'value' => $productAttributes,
+                    'label' => __('Product Attribute'),
                 ],
                 [
                     'value' => $quoteAddressAttributes,
