@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\Advanced;
 
+use InvalidArgumentException;
 use JosephLeedy\CustomFees\Model\Rule\CustomFees as CustomFeesRule;
 use JosephLeedy\CustomFees\Model\Rule\CustomFeesFactory as CustomFeesRuleFactory;
 use Magento\Backend\Block\Template\Context;
@@ -40,6 +41,9 @@ class Form extends Generic
         parent::__construct($context, $registry, $formFactory, $data);
     }
 
+    /**
+     * @throws LocalizedException
+     */
     protected function _prepareForm(): self
     {
         try {
@@ -53,6 +57,9 @@ class Form extends Generic
         return parent::_prepareForm();
     }
 
+    /**
+     * @throws LocalizedException
+     */
     private function createConditionsFieldset(\Magento\Framework\Data\Form $advancedForm): void
     {
         $newChildUrl = $this->getUrl(
@@ -119,14 +126,33 @@ class Form extends Generic
      *         >
      *     }
      * }
+     * @throws LocalizedException
      */
     private function getConfig(): array
     {
-        $config = $this->getAdvancedConfig() ?? '{}';
+        $config = $this->getAdvancedConfig();
 
-        return $this->serializer->unserialize($config) ?: [];
+        if (empty($config)) {
+            $config = '{}';
+        }
+
+        try {
+            return $this->serializer->unserialize($config) ?: [];
+        } catch (InvalidArgumentException $invalidArgumentException) {
+            throw new LocalizedException(
+                __(
+                    'Could not process the advanced configuration data for custom fee "%1". Error: "%2"',
+                    $this->getRowId(),
+                    $invalidArgumentException->getMessage(),
+                ),
+                $invalidArgumentException,
+            );
+        }
     }
 
+    /**
+     * @throws LocalizedException
+     */
     private function createCustomFeesRule(): CustomFeesRule
     {
         /** @var CustomFeesRule $customFeesRule */

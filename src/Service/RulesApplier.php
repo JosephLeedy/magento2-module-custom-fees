@@ -6,8 +6,10 @@ namespace JosephLeedy\CustomFees\Service;
 
 use JosephLeedy\CustomFees\Model\Rule\CustomFees;
 use JosephLeedy\CustomFees\Model\Rule\CustomFeesFactory;
-use Magento\Quote\Api\Data\AddressInterface;
+use Magento\Quote\Api\Data\CartInterface;
+use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address;
+use Magento\Quote\Model\Quote\Item;
 
 class RulesApplier
 {
@@ -19,7 +21,7 @@ class RulesApplier
     public function __construct(private readonly CustomFeesFactory $ruleFactory) {}
 
     /**
-     * @phpstan-param AddressInterface&Address $quoteAddress
+     * @phpstan-param CartInterface&Quote $quote
      * @param array{
      *     type: class-string,
      *     aggregator: string,
@@ -35,9 +37,22 @@ class RulesApplier
      *     >
      * } $conditions
      */
-    public function isApplicable(AddressInterface $quoteAddress, string $feeCode, array $conditions): bool
+    public function isApplicable(CartInterface $quote, string $feeCode, array $conditions): bool
     {
-        return $this->getRule($feeCode, $conditions)->validate($quoteAddress);
+        $customFeesRule = $this->getRule($feeCode, $conditions);
+        /** @var Address $quoteAddress */
+        $quoteAddress = $quote->isVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
+        $isApplicableToQuoteAddress = $customFeesRule->validate($quoteAddress);
+        $applicableProducts = array_filter(
+            $quote->getAllVisibleItems(),
+            static fn(Item $quoteItem): bool => $customFeesRule->validate($quoteItem->getProduct()),
+        );
+        $isApplicableToProducts = count($applicableProducts) > 0;
+        $isApplicable = $conditions['aggregator'] === 'all'
+            ? $isApplicableToQuoteAddress && $isApplicableToProducts
+            : $isApplicableToQuoteAddress || $isApplicableToProducts;
+
+        return $isApplicable;
     }
 
     /**
