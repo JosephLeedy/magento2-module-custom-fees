@@ -31,5 +31,10 @@
       "PRIMARY": true,
       "REPORT_CUSTOM_ORDER_FEES_AGGREGATED_STORE_ID_STORE_STORE_ID": true
     }
+  },
+  "catalog_eav_attribute": {
+    "column": {
+      "is_used_for_custom_fee_rules": true
+    }
   }
 }

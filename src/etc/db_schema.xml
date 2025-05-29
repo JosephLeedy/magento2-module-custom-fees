@@ -33,4 +33,8 @@
             <column name="invoiced_fee_amount"/>
         </index>
     </table>
+
+    <table name="catalog_eav_attribute">
+        <column xsi:type="smallint" name="is_used_for_custom_fee_rules" unsigned="true" nullable="false" identity="false" default="0" comment="Is Used For Custom Fee Rules"/>
+    </table>
 </schema>
