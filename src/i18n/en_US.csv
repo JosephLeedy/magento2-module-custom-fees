@@ -36,7 +36,7 @@ Sales,Sales
 "Order with ID ""%1"" does not exist.","Order with ID ""%1"" does not exist."
 "Unsupported database server version ""%1"".","Unsupported database server version ""%1""."
 "Conditions Combination","Conditions Combination"
-"Cart Address Attribute","Cart Address Attribute"
+"Cart Attribute","Cart Attribute"
 Subtotal,Subtotal
 "Subtotal (Incl. Tax)","Subtotal (Incl. Tax)"
 "Total Items Quantity","Total Items Quantity"

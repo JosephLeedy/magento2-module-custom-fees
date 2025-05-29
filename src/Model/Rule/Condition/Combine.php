@@ -57,7 +57,7 @@ class Combine extends CoreCombineConditionModel
                 ],
                 [
                     'value' => $quoteAddressAttributes,
-                    'label' => __('Cart Address Attribute'),
+                    'label' => __('Cart Attribute'),
                 ],
             ],
         );
