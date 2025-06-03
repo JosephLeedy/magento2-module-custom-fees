@@ -6,6 +6,7 @@ namespace JosephLeedy\CustomFees\Model;
 
 use InvalidArgumentException;
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JsonException;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -14,7 +15,10 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
 use function array_key_exists;
-use function str_replace;
+use function json_decode;
+
+use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_SLASHES;
 
 class Config implements ConfigInterface
 {
@@ -60,17 +64,20 @@ class Config implements ConfigInterface
                 }
 
                 try {
-                    $customFee['advanced'] = $this->serializer->unserialize(
-                        str_replace('\\', '\\\\', $customFee['advanced']),
+                    $customFee['advanced'] = json_decode(
+                        $customFee['advanced'],
+                        true,
+                        512,
+                        JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES,
                     );
-                } catch (InvalidArgumentException $invalidArgumentException) {
+                } catch (JsonException $jsonException) {
                     throw new LocalizedException(
                         __(
                             'Could not process advanced configuration for custom fee "%1". Error: "%2"',
                             $customFee['code'],
-                            $invalidArgumentException->getMessage(),
+                            $jsonException->getMessage(),
                         ),
-                        $invalidArgumentException,
+                        $jsonException,
                     );
                 }
             },
