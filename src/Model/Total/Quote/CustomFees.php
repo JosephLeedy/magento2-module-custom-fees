@@ -110,7 +110,7 @@ class CustomFees extends AbstractTotal
 
         $quoteAddress = $quote->isVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
 
-        foreach ($customFees as $customFee) {
+        foreach ($customFees as $id => $customFee) {
             if ($customFee['code'] === 'example_fee') {
                 continue;
             }
@@ -130,8 +130,8 @@ class CustomFees extends AbstractTotal
             unset($customFee['advanced']);
 
             $customFee['title'] = __($customFee['title']);
-            $baseCustomFees[] = $customFee;
-            $localCustomFees[] = [
+            $baseCustomFees[$id] = $customFee;
+            $localCustomFees[$id] = [
                 'value' => $this->priceCurrency->convert($customFee['value'], $store),
             ] + $customFee;
         }
