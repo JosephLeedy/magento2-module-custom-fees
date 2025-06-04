@@ -167,7 +167,7 @@ define(
                     click: handelModalClose,
                 },
                 {
-                    text: $.mage.__('Save'),
+                    text: $.mage.__('Done'),
                     class: 'primary',
                     click: handleModalSave,
                 },
