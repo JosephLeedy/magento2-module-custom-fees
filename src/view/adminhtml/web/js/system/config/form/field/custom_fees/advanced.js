@@ -2,10 +2,11 @@ define(
     [
         'jquery',
         'Magento_Ui/js/modal/modal',
+        'Magento_Ui/js/modal/confirm',
         'mage/translate',
         'mage/loader',
     ],
-    function($, modal) {
+    function($, modal, confirm) {
         'use strict';
 
         const convertFormDataToNestedObject = function (formData) {
@@ -110,9 +111,24 @@ define(
         };
 
         const handelModalClose = function () {
-            beforeModalClose.call(this);
+            const modalInstance = this;
 
-            this.closeModal();
+            confirm(
+                {
+                    title: $.mage.__('Are you sure you want to close Advanced Settings?'),
+                    content: $.mage.__('Changes made to the advanced settings will not be saved.'),
+                    actions: {
+                        confirm: function () {
+                            beforeModalClose.call(modalInstance);
+
+                            modalInstance.closeModal();
+                        },
+                        cancel: function () {
+                            return false;
+                        }
+                    }
+                }
+            );
         };
 
         const handleModalSave = function () {

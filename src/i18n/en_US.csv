@@ -55,6 +55,8 @@ Subtotal,Subtotal
 "%1 (Purchased)","%1 (Purchased)"
 "Advanced Settings","Advanced Settings"
 Advanced,Advanced
+"Are you sure you want to close Advanced Settings?","Are you sure you want to close Advanced Settings?"
+"Changes made to the advanced settings will not be saved.","Changes made to the advanced settings will not be saved."
 Close,Close
 Done,Done
 "<strong>Note:</strong> Fee amount is relative to the store's base currency and will be converted to the customer's selected currency.","<strong>Note:</strong> Fee amount is relative to the store's base currency and will be converted to the customer's selected currency."
