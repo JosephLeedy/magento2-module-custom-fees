@@ -108,16 +108,17 @@ class CustomFees extends AbstractTotal
             return [$baseCustomFees, $localCustomFees];
         }
 
-        $quoteAddress = $quote->isVirtual() ? $quote->getBillingAddress() : $quote->getShippingAddress();
-
         foreach ($customFees as $id => $customFee) {
             if ($customFee['code'] === 'example_fee') {
                 continue;
             }
 
-            if ($quoteAddress !== null && array_key_exists('conditions', $customFee['advanced'])) {
+            if (
+                array_key_exists('conditions', $customFee['advanced'])
+                && count($customFee['advanced']['conditions']) > 0
+            ) {
                 $isApplicable = $this->rulesApplier->isApplicable(
-                    $quoteAddress,
+                    $quote,
                     $customFee['code'],
                     $customFee['advanced']['conditions'],
                 );
