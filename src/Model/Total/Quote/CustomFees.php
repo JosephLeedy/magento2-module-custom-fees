@@ -137,9 +137,6 @@ class CustomFees extends AbstractTotal
             ] + $customFee;
         }
 
-        return [
-            array_filter($baseCustomFees),
-            array_filter($localCustomFees)
-        ];
+        return [$baseCustomFees, $localCustomFees];
     }
 }
