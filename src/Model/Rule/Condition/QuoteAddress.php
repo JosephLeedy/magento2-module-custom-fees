@@ -7,7 +7,9 @@ namespace JosephLeedy\CustomFees\Model\Rule\Condition;
 use Magento\Directory\Model\Config\Source\Allregion;
 use Magento\Directory\Model\Config\Source\Country;
 use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Phrase;
+use Magento\Quote\Model\Quote\Item;
 use Magento\Rule\Model\Condition\AbstractCondition;
 use Magento\Rule\Model\Condition\Context;
 use Magento\Shipping\Model\Config\Source\Allmethods;
@@ -98,5 +100,14 @@ class QuoteAddress extends AbstractCondition
         $this->setData('value_select_options', $options);
 
         return $this->getData('value_select_options');
+    }
+
+    public function validate(AbstractModel $model): bool
+    {
+        if ($model instanceof Item) {
+            $model = $model->getAddress();
+        }
+
+        return parent::validate($model);
     }
 }
