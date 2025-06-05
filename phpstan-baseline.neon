@@ -31,6 +31,11 @@ parameters:
 			path: src/Block/System/Config/Form/Field/CustomFees/Advanced/Form.php
 
 		-
+			message: "#^Parameter \\#1 \\$form of method Magento\\\\Rule\\\\Model\\\\Condition\\\\Combine\\:\\:setJsFormObject\\(\\) expects Magento\\\\Framework\\\\Data\\\\Form, string given\\.$#"
+			count: 1
+			path: src/Block/System/Config/Form/Field/CustomFees/Advanced/Form.php
+
+		-
 			message: "#^Setter methods like Magento\\\\Backend\\\\Block\\\\Widget\\\\Form\\\\Renderer\\\\Fieldset\\:\\:setTemplate\\(\\) are deprecated in Block classes, use constructor arguments instead$#"
 			count: 1
 			path: src/Block/System/Config/Form/Field/CustomFees/Advanced/Form.php

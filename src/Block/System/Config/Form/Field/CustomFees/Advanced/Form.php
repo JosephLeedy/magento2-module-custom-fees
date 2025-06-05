@@ -84,6 +84,11 @@ class Form extends Generic
                     'legend' => __('Apply the rule only if the following conditions are met:'),
                 ],
             );
+        $customFeesRule = $this->createCustomFeesRule();
+
+        $customFeesRule->getConditions()->setFormName('system_config_custom_fees_advanced_form');
+        $customFeesRule->getConditions()->setJsFormObject('conditions_fieldset');
+
         /** @var Fieldset $renderer */
         $renderer
             ->setTemplate(
@@ -103,7 +108,7 @@ class Form extends Generic
                     'required' => false,
                     'data-form-part' => 'system_config_custom_fees_advanced_form',
                 ],
-            )->setRule($this->createCustomFeesRule())
+            )->setRule($customFeesRule)
             ->setRenderer($this->conditions);
 
         $this->setForm($advancedForm);
