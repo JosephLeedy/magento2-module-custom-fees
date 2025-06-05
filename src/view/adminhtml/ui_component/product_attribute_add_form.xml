@@ -9,7 +9,7 @@
             </argument>
             <settings>
                 <dataType>boolean</dataType>
-                <label translate="true">Use for Custom Fee Rule Conditions</label>
+                <label translate="true">Use for Custom Fee Conditions</label>
                 <dataScope>is_used_for_custom_fee_rules</dataScope>
             </settings>
             <formElements>

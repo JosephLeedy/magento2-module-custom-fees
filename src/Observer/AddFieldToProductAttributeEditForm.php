@@ -35,8 +35,8 @@ class AddFieldToProductAttributeEditForm implements ObserverInterface
             'select',
             [
                 'name' => 'is_used_for_custom_fee_rules',
-                'label' => __('Use for Custom Fee Rule Conditions'),
-                'title' => __('Use for Custom Fee Rule Conditions'),
+                'label' => __('Use for Custom Fee Conditions'),
+                'title' => __('Use for Custom Fee Conditions'),
                 'values' => $yesNoValues,
             ],
             'is_used_for_promo_rules',
