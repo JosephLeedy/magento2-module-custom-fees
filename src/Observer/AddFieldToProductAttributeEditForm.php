@@ -31,10 +31,10 @@ class AddFieldToProductAttributeEditForm implements ObserverInterface
         $yesNoValues = $this->yesNoSource->toOptionArray();
 
         $fieldset->addField(
-            'is_used_for_custom_fee_rules',
+            'is_used_for_custom_fee_conditions',
             'select',
             [
-                'name' => 'is_used_for_custom_fee_rules',
+                'name' => 'is_used_for_custom_fee_conditions',
                 'label' => __('Use for Custom Fee Conditions'),
                 'title' => __('Use for Custom Fee Conditions'),
                 'values' => $yesNoValues,

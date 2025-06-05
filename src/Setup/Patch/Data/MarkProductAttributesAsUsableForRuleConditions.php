@@ -32,9 +32,14 @@ class MarkProductAttributesAsUsableForRuleConditions implements DataPatchInterfa
         /** @var CategorySetup $categorySetup */
         $categorySetup = $this->categorySetupFactory->create(['setup' => $this->moduleDataSetup]);
 
-        $categorySetup->updateAttribute(Product::ENTITY, 'sku', 'is_used_for_custom_fee_rules', '1');
-        $categorySetup->updateAttribute(Product::ENTITY, 'manufacturer', 'is_used_for_custom_fee_rules', '1');
-        $categorySetup->updateAttribute(Product::ENTITY, 'country_of_manufacture', 'is_used_for_custom_fee_rules', '1');
+        $categorySetup->updateAttribute(Product::ENTITY, 'sku', 'is_used_for_custom_fee_conditions', '1');
+        $categorySetup->updateAttribute(Product::ENTITY, 'manufacturer', 'is_used_for_custom_fee_conditions', '1');
+        $categorySetup->updateAttribute(
+            Product::ENTITY,
+            'country_of_manufacture',
+            'is_used_for_custom_fee_conditions',
+            '1',
+        );
 
         return $this;
     }

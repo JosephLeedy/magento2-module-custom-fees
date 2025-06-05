@@ -10,7 +10,7 @@ use Magento\Rule\Model\Condition\Product\AbstractProduct;
 
 class Product extends AbstractProduct
 {
-    protected $_isUsedForRuleProperty = 'is_used_for_custom_fee_rules';
+    protected $_isUsedForRuleProperty = 'is_used_for_custom_fee_conditions';
 
     public function validate(AbstractModel $model): bool
     {

@@ -34,7 +34,7 @@
   },
   "catalog_eav_attribute": {
     "column": {
-      "is_used_for_custom_fee_rules": true
+      "is_used_for_custom_fee_conditions": true
     }
   }
 }
