@@ -81,7 +81,7 @@ class Form extends Generic
             ->addFieldset(
                 'conditions_fieldset',
                 [
-                    'legend' => __('Apply the rule only if the following conditions are met:'),
+                    'legend' => __('Apply the fee only if the following conditions are met:'),
                 ],
             );
         $customFeesRule = $this->createCustomFeesRule();

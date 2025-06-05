@@ -16,7 +16,7 @@ Code,Code
 "Fee Name","Fee Name"
 "Add Custom Fee","Add Custom Fee"
 Conditions,Conditions
-"Apply the rule only if the following conditions are met:","Apply the rule only if the following conditions are met:"
+"Apply the fee only if the following conditions are met:","Apply the fee only if the following conditions are met:"
 "Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2""","Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2"""
 "Replace Existing Custom Fees","Replace Existing Custom Fees"
 Sales,Sales
