@@ -20,5 +20,33 @@ $modalId = $block->getModalId();
     <span><?= $escaper->escapeHtml((string) __('Advanced')) ?></span>
 </button>
 
-<div id="<?= /* @noEscape */ $modalId ?>" class="system-config-custom-fees-advanced-modal" data-row-id="<?= /* @noEscape */ $block->getRowId() ?>" data-input-id="<?= /* @noEscape */ $block->getInputId() ?>" data-mage-init='{"JosephLeedy_CustomFees/js/system/config/form/field/custom_fees/advanced":{"buttonId":"<?= /* @noEscape */ $buttonId ?>","formUrl":"<?= $escaper->escapeUrl($block->getFormUrl()) ?>","formKey":"<?= /* @noEscape */ $block->getFormKey() ?>","rowId":"<?= /* @noEscape */ $block->getRowId() ?>","inputId":"<?= /* @noEscape */ $block->getInputId() ?>"}}'>
+<div id="<?= /* @noEscape */ $modalId ?>" class="system-config-custom-fees-advanced-modal" data-row-id="<?= /* @noEscape */ $block->getRowId() ?>" data-input-id="<?= /* @noEscape */ $block->getInputId() ?>">
 </div>
+
+<?php
+$script = <<<JAVASCRIPT
+    require(
+        [
+            'prototype',
+            'JosephLeedy_CustomFees/js/system/config/form/field/custom_fees/advanced'
+        ],
+        function (prototype, advancedCustomFeesSettings) {
+            function handleAdvancedButtonClick() {
+                advancedCustomFeesSettings(
+                    {
+                        buttonId: "$buttonId",
+                        inputId: "{$block->getInputId()}",
+                        rowId: "{$block->getRowId()}",
+                        formKey: "{$block->getFormKey()}",
+                        formUrl: "{$block->getFormUrl()}"
+                    },
+                    $('$modalId')
+                );
+            }
+
+            Event.observe('$buttonId', 'click', handleAdvancedButtonClick);
+        }
+    );
+JAVASCRIPT;
+echo $secureRenderer->renderTag('script', [], $script, false);
+?>

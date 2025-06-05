@@ -138,7 +138,7 @@ define(
             this.closeModal();
         };
 
-        const handleAdvancedButtonClick = function (config, modalContainer, event) {
+        const loadModalContent = function (config, modalContainer) {
             $('body').trigger('processStart');
 
             $.ajax(
@@ -167,10 +167,6 @@ define(
             );
         };
 
-        const bindEvents = function (config, element) {
-            $(`#${config.buttonId}`).on('click', handleAdvancedButtonClick.bind(null, config, element));
-        };
-
         const modalOptions = {
             type: 'slide',
             responsive: true,
@@ -191,9 +187,9 @@ define(
         };
 
         return function (config, element) {
-            bindEvents(config, element);
-
             modal(modalOptions, element);
+
+            loadModalContent(config, element);
         };
     }
 );
