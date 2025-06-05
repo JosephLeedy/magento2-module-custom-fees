@@ -10,7 +10,7 @@ use Magento\Catalog\Setup\CategorySetupFactory;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 
-class MarkProductAttributesAsUsableForRuleConditions implements DataPatchInterface
+class MarkProductAttributesAsUsableForFeeConditions implements DataPatchInterface
 {
     public function __construct(
         private readonly ModuleDataSetupInterface $moduleDataSetup,
