@@ -172,6 +172,7 @@ define(
             responsive: true,
             innerScroll: true,
             title: $.mage.__('Advanced Settings'),
+            modalCloseBtnHandler: handelModalClose,
             buttons: [
                 {
                     text: $.mage.__('Close'),
