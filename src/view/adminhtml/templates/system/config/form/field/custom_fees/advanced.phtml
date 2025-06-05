@@ -48,5 +48,5 @@ $script = <<<JAVASCRIPT
         }
     );
 JAVASCRIPT;
-echo $secureRenderer->renderTag('script', [], $script, false);
+/* @noEscape */ echo $secureRenderer->renderTag('script', [], $script, false);
 ?>
