@@ -10,7 +10,7 @@ use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
 
-class RulesApplier
+class ConditionsApplier
 {
     /**
      * @var array<string, CustomFees> $rules

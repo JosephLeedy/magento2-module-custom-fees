@@ -7,21 +7,21 @@ namespace JosephLeedy\CustomFees\Test\Integration\Service;
 use JosephLeedy\CustomFees\Model\Rule\Condition\Combine;
 use JosephLeedy\CustomFees\Model\Rule\Condition\Product;
 use JosephLeedy\CustomFees\Model\Rule\Condition\QuoteAddress;
-use JosephLeedy\CustomFees\Service\RulesApplier;
+use JosephLeedy\CustomFees\Service\ConditionsApplier;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\ResourceModel\Quote as QuoteResource;
 use Magento\TestFramework\Fixture\DataFixture;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
-final class RulesApplierTest extends TestCase
+final class ConditionsApplierTest extends TestCase
 {
     /**
-     * @dataProvider appliesRulesSuccessfullyDataProvider
+     * @dataProvider appliesConditionsSuccessfullyDataProvider
      * @param array<int, array{type: class-string, attribute: string, operator: string, value: string}> $conditions
      */
     #[DataFixture('Magento/Checkout/_files/quote_with_address_and_shipping_method_saved.php')]
-    public function testAppliesRulesSuccessfully(string $aggregator, array $conditions): void
+    public function testAppliesConditionsSuccessfully(string $aggregator, array $conditions): void
     {
         $objectManager = Bootstrap::getObjectManager();
         /** @var QuoteResource $quoteResource */
@@ -34,12 +34,12 @@ final class RulesApplierTest extends TestCase
             'value' => '1',
             'conditions' => $conditions,
         ];
-        /** @var RulesApplier $rulesApplier */
-        $rulesApplier = $objectManager->create(RulesApplier::class);
+        /** @var ConditionsApplier $conditionsApplier */
+        $conditionsApplier = $objectManager->create(ConditionsApplier::class);
 
         $quoteResource->load($quote, 'test_order_1', 'reserved_order_id');
 
-        $isApplicable = $rulesApplier->isApplicable($quote, 'test_fee_0', $aggregatedConditions);
+        $isApplicable = $conditionsApplier->isApplicable($quote, 'test_fee_0', $aggregatedConditions);
 
         self::assertTrue($isApplicable);
     }
@@ -61,7 +61,7 @@ final class RulesApplierTest extends TestCase
      *     }
      * >
      */
-    public static function appliesRulesSuccessfullyDataProvider(): array
+    public static function appliesConditionsSuccessfullyDataProvider(): array
     {
         return [
             'only address condition' => [

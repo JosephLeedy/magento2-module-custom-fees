@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model\Total\Quote;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
-use JosephLeedy\CustomFees\Service\RulesApplier;
+use JosephLeedy\CustomFees\Service\ConditionsApplier;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
@@ -27,7 +27,7 @@ class CustomFees extends AbstractTotal
     public function __construct(
         private readonly ConfigInterface $config,
         private readonly LoggerInterface $logger,
-        private readonly RulesApplier $rulesApplier,
+        private readonly ConditionsApplier $conditionsApplier,
         private readonly PriceCurrencyInterface $priceCurrency,
     ) {
         $this->setCode(self::CODE);
@@ -117,7 +117,7 @@ class CustomFees extends AbstractTotal
                 array_key_exists('conditions', $customFee['advanced'])
                 && count($customFee['advanced']['conditions']) > 0
             ) {
-                $isApplicable = $this->rulesApplier->isApplicable(
+                $isApplicable = $this->conditionsApplier->isApplicable(
                     $quote,
                     $customFee['code'],
                     $customFee['advanced']['conditions'],
