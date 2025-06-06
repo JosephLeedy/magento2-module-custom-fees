@@ -31,7 +31,9 @@ class NewConditionHtml extends Action implements HttpPostActionInterface
     {
         $objectId = $this->getRequest()->getParam('id');
         $formNamespace = $this->getRequest()->getParam('form_namespace');
-        $types = explode('|', str_replace('-', '/', $this->getRequest()->getParam('type', '')));
+        /** @var string $type */
+        $type = $this->getRequest()->getParam('type', '');
+        $types = explode('|', str_replace('-', '/', $type));
         $objectType = $types[0];
         $responseBody = '';
         /** @var Raw $rawResult */
