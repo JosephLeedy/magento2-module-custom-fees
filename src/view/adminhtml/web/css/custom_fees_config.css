@@ -1,0 +1,47 @@
+#sales_custom_order_fees {
+    .label {
+        width: 12%;
+    }
+
+    .value {
+        width: 70%;
+    }
+}
+
+.action-custom-fees-advanced-config {
+    &:before {
+        font-family: 'Admin Icons';
+        font-size: 2rem;
+        font-style: normal;
+        font-weight: normal;
+        content: '\e610';
+        line-height: 1;
+    }
+
+    &, &:hover, &:active, &:focus {
+        background-color: transparent;
+        border-color: transparent;
+        box-shadow: none;
+    }
+
+    padding-left: 0;
+    padding-right: 0;
+
+    span {
+        display: none;
+    }
+}
+
+.system-config-custom-fees-advanced-modal {
+    display: none;
+
+    .admin__collapsible-block-wrapper .admin__fieldset-wrapper-title .admin__collapsible-title {
+        &:before {
+            content: '\e615';
+        }
+
+        &.collapsed:before {
+            content: '\e616';
+        }
+    }
+}

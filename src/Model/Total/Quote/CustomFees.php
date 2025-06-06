@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model\Total\Quote;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Service\ConditionsApplier;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
@@ -12,10 +14,9 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
 use Magento\Quote\Model\Quote\Address\Total\CollectorInterface;
-use Magento\Store\Api\Data\StoreInterface;
+use Psr\Log\LoggerInterface;
 
-use function array_filter;
-use function array_map;
+use function array_key_exists;
 use function array_walk;
 use function count;
 
@@ -25,6 +26,8 @@ class CustomFees extends AbstractTotal
 
     public function __construct(
         private readonly ConfigInterface $config,
+        private readonly LoggerInterface $logger,
+        private readonly ConditionsApplier $conditionsApplier,
         private readonly PriceCurrencyInterface $priceCurrency,
     ) {
         $this->setCode(self::CODE);
@@ -41,7 +44,7 @@ class CustomFees extends AbstractTotal
             return $this;
         }
 
-        [$baseCustomFees, $localCustomFees] = $this->getCustomFees($quote->getStore());
+        [$baseCustomFees, $localCustomFees] = $this->getCustomFees($quote);
         $customFees = $baseCustomFees;
 
         array_walk(
@@ -83,7 +86,7 @@ class CustomFees extends AbstractTotal
      */
     public function fetch(Quote $quote, Total $total): array
     {
-        [, $localCustomFees] = $this->getCustomFees($quote->getStore());
+        [, $localCustomFees] = $this->getCustomFees($quote);
 
         return $localCustomFees;
     }
@@ -91,44 +94,49 @@ class CustomFees extends AbstractTotal
     /**
      * @return array{code: string, title: Phrase, value: float}[][]
      */
-    private function getCustomFees(StoreInterface $store): array
+    private function getCustomFees(Quote $quote): array
     {
-        $baseCustomFees = array_map(
-            /**
-             * @param array{code: string, title: string, value: float} $customFee
-             * @return array{code: string, title: Phrase, value: float}
-             */
-            static function (array $customFee): array {
-                if ($customFee['code'] === 'example_fee') {
-                    return [];
+        $store = $quote->getStore();
+        $baseCustomFees = [];
+        $localCustomFees = [];
+
+        try {
+            $customFees = $this->config->getCustomFees($store->getId());
+        } catch (LocalizedException $localizedException) {
+            $this->logger->critical($localizedException->getLogMessage(), ['exception' => $localizedException]);
+
+            return [$baseCustomFees, $localCustomFees];
+        }
+
+        foreach ($customFees as $id => $customFee) {
+            if ($customFee['code'] === 'example_fee') {
+                continue;
+            }
+
+            if (
+                array_key_exists('conditions', $customFee['advanced'])
+                && count($customFee['advanced']['conditions']) > 0
+            ) {
+                $isApplicable = $this->conditionsApplier->isApplicable(
+                    $quote,
+                    $customFee['code'],
+                    $customFee['advanced']['conditions'],
+                );
+
+                if (!$isApplicable) {
+                    continue;
                 }
+            }
 
-                $customFee['title'] = __($customFee['title']);
+            unset($customFee['advanced']);
 
-                return $customFee;
-            },
-            $this->config->getCustomFees($store->getId())
-        );
-        $localCustomFees = array_map(
-            /**
-             * @param array{code: string, title: Phrase, value: float} $customFee
-             * @return array{code: string, title: Phrase, value: float}
-             */
-            function (array $customFee) use ($store): array {
-                if (count($customFee) === 0) {
-                    return $customFee;
-                }
+            $customFee['title'] = __($customFee['title']);
+            $baseCustomFees[$id] = $customFee;
+            $localCustomFees[$id] = [
+                'value' => $this->priceCurrency->convert($customFee['value'], $store),
+            ] + $customFee;
+        }
 
-                $customFee['value'] = $this->priceCurrency->convert($customFee['value'], $store);
-
-                return $customFee;
-            },
-            $baseCustomFees
-        );
-
-        return [
-            array_filter($baseCustomFees),
-            array_filter($localCustomFees)
-        ];
+        return [$baseCustomFees, $localCustomFees];
     }
 }

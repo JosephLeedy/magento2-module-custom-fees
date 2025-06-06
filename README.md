@@ -18,6 +18,10 @@ customers when orders are placed.
 
 - Allows fees to be configured with a label and amount to be added to an order
   - Custom fees configuration can be imported via a CSV spreadsheet
+  - Conditions can be defined to determine whether a custom fee should be 
+    applied to an order based on product and cart details, including 
+    specific product attributes, product SKU, cart subtotal, cart item count,
+    total cart weight and more
 - Custom fees are displayed for orders, invoices and credit memos in both the 
 frontend and backend
 - Custom fees can be refunded via Magento's credit memo functionality
@@ -85,6 +89,11 @@ spreadsheet containing the following columns:
 code,title,value
 example_fee,"Example Fee",5.00
 ```
+
+#### Configuring Adavanced Settings
+
+Additional settings for a Custom Fee, including Conditions, can be found in the 
+Advanced Settings dialog by clicking on the cog icon "⚙️."
 
 ### Reporting
 

@@ -13,6 +13,8 @@ document.
 ### Added
 
 - Configuration for custom fees can be imported from a CSV spreadsheet
+- Conditions can be defined in the extension configuration to determine whether 
+  or not to apply a custom fee to an order
 
 ## [1.1.1]
 
