@@ -188,6 +188,17 @@ define(
         };
 
         return function (config, element) {
+            const $feeNameInput = $(`#${config.rowId}_title`);
+            let feeName = '';
+
+            if ($feeNameInput.length > 0) {
+                feeName = $feeNameInput.val();
+            }
+
+            if (feeName.trim() !== '') {
+                modalOptions.title = $.mage.__('Advanced Settings for %1').replace('%1', feeName);
+            }
+
             modal(modalOptions, element);
 
             loadModalContent(config, element);

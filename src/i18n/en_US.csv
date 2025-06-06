@@ -59,6 +59,7 @@ Advanced,Advanced
 "Changes made to the advanced settings will not be saved.","Changes made to the advanced settings will not be saved."
 Close,Close
 Done,Done
+"Advanced Settings for %1","Advanced Settings for %1"
 "<strong>Note:</strong> Fee amount is relative to the store's base currency and will be converted to the customer's selected currency.","<strong>Note:</strong> Fee amount is relative to the store's base currency and will be converted to the customer's selected currency."
 "Import Custom Fees","Import Custom Fees"
 "Import custom fees from a CSV spreadsheet. <a href=""{{exampleCsvUrl}}"">Example file</a>","Import custom fees from a CSV spreadsheet. <a href=""{{exampleCsvUrl}}"">Example file</a>"
