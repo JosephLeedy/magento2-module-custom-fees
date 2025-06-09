@@ -20,12 +20,13 @@ final class ConfigTest extends TestCase
     #[ConfigFixture(
         ConfigInterface::CONFIG_PATH_CUSTOM_FEES,
         '{"_1748287113250_250":{"code":"test_fee_0","title":"Test Fee","value":"4.00"},'
-        . '"_1748287169237_237":{"code":"test_fee_1","title":"Another Fee","value":"1.00","advanced":"{\"conditions\":'
-        . '{\"type\":\"JosephLeedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\Combine\",\"aggregator\":\"any\",'
-        . '\"value\":\"1\",\"conditions\":[{\"type\":\"JosephLeedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\'
-        . 'QuoteAddress\",\"attribute\":\"base_subtotal\",\"operator\":\">=\",\"value\":\"100\"},{\"type\":\"Joseph'
-        . 'Leedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\QuoteAddress\",\"attribute\":\"total_qty\",\"operator'
-        . '\":\"<\",\"value\":\"2\"}]}}"}}',
+        . '"_1748287169237_237":{"code":"test_fee_1","title":"Another Fee","value":"1.00","advanced":"{\\"conditions'
+        . '\\":{\\"type\\":\\"JosephLeedy\\\\\\\\CustomFees\\\\\\\\Model\\\\\\\\Rule\\\\\\\\Condition\\\\\\\\Combine'
+        . '\\",\\"aggregator\\":\\"any\\",\\"value\\":\\"1\\",\\"conditions\\":[{\\"type\\":\\"JosephLeedy\\\\\\\\'
+        . 'CustomFees\\\\\\\\Model\\\\\\\\Rule\\\\\\\\Condition\\\\\\\\QuoteAddress\\",\\"attribute\\":\\"base_subtotal'
+        . '\\",\\"operator\\":\\">=\\",\\"value\\":\\"100\\"},{\\"type\\":\\"JosephLeedy\\\\\\\\CustomFees\\\\\\\\Model'
+        . '\\\\\\\\Rule\\\\\\\\Condition\\\\\\\\QuoteAddress\\",\\"attribute\\":\\"total_qty\\",\\"operator\\":\\"<\\",'
+        . '\\"value\\":\\"2\\"}]}}"}}',
         StoreScopeInterface::SCOPE_STORE,
         'default',
     )]
