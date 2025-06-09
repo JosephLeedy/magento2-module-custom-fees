@@ -60,6 +60,10 @@ jobs:
         working-directory: /data
         run: php bin/magento setup:upgrade
 
+      - name: Recompile generated classes
+        working-directory: /data
+        run: rm -rf "generated/*"; php bin/magento setup:di:compile
+
       - name: Run tests
         if: ${{ ! matrix.generate_coverage }}
         working-directory: /data
