@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Model;
 
-use InvalidArgumentException;
 use JosephLeedy\CustomFees\Api\ConfigInterface;
 use JosephLeedy\CustomFees\Model\Config;
+use JsonException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\ScopeInterface as StoreScopeInterface;
 use Magento\TestFramework\Fixture\Config as ConfigFixture;
@@ -78,11 +78,11 @@ final class ConfigTest extends TestCase
             LocalizedException::class,
             [
                 'phrase' => __(
-                    'Could not parse advanced configuration for custom fee "%1". Error: "%2"',
+                    'Could not process advanced configuration for custom fee "%1". Error: "%2"',
                     'test_fee_1',
-                    'Unable to unserialize value. Error: Syntax error',
+                    'Syntax error',
                 ),
-                new InvalidArgumentException('Unable to unserialize value. Error: Syntax error'),
+                new JsonException('Syntax error', 4),
             ],
         );
         /** @var Config $config */
