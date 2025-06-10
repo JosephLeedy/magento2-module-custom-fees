@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Controller\Adminhtml\Config\Export;
 
 use Exception;
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Response\Http\FileFactory;
@@ -13,9 +15,15 @@ use Magento\Framework\Filesystem;
 
 use function microtime;
 
-class ExampleCsv implements HttpGetActionInterface
+class ExampleCsv extends Action implements HttpGetActionInterface
 {
-    public function __construct(private readonly Filesystem $filesystem, private readonly FileFactory $fileFactory) {}
+    public function __construct(
+        Context $context,
+        private readonly Filesystem $filesystem,
+        private readonly FileFactory $fileFactory,
+    ) {
+        parent::__construct($context);
+    }
 
     /**
      * @throws Exception
