@@ -52,7 +52,7 @@ final class AddFieldToProductAttributeEditFormTest extends TestCase
         $productAttributeEditFormBlock->toHtml();
 
         $productAttributeEditForm = $productAttributeEditFormBlock->getForm();
-        $isUsedForCustomFeesField = $productAttributeEditForm->getElement('is_used_for_custom_fee_rules');
+        $isUsedForCustomFeesField = $productAttributeEditForm->getElement('is_used_for_custom_fee_conditions');
 
         self::assertNotNull($isUsedForCustomFeesField);
     }
