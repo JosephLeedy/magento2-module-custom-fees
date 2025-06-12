@@ -64,7 +64,7 @@ class CustomOrderFees extends AbstractDb
         } catch (InputException) { // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
             // No-op; this exception will never be thrown
         } catch (NoSuchEntityException) {
-            throw new InvalidArgumentException((string)__('Order with ID "%1" does not exist.', $orderId));
+            throw new InvalidArgumentException((string) __('Order with ID "%1" does not exist.', $orderId));
         }
 
         return $this->order;
