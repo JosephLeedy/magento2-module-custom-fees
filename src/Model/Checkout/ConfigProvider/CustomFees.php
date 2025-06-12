@@ -12,8 +12,7 @@ use function array_column;
 
 class CustomFees implements ConfigProviderInterface
 {
-    public function __construct(private readonly ConfigInterface $config)
-    {}
+    public function __construct(private readonly ConfigInterface $config) {}
 
     /**
      * @return array{customFees: array{codes: string[]}}

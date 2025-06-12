@@ -13,8 +13,7 @@ use Magento\Sales\Model\Order;
  */
 class CustomFeesRetriever
 {
-    public function __construct(private readonly CustomOrderFeesRepositoryInterface $customOrderFeesRepository)
-    {}
+    public function __construct(private readonly CustomOrderFeesRepositoryInterface $customOrderFeesRepository) {}
 
     /**
      * @return array{}|array<string, array{code: string, title: string, base_value: float, value: float}>

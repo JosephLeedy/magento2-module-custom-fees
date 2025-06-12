@@ -12,8 +12,7 @@ use function method_exists;
 
 class CollectionFactoryPlugin
 {
-    public function __construct(private readonly CustomOrderFeesResource $resource)
-    {}
+    public function __construct(private readonly CustomOrderFeesResource $resource) {}
 
     public function afterGetReport(CollectionFactory $subject, Collection $result, string $requestName): Collection
     {
