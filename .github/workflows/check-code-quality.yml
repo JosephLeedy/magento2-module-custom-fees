@@ -60,7 +60,7 @@ jobs:
       - name: Detect coding standard violations
         run: |
           vendor/bin/phpcs -q --report=checkstyle | cs2pr --graceful-warnings
-          vendor/bin/php-cs-fixer check --format=checkstyle | cs2pr --graceful-warnings
+          vendor/bin/php-cs-fixer check --format=checkstyle 2>/dev/null | cs2pr --graceful-warnings
 
       - name: Analyze code for potential bugs
         run: vendor/bin/phpstan analyse
