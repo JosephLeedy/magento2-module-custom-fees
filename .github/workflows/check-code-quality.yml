@@ -44,6 +44,13 @@ jobs:
           key: ${{ runner.os }}-phpstan-${{ github.run_id }}
           restore-keys: ${{ runner.os }}-phpstan-
 
+      - name: Set up PHP CS Fixer cache
+        uses: actions/cache@v4
+        with:
+          path: .tmp/php-cs-fixer
+          key: ${{ runner.os }}-php-cs-fixer-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-php-cs-fixer-
+
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
@@ -51,7 +58,9 @@ jobs:
         run: vendor/bin/parallel-lint --checkstyle src test | cs2pr
 
       - name: Detect coding standard violations
-        run: vendor/bin/phpcs -q --report=checkstyle | cs2pr --graceful-warnings
+        run: |
+          vendor/bin/phpcs -q --report=checkstyle | cs2pr --graceful-warnings
+          vendor/bin/php-cs-fixer check --format=checkstyle | cs2pr --graceful-warnings
 
       - name: Analyze code for potential bugs
         run: vendor/bin/phpstan analyse
