@@ -32,15 +32,15 @@ $jsObjectName = ($block->getFieldSetId() ?? $element->getHtmlId());
 </div>
 <?php
 $script = <<<JAVASCRIPT
-require(
-    [
-        'Magento_Rule/rules',
-        'prototype'
-    ],
-    function(VarienRulesForm) {
-        window.{$escaper->escapeJs($jsObjectName)} = new VarienRulesForm('{$escaper->escapeJs($jsObjectName)}', '{$escaper->escapeUrl($block->getNewChildUrl())}');
-    }
-);
-JAVASCRIPT;
+    require(
+        [
+            'Magento_Rule/rules',
+            'prototype'
+        ],
+        function(VarienRulesForm) {
+            window.{$escaper->escapeJs($jsObjectName)} = new VarienRulesForm('{$escaper->escapeJs($jsObjectName)}', '{$escaper->escapeUrl($block->getNewChildUrl())}');
+        }
+    );
+    JAVASCRIPT;
 ?>
 <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>

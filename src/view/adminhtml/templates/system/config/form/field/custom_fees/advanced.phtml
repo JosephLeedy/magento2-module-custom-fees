@@ -47,6 +47,6 @@ $script = <<<JAVASCRIPT
             Event.observe('$buttonId', 'click', handleAdvancedButtonClick);
         }
     );
-JAVASCRIPT;
+    JAVASCRIPT;
 /* @noEscape */ echo $secureRenderer->renderTag('script', [], $script, false);
 ?>
