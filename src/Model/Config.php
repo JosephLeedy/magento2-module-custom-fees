@@ -61,7 +61,7 @@ class Config implements ConfigInterface
 
         array_walk(
             $customFees,
-            function (array &$customFee): void {
+            static function (array &$customFee): void {
                 if (!array_key_exists('advanced', $customFee)) {
                     $customFee['advanced'] = '[]';
                 }
