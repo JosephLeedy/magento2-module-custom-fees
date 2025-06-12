@@ -85,15 +85,15 @@ class CustomOrderFeesRepository implements CustomOrderFeesRepositoryInterface
             $this->resourceModel->save($customOrderFees);
         } catch (AlreadyExistsException) {
             throw new AlreadyExistsException(
-                __('Custom fees have already been saved for order with ID "%1".', $customOrderFees->getOrderId())
+                __('Custom fees have already been saved for order with ID "%1".', $customOrderFees->getOrderId()),
             );
         } catch (Exception $exception) {
             throw new CouldNotSaveException(
                 __(
                     'Could not save custom fees for order with ID "%1". Error: "%2"',
                     $customOrderFees->getOrderId(),
-                    $exception->getMessage()
-                )
+                    $exception->getMessage(),
+                ),
             );
         }
 
@@ -113,8 +113,8 @@ class CustomOrderFeesRepository implements CustomOrderFeesRepositoryInterface
                 __(
                     'Could not delete custom fees for order with ID "%1". Error: "%2"',
                     $customOrderFees->getOrderId(),
-                    $exception->getMessage()
-                )
+                    $exception->getMessage(),
+                ),
             );
         }
 

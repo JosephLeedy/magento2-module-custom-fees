@@ -40,10 +40,10 @@ final class CustomFeesTest extends TestCase
             [
                 'codes' => [
                     'test_fee_0',
-                    'test_fee_1'
-                ]
+                    'test_fee_1',
+                ],
             ],
-            $providedConfig['customFees']
+            $providedConfig['customFees'],
         );
     }
 }

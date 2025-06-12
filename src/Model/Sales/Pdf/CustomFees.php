@@ -68,9 +68,9 @@ class CustomFees extends DefaultTotal
             fn (array $customFees): array => [
                 'amount' => $this->getOrder()->formatPriceTxt($customFees['value']),
                 'label' => __($customFees['title']) . ':',
-                'font_size' => $fontSize
+                'font_size' => $fontSize,
             ],
-            $allCustomFees
+            $allCustomFees,
         );
 
         return $totals;

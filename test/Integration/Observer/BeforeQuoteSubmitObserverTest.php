@@ -30,7 +30,7 @@ final class BeforeQuoteSubmitObserverTest extends TestCase
         self::assertArrayHasKey('add_custom_fees_to_order', $observers);
         self::assertSame(
             ltrim(BeforeQuoteSubmitObserver::class, '\\'),
-            $observers['add_custom_fees_to_order']['instance']
+            $observers['add_custom_fees_to_order']['instance'],
         );
     }
 
@@ -63,13 +63,13 @@ final class BeforeQuoteSubmitObserverTest extends TestCase
             'sales_model_service_quote_submit_before',
             [
                 'quote' => $quote,
-                'order' => $order
-            ]
+                'order' => $order,
+            ],
         );
 
         self::assertInstanceOf(
             CustomOrderFeesInterface::class,
-            $order->getExtensionAttributes()?->getCustomOrderFees()
+            $order->getExtensionAttributes()?->getCustomOrderFees(),
         );
     }
 }

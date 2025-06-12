@@ -69,15 +69,15 @@ class AbstractComponentPlugin
                     'componentType' => 'column',
                     'visible' => false,
                     '__disableTmpl' => [
-                        'label' => true
-                    ]
+                        'label' => true,
+                    ],
                 ],
                 'js_config' => [
                     'component' => 'Magento_Ui/js/form/element/text',
-                    'extends' => 'sales_order_grid'
-                ]
+                    'extends' => 'sales_order_grid',
+                ],
             ],
-            'context' => $subject->getContext()
+            'context' => $subject->getContext(),
         ];
 
         array_walk(
@@ -96,7 +96,7 @@ class AbstractComponentPlugin
 
                 $subject->addComponent($customFeeCode . '_base', $baseColumn);
                 $subject->addComponent($customFeeCode, $column);
-            }
+            },
         );
     }
 }

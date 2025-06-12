@@ -42,7 +42,7 @@ class Config implements ConfigInterface
         $customFeesJson = $this->scopeConfig->getValue(
             self::CONFIG_PATH_CUSTOM_FEES,
             ScopeInterface::SCOPE_STORES,
-            $storeId
+            $storeId,
         ) ?? '[]';
 
         try {
@@ -52,7 +52,10 @@ class Config implements ConfigInterface
             $customFees = $this->serializer->unserialize($customFeesJson);
         } catch (InvalidArgumentException $invalidArgumentException) {
             throw new LocalizedException(
-                __('Could not get custom fees from configuration. Error: "%1"', $invalidArgumentException->getMessage())
+                __(
+                    'Could not get custom fees from configuration. Error: "%1"',
+                    $invalidArgumentException->getMessage(),
+                ),
             );
         }
 

@@ -36,7 +36,7 @@ class CustomFees extends AbstractTotal
     public function collect(
         Quote $quote,
         ShippingAssignmentInterface $shippingAssignment,
-        Total $total
+        Total $total,
     ): CollectorInterface {
         parent::collect($quote, $shippingAssignment, $total);
 
@@ -56,7 +56,7 @@ class CustomFees extends AbstractTotal
                 $total->setBaseTotalAmount($baseCustomFee['code'], $baseCustomFee['value']);
 
                 $customFees[$key]['base_value'] = $baseCustomFee['value'];
-            }
+            },
         );
         array_walk(
             $localCustomFees,
@@ -67,7 +67,7 @@ class CustomFees extends AbstractTotal
                 $total->setTotalAmount($localCustomFee['code'], $localCustomFee['value']);
 
                 $customFees[$key]['value'] = $localCustomFee['value'];
-            }
+            },
         );
 
         $cartExtension = $quote->getExtensionAttributes();

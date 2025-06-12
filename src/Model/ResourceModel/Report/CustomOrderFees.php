@@ -33,7 +33,7 @@ class CustomOrderFees extends AbstractReport
      */
     public function aggregate(
         string|DateTimeInterface|null $from = null,
-        string|DateTimeInterface|null $to = null
+        string|DateTimeInterface|null $to = null,
     ): self {
         $databaseServerVersion = $this->getDatabaseServerVersion();
 
@@ -57,7 +57,7 @@ class CustomOrderFees extends AbstractReport
                     'created_at',
                     'created_at',
                     $from,
-                    $to
+                    $to,
                 );
             } else {
                 $subSelect = null;
@@ -70,8 +70,8 @@ class CustomOrderFees extends AbstractReport
                     ['so' => $salesOrderTable],
                     'so.created_at',
                     $from,
-                    $to
-                )
+                    $to,
+                ),
             );
             // phpcs:disable Magento2.SQL.RawQuery.FoundRawSql
             $query = <<<SQL
@@ -156,7 +156,7 @@ class CustomOrderFees extends AbstractReport
             !$isMatched => false,
             str_contains(strtolower($version), 'mariadb') => version_compare($matches[0], '10.6.0', '>='),
             str_contains(strtolower($version), 'aurora') => version_compare(rtrim($matches[0], '.'), '8.0', '>='),
-            default => version_compare($matches[0], '8.0.4', '>=')
+            default => version_compare($matches[0], '8.0.4', '>='),
         };
     }
 }

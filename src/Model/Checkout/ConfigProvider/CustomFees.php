@@ -30,8 +30,8 @@ class CustomFees implements ConfigProviderInterface
 
         return [
             'customFees' => [
-                'codes' => $codes
-            ]
+                'codes' => $codes,
+            ],
         ];
     }
 }

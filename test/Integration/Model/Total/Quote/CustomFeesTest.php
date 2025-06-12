@@ -45,17 +45,17 @@ final class CustomFeesTest extends TestCase
             [
                 'code' => 'test_fee_0',
                 'title' => __('Test Fee'),
-                'value' => 4.00
+                'value' => 4.00,
             ],
-            $collectedTotals['test_fee_0']->getData()
+            $collectedTotals['test_fee_0']->getData(),
         );
         self::assertEquals(
             [
                 'code' => 'test_fee_1',
                 'title' => __('Another Fee'),
-                'value' => 1.00
+                'value' => 1.00,
             ],
-            $collectedTotals['test_fee_1']->getData()
+            $collectedTotals['test_fee_1']->getData(),
         );
         self::assertNotNull($quote->getExtensionAttributes()?->getCustomFees());
         self::assertEquals(
@@ -64,16 +64,16 @@ final class CustomFeesTest extends TestCase
                     'code' => 'test_fee_0',
                     'title' => __('Test Fee'),
                     'base_value' => 4.00,
-                    'value' => 4.00
+                    'value' => 4.00,
                 ],
                 [
                     'code' => 'test_fee_1',
                     'title' => __('Another Fee'),
                     'base_value' => 1.00,
-                    'value' => 1.00
-                ]
+                    'value' => 1.00,
+                ],
             ],
-            $quote->getExtensionAttributes()->getCustomFees()
+            $quote->getExtensionAttributes()->getCustomFees(),
         );
     }
 
@@ -100,13 +100,13 @@ final class CustomFeesTest extends TestCase
             [
                 'code' => 'test_fee_0',
                 'title' => __('Test Fee'),
-                'value' => 4.00
+                'value' => 4.00,
             ],
             [
                 'code' => 'test_fee_1',
                 'title' => __('Another Fee'),
-                'value' => 1.00
-            ]
+                'value' => 1.00,
+            ],
         ];
         $actualCustomFees = $customFeesTotalCollector->fetch($quote, $total);
 

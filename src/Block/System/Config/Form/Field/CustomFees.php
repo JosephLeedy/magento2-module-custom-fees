@@ -29,22 +29,22 @@ class CustomFees extends AbstractFieldArray
             'code',
             [
                 'label' => __('Code'),
-                'class' => 'required-entry validate-code'
-            ]
+                'class' => 'required-entry validate-code',
+            ],
         );
         $this->addColumn(
             'title',
             [
                 'label' => __('Fee Name'),
-                'class' => 'required-entry'
-            ]
+                'class' => 'required-entry',
+            ],
         );
         $this->addColumn(
             'value',
             [
                 'label' => $valueColumnLabel,
-                'class' => 'required-entry validate-number validate-zero-or-greater'
-            ]
+                'class' => 'required-entry validate-number validate-zero-or-greater',
+            ],
         );
         $this->addColumn(
             'advanced',
