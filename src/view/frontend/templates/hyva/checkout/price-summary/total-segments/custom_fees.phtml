@@ -31,7 +31,7 @@ foreach ($customFeesSegmentExtension->getCustomFeeSegments() as $customFeeSegmen
     endif;
     // phpcs:ignore Generic.WhiteSpace.ScopeIndent.IncorrectExact
 ?>
-    <div class="flex gap-4 justify-between md:gap-0 custom-fee-<?= $escaper->escapeHtmlAttr($customFeeSegment->getCode()) // phpcs:ignore Generic.Files.LineLength.TooLong ?>">
+    <div class="flex gap-4 justify-between md:gap-0 custom-fee-<?= $escaper->escapeHtmlAttr($customFeeSegment->getCode()) // phpcs:ignore Generic.Files.LineLength.TooLong?>">
         <span class="label">
             <?= $escaper->escapeHtml($customFeeSegment->getTitle() ?? '') ?>
         </span>
