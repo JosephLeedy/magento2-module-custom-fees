@@ -22,8 +22,7 @@ use function count;
  */
 class BeforeQuoteSubmitObserver implements ObserverInterface
 {
-    public function __construct(private readonly CustomOrderFeesInterfaceFactory $customOrderFeesFactory)
-    {}
+    public function __construct(private readonly CustomOrderFeesInterfaceFactory $customOrderFeesFactory) {}
 
     public function execute(Observer $observer): void
     {

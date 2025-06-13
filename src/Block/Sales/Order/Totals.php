@@ -74,8 +74,8 @@ class Totals extends Template
                 /** @var DataObject $total */
                 $total = $this->dataObjectFactory->create(
                     [
-                        'data' => $customFee
-                    ]
+                        'data' => $customFee,
+                    ],
                 );
 
                 if ($key === $firstFeeKey) {
@@ -89,7 +89,7 @@ class Totals extends Template
                 }
 
                 $previousFeeCode = $customFee['code'];
-            }
+            },
         );
 
         return $this;

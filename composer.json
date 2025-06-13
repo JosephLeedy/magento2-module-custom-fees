@@ -29,7 +29,8 @@
     "phpstan/extension-installer": "^1.4",
     "bitexpert/phpstan-magento": "^v0.32 || ^v0.40",
     "phpunit/phpunit": "^9.6",
-    "php-parallel-lint/php-parallel-lint": "^1.4"
+    "php-parallel-lint/php-parallel-lint": "^1.4",
+    "friendsofphp/php-cs-fixer": "^v3.75"
   },
   "suggest": {
     "magento/zendframework1": "Version 1.15 is used to interact with the database in Magento 2.4.4 and 2.4.5",

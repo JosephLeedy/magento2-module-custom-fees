@@ -111,7 +111,7 @@ final class ImportCustomFeesTest extends TestCase
     #[ConfigFixture(
         ConfigInterface::CONFIG_PATH_CUSTOM_FEES,
         '{"_1727299833817_817":{"code":"test_fee_0","title":"Test Fee","value":"4.00"},'
-            . '"_1727299843197_197":{"code":"test_fee_1","title":"Another Fee","value":"1.00"}}',
+         . '"_1727299843197_197":{"code":"test_fee_1","title":"Another Fee","value":"1.00"}}',
         StoreScopeInterface::SCOPE_STORE,
         'default',
     )]
@@ -215,7 +215,7 @@ final class ImportCustomFeesTest extends TestCase
     #[ConfigFixture(
         ConfigInterface::CONFIG_PATH_CUSTOM_FEES,
         '{"_1727299833817_817":{"code":"test_fee_0","title":"Test Fee","value":"4.00"},'
-            . '"_1727299843197_197":{"code":"test_fee_1","title":"Another Fee","value":"1.00"}}',
+        . '"_1727299843197_197":{"code":"test_fee_1","title":"Another Fee","value":"1.00"}}',
         StoreScopeInterface::SCOPE_STORE,
         'default',
     )]

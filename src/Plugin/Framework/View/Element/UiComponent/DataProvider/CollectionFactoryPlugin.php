@@ -12,8 +12,7 @@ use function method_exists;
 
 class CollectionFactoryPlugin
 {
-    public function __construct(private readonly CustomOrderFeesResource $resource)
-    {}
+    public function __construct(private readonly CustomOrderFeesResource $resource) {}
 
     public function afterGetReport(CollectionFactory $subject, Collection $result, string $requestName): Collection
     {
@@ -29,7 +28,7 @@ class CollectionFactoryPlugin
             ->joinLeft(
                 $customOrderFeesTable,
                 "$customOrderFeesTable.order_entity_id = main_table.$idFieldName",
-                "$customOrderFeesTable.custom_fees"
+                "$customOrderFeesTable.custom_fees",
             );
 
         return $result;

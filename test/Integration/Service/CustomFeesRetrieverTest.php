@@ -55,14 +55,14 @@ final class CustomFeesRetrieverTest extends TestCase
                 'code' => 'test_fee_0',
                 'title' => 'Test Fee',
                 'base_value' => 5.00,
-                'value' => 5.00
+                'value' => 5.00,
             ],
             '_1727299843197_197' => [
                 'code' => 'test_fee_1',
                 'title' => 'Another Test Fee',
                 'base_value' => 1.50,
-                'value' => 1.50
-            ]
+                'value' => 1.50,
+            ],
         ];
         $actualCustomFees = $customFeesRetriever->retrieve($order);
 
@@ -106,10 +106,10 @@ final class CustomFeesRetrieverTest extends TestCase
     {
         return [
             'from extension attribute' => [
-                'source' => 'order_extension'
+                'source' => 'order_extension',
             ],
             'from custom order fees database table' => [
-                'source' => 'custom_order_fees_table'
+                'source' => 'custom_order_fees_table',
             ],
         ];
     }
@@ -121,10 +121,10 @@ final class CustomFeesRetrieverTest extends TestCase
     {
         return [
             'extension attribute not instantiated' => [
-                'condition' => 'order_extension_null'
+                'condition' => 'order_extension_null',
             ],
             'no custom fees for order' => [
-                'source' => 'no_custom_order_fees'
+                'source' => 'no_custom_order_fees',
             ],
         ];
     }

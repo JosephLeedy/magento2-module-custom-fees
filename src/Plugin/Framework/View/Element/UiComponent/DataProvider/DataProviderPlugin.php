@@ -77,17 +77,17 @@ class DataProviderPlugin
                             amount: $customFee['base_value'],
                             includeContainer: false,
                             scope: $orderData['store_id'],
-                            currency: $orderData['base_currency_code']
+                            currency: $orderData['base_currency_code'],
                         );
                         $orderData[$customFee['code']] = $this->priceCurrency->format(
                             amount: $customFee['value'],
                             includeContainer: false,
                             scope: $orderData['store_id'],
-                            currency: $orderData['order_currency_code']
+                            currency: $orderData['order_currency_code'],
                         );
-                    }
+                    },
                 );
-            }
+            },
         );
 
         return $result;

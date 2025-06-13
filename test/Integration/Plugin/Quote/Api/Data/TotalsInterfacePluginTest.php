@@ -43,7 +43,7 @@ final class TotalsInterfacePluginTest extends TestCase
     #[ConfigFixture(
         ConfigInterface::CONFIG_PATH_CUSTOM_FEES,
         '[{"code":"test_fee_0","title":"Test Fee","value":"4.00"},{"code":"test_fee_1",'
-            . '"title":"Another Fee","value":"1.00"}]',
+         . '"title":"Another Fee","value":"1.00"}]',
         ScopeInterface::SCOPE_STORE,
         'default',
     )]

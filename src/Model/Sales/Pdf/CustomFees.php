@@ -65,12 +65,12 @@ class CustomFees extends DefaultTotal
 
         $fontSize = $this->getFontSize() ?? 7;
         $totals = array_map(
-            fn (array $customFees): array => [
+            fn(array $customFees): array => [
                 'amount' => $this->getOrder()->formatPriceTxt($customFees['value']),
                 'label' => __($customFees['title']) . ':',
-                'font_size' => $fontSize
+                'font_size' => $fontSize,
             ],
-            $allCustomFees
+            $allCustomFees,
         );
 
         return $totals;
