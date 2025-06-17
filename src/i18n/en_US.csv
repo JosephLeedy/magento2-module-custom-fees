@@ -56,6 +56,8 @@ Subtotal,Subtotal
 "Custom Order Fees","Custom Order Fees"
 "%1 (Base)","%1 (Base)"
 "%1 (Purchased)","%1 (Purchased)"
+"Could not get identifier for scope ""%1"".","Could not get identifier for scope ""%1""."
+"Could not serialize custom fees.","Could not serialize custom fees."
 "Advanced Settings","Advanced Settings"
 Advanced,Advanced
 "Are you sure you want to close Advanced Settings?","Are you sure you want to close Advanced Settings?"

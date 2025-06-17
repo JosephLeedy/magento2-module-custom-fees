@@ -136,6 +136,11 @@ parameters:
 			path: src/Observer/AddFieldToProductAttributeEditForm.php
 
 		-
+			message: "#^Parameter \\#1 \\$scopeId of method Magento\\\\Framework\\\\App\\\\ScopeResolverInterface\\:\\:getScope\\(\\) expects int\\|null, string\\|null given\\.$#"
+			count: 1
+			path: src/Service/ConfigUpdater.php
+
+		-
 			message: "#^Parameter \\#1 \\(array\\|string\\) of echo cannot be converted to string\\.$#"
 			count: 1
 			path: src/view/adminhtml/templates/system/config/form/field/custom_fees/advanced.phtml
