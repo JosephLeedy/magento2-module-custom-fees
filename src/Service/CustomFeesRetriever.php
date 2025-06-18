@@ -16,7 +16,13 @@ class CustomFeesRetriever
     public function __construct(private readonly CustomOrderFeesRepositoryInterface $customOrderFeesRepository) {}
 
     /**
-     * @return array{}|array<string, array{code: string, title: string, base_value: float, value: float}>
+     * @return array{}|array<string, array{
+     *     code: string,
+     *     title: string,
+     *     type: 'fixed'|'percent',
+     *     base_value: float,
+     *     value: float
+     * }>
      */
     public function retrieve(Order $order): array
     {
@@ -26,7 +32,15 @@ class CustomFeesRetriever
             return [];
         }
 
-        /** @var array<string, array{code: string, title: string, base_value: float, value: float}> $customFees */
+        /**
+         * @var array<string, array{
+         *     code: string,
+         *     title: string,
+         *     type: 'fixed'|'percent',
+         *     base_value: float,
+         *     value: float
+         * }> $customFees
+         */
         $customFees = $orderExtension->getCustomOrderFees()
             ?->getCustomFees();
 
