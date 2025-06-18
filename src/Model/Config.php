@@ -47,7 +47,13 @@ class Config implements ConfigInterface
 
         try {
             /**
-             * @var array{code: string, title: string, value: float, advanced?: string}[] $customFees
+             * @var array{
+             *     code: string,
+             *     title: string,
+             *     type: 'fixed'|'percent',
+             *     value: float,
+             *     advanced?: string
+             * }[] $customFees
              */
             $customFees = $this->serializer->unserialize($customFeesJson);
         } catch (InvalidArgumentException $invalidArgumentException) {
@@ -90,6 +96,7 @@ class Config implements ConfigInterface
          * @var array{
          *      code: string,
          *      title: string,
+         *      type: 'fixed'|'percent',
          *      value: float,
          *      advanced: array{
          *          conditions?: array{

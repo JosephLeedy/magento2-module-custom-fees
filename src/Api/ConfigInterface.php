@@ -14,6 +14,7 @@ interface ConfigInterface
      * @return array{
      *     code: string,
      *     title: string,
+     *     type: 'fixed'|'percent',
      *     value: float,
      *     advanced: array{
      *         conditions?: array{
