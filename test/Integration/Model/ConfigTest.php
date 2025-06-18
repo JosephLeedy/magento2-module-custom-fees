@@ -19,14 +19,14 @@ final class ConfigTest extends TestCase
 {
     #[ConfigFixture(
         ConfigInterface::CONFIG_PATH_CUSTOM_FEES,
-        '{"_1748287113250_250":{"code":"test_fee_0","title":"Test Fee","value":"4.00"},'
-        . '"_1748287169237_237":{"code":"test_fee_1","title":"Another Fee","value":"1.00","advanced":"{\\"conditions'
-        . '\\":{\\"type\\":\\"JosephLeedy\\\\\\\\CustomFees\\\\\\\\Model\\\\\\\\Rule\\\\\\\\Condition\\\\\\\\Combine'
-        . '\\",\\"aggregator\\":\\"any\\",\\"value\\":\\"1\\",\\"conditions\\":[{\\"type\\":\\"JosephLeedy\\\\\\\\'
-        . 'CustomFees\\\\\\\\Model\\\\\\\\Rule\\\\\\\\Condition\\\\\\\\QuoteAddress\\",\\"attribute\\":\\"base_subtotal'
-        . '\\",\\"operator\\":\\">=\\",\\"value\\":\\"100\\"},{\\"type\\":\\"JosephLeedy\\\\\\\\CustomFees\\\\\\\\Model'
-        . '\\\\\\\\Rule\\\\\\\\Condition\\\\\\\\QuoteAddress\\",\\"attribute\\":\\"total_qty\\",\\"operator\\":\\"<\\",'
-        . '\\"value\\":\\"2\\"}]}}"}}',
+        '{"_1748287113250_250":{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00"},'
+        . '"_1748287169237_237":{"code":"test_fee_1","title":"Another Fee","type":"fixed","value":"1.00","advanced":'
+        . '"{\\"conditions\\":{\\"type\\":\\"JosephLeedy\\\\\\\\CustomFees\\\\\\\\Model\\\\\\\\Rule\\\\\\\\Condition'
+        . '\\\\\\\\Combine\\",\\"aggregator\\":\\"any\\",\\"value\\":\\"1\\",\\"conditions\\":[{\\"type\\":\\"'
+        . 'JosephLeedy\\\\\\\\CustomFees\\\\\\\\Model\\\\\\\\Rule\\\\\\\\Condition\\\\\\\\QuoteAddress\\",\\"attribute'
+        . '\\":\\"base_subtotal\\",\\"operator\\":\\">=\\",\\"value\\":\\"100\\"},{\\"type\\":\\"JosephLeedy'
+        . '\\\\\\\\CustomFees\\\\\\\\Model\\\\\\\\Rule\\\\\\\\Condition\\\\\\\\QuoteAddress\\",\\"attribute\\":'
+        . '\\"total_qty\\",\\"operator\\":\\"<\\",\\"value\\":\\"2\\"}]}}"}}',
         StoreScopeInterface::SCOPE_STORE,
         'default',
     )]
@@ -65,8 +65,9 @@ final class ConfigTest extends TestCase
 
     #[ConfigFixture(
         ConfigInterface::CONFIG_PATH_CUSTOM_FEES,
-        '{"_1748289122895_895":{"code":"test_fee_0","title":"Test Fee","value":"4.00"},'
-        . '"_1748289147673_673":{"code":"test_fee_1","title":"Another Fee","value":"1.00","advanced":"{"}}',
+        '{"_1748289122895_895":{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00"},'
+        . '"_1748289147673_673":{"code":"test_fee_1","title":"Another Fee","type":"fixed","value":"1.00","advanced":'
+        . '"{"}}',
         StoreScopeInterface::SCOPE_STORE,
         'default',
     )]
