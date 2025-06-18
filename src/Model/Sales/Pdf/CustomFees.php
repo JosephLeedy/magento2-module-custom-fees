@@ -28,7 +28,13 @@ use const FILTER_VALIDATE_BOOLEAN;
 class CustomFees extends DefaultTotal
 {
     /**
-     * @var array{}|array<string, array{code: string, title: string, base_value: float, value: float}>|null
+     * @var array{}|array<string, array{
+     *     code: string,
+     *     title: string,
+     *     type: 'fixed'|'percent',
+     *     base_value: float,
+     *     value: float,
+     * }>|null
      */
     private array|null $customFees = null;
 
@@ -85,7 +91,13 @@ class CustomFees extends DefaultTotal
     }
 
     /**
-     * @return array{}|array<string, array{code: string, title: string, base_value: float, value: float}>
+     * @return array{}|array<string, array{
+     *     code: string,
+     *     title: string,
+     *     type: 'fixed'|'percent',
+     *     base_value: float,
+     *     value: float,
+     * }>
      */
     private function getCustomFees(): array
     {
