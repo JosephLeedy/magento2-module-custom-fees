@@ -25,6 +25,9 @@ class FeeType extends Select
             static fn(FeeTypeEnum $feeType): array => [
                 'value' => $feeType->value,
                 'label' => $feeType->label(),
+                'params' => [
+                    'title' => $feeType->description(),
+                ],
             ],
             FeeTypeEnum::cases(),
         );

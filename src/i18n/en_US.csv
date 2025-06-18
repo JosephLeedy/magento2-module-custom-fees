@@ -37,6 +37,8 @@ Sales,Sales
 "Could not delete custom fees for order with ID ""%1"". Error: ""%2""","Could not delete custom fees for order with ID ""%1"". Error: ""%2"""
 Fixed,Fixed
 Percent,Percent
+"Fixed fee amount","Fixed fee amount"
+"Percentage of order total","Percentage of order total"
 "Order with ID ""%1"" does not exist.","Order with ID ""%1"" does not exist."
 "Unsupported database server version ""%1"".","Unsupported database server version ""%1""."
 "Conditions Combination","Conditions Combination"

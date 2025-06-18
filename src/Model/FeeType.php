@@ -20,4 +20,12 @@ enum FeeType: string
             self::Percent => __('Percent'),
         };
     }
+
+    public function description(): Phrase
+    {
+        return match ($this) {
+            self::Fixed => __('Fixed fee amount'),
+            self::Percent => __('Percentage of order total'),
+        };
+    }
 }
