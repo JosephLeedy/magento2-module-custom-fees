@@ -22,7 +22,7 @@ final class CustomFeesTest extends TestCase
 {
     /**
      * @phpcs:ignore Generic.Files.LineLength.TooLong
-     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","value":"4.00"},{"code":"test_fee_1","title":"Another Fee","value":"1.00"}]
+     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00"},{"code":"test_fee_1","title":"Another Fee","type":"fixed","value":"1.00"}]
      * @magentoDataFixture Magento/Checkout/_files/quote_with_address.php
      */
     public function testCollectsCustomFeesTotals(): void
@@ -45,6 +45,7 @@ final class CustomFeesTest extends TestCase
             [
                 'code' => 'test_fee_0',
                 'title' => __('Test Fee'),
+                'type' => 'fixed',
                 'value' => 4.00,
             ],
             $collectedTotals['test_fee_0']->getData(),
@@ -53,6 +54,7 @@ final class CustomFeesTest extends TestCase
             [
                 'code' => 'test_fee_1',
                 'title' => __('Another Fee'),
+                'type' => 'fixed',
                 'value' => 1.00,
             ],
             $collectedTotals['test_fee_1']->getData(),
@@ -63,12 +65,14 @@ final class CustomFeesTest extends TestCase
                 [
                     'code' => 'test_fee_0',
                     'title' => __('Test Fee'),
+                    'type' => 'fixed',
                     'base_value' => 4.00,
                     'value' => 4.00,
                 ],
                 [
                     'code' => 'test_fee_1',
                     'title' => __('Another Fee'),
+                    'type' => 'fixed',
                     'base_value' => 1.00,
                     'value' => 1.00,
                 ],
@@ -79,7 +83,7 @@ final class CustomFeesTest extends TestCase
 
     /**
      * @phpcs:ignore Generic.Files.LineLength.TooLong
-     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","value":"4.00"},{"code":"test_fee_1","title":"Another Fee","value":"1.00"}]
+     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00"},{"code":"test_fee_1","title":"Another Fee","type":"fixed","value":"1.00"}]
      * @magentoDataFixture Magento/Checkout/_files/quote_with_address.php
      */
     public function testFetchesCustomFeesTotals(): void
@@ -100,11 +104,13 @@ final class CustomFeesTest extends TestCase
             [
                 'code' => 'test_fee_0',
                 'title' => __('Test Fee'),
+                'type' => 'fixed',
                 'value' => 4.00,
             ],
             [
                 'code' => 'test_fee_1',
                 'title' => __('Another Fee'),
+                'type' => 'fixed',
                 'value' => 1.00,
             ],
         ];
