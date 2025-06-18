@@ -33,6 +33,7 @@ interface CustomOrderFeesInterface
      * @phpstan-param string|array<string, array{
      *     code: string,
      *     title: string,
+     *     type: 'fixed'|'percent',
      *     base_value: float,
      *     value: float
      * }> $customFees
@@ -42,7 +43,13 @@ interface CustomOrderFeesInterface
 
     /**
      * @return string[]|float[]
-     * @phpstan-return array{}|array<string, array{code: string, title: string, base_value: float, value: float}>
+     * @phpstan-return array{}|array<string, array{
+     *     code: string,
+     *     title: string,
+     *     type: 'fixed'|'percent',
+     *     base_value: float,
+     *     value: float
+     * }>
      */
     public function getCustomFees(): array;
 
