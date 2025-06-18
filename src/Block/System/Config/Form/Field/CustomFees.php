@@ -76,7 +76,7 @@ class CustomFees extends AbstractFieldArray
         }
 
         if (!$row->hasData('type')) {
-            $row->setData('type', 'fixed');
+            $row->setData('type', \JosephLeedy\CustomFees\Model\FeeType::Fixed->value);
         }
 
         /** @var string $feeType */
