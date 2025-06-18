@@ -28,4 +28,13 @@ enum FeeType: string
             self::Percent => __('Percentage of order total'),
         };
     }
+
+    public function equals(string|self $feeType): bool
+    {
+        if (!($feeType instanceof self)) {
+            $feeType = self::tryFrom($feeType);
+        }
+
+        return $feeType === $this;
+    }
 }

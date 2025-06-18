@@ -22,7 +22,7 @@ final class CustomFeesTest extends TestCase
 {
     /**
      * @phpcs:ignore Generic.Files.LineLength.TooLong
-     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00"},{"code":"test_fee_1","title":"Another Fee","type":"fixed","value":"1.00"}]
+     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00"},{"code":"test_fee_1","title":"Another Fee","type":"percent","value":"5"}]
      * @magentoDataFixture Magento/Checkout/_files/quote_with_address.php
      */
     public function testCollectsCustomFeesTotals(): void
@@ -54,7 +54,7 @@ final class CustomFeesTest extends TestCase
             [
                 'code' => 'test_fee_1',
                 'title' => __('Another Fee'),
-                'type' => 'fixed',
+                'type' => 'percent',
                 'value' => 1.00,
             ],
             $collectedTotals['test_fee_1']->getData(),
@@ -72,7 +72,7 @@ final class CustomFeesTest extends TestCase
                 [
                     'code' => 'test_fee_1',
                     'title' => __('Another Fee'),
-                    'type' => 'fixed',
+                    'type' => 'percent',
                     'base_value' => 1.00,
                     'value' => 1.00,
                 ],
@@ -83,7 +83,7 @@ final class CustomFeesTest extends TestCase
 
     /**
      * @phpcs:ignore Generic.Files.LineLength.TooLong
-     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00"},{"code":"test_fee_1","title":"Another Fee","type":"fixed","value":"1.00"}]
+     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00"},{"code":"test_fee_1","title":"Another Fee","type":"percent","value":"5"}]
      * @magentoDataFixture Magento/Checkout/_files/quote_with_address.php
      */
     public function testFetchesCustomFeesTotals(): void
@@ -100,6 +100,8 @@ final class CustomFeesTest extends TestCase
 
         $quoteResource->load($quote, 'test_order_1', 'reserved_order_id');
 
+        $total->setBaseSubtotal(20.00);
+
         $expectedCustomFees = [
             [
                 'code' => 'test_fee_0',
@@ -110,7 +112,7 @@ final class CustomFeesTest extends TestCase
             [
                 'code' => 'test_fee_1',
                 'title' => __('Another Fee'),
-                'type' => 'fixed',
+                'type' => 'percent',
                 'value' => 1.00,
             ],
         ];

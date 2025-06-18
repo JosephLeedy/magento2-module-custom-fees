@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model\Total\Quote;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\ConditionsApplier;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
@@ -19,6 +20,7 @@ use Psr\Log\LoggerInterface;
 use function array_key_exists;
 use function array_walk;
 use function count;
+use function round;
 
 class CustomFees extends AbstractTotal
 {
@@ -44,7 +46,7 @@ class CustomFees extends AbstractTotal
             return $this;
         }
 
-        [$baseCustomFees, $localCustomFees] = $this->getCustomFees($quote);
+        [$baseCustomFees, $localCustomFees] = $this->getCustomFees($quote, $total);
         $customFees = $baseCustomFees;
 
         array_walk(
@@ -86,7 +88,7 @@ class CustomFees extends AbstractTotal
      */
     public function fetch(Quote $quote, Total $total): array
     {
-        [, $localCustomFees] = $this->getCustomFees($quote);
+        [, $localCustomFees] = $this->getCustomFees($quote, $total);
 
         return $localCustomFees;
     }
@@ -94,7 +96,7 @@ class CustomFees extends AbstractTotal
     /**
      * @return array{code: string, title: Phrase, type: 'fixed'|'percent', value: float}[][]
      */
-    private function getCustomFees(Quote $quote): array
+    private function getCustomFees(Quote $quote, Total $total): array
     {
         $store = $quote->getStore();
         $baseCustomFees = [];
@@ -111,6 +113,10 @@ class CustomFees extends AbstractTotal
         foreach ($customFees as $id => $customFee) {
             if ($customFee['code'] === 'example_fee') {
                 continue;
+            }
+
+            if (FeeType::Percent->equals($customFee['type'])) {
+                $customFee['value'] = round(((float) $customFee['value'] * (float) $total->getBaseSubtotal()) / 100);
             }
 
             if (
