@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees;
 
+use JosephLeedy\CustomFees\Model\FeeType as FeeTypeEnum;
 use Magento\Framework\View\Element\Html\Select;
+
+use function array_map;
 
 /**
  * @method self setName(string $name)
@@ -18,16 +21,13 @@ class FeeType extends Select
 
     protected function _toHtml(): string
     {
-        $options = [
-            [
-                'value' => 'fixed',
-                'label' => __('Fixed'),
+        $options = array_map(
+            static fn(FeeTypeEnum $feeType): array => [
+                'value' => $feeType->value,
+                'label' => $feeType->label(),
             ],
-            [
-                'value' => 'percent',
-                'label' => __('Percent'),
-            ],
-        ];
+            FeeTypeEnum::cases(),
+        );
 
         $this->setOptions($options);
 

@@ -19,8 +19,6 @@ Code,Code
 Conditions,Conditions
 "Apply the fee only if the following conditions are met:","Apply the fee only if the following conditions are met:"
 "Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2""","Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2"""
-Fixed,Fixed
-Percent,Percent
 "Replace Existing Custom Fees","Replace Existing Custom Fees"
 Sales,Sales
 "Custom Order Fees Report","Custom Order Fees Report"
@@ -37,6 +35,8 @@ Sales,Sales
 "Custom fees have already been saved for order with ID ""%1"".","Custom fees have already been saved for order with ID ""%1""."
 "Could not save custom fees for order with ID ""%1"". Error: ""%2""","Could not save custom fees for order with ID ""%1"". Error: ""%2"""
 "Could not delete custom fees for order with ID ""%1"". Error: ""%2""","Could not delete custom fees for order with ID ""%1"". Error: ""%2"""
+Fixed,Fixed
+Percent,Percent
 "Order with ID ""%1"" does not exist.","Order with ID ""%1"" does not exist."
 "Unsupported database server version ""%1"".","Unsupported database server version ""%1""."
 "Conditions Combination","Conditions Combination"
