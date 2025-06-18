@@ -64,12 +64,14 @@ final class TotalsPluginTest extends TestCase
                         'test_fee_0' => [
                             'code' => 'test_fee_0',
                             'title' => 'Test Fee',
+                            'type' => 'fixed',
                             'base_value' => 4.00,
                             'value' => 4.00,
                         ],
                         'test_fee_1' => [
                             'code' => 'test_fee_1',
                             'title' => 'Another Fee',
+                            'type' => 'fixed',
                             'base_value' => 1.00,
                             'value' => 1.00,
                         ],
@@ -150,12 +152,14 @@ final class TotalsPluginTest extends TestCase
                         'test_fee_0' => [
                             'code' => 'test_fee_0',
                             'title' => 'Test Fee',
+                            'type' => 'fixed',
                             'base_value' => 4.00,
                             'value' => 4.00,
                         ],
                         'test_fee_1' => [
                             'code' => 'test_fee_1',
                             'title' => 'Another Fee',
+                            'type' => 'fixed',
                             'base_value' => 1.00,
                             'value' => 1.00,
                         ],
@@ -224,12 +228,14 @@ final class TotalsPluginTest extends TestCase
                         'test_fee_0' => [
                             'code' => 'test_fee_0',
                             'title' => 'Test Fee',
+                            'type' => 'fixed',
                             'base_value' => 4.00,
                             'value' => 4.00,
                         ],
                         'test_fee_1' => [
                             'code' => 'test_fee_1',
                             'title' => 'Another Fee',
+                            'type' => 'fixed',
                             'base_value' => 1.00,
                             'value' => 1.00,
                         ],
@@ -315,12 +321,14 @@ final class TotalsPluginTest extends TestCase
                         'test_fee_0' => [
                             'code' => 'test_fee_0',
                             'title' => 'Test Fee',
+                            'type' => 'fixed',
                             'base_value' => 4.00,
                             'value' => 4.00,
                         ],
                         'test_fee_1' => [
                             'code' => 'test_fee_1',
                             'title' => 'Another Fee',
+                            'type' => 'fixed',
                             'base_value' => 1.00,
                             'value' => 1.00,
                         ],
@@ -404,12 +412,14 @@ final class TotalsPluginTest extends TestCase
                 'test_fee_0' => [
                     'code' => 'test_fee_0',
                     'title' => 'Test Fee',
+                    'type' => 'fixed',
                     'base_value' => 4.00,
                     'value' => 4.00,
                 ],
                 'test_fee_1' => [
                     'code' => 'test_fee_1',
                     'title' => 'Another Fee',
+                    'type' => 'fixed',
                     'base_value' => 1.00,
                     'value' => 1.00,
                 ],
