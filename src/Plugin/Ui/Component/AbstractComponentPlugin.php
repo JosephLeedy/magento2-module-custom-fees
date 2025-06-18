@@ -45,7 +45,13 @@ class AbstractComponentPlugin
 
             try {
                 /**
-                 * @var array<string, array{code: string, title: string, base_value: float, value: float}> $customFees
+                 * @var array<string, array{
+                 *     code: string,
+                 *     title: string,
+                 *     type: 'fixed'|'percent',
+                 *     base_value: float,
+                 *     value: float
+                 * }> $customFees
                  */
                 $customFees = $this->serializer->unserialize($customFeesJson);
             } catch (InvalidArgumentException) {
