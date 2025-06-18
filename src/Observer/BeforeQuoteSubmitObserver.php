@@ -33,7 +33,15 @@ class BeforeQuoteSubmitObserver implements ObserverInterface
         $order = $event->getData('order');
         /** @var CartExtensionInterface $quoteExtension */
         $quoteExtension = $quote->getExtensionAttributes();
-        /** @var array<string, array{code: string, title: string, base_value: float, value: float}>|null $customFees */
+        /**
+         * @var array<string, array{
+         *      code: string,
+         *      title: string,
+         *      type: 'fixed'|'percent',
+         *      base_value: float,
+         *      value: float
+         *  }>|null $customFees
+         */
         $customFees = $quoteExtension->getCustomFees();
         /** @var OrderExtensionInterface $orderExtension */
         $orderExtension = $order->getExtensionAttributes();
