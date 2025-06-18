@@ -58,6 +58,7 @@ class DataProviderPlugin
                      * @var array<string, array{
                      *     code: string,
                      *     title: string,
+                     *     type: 'fixed'|'percent',
                      *     base_value: float,
                      *     value: float
                      * }> $customFees
@@ -70,7 +71,13 @@ class DataProviderPlugin
                 array_walk(
                     $customFees,
                     /**
-                     * @param array{code: string, title: string, base_value: float, value: float} $customFee
+                     * @param array{
+                     *     code: string,
+                     *     title: string,
+                     *     type: 'fixed'|'percent',
+                     *     base_value: float,
+                     *     value: float
+                     * } $customFee
                      */
                     function (array $customFee) use (&$orderData): void {
                         $orderData[$customFee['code'] . '_base'] = $this->priceCurrency->format(
