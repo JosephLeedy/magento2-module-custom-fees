@@ -28,12 +28,14 @@ $testCustomFees = [
     '_1727299833817_817' => [
         'code' => 'test_fee_0',
         'title' => 'Test Fee',
+        'type' => 'fixed',
         'base_value' => 5.00,
         'value' => 5.00,
     ],
     '_1727299843197_197' => [
         'code' => 'test_fee_1',
         'title' => 'Another Test Fee',
+        'type' => 'fixed',
         'base_value' => 1.50,
         'value' => 1.50,
     ],
