@@ -52,7 +52,13 @@ class CustomFees extends AbstractTotal
         array_walk(
             $baseCustomFees,
             /**
-             * @param array{code: string, title: string, type: 'fixed'|'percent', value: float} $baseCustomFee
+             * @param array{
+             *     code: string,
+             *     title: string,
+             *     type: 'fixed'|'percent',
+             *     percent: float|null,
+             *     value: float
+             * } $baseCustomFee
              */
             static function (array $baseCustomFee, string|int $key) use ($total, &$customFees): void {
                 $total->setBaseTotalAmount($baseCustomFee['code'], $baseCustomFee['value']);
@@ -63,7 +69,13 @@ class CustomFees extends AbstractTotal
         array_walk(
             $localCustomFees,
             /**
-             * @param array{code: string, title: string, type: 'fixed'|'percent', value: float} $localCustomFee
+             * @param array{
+             *     code: string,
+             *     title: string,
+             *     type: 'fixed'|'percent',
+             *     percent: float|null,
+             *     value: float
+             * } $localCustomFee
              */
             static function (array $localCustomFee, string|int $key) use ($total, &$customFees): void {
                 $total->setTotalAmount($localCustomFee['code'], $localCustomFee['value']);
@@ -84,7 +96,7 @@ class CustomFees extends AbstractTotal
     }
 
     /**
-     * @return array{code: string, title: Phrase, type: 'fixed'|'percent', value: float}[]
+     * @return array{code: string, title: Phrase, type: 'fixed'|'percent', percent: float|null, value: float}[]
      */
     public function fetch(Quote $quote, Total $total): array
     {
@@ -94,7 +106,7 @@ class CustomFees extends AbstractTotal
     }
 
     /**
-     * @return array{code: string, title: Phrase, type: 'fixed'|'percent', value: float}[][]
+     * @return array{code: string, title: Phrase, type: 'fixed'|'percent', percent: float|null, value: float}[][]
      */
     private function getCustomFees(Quote $quote, Total $total): array
     {
@@ -115,7 +127,10 @@ class CustomFees extends AbstractTotal
                 continue;
             }
 
+            $customFee['percent'] = null;
+
             if (FeeType::Percent->equals($customFee['type'])) {
+                $customFee['percent'] = $customFee['value'];
                 $customFee['value'] = round(((float) $customFee['value'] * (float) $total->getBaseSubtotal()) / 100);
             }
 

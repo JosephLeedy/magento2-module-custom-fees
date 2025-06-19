@@ -29,6 +29,7 @@ $customFees = [
         'code' => 'example_fee',
         'title' => 'Example Fee',
         'type' => 'fixed',
+        'percent' => null,
         'base_value' => 0.00,
         'value' => 0.00,
     ],

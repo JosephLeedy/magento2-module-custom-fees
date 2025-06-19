@@ -34,6 +34,7 @@ interface CustomOrderFeesInterface
      *     code: string,
      *     title: string,
      *     type: 'fixed'|'percent',
+     *     percent: float|null,
      *     base_value: float,
      *     value: float
      * }> $customFees
@@ -47,6 +48,7 @@ interface CustomOrderFeesInterface
      *     code: string,
      *     title: string,
      *     type: 'fixed'|'percent',
+     *     percent: float|null,
      *     base_value: float,
      *     value: float
      * }>

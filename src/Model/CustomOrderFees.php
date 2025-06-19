@@ -83,6 +83,7 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
          *     code: string,
          *     title: string,
          *     type: 'fixed'|'percent',
+         *     percent: float|null,
          *     base_value: float,
          *     value: float
          * }>|string|null $customFees

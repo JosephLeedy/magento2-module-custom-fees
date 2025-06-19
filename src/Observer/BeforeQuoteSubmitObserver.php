@@ -38,6 +38,7 @@ class BeforeQuoteSubmitObserver implements ObserverInterface
          *      code: string,
          *      title: string,
          *      type: 'fixed'|'percent',
+         *      percent: float|null,
          *      base_value: float,
          *      value: float
          *  }>|null $customFees
