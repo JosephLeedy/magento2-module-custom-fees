@@ -29,6 +29,7 @@ Sales,Sales
 "Custom Fees spreadsheet must be a CSV file.","Custom Fees spreadsheet must be a CSV file."
 "Could not read Custom Fees spreadsheet.","Could not read Custom Fees spreadsheet."
 "Invalid Custom Fees spreadsheet.","Invalid Custom Fees spreadsheet."
+"Invalid custom fee type ""%1"".","Invalid custom fee type ""%1""."
 "Invalid custom fees","Invalid custom fees"
 "Custom order fees with ID ""%1"" does not exist.","Custom order fees with ID ""%1"" does not exist."
 "Custom fees do not exist for order with ID ""%1"".","Custom fees do not exist for order with ID ""%1""."
