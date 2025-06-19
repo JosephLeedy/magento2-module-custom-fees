@@ -131,7 +131,7 @@ class CustomFees extends AbstractTotal
 
             if (FeeType::Percent->equals($customFee['type'])) {
                 $customFee['percent'] = $customFee['value'];
-                $customFee['value'] = round(((float) $customFee['value'] * (float) $total->getBaseSubtotal()) / 100);
+                $customFee['value'] = round(((float) $customFee['value'] * (float) $total->getBaseSubtotal()) / 100, 2);
             }
 
             if (
