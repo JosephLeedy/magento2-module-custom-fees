@@ -112,7 +112,8 @@ class Config implements ConfigInterface
          *                      value: string
          *                  }
          *              >
-         *          }
+         *          },
+         *          show_percentage?: bool,
          *      }
          *  }[] $customFees
          */
