@@ -75,7 +75,11 @@ class CustomFees extends DefaultTotal
         $totals = array_map(
             fn(array $customFees): array => [
                 'amount' => $this->getOrder()->formatPriceTxt($customFees['value']),
-                'label' => __($customFees['title']) . ':',
+                'label' => (
+                    FeeType::Percent->equals($customFees['type']) && $customFees['percent'] !== null
+                        ? __($customFees['title'] . ' (%1%)', $customFees['percent'])
+                        : __($customFees['title'])
+                ) . ':',
                 'font_size' => $fontSize,
             ],
             $allCustomFees,

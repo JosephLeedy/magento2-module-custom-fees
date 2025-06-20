@@ -54,7 +54,7 @@ final class CustomFeesTest extends TestCase
         self::assertEquals(
             [
                 'code' => 'test_fee_1',
-                'title' => __('Another Fee'),
+                'title' => __('Another Fee (5%)'),
                 'type' => 'percent',
                 'percent' => 5,
                 'value' => 1.00,
@@ -116,7 +116,7 @@ final class CustomFeesTest extends TestCase
             ],
             [
                 'code' => 'test_fee_1',
-                'title' => __('Another Fee'),
+                'title' => __('Another Fee (5%)'),
                 'type' => 'percent',
                 'percent' => 5,
                 'value' => 1.00,

@@ -100,7 +100,7 @@ class CustomFees extends AbstractTotal
      */
     public function fetch(Quote $quote, Total $total): array
     {
-        [, $localCustomFees] = $this->getCustomFees($quote, $total);
+        [, $localCustomFees] = $this->getCustomFees($quote, $total, true);
 
         return $localCustomFees;
     }
@@ -108,7 +108,7 @@ class CustomFees extends AbstractTotal
     /**
      * @return array{code: string, title: Phrase, type: value-of<FeeType>, percent: float|null, value: float}[][]
      */
-    private function getCustomFees(Quote $quote, Total $total): array
+    private function getCustomFees(Quote $quote, Total $total, bool $isFetch = false): array
     {
         $store = $quote->getStore();
         $baseCustomFees = [];
@@ -132,6 +132,10 @@ class CustomFees extends AbstractTotal
             if (FeeType::Percent->equals($customFee['type'])) {
                 $customFee['percent'] = $customFee['value'];
                 $customFee['value'] = round(((float) $customFee['value'] * (float) $total->getBaseSubtotal()) / 100, 2);
+
+                if ($isFetch) {
+                    $customFee['title'] .= " ({$customFee['percent']}%)";
+                }
             }
 
             if (
