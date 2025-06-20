@@ -50,7 +50,7 @@ class Config implements ConfigInterface
              * @var array{
              *     code: string,
              *     title: string,
-             *     type: 'fixed'|'percent',
+             *     type: value-of<FeeType>,
              *     value: float,
              *     advanced?: string
              * }[] $customFees
@@ -96,7 +96,7 @@ class Config implements ConfigInterface
          * @var array{
          *      code: string,
          *      title: string,
-         *      type: 'fixed'|'percent',
+         *      type: value-of<FeeType>,
          *      value: float,
          *      advanced: array{
          *          conditions?: array{

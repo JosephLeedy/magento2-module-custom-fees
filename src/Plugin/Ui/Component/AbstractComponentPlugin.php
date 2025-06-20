@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Plugin\Ui\Component;
 
 use InvalidArgumentException;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Sales\Model\Order;
@@ -48,7 +49,7 @@ class AbstractComponentPlugin
                  * @var array<string, array{
                  *     code: string,
                  *     title: string,
-                 *     type: 'fixed'|'percent',
+                 *     type: value-of<FeeType>,
                  *     percent: float|null,
                  *     base_value: float,
                  *     value: float

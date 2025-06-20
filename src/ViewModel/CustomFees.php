@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\ViewModel;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
@@ -19,7 +20,7 @@ class CustomFees implements ArgumentInterface
     ) {}
 
     /**
-     * @return array{code: string, title: string, type: 'fixed'|'percent', value: float}[]
+     * @return array{code: string, title: string, type: value-of<FeeType>, value: float}[]
      */
     public function getCustomFees(): array
     {

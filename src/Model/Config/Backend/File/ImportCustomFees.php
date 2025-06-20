@@ -45,7 +45,7 @@ use const PATHINFO_EXTENSION;
 class ImportCustomFees extends File
 {
     /**
-     * @var array{code: string, title: string, type: 'fixed'|'percent', value: float}[]
+     * @var array{code: string, title: string, type: value-of<FeeType>, value: float}[]
      */
     private array $customFees = [];
 
@@ -169,7 +169,7 @@ class ImportCustomFees extends File
         }
 
         foreach (array_slice($rawCustomFees, 1) as $customFee) {
-            /** @var array{code: string, title: string, type: 'fixed'|'percent', value: float} $customFee */
+            /** @var array{code: string, title: string, type: value-of<FeeType>, value: float} $customFee */
             $customFee = array_combine($rawCustomFees[0], $customFee);
 
             if (FeeType::tryFrom($customFee['type']) === null) {

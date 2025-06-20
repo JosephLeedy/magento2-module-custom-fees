@@ -6,6 +6,7 @@ namespace JosephLeedy\CustomFees\Observer;
 
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterfaceFactory;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Quote\Api\Data\CartExtensionInterface;
@@ -37,7 +38,7 @@ class BeforeQuoteSubmitObserver implements ObserverInterface
          * @var array<string, array{
          *      code: string,
          *      title: string,
-         *      type: 'fixed'|'percent',
+         *      type: value-of<FeeType>,
          *      percent: float|null,
          *      base_value: float,
          *      value: float

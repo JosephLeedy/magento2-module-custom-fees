@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Plugin\Framework\View\Element\UiComponent\DataProvider;
 
 use InvalidArgumentException;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider;
@@ -58,7 +59,7 @@ class DataProviderPlugin
                      * @var array<string, array{
                      *     code: string,
                      *     title: string,
-                     *     type: 'fixed'|'percent',
+                     *     type: value-of<FeeType>,
                      *     percent: float|null,
                      *     base_value: float,
                      *     value: float
@@ -75,7 +76,7 @@ class DataProviderPlugin
                      * @param array{
                      *     code: string,
                      *     title: string,
-                     *     type: 'fixed'|'percent',
+                     *     type: value-of<FeeType>,
                      *     percent: float|null,
                      *     base_value: float,
                      *     value: float

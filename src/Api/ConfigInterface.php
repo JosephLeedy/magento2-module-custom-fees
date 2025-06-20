@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Api;
 
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Exception\LocalizedException;
 
 interface ConfigInterface
@@ -14,7 +15,7 @@ interface ConfigInterface
      * @return array{
      *     code: string,
      *     title: string,
-     *     type: 'fixed'|'percent',
+     *     type: value-of<FeeType>,
      *     value: float,
      *     advanced: array{
      *         conditions?: array{

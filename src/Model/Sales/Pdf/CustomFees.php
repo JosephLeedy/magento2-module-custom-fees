@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Model\Sales\Pdf;
 
+use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\Phrase;
 use Magento\Sales\Model\Order\Pdf\Total\DefaultTotal;
@@ -31,7 +32,7 @@ class CustomFees extends DefaultTotal
      * @var array{}|array<string, array{
      *     code: string,
      *     title: string,
-     *     type: 'fixed'|'percent',
+     *     type: value-of<FeeType>,
      *     percent: float|null,
      *     base_value: float,
      *     value: float,
@@ -95,7 +96,7 @@ class CustomFees extends DefaultTotal
      * @return array{}|array<string, array{
      *     code: string,
      *     title: string,
-     *     type: 'fixed'|'percent',
+     *     type: value-of<FeeType>,
      *     percent: float|null,
      *     base_value: float,
      *     value: float,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Service;
 
 use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\Order;
 
@@ -19,7 +20,7 @@ class CustomFeesRetriever
      * @return array{}|array<string, array{
      *     code: string,
      *     title: string,
-     *     type: 'fixed'|'percent',
+     *     type: value-of<FeeType>,
      *     percent: float|null,
      *     base_value: float,
      *     value: float
@@ -37,7 +38,7 @@ class CustomFeesRetriever
          * @var array<string, array{
          *     code: string,
          *     title: string,
-         *     type: 'fixed'|'percent',
+         *     type: value-of<FeeType>,
          *     percent: float|null,
          *     base_value: float,
          *     value: float
