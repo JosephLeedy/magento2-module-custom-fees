@@ -75,24 +75,11 @@ define(
             return recursiveData;
         };
 
-        const saveRuleData = function () {
-            const formData = $(this.element).find('input, select').serializeArray();
-            const $advancedInput = $('#' + $(this.element).data('input-id'));
-            let nestedFormData;
+        const saveRuleData = function (ruleData) {
             let rule;
             let conditionsJson;
 
-            if (formData.length === 0 || $advancedInput.length === 0) {
-                return;
-            }
-
-            nestedFormData = convertFormDataToNestedObject(formData);
-
-            if (!nestedFormData.hasOwnProperty('rule')) {
-                return;
-            }
-
-            rule = convertFlatDataToRecursiveData(nestedFormData.rule);
+            rule = convertFlatDataToRecursiveData(ruleData);
 
             if (!rule.hasOwnProperty('conditions') || rule.conditions.length === 0) {
                 return;
@@ -103,7 +90,32 @@ define(
                 (key, value) => key === 'conditions' ? value.filter(Boolean) : value
             );
 
-            $advancedInput.val(`{"conditions":${conditionsJson}}`);
+            return `"conditions":${conditionsJson}`;
+        };
+
+        const saveFormData = function () {
+            const formData = $(this.element).find('input, select').serializeArray();
+            const $advancedInput = $('#' + $(this.element).data('input-id'));
+            let nestedFormData;
+            let advancedData = [];
+
+            if (formData.length === 0 || $advancedInput.length === 0) {
+                return;
+            }
+
+            nestedFormData = convertFormDataToNestedObject(formData);
+
+            if (nestedFormData.hasOwnProperty('rule')) {
+                advancedData.push(saveRuleData(nestedFormData.rule));
+
+                delete nestedFormData.rule;
+            }
+
+            for (const key in nestedFormData) {
+                advancedData.push(`"${key}":${JSON.stringify(nestedFormData[key])}`);
+            }
+
+            $advancedInput.val(`{${advancedData.join(',')}}`);
         };
 
         const beforeModalClose = function () {
@@ -132,7 +144,7 @@ define(
         };
 
         const handleModalSave = function () {
-            saveRuleData.call(this);
+            saveFormData.call(this);
             beforeModalClose.call(this);
 
             this.closeModal();
