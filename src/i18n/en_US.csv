@@ -20,6 +20,7 @@ Conditions,Conditions
 "Apply the fee only if the following conditions are met:","Apply the fee only if the following conditions are met:"
 Display,Display
 "Show Percentage","Show Percentage"
+"If ""Yes,"" the fee percentage will be shown next to its name (i.e. ""Processing (10%)"").","If ""Yes,"" the fee percentage will be shown next to its name (i.e. ""Processing (10%)"")."
 "Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2""","Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2"""
 "Replace Existing Custom Fees","Replace Existing Custom Fees"
 Sales,Sales

@@ -138,6 +138,7 @@ class Form extends Generic
             'values' => $this->yesNoSource->toOptionArray(),
             'value' => (int) ($this->getConfig()['show_percentage'] ?? true),
             'data-form-part' => 'system_config_custom_fees_advanced_form',
+            'note' => __('If "Yes," the fee percentage will be shown next to its name (i.e. "Processing (10%)").'),
         ];
 
         if (!FeeType::Percent->equals($this->getFeeType())) {
