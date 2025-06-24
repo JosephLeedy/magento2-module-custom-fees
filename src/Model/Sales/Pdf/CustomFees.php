@@ -78,6 +78,7 @@ class CustomFees extends DefaultTotal
                 'amount' => $this->getOrder()->formatPriceTxt($customFees['value']),
                 'label' => (
                     FeeType::Percent->equals($customFees['type']) && $customFees['percent'] !== null
+                        && $customFees['show_percentage']
                         ? __($customFees['title'] . ' (%1%)', $customFees['percent'])
                         : __($customFees['title'])
                 ) . ':',

@@ -149,7 +149,7 @@ class CustomFees extends AbstractTotal
                 $customFee['percent'] = $customFee['value'];
                 $customFee['value'] = round(((float) $customFee['value'] * (float) $total->getBaseSubtotal()) / 100, 2);
 
-                if ($isFetch) {
+                if ($isFetch && $customFee['advanced']['show_percentage']) {
                     $customFee['title'] .= " ({$customFee['percent']}%)";
                 }
             }

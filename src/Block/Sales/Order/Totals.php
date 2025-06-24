@@ -69,6 +69,7 @@ class Totals extends Template
             $customFees,
             function (array $customFee, string|int $key) use ($firstFeeKey, &$previousFeeCode) {
                 $customFee['label'] = FeeType::Percent->equals($customFee['type']) && $customFee['percent'] !== null
+                    && $customFee['show_percentage']
                     ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
                     : __($customFee['title']);
 
