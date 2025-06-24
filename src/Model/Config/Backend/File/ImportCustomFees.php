@@ -29,6 +29,7 @@ use Magento\Store\Model\StoreManagerInterface;
 
 use function array_combine;
 use function array_filter;
+use function array_intersect;
 use function array_merge;
 use function array_slice;
 use function array_walk;
@@ -44,6 +45,15 @@ use const PATHINFO_EXTENSION;
  */
 class ImportCustomFees extends File
 {
+    /**
+     * @var string[]
+     */
+    private array $requiredFields = [
+        'code',
+        'title',
+        'type',
+        'value',
+    ];
     /**
      * @var array{code: string, title: string, type: value-of<FeeType>, value: float}[]
      */
@@ -164,7 +174,10 @@ class ImportCustomFees extends File
             throw new LocalizedException(__('Could not read Custom Fees spreadsheet.'), $exception);
         }
 
-        if (count($rawCustomFees) === 0 || $rawCustomFees[0] !== ['code', 'title', 'type', 'value']) {
+        if (
+            count($rawCustomFees) === 0
+            || count(array_intersect($rawCustomFees[0], $this->requiredFields)) !== count($this->requiredFields)
+        ) {
             throw new LocalizedException(__('Invalid Custom Fees spreadsheet.'));
         }
 
