@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Controller\Adminhtml\System\Config\CustomFees\Advanced;
 
 use JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\Advanced\Form as AdvancedFormBlock;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
@@ -30,6 +31,8 @@ class Form extends Action implements HttpPostActionInterface
     {
         /** @var string|null $rowId */
         $rowId = $this->request->getParam('row_id');
+        /** @var string $feeType */
+        $feeType = $this->request->getParam('fee_type', FeeType::Fixed->value);
         /** @var string $advancedConfig */
         $advancedConfig = $this->request->getParam('advanced_config', '{}');
 
@@ -42,6 +45,7 @@ class Form extends Action implements HttpPostActionInterface
             arguments: [
                 'data' => [
                     'row_id' => $rowId,
+                    'fee_type' => $feeType,
                     'advanced_config' => $advancedConfig,
                 ],
             ],

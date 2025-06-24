@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\Advanced;
 
 use InvalidArgumentException;
+use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Model\Rule\CustomFees as CustomFeesRule;
 use JosephLeedy\CustomFees\Model\Rule\CustomFeesFactory as CustomFeesRuleFactory;
 use Magento\Backend\Block\Template\Context;
@@ -23,6 +24,8 @@ use function array_key_exists;
 /**
  * @method self setRowId(string $rowId)
  * @method string getRowId()
+ * @method string getFeeType()
+ * @phpstan-method value-of<FeeType> getFeeType()
  * @method string|null getAdvancedConfig()
  */
 class Form extends Generic
@@ -136,6 +139,10 @@ class Form extends Generic
             'value' => (int) ($this->getConfig()['show_percentage'] ?? true),
             'data-form-part' => 'system_config_custom_fees_advanced_form',
         ];
+
+        if (!FeeType::Percent->equals($this->getFeeType())) {
+            $config['readonly'] = 'readonly';
+        }
 
         $displayFieldset->addField('show_percentage', 'select', $config);
     }

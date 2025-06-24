@@ -151,6 +151,9 @@ define(
         };
 
         const loadModalContent = function (config, modalContainer) {
+            const $advancedConfigInput = $(`#${config.inputId}`);
+            const feeType = $advancedConfigInput.parents('tr:first').find('select[name$="[type]"]').val() ?? 'fixed';
+
             $('body').trigger('processStart');
 
             $.ajax(
@@ -160,7 +163,8 @@ define(
                     data: {
                         form_key: config.formKey,
                         row_id: config.rowId,
-                        advanced_config: $(`#${config.inputId}`).val(),
+                        fee_type: feeType,
+                        advanced_config: $advancedConfigInput.val(),
                     }
                 }
             ).done(
