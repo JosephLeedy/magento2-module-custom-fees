@@ -34,6 +34,7 @@ class CustomFees extends DefaultTotal
      *     title: string,
      *     type: value-of<FeeType>,
      *     percent: float|null,
+     *     show_percentage: bool,
      *     base_value: float,
      *     value: float,
      * }>|null
@@ -102,6 +103,7 @@ class CustomFees extends DefaultTotal
      *     title: string,
      *     type: value-of<FeeType>,
      *     percent: float|null,
+     *     show_percentage: bool,
      *     base_value: float,
      *     value: float,
      * }>

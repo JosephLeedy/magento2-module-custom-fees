@@ -51,6 +51,7 @@ class AbstractComponentPlugin
                  *     title: string,
                  *     type: value-of<FeeType>,
                  *     percent: float|null,
+                 *     show_percentage: bool,
                  *     base_value: float,
                  *     value: float
                  * }> $customFees

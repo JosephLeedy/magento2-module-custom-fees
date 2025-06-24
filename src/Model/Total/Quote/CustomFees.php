@@ -57,6 +57,7 @@ class CustomFees extends AbstractTotal
              *     title: string,
              *     type: value-of<FeeType>,
              *     percent: float|null,
+             *     show_percentage: bool,
              *     value: float
              * } $baseCustomFee
              */
@@ -74,6 +75,7 @@ class CustomFees extends AbstractTotal
              *     title: string,
              *     type: value-of<FeeType>,
              *     percent: float|null,
+             *     show_percentage: bool,
              *     value: float
              * } $localCustomFee
              */
@@ -96,7 +98,14 @@ class CustomFees extends AbstractTotal
     }
 
     /**
-     * @return array{code: string, title: Phrase, type: value-of<FeeType>, percent: float|null, value: float}[]
+     * @return array{
+     *     code: string,
+     *     title: Phrase,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     value: float
+     * }[]
      */
     public function fetch(Quote $quote, Total $total): array
     {
@@ -106,7 +115,14 @@ class CustomFees extends AbstractTotal
     }
 
     /**
-     * @return array{code: string, title: Phrase, type: value-of<FeeType>, percent: float|null, value: float}[][]
+     * @return array{
+     *     code: string,
+     *     title: Phrase,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     value: float
+     * }[][]
      */
     private function getCustomFees(Quote $quote, Total $total, bool $isFetch = false): array
     {
@@ -152,6 +168,8 @@ class CustomFees extends AbstractTotal
                     continue;
                 }
             }
+
+            $customFee['show_percentage'] = $customFee['advanced']['show_percentage'];
 
             unset($customFee['advanced']);
 

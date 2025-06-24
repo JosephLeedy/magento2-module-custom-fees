@@ -36,6 +36,7 @@ interface CustomOrderFeesInterface
      *     title: string,
      *     type: value-of<FeeType>,
      *     percent: float|null,
+     *     show_percentage: bool,
      *     base_value: float,
      *     value: float
      * }> $customFees
@@ -50,6 +51,7 @@ interface CustomOrderFeesInterface
      *     title: string,
      *     type: value-of<FeeType>,
      *     percent: float|null,
+     *     show_percentage: bool,
      *     base_value: float,
      *     value: float
      * }>
