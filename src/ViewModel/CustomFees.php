@@ -20,7 +20,15 @@ class CustomFees implements ArgumentInterface
     ) {}
 
     /**
-     * @return array{code: string, title: string, type: value-of<FeeType>, value: float}[]
+     * @return array{
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     value: float,
+     *     advanced: array{
+     *         show_percentage: bool,
+     *     }
+     * }[]
      */
     public function getCustomFees(): array
     {

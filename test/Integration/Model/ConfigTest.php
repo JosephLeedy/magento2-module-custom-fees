@@ -26,7 +26,7 @@ final class ConfigTest extends TestCase
         . 'JosephLeedy\\\\\\\\CustomFees\\\\\\\\Model\\\\\\\\Rule\\\\\\\\Condition\\\\\\\\QuoteAddress\\",\\"attribute'
         . '\\":\\"base_subtotal\\",\\"operator\\":\\">=\\",\\"value\\":\\"100\\"},{\\"type\\":\\"JosephLeedy'
         . '\\\\\\\\CustomFees\\\\\\\\Model\\\\\\\\Rule\\\\\\\\Condition\\\\\\\\QuoteAddress\\",\\"attribute\\":'
-        . '\\"total_qty\\",\\"operator\\":\\"<\\",\\"value\\":\\"2\\"}]}}"}}',
+        . '\\"total_qty\\",\\"operator\\":\\"<\\",\\"value\\":\\"2\\"}]},\\"show_percentage\\":\\"1\"}"}}',
         StoreScopeInterface::SCOPE_STORE,
         'default',
     )]
@@ -57,9 +57,10 @@ final class ConfigTest extends TestCase
                     ],
                 ],
             ],
+            'show_percentage' => true,
         ];
 
-        self::assertEmpty($customFees['_1748287113250_250']['advanced']);
+        self::assertFalse($customFees['_1748287113250_250']['advanced']['show_percentage']);
         self::assertSame($expectedAdvancedConfig, $customFees['_1748287169237_237']['advanced']);
     }
 

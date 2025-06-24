@@ -31,7 +31,8 @@ interface ConfigInterface
      *                     value: string
      *                 }
      *             >
-     *         }
+     *         },
+     *         show_percentage: bool,
      *     }
      * }[]
      * @throws LocalizedException

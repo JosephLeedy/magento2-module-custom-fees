@@ -73,7 +73,7 @@ class Config implements ConfigInterface
                 }
 
                 try {
-                    $customFee['advanced'] = json_decode(
+                    $customFee['advanced'] = (array) json_decode(
                         $customFee['advanced'],
                         true,
                         512,
@@ -88,6 +88,12 @@ class Config implements ConfigInterface
                         ),
                         $jsonException,
                     );
+                }
+
+                if (array_key_exists('show_percentage', $customFee['advanced'])) {
+                    $customFee['advanced']['show_percentage'] = (bool) $customFee['advanced']['show_percentage'];
+                } else {
+                    $customFee['advanced']['show_percentage'] = false;
                 }
             },
         );
@@ -112,7 +118,8 @@ class Config implements ConfigInterface
          *                      value: string
          *                  }
          *              >
-         *          }
+         *          },
+         *          show_percentage: bool,
          *      }
          *  }[] $customFees
          */
