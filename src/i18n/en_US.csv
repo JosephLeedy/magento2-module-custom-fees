@@ -18,6 +18,8 @@ Code,Code
 "Add Custom Fee","Add Custom Fee"
 Conditions,Conditions
 "Apply the fee only if the following conditions are met:","Apply the fee only if the following conditions are met:"
+Display,Display
+"Show Percentage","Show Percentage"
 "Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2""","Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2"""
 "Replace Existing Custom Fees","Replace Existing Custom Fees"
 Sales,Sales

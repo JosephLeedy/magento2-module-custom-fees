@@ -10,6 +10,7 @@ use JosephLeedy\CustomFees\Model\Rule\CustomFeesFactory as CustomFeesRuleFactory
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Block\Widget\Form\Generic;
 use Magento\Backend\Block\Widget\Form\Renderer\Fieldset;
+use Magento\Config\Model\Config\Source\Yesno;
 use Magento\Framework\Data\FormFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Registry;
@@ -36,6 +37,7 @@ class Form extends Generic
         private readonly CustomFeesRuleFactory $customFeesRuleFactory,
         private readonly SerializerInterface $serializer,
         private readonly Conditions $conditions,
+        private readonly Yesno $yesNoSource,
         array $data = [],
     ) {
         parent::__construct($context, $registry, $formFactory, $data);
@@ -53,6 +55,7 @@ class Form extends Generic
         }
 
         $this->createConditionsFieldset($advancedForm);
+        $this->createDisplayFieldset($advancedForm);
 
         return parent::_prepareForm();
     }
@@ -114,6 +117,29 @@ class Form extends Generic
         $this->setForm($advancedForm);
     }
 
+    private function createDisplayFieldset(\Magento\Framework\Data\Form $advancedForm): void
+    {
+        /** @var \Magento\Framework\Data\Form\Element\Fieldset $displayFieldset */
+        $displayFieldset = $advancedForm
+            ->addFieldset(
+                'display_fieldset',
+                [
+                    'legend' => __('Display'),
+                    'class' => 'admin__scope-old',
+                ],
+            )->setCollapsable(true);
+        $config = [
+            'name' => 'show_percentage',
+            'label' => __('Show Percentage'),
+            'title' => __('Show Percentage'),
+            'values' => $this->yesNoSource->toOptionArray(),
+            'value' => (int) ($this->getConfig()['show_percentage'] ?? true),
+            'data-form-part' => 'system_config_custom_fees_advanced_form',
+        ];
+
+        $displayFieldset->addField('show_percentage', 'select', $config);
+    }
+
     /**
      * @return array{
      *     conditions?: array{
@@ -129,7 +155,8 @@ class Form extends Generic
      *                 value: string,
      *             }
      *         >
-     *     }
+     *     },
+     *     show_percentage?: bool,
      * }
      * @throws LocalizedException
      */
