@@ -21,6 +21,7 @@ Display,Display
 "Show Percentage","Show Percentage"
 "If ""Yes,"" the fee percentage will be shown next to its name (i.e. ""Processing (10%)"").","If ""Yes,"" the fee percentage will be shown next to its name (i.e. ""Processing (10%)"")."
 "Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2""","Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2"""
+"Import Custom Fees","Import Custom Fees"
 "Replace Existing Custom Fees","Replace Existing Custom Fees"
 Sales,Sales
 "Custom Order Fees Report","Custom Order Fees Report"
@@ -71,6 +72,5 @@ Close,Close
 Done,Done
 "Advanced Settings for %1","Advanced Settings for %1"
 "<strong>Note:</strong> Fixed fee amount is relative to the store's base currency and will be converted to the customer's selected currency. Percent fees are based on an order's subtotal.","<strong>Note:</strong> Fixed fee amount is relative to the store's base currency and will be converted to the customer's selected currency. Percent fees are based on an order's subtotal."
-"Import Custom Fees","Import Custom Fees"
 "Import custom fees from a CSV spreadsheet. <a href=""{{exampleCsvUrl}}"">Example file</a>","Import custom fees from a CSV spreadsheet. <a href=""{{exampleCsvUrl}}"">Example file</a>"
 "All Websites","All Websites"

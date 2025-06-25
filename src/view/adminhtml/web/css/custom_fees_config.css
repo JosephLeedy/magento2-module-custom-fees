@@ -6,6 +6,14 @@
     .value {
         width: 80%;
     }
+
+    label.import-fees-label {
+        display: block;
+        padding-bottom: 6px;
+        color: #303030;
+        font-size: 14px;
+        font-weight: 600;
+    }
 }
 
 #sales_custom_order_fees_custom_fees {
