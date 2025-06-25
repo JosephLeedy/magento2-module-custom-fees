@@ -36,6 +36,7 @@ use function array_walk;
 use function count;
 use function pathinfo;
 use function preg_replace;
+use function strtolower;
 use function usleep;
 
 use const PATHINFO_EXTENSION;
@@ -55,7 +56,14 @@ class ImportCustomFees extends File
         'value',
     ];
     /**
-     * @var array{code: string, title: string, type: value-of<FeeType>, value: float}[]
+     * @var array{
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     show_percentage?: string,
+     *     value: float,
+     *     advanced?: string
+     * }[]
      */
     private array $customFees = [];
 
@@ -129,7 +137,12 @@ class ImportCustomFees extends File
 
         if (!$replaceExistingCustomFees) {
             /**
-             * @var array<string, array{code: string, title: string, value: float}> $originalCustomFees
+             * @var array<string, array{
+             *     code: string,
+             *     title: string,
+             *     value: float,
+             *     advanced?: string
+             * }> $originalCustomFees
              */
             $originalCustomFees = $this->serializer->unserialize(
                 (string) (
@@ -182,7 +195,15 @@ class ImportCustomFees extends File
         }
 
         foreach (array_slice($rawCustomFees, 1) as $customFee) {
-            /** @var array{code: string, title: string, type: value-of<FeeType>, value: float} $customFee */
+            /**
+             * @var array{
+             *     code: string,
+             *     title: string,
+             *     type: value-of<FeeType>,
+             *     show_percentage?: string,
+             *     value: float
+             * } $customFee
+             */
             $customFee = array_combine($rawCustomFees[0], $customFee);
 
             if (FeeType::tryFrom($customFee['type']) === null) {
@@ -232,6 +253,12 @@ class ImportCustomFees extends File
             $this->customFees,
             static function (array &$customFee) use ($store): void {
                 $customFee['code'] = preg_replace('/[^A-z0-9_]+/', '_', $customFee['code']);
+                $customFee['advanced'] = '{"show_percentage":"'
+                    . match (strtolower($customFee['show_percentage'] ?? '')) {
+                        '0', 'n', 'no', 'false' => '0',
+                        '1', 'y', 'yes', 'true' => '1',
+                        default => '0',
+                    } . '"}';
 
                 if (FeeType::Fixed->equals($customFee['type'])) {
                     $customFee['value'] = $store
@@ -242,6 +269,8 @@ class ImportCustomFees extends File
                             false,
                         ) ?? $customFee['value'];
                 }
+
+                unset($customFee['show_percentage']);
             },
         );
     }
