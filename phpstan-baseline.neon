@@ -141,6 +141,11 @@ parameters:
 			path: src/Service/ConfigUpdater.php
 
 		-
+			message: "#^Use service contracts to persist entities in favour of JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFees\\:\\:save\\(\\) method$#"
+			count: 1
+			path: src/Setup/Patch/Data/AddFieldsToCustomOrderFeesPatch.php
+
+		-
 			message: "#^Parameter \\#1 \\(array\\|string\\) of echo cannot be converted to string\\.$#"
 			count: 1
 			path: src/view/adminhtml/templates/system/config/form/field/custom_fees/advanced.phtml
