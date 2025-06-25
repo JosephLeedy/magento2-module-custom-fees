@@ -195,6 +195,8 @@ class ImportCustomFees extends File
         }
 
         foreach (array_slice($rawCustomFees, 1) as $customFee) {
+            /** @var string[] $headerFields */
+            $headerFields = $rawCustomFees[0];
             /**
              * @var array{
              *     code: string,
@@ -204,7 +206,7 @@ class ImportCustomFees extends File
              *     value: float
              * } $customFee
              */
-            $customFee = array_combine($rawCustomFees[0], $customFee);
+            $customFee = array_combine($headerFields, $customFee);
 
             if (FeeType::tryFrom($customFee['type']) === null) {
                 throw new LocalizedException(__('Invalid custom fee type "%1".', $customFee['type']));
