@@ -1,6 +1,6 @@
 #sales_custom_order_fees {
     .label {
-        width: 12%;
+        display: none;
     }
 
     .value {
