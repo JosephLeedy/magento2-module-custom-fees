@@ -54,7 +54,7 @@ class CustomFees extends AbstractFieldArray
             'value',
             [
                 'label' => $valueColumnLabel,
-                'class' => 'required-entry validate-number validate-zero-or-greater',
+                'class' => 'fee-value required-entry validate-number validate-zero-or-greater',
             ],
         );
         $this->addColumn(

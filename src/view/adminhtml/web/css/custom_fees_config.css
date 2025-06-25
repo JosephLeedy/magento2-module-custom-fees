@@ -8,6 +8,12 @@
     }
 }
 
+#sales_custom_order_fees_custom_fees {
+    .fee-value {
+        max-width: 95px;
+    }
+}
+
 .action-custom-fees-advanced-config {
     &:before {
         font-family: 'Admin Icons';
