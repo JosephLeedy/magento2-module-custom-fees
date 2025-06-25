@@ -70,7 +70,7 @@ class AddFieldsToCustomOrderFeesPatch implements DataPatchInterface
                         }
 
                         if (!array_key_exists('show_percentage', $customFee)) {
-                            $customFee['show_percentage'] = !FeeType::Percent->equals($customFee['type']) ? '0' : '1';
+                            $customFee['show_percentage'] = FeeType::Percent->equals($customFee['type']);
                             $hasChanges = true;
                         }
                     },
