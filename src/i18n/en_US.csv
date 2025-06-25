@@ -11,10 +11,9 @@ Amount,Amount
 "Amount Invoiced","Amount Invoiced"
 CSV,CSV
 "Excel XML","Excel XML"
-"Fee Amount","Fee Amount"
 Code,Code
-"Fee Name","Fee Name"
-"Fee Type","Fee Type"
+Name,Name
+Type,Type
 "Add Custom Fee","Add Custom Fee"
 Conditions,Conditions
 "Apply the fee only if the following conditions are met:","Apply the fee only if the following conditions are met:"

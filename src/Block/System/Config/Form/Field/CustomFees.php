@@ -22,7 +22,7 @@ class CustomFees extends AbstractFieldArray
     {
         $store = $this->getStore();
         $baseCurrency = $store?->getBaseCurrency()->getCurrencyCode() ?? '';
-        $valueColumnLabel = (string) __('Fee Amount');
+        $valueColumnLabel = (string) __('Amount');
 
         if ($baseCurrency !== '') {
             $valueColumnLabel .= ' (' . $baseCurrency . ')';
@@ -38,14 +38,14 @@ class CustomFees extends AbstractFieldArray
         $this->addColumn(
             'title',
             [
-                'label' => __('Fee Name'),
+                'label' => __('Name'),
                 'class' => 'required-entry',
             ],
         );
         $this->addColumn(
             'type',
             [
-                'label' => __('Fee Type'),
+                'label' => __('Type'),
                 'class' => 'required-entry',
                 'renderer' => $this->getFeeTypeFieldRenderer(),
             ],
