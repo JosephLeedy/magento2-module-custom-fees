@@ -12,6 +12,10 @@
     .fee-value {
         max-width: 95px;
     }
+
+    select[name$="[type]"] {
+        min-width: 105px;
+    }
 }
 
 .action-custom-fees-advanced-config {
