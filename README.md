@@ -22,6 +22,8 @@ customers when orders are placed.
     applied to an order based on product and cart details, including 
     specific product attributes, product SKU, cart subtotal, cart item count,
     total cart weight and more
+  - Custom fees can be applied as a fixed amount or a percentage of the order 
+    subtotal 
 - Custom fees are displayed for orders, invoices and credit memos in both the 
 frontend and backend
 - Custom fees can be refunded via Magento's credit memo functionality
