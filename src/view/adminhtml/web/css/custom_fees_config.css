@@ -4,7 +4,11 @@
     }
 
     .value {
-        width: 80%;
+        width: 84%;
+    }
+
+    .use-default {
+        padding-right: 0;
     }
 
     label.import-fees-label {
