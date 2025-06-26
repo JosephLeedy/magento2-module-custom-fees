@@ -93,7 +93,7 @@ class Config implements ConfigInterface
                 if (array_key_exists('show_percentage', $customFee['advanced'])) {
                     $customFee['advanced']['show_percentage'] = (bool) $customFee['advanced']['show_percentage'];
                 } else {
-                    $customFee['advanced']['show_percentage'] = false;
+                    $customFee['advanced']['show_percentage'] = FeeType::Percent->equals($customFee['type']);
                 }
             },
         );
