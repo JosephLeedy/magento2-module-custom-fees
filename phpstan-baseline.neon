@@ -121,7 +121,7 @@ parameters:
 			path: src/Model/Rule/Condition/QuoteAddress.php
 
 		-
-			message: "#^Parameter \\#1 \\$customFees of method Magento\\\\Quote\\\\Api\\\\Data\\\\CartExtensionInterface\\:\\:setCustomFees\\(\\) expects array\\<mixed\\>, array\\<array\\<string, float\\|Magento\\\\Framework\\\\Phrase\\|string\\>\\> given\\.$#"
+			message: "#^Parameter \\#1 \\$customFees of method Magento\\\\Quote\\\\Api\\\\Data\\\\CartExtensionInterface\\:\\:setCustomFees\\(\\) expects array\\<mixed\\>, array\\<array\\<string, bool\\|float\\|Magento\\\\Framework\\\\Phrase\\|string\\|null\\>\\> given\\.$#"
 			count: 1
 			path: src/Model/Total/Quote/CustomFees.php
 
