@@ -15,6 +15,7 @@ document.
 - Configuration for custom fees can be imported from a CSV spreadsheet
 - Conditions can be defined in the extension configuration to determine whether 
   or not to apply a custom fee to an order
+- Custom Fees can be calculated as a percentage of an order's subtotal
 
 ## [1.1.1]
 
