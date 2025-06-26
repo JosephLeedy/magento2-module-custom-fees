@@ -68,7 +68,6 @@ Subtotal,Subtotal
 Advanced,Advanced
 "Are you sure you want to close Advanced Settings?","Are you sure you want to close Advanced Settings?"
 "Changes made to the advanced settings will not be saved.","Changes made to the advanced settings will not be saved."
-Close,Close
 Done,Done
 "Advanced Settings for %1","Advanced Settings for %1"
 "<strong>Note:</strong> Fixed fee amount is relative to the store's base currency and will be converted to the customer's selected currency. Percent fees are based on an order's subtotal.","<strong>Note:</strong> Fixed fee amount is relative to the store's base currency and will be converted to the customer's selected currency. Percent fees are based on an order's subtotal."

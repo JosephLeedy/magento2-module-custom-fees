@@ -190,11 +190,6 @@ define(
             modalCloseBtnHandler: handelModalClose,
             buttons: [
                 {
-                    text: $.mage.__('Close'),
-                    class: 'modal-close',
-                    click: handelModalClose,
-                },
-                {
                     text: $.mage.__('Done'),
                     class: 'primary',
                     click: handleModalSave,
