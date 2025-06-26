@@ -26,7 +26,7 @@ parameters:
 			path: src/Block/System/Config/Form/Field/CustomFees.php
 
 		-
-			message: "#^Method JosephLeedy\\\\CustomFees\\\\Block\\\\System\\\\Config\\\\Form\\\\Field\\\\CustomFees\\\\Advanced\\\\Form\\:\\:getConfig\\(\\) should return array\\{conditions\\?\\: array\\{type\\: class\\-string, aggregator\\: string, value\\: '0'\\|'1', conditions\\: array\\<int, array\\{type\\: class\\-string, attribute\\: string, operator\\: string, value\\: string\\}\\>\\}\\} but returns array\\|float\\|int\\<min, \\-1\\>\\|int\\<1, max\\>\\|non\\-falsy\\-string\\|true\\.$#"
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Block\\\\System\\\\Config\\\\Form\\\\Field\\\\CustomFees\\\\Advanced\\\\Form\\:\\:getConfig\\(\\) should return array\\{conditions\\?\\: array\\{type\\: class\\-string, aggregator\\: string, value\\: '0'\\|'1', conditions\\: array\\<int, array\\{type\\: class\\-string, attribute\\: string, operator\\: string, value\\: string\\}\\>\\}, show_percentage\\?\\: bool\\} but returns array\\|float\\|int\\<min, \\-1\\>\\|int\\<1, max\\>\\|non\\-falsy\\-string\\|true\\.$#"
 			count: 1
 			path: src/Block/System/Config/Form/Field/CustomFees/Advanced/Form.php
 
@@ -121,7 +121,7 @@ parameters:
 			path: src/Model/Rule/Condition/QuoteAddress.php
 
 		-
-			message: "#^Parameter \\#1 \\$customFees of method Magento\\\\Quote\\\\Api\\\\Data\\\\CartExtensionInterface\\:\\:setCustomFees\\(\\) expects array\\<mixed\\>, array\\<array\\<string, float\\|Magento\\\\Framework\\\\Phrase\\|string\\>\\> given\\.$#"
+			message: "#^Parameter \\#1 \\$customFees of method Magento\\\\Quote\\\\Api\\\\Data\\\\CartExtensionInterface\\:\\:setCustomFees\\(\\) expects array\\<mixed\\>, array\\<array\\<string, bool\\|float\\|Magento\\\\Framework\\\\Phrase\\|string\\|null\\>\\> given\\.$#"
 			count: 1
 			path: src/Model/Total/Quote/CustomFees.php
 
@@ -134,6 +134,16 @@ parameters:
 			message: "#^Parameter \\#4 \\$after of method Magento\\\\Framework\\\\Data\\\\Form\\\\Element\\\\Fieldset\\:\\:addField\\(\\) expects bool, string given\\.$#"
 			count: 1
 			path: src/Observer/AddFieldToProductAttributeEditForm.php
+
+		-
+			message: "#^Parameter \\#1 \\$scopeId of method Magento\\\\Framework\\\\App\\\\ScopeResolverInterface\\:\\:getScope\\(\\) expects int\\|null, string\\|null given\\.$#"
+			count: 1
+			path: src/Service/ConfigUpdater.php
+
+		-
+			message: "#^Use service contracts to persist entities in favour of JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFees\\:\\:save\\(\\) method$#"
+			count: 1
+			path: src/Setup/Patch/Data/AddFieldsToCustomOrderFeesPatch.php
 
 		-
 			message: "#^Parameter \\#1 \\(array\\|string\\) of echo cannot be converted to string\\.$#"

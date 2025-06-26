@@ -6,6 +6,7 @@ namespace JosephLeedy\CustomFees\Block\System\Config\Form\Field;
 
 use DomainException;
 use JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\Advanced;
+use JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\FeeType;
 use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -15,11 +16,13 @@ use function __;
 
 class CustomFees extends AbstractFieldArray
 {
+    private FeeType $feeTypeFieldRenderer;
+
     protected function _prepareToRender(): void
     {
         $store = $this->getStore();
         $baseCurrency = $store?->getBaseCurrency()->getCurrencyCode() ?? '';
-        $valueColumnLabel = (string) __('Fee Amount');
+        $valueColumnLabel = (string) __('Amount');
 
         if ($baseCurrency !== '') {
             $valueColumnLabel .= ' (' . $baseCurrency . ')';
@@ -35,15 +38,23 @@ class CustomFees extends AbstractFieldArray
         $this->addColumn(
             'title',
             [
-                'label' => __('Fee Name'),
+                'label' => __('Name'),
                 'class' => 'required-entry',
+            ],
+        );
+        $this->addColumn(
+            'type',
+            [
+                'label' => __('Type'),
+                'class' => 'required-entry',
+                'renderer' => $this->getFeeTypeFieldRenderer(),
             ],
         );
         $this->addColumn(
             'value',
             [
                 'label' => $valueColumnLabel,
-                'class' => 'required-entry validate-number validate-zero-or-greater',
+                'class' => 'fee-value required-entry validate-number validate-zero-or-greater',
             ],
         );
         $this->addColumn(
@@ -60,11 +71,21 @@ class CustomFees extends AbstractFieldArray
 
     protected function _prepareArrayRow(DataObject $row): void
     {
-        if ($row->hasData('advanced')) {
-            return;
+        if (!$row->hasData('advanced')) {
+            $row->setData('advanced', '{}');
         }
 
-        $row->setData('advanced', '{}');
+        if (!$row->hasData('type')) {
+            $row->setData('type', \JosephLeedy\CustomFees\Model\FeeType::Fixed->value);
+        }
+
+        /** @var string $feeType */
+        $feeType = $row->getData('type');
+        $optionsExtraAttributes = [
+            "option_{$this->getFeeTypeFieldRenderer()->calcOptionHash($feeType)}" => 'selected="selected"',
+        ];
+
+        $row->setData('option_extra_attrs', $optionsExtraAttributes);
     }
 
     private function getStore(): ?StoreInterface
@@ -90,5 +111,28 @@ class CustomFees extends AbstractFieldArray
         }
 
         return $store;
+    }
+
+    private function getFeeTypeFieldRenderer(): FeeType
+    {
+        if (isset($this->feeTypeFieldRenderer)) {
+            return $this->feeTypeFieldRenderer;
+        }
+
+        /** @var FeeType $feeTypeFieldRenderer */
+        $feeTypeFieldRenderer = $this
+            ->getLayout()
+            ->createBlock(
+                FeeType::class,
+                '',
+                [
+                    'data' => [
+                        'is_render_to_js_template' => true,
+                    ],
+                ],
+            );
+        $this->feeTypeFieldRenderer = $feeTypeFieldRenderer;
+
+        return $this->feeTypeFieldRenderer;
     }
 }

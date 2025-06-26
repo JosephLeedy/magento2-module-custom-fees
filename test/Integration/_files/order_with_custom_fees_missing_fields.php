@@ -24,15 +24,18 @@ $customOrderFeesFactory = $objectManager->create(CustomOrderFeesInterfaceFactory
 $customOrderFees = $customOrderFeesFactory->create();
 /** @var CustomOrderFeesRepository $customOrderFeesRepository */
 $customOrderFeesRepository = $objectManager->create(CustomOrderFeesRepositoryInterface::class);
-$customFees = [
-    [
-        'code' => 'example_fee',
-        'title' => 'Example Fee',
-        'type' => 'fixed',
-        'percent' => null,
-        'show_percentage' => false,
-        'base_value' => 0.00,
-        'value' => 0.00,
+$testCustomFees = [
+    '_1750885400610_610' => [
+        'code' => 'test_fee_0',
+        'title' => 'Test Fee',
+        'base_value' => 5.00,
+        'value' => 5.00,
+    ],
+    '_1750886019048_048' => [
+        'code' => 'test_fee_1',
+        'title' => 'Another Test Fee',
+        'base_value' => 1.50,
+        'value' => 1.50,
     ],
 ];
 
@@ -42,7 +45,7 @@ $orderResource->load($order, '100000001', 'increment_id');
 $orderId = $order->getEntityId() ?? 0;
 
 $customOrderFees->setOrderId($orderId);
-$customOrderFees->setCustomFees($customFees);
+$customOrderFees->setCustomFees($testCustomFees);
 
 $customOrderFeesRepository->save($customOrderFees);
 

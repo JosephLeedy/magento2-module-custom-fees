@@ -8,6 +8,7 @@ use DateTimeImmutableFactory;
 use DateTimeInterface;
 use Exception;
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Config\Model\Config\Backend\File;
 use Magento\Config\Model\Config\Backend\File\RequestData\RequestDataInterface;
 use Magento\Framework\App\Cache\TypeListInterface;
@@ -28,13 +29,14 @@ use Magento\Store\Model\StoreManagerInterface;
 
 use function array_combine;
 use function array_filter;
-use function array_map;
+use function array_intersect;
 use function array_merge;
 use function array_slice;
 use function array_walk;
 use function count;
 use function pathinfo;
 use function preg_replace;
+use function strtolower;
 use function usleep;
 
 use const PATHINFO_EXTENSION;
@@ -45,7 +47,23 @@ use const PATHINFO_EXTENSION;
 class ImportCustomFees extends File
 {
     /**
-     * @var array{code: string, title: string, value: float}[]
+     * @var string[]
+     */
+    private array $requiredFields = [
+        'code',
+        'title',
+        'type',
+        'value',
+    ];
+    /**
+     * @var array{
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     show_percentage?: string,
+     *     value: float,
+     *     advanced?: string
+     * }[]
      */
     private array $customFees = [];
 
@@ -119,7 +137,12 @@ class ImportCustomFees extends File
 
         if (!$replaceExistingCustomFees) {
             /**
-             * @var array<string, array{code: string, title: string, value: float}> $originalCustomFees
+             * @var array<string, array{
+             *     code: string,
+             *     title: string,
+             *     value: float,
+             *     advanced?: string
+             * }> $originalCustomFees
              */
             $originalCustomFees = $this->serializer->unserialize(
                 (string) (
@@ -164,17 +187,33 @@ class ImportCustomFees extends File
             throw new LocalizedException(__('Could not read Custom Fees spreadsheet.'), $exception);
         }
 
-        if (count($rawCustomFees) === 0 || $rawCustomFees[0] !== ['code', 'title', 'value']) {
+        if (
+            count($rawCustomFees) === 0
+            || count(array_intersect($rawCustomFees[0], $this->requiredFields)) !== count($this->requiredFields)
+        ) {
             throw new LocalizedException(__('Invalid Custom Fees spreadsheet.'));
         }
 
-        /** @var array{code: string, title: string, value: float}[] $customFees */
-        $customFees = array_map(
-            static fn(array $customFee): array => array_combine($rawCustomFees[0], $customFee),
-            array_slice($rawCustomFees, 1),
-        );
+        foreach (array_slice($rawCustomFees, 1) as $customFee) {
+            /** @var string[] $headerFields */
+            $headerFields = $rawCustomFees[0];
+            /**
+             * @var array{
+             *     code: string,
+             *     title: string,
+             *     type: value-of<FeeType>,
+             *     show_percentage?: string,
+             *     value: float
+             * } $customFee
+             */
+            $customFee = array_combine($headerFields, $customFee);
 
-        $this->customFees = $customFees;
+            if (FeeType::tryFrom($customFee['type']) === null) {
+                throw new LocalizedException(__('Invalid custom fee type "%1".', $customFee['type']));
+            }
+
+            $this->customFees[] = $customFee;
+        }
     }
 
     /**
@@ -216,8 +255,24 @@ class ImportCustomFees extends File
             $this->customFees,
             static function (array &$customFee) use ($store): void {
                 $customFee['code'] = preg_replace('/[^A-z0-9_]+/', '_', $customFee['code']);
-                $customFee['value'] = $store?->getBaseCurrency()->format($customFee['value'], ['display' => 1], false)
-                    ?? $customFee['value'];
+                $customFee['advanced'] = '{"show_percentage":"'
+                    . match (strtolower($customFee['show_percentage'] ?? '')) {
+                        '0', 'n', 'no', 'false' => '0',
+                        '1', 'y', 'yes', 'true' => '1',
+                        default => '0',
+                    } . '"}';
+
+                if (FeeType::Fixed->equals($customFee['type'])) {
+                    $customFee['value'] = $store
+                        ?->getBaseCurrency()
+                        ->format(
+                            $customFee['value'],
+                            ['display' => 1],
+                            false,
+                        ) ?? $customFee['value'];
+                }
+
+                unset($customFee['show_percentage']);
             },
         );
     }

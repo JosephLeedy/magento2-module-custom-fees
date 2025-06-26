@@ -64,16 +64,22 @@ final class ImportCustomFeesTest extends TestCase
                     [
                         'code',
                         'title',
+                        'type',
+                        'show_percentage',
                         'value',
                     ],
                     [
                         'test_fee_0',
                         'Test Fee',
+                        'fixed',
+                        'no',
                         '4.00',
                     ],
                     [
                         'test_fee_1',
                         'Another Fee',
+                        'percent',
+                        'yes',
                         '1.00',
                     ],
                 ],
@@ -94,12 +100,16 @@ final class ImportCustomFeesTest extends TestCase
             '_1746570703638_638' => [
                 'code' => 'test_fee_0',
                 'title' => 'Test Fee',
+                'type' => 'fixed',
                 'value' => '4.00',
+                'advanced' => '{"show_percentage":"0"}',
             ],
             '_1746570704381_381' => [
                 'code' => 'test_fee_1',
                 'title' => 'Another Fee',
+                'type' => 'percent',
                 'value' => '1.00',
+                'advanced' => '{"show_percentage":"1"}',
             ],
         ];
         $actualCustomFees = $this->getCustomFees();
@@ -110,8 +120,9 @@ final class ImportCustomFeesTest extends TestCase
     #[AppIsolation(true)]
     #[ConfigFixture(
         ConfigInterface::CONFIG_PATH_CUSTOM_FEES,
-        '{"_1727299833817_817":{"code":"test_fee_0","title":"Test Fee","value":"4.00"},'
-         . '"_1727299843197_197":{"code":"test_fee_1","title":"Another Fee","value":"1.00"}}',
+        '{"_1727299833817_817":{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","advanced":'
+        . '"{\\"show_percentage\\":\\"0\\"}"},"_1727299843197_197":{"code":"test_fee_1","title":"Another Fee","type":'
+        . '"percent","value":"1.00","advanced":"{\\"show_percentage\\":\\"1\\"}"}}',
         StoreScopeInterface::SCOPE_STORE,
         'default',
     )]
@@ -152,16 +163,22 @@ final class ImportCustomFeesTest extends TestCase
                     [
                         'code',
                         'title',
+                        'type',
+                        'show_percentage',
                         'value',
                     ],
                     [
                         'processing_fee',
                         'Processing Fee',
+                        'fixed',
+                        'no',
                         '5.00',
                     ],
                     [
                         'tariff',
                         'Tariff',
+                        'fixed',
+                        'no',
                         '20.00',
                     ],
                 ],
@@ -198,12 +215,16 @@ final class ImportCustomFeesTest extends TestCase
             '_1746639728881_881' => [
                 'code' => 'processing_fee',
                 'title' => 'Processing Fee',
+                'type' => 'fixed',
                 'value' => '5.00',
+                'advanced' => '{"show_percentage":"0"}',
             ],
             '_1746639729624_624' => [
                 'code' => 'tariff',
                 'title' => 'Tariff',
+                'type' => 'fixed',
                 'value' => '20.00',
+                'advanced' => '{"show_percentage":"0"}',
             ],
         ];
         $actualCustomFees = $this->getCustomFees(StoreScopeInterface::SCOPE_STORES, (int) $storeId);
@@ -214,8 +235,9 @@ final class ImportCustomFeesTest extends TestCase
     #[AppIsolation(true)]
     #[ConfigFixture(
         ConfigInterface::CONFIG_PATH_CUSTOM_FEES,
-        '{"_1727299833817_817":{"code":"test_fee_0","title":"Test Fee","value":"4.00"},'
-        . '"_1727299843197_197":{"code":"test_fee_1","title":"Another Fee","value":"1.00"}}',
+        '{"_1727299833817_817":{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","advanced":'
+        . '"{\\"show_percentage\\":\\"0\\"}"},"_1727299843197_197":{"code":"test_fee_1","title":"Another Fee","type":'
+        . '"percent","value":"1.00","advanced":"{\\"show_percentage\\":\\"1\\"}"}}',
         StoreScopeInterface::SCOPE_STORE,
         'default',
     )]
@@ -253,16 +275,22 @@ final class ImportCustomFeesTest extends TestCase
                     [
                         'code',
                         'title',
+                        'type',
+                        'show_percentage',
                         'value',
                     ],
                     [
                         'processing_fee',
                         'Processing Fee',
+                        'fixed',
+                        'no',
                         '5.00',
                     ],
                     [
                         'tariff',
                         'Tariff',
+                        'fixed',
+                        'no',
                         '20.00',
                     ],
                 ],
@@ -285,22 +313,30 @@ final class ImportCustomFeesTest extends TestCase
             '_1727299833817_817' => [
                 'code' => 'test_fee_0',
                 'title' => 'Test Fee',
+                'type' => 'fixed',
                 'value' => '4.00',
+                'advanced' => '{"show_percentage":"0"}',
             ],
             '_1727299843197_197' => [
                 'code' => 'test_fee_1',
                 'title' => 'Another Fee',
+                'type' => 'percent',
                 'value' => '1.00',
+                'advanced' => '{"show_percentage":"1"}',
             ],
             '_1746639728881_881' => [
                 'code' => 'processing_fee',
                 'title' => 'Processing Fee',
+                'type' => 'fixed',
                 'value' => '5.00',
+                'advanced' => '{"show_percentage":"0"}',
             ],
             '_1746639729624_624' => [
                 'code' => 'tariff',
                 'title' => 'Tariff',
+                'type' => 'fixed',
                 'value' => '20.00',
+                'advanced' => '{"show_percentage":"0"}',
             ],
         ];
         $actualCustomFees = $this->getCustomFees(StoreScopeInterface::SCOPE_STORES, (int) $storeId);
@@ -427,22 +463,90 @@ final class ImportCustomFeesTest extends TestCase
                     [
                         'key',
                         'name',
+                        'fee_type',
+                        'show_percent',
                         'amount',
                     ],
                     [
                         'test_fee_0',
                         'Test Fee',
+                        'fixed',
+                        'no',
                         '4.00',
                     ],
                     [
                         'test_fee_1',
                         'Another Fee',
+                        'percent',
+                        'no',
                         '1.00',
                     ],
                 ],
             );
 
         $this->expectExceptionObject($invalidFileException);
+
+        $importCustomFees->setHasDataChanges(true);
+        $importCustomFees->save();
+    }
+
+    public function testThrowsExceptionIfUploadedSpreadsheetHasInvalidFeeType(): void
+    {
+        $requestDataStub = $this->createStub(RequestDataInterface::class);
+        $csvStub = $this->createStub(Csv::class);
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var LocalizedException $invalidFeeTypeException */
+        $invalidFeeTypeException = $objectManager->create(
+            LocalizedException::class,
+            [
+                'phrase' => __('Invalid custom fee type "%1".', 'invalid'),
+            ],
+        );
+        /** @var ImportCustomFees $importCustomFees */
+        $importCustomFees = $objectManager->create(
+            ImportCustomFees::class,
+            [
+                'requestData' => $requestDataStub,
+                'csv' => $csvStub,
+            ],
+        );
+
+        $requestDataStub
+            ->method('getTmpName')
+            ->willReturn('/tmp/16cf42b');
+        $requestDataStub
+            ->method('getName')
+            ->willReturn('custom-fees.csv');
+
+        $csvStub
+            ->method('getData')
+            ->willReturn(
+                [
+                    [
+                        'code',
+                        'title',
+                        'type',
+                        'show_percentage',
+                        'value',
+                    ],
+                    [
+                        'processing_fee',
+                        'Processing Fee',
+                        'fixed',
+                        'no',
+                        '5.00',
+                    ],
+                    [
+                        'invalid_fee',
+                        'Invalid Fee',
+                        'invalid',
+                        'no',
+                        '2.00',
+                    ],
+                ],
+            );
+
+        $this->expectExceptionObject($invalidFeeTypeException);
 
         $importCustomFees->setHasDataChanges(true);
         $importCustomFees->save();

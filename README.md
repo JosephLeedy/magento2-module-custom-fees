@@ -22,6 +22,8 @@ customers when orders are placed.
     applied to an order based on product and cart details, including 
     specific product attributes, product SKU, cart subtotal, cart item count,
     total cart weight and more
+  - Custom fees can be applied as a fixed amount or a percentage of the order 
+    subtotal 
 - Custom fees are displayed for orders, invoices and credit memos in both the 
 frontend and backend
 - Custom fees can be refunded via Magento's credit memo functionality
@@ -77,17 +79,19 @@ can be configured in the Global (Default), Website or Store scope.
 The Custom Fees configuration page allows fees to imported from a CSV 
 spreadsheet containing the following columns:
 
-| Column | Description                                                                             | Example       |
-|--------|-----------------------------------------------------------------------------------------|---------------|
-| code   | A unique code identifying the custom fee (allowed characters: "A-Z", "a-z", "0-9", "_") | example_fee   |
-| title  | A short label describing the custom fee                                                 | "Example Fee" |
-| value  | The amount of the custom fee, in the store's default currency                           | 5.00          |
+| Column          | Description                                                                                               | Example       |
+|-----------------|-----------------------------------------------------------------------------------------------------------|---------------|
+| code            | A unique code identifying the custom fee (allowed characters: "A-Z", "a-z", "0-9", "_")                   | example_fee   |
+| title           | A short label describing the custom fee                                                                   | "Example Fee" |
+| type            | The type of custom fee ("fixed" or "percent" \[of order subtotal\])                                       | "fixed"       |
+| show_percentage | _Optional_ - Whether or not to show the percentage next to the fee name ("0", "n", "no", "1", "y", "yes") | "yes"         |
+| value           | The amount of the custom fee, in the store's default currency                                             | 5.00          |
 
 ##### Example CSV Import Spreadsheet
 
 ```csv
-code,title,value
-example_fee,"Example Fee",5.00
+code,title,type,show_percentage,value
+example_fee,"Example Fee",fixed,0,5.00
 ```
 
 #### Configuring Adavanced Settings

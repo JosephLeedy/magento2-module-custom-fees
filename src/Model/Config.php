@@ -47,7 +47,13 @@ class Config implements ConfigInterface
 
         try {
             /**
-             * @var array{code: string, title: string, value: float, advanced?: string}[] $customFees
+             * @var array{
+             *     code: string,
+             *     title: string,
+             *     type: value-of<FeeType>,
+             *     value: float,
+             *     advanced?: string
+             * }[] $customFees
              */
             $customFees = $this->serializer->unserialize($customFeesJson);
         } catch (InvalidArgumentException $invalidArgumentException) {
@@ -67,7 +73,7 @@ class Config implements ConfigInterface
                 }
 
                 try {
-                    $customFee['advanced'] = json_decode(
+                    $customFee['advanced'] = (array) json_decode(
                         $customFee['advanced'],
                         true,
                         512,
@@ -83,6 +89,12 @@ class Config implements ConfigInterface
                         $jsonException,
                     );
                 }
+
+                if (array_key_exists('show_percentage', $customFee['advanced'])) {
+                    $customFee['advanced']['show_percentage'] = (bool) $customFee['advanced']['show_percentage'];
+                } else {
+                    $customFee['advanced']['show_percentage'] = FeeType::Percent->equals($customFee['type']);
+                }
             },
         );
 
@@ -90,6 +102,7 @@ class Config implements ConfigInterface
          * @var array{
          *      code: string,
          *      title: string,
+         *      type: value-of<FeeType>,
          *      value: float,
          *      advanced: array{
          *          conditions?: array{
@@ -105,7 +118,8 @@ class Config implements ConfigInterface
          *                      value: string
          *                  }
          *              >
-         *          }
+         *          },
+         *          show_percentage: bool,
          *      }
          *  }[] $customFees
          */

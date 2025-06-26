@@ -7,13 +7,16 @@ namespace JosephLeedy\CustomFees\Block\System\Config\Form\Field;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 
+use function __;
 use function str_replace;
 
 class ImportCustomFees extends Field
 {
     protected function _getElementHtml(AbstractElement $element): string
     {
-        $elementHtml = parent::_getElementHtml($element);
+        $elementHtml = '<label class="import-fees-label" for="' . $element->getHtmlId() . '">'
+            . __('Import Custom Fees') . "</span></label>\n";
+        $elementHtml .= parent::_getElementHtml($element);
         $elementHtml .= $this->renderReplaceExistingCheckbox($element);
 
         return $elementHtml;

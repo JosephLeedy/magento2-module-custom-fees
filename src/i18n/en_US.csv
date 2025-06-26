@@ -11,13 +11,17 @@ Amount,Amount
 "Amount Invoiced","Amount Invoiced"
 CSV,CSV
 "Excel XML","Excel XML"
-"Fee Amount","Fee Amount"
 Code,Code
-"Fee Name","Fee Name"
+Name,Name
+Type,Type
 "Add Custom Fee","Add Custom Fee"
 Conditions,Conditions
 "Apply the fee only if the following conditions are met:","Apply the fee only if the following conditions are met:"
+Display,Display
+"Show Percentage","Show Percentage"
+"If ""Yes,"" the fee percentage will be shown next to its name (i.e. ""Processing (10%)"").","If ""Yes,"" the fee percentage will be shown next to its name (i.e. ""Processing (10%)"")."
 "Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2""","Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2"""
+"Import Custom Fees","Import Custom Fees"
 "Replace Existing Custom Fees","Replace Existing Custom Fees"
 Sales,Sales
 "Custom Order Fees Report","Custom Order Fees Report"
@@ -28,12 +32,17 @@ Sales,Sales
 "Custom Fees spreadsheet must be a CSV file.","Custom Fees spreadsheet must be a CSV file."
 "Could not read Custom Fees spreadsheet.","Could not read Custom Fees spreadsheet."
 "Invalid Custom Fees spreadsheet.","Invalid Custom Fees spreadsheet."
+"Invalid custom fee type ""%1"".","Invalid custom fee type ""%1""."
 "Invalid custom fees","Invalid custom fees"
 "Custom order fees with ID ""%1"" does not exist.","Custom order fees with ID ""%1"" does not exist."
 "Custom fees do not exist for order with ID ""%1"".","Custom fees do not exist for order with ID ""%1""."
 "Custom fees have already been saved for order with ID ""%1"".","Custom fees have already been saved for order with ID ""%1""."
 "Could not save custom fees for order with ID ""%1"". Error: ""%2""","Could not save custom fees for order with ID ""%1"". Error: ""%2"""
 "Could not delete custom fees for order with ID ""%1"". Error: ""%2""","Could not delete custom fees for order with ID ""%1"". Error: ""%2"""
+Fixed,Fixed
+Percent,Percent
+"Fixed fee amount","Fixed fee amount"
+"Percentage of order total","Percentage of order total"
 "Order with ID ""%1"" does not exist.","Order with ID ""%1"" does not exist."
 "Unsupported database server version ""%1"".","Unsupported database server version ""%1""."
 "Conditions Combination","Conditions Combination"
@@ -53,6 +62,8 @@ Subtotal,Subtotal
 "Custom Order Fees","Custom Order Fees"
 "%1 (Base)","%1 (Base)"
 "%1 (Purchased)","%1 (Purchased)"
+"Could not get identifier for scope ""%1"".","Could not get identifier for scope ""%1""."
+"Could not serialize custom fees.","Could not serialize custom fees."
 "Advanced Settings","Advanced Settings"
 Advanced,Advanced
 "Are you sure you want to close Advanced Settings?","Are you sure you want to close Advanced Settings?"
@@ -60,7 +71,6 @@ Advanced,Advanced
 Close,Close
 Done,Done
 "Advanced Settings for %1","Advanced Settings for %1"
-"<strong>Note:</strong> Fee amount is relative to the store's base currency and will be converted to the customer's selected currency.","<strong>Note:</strong> Fee amount is relative to the store's base currency and will be converted to the customer's selected currency."
-"Import Custom Fees","Import Custom Fees"
+"<strong>Note:</strong> Fixed fee amount is relative to the store's base currency and will be converted to the customer's selected currency. Percent fees are based on an order's subtotal.","<strong>Note:</strong> Fixed fee amount is relative to the store's base currency and will be converted to the customer's selected currency. Percent fees are based on an order's subtotal."
 "Import custom fees from a CSV spreadsheet. <a href=""{{exampleCsvUrl}}"">Example file</a>","Import custom fees from a CSV spreadsheet. <a href=""{{exampleCsvUrl}}"">Example file</a>"
 "All Websites","All Websites"

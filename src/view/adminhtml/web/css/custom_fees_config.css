@@ -1,10 +1,32 @@
 #sales_custom_order_fees {
     .label {
-        width: 12%;
+        display: none;
     }
 
     .value {
-        width: 70%;
+        width: 84%;
+    }
+
+    .use-default {
+        padding-right: 0;
+    }
+
+    label.import-fees-label {
+        display: block;
+        padding-bottom: 6px;
+        color: #303030;
+        font-size: 14px;
+        font-weight: 600;
+    }
+}
+
+#sales_custom_order_fees_custom_fees {
+    .fee-value {
+        max-width: 95px;
+    }
+
+    select[name$="[type]"] {
+        min-width: 105px;
     }
 }
 

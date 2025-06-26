@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model\Total\Quote;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\ConditionsApplier;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
@@ -19,6 +20,7 @@ use Psr\Log\LoggerInterface;
 use function array_key_exists;
 use function array_walk;
 use function count;
+use function round;
 
 class CustomFees extends AbstractTotal
 {
@@ -44,13 +46,20 @@ class CustomFees extends AbstractTotal
             return $this;
         }
 
-        [$baseCustomFees, $localCustomFees] = $this->getCustomFees($quote);
+        [$baseCustomFees, $localCustomFees] = $this->getCustomFees($quote, $total);
         $customFees = $baseCustomFees;
 
         array_walk(
             $baseCustomFees,
             /**
-             * @param array{code: string, title: string, value: float} $baseCustomFee
+             * @param array{
+             *     code: string,
+             *     title: string,
+             *     type: value-of<FeeType>,
+             *     percent: float|null,
+             *     show_percentage: bool,
+             *     value: float
+             * } $baseCustomFee
              */
             static function (array $baseCustomFee, string|int $key) use ($total, &$customFees): void {
                 $total->setBaseTotalAmount($baseCustomFee['code'], $baseCustomFee['value']);
@@ -61,7 +70,14 @@ class CustomFees extends AbstractTotal
         array_walk(
             $localCustomFees,
             /**
-             * @param array{code: string, title: string, value: float} $localCustomFee
+             * @param array{
+             *     code: string,
+             *     title: string,
+             *     type: value-of<FeeType>,
+             *     percent: float|null,
+             *     show_percentage: bool,
+             *     value: float
+             * } $localCustomFee
              */
             static function (array $localCustomFee, string|int $key) use ($total, &$customFees): void {
                 $total->setTotalAmount($localCustomFee['code'], $localCustomFee['value']);
@@ -82,19 +98,33 @@ class CustomFees extends AbstractTotal
     }
 
     /**
-     * @return array{code: string, title: Phrase, value: float}[]
+     * @return array{
+     *     code: string,
+     *     title: Phrase,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     value: float
+     * }[]
      */
     public function fetch(Quote $quote, Total $total): array
     {
-        [, $localCustomFees] = $this->getCustomFees($quote);
+        [, $localCustomFees] = $this->getCustomFees($quote, $total, true);
 
         return $localCustomFees;
     }
 
     /**
-     * @return array{code: string, title: Phrase, value: float}[][]
+     * @return array{
+     *     code: string,
+     *     title: Phrase,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     value: float
+     * }[][]
      */
-    private function getCustomFees(Quote $quote): array
+    private function getCustomFees(Quote $quote, Total $total, bool $isFetch = false): array
     {
         $store = $quote->getStore();
         $baseCustomFees = [];
@@ -113,6 +143,17 @@ class CustomFees extends AbstractTotal
                 continue;
             }
 
+            $customFee['percent'] = null;
+
+            if (FeeType::Percent->equals($customFee['type'])) {
+                $customFee['percent'] = $customFee['value'];
+                $customFee['value'] = round(((float) $customFee['value'] * (float) $total->getBaseSubtotal()) / 100, 2);
+
+                if ($isFetch && $customFee['advanced']['show_percentage']) {
+                    $customFee['title'] .= " ({$customFee['percent']}%)";
+                }
+            }
+
             if (
                 array_key_exists('conditions', $customFee['advanced'])
                 && count($customFee['advanced']['conditions']) > 0
@@ -127,6 +168,8 @@ class CustomFees extends AbstractTotal
                     continue;
                 }
             }
+
+            $customFee['show_percentage'] = $customFee['advanced']['show_percentage'];
 
             unset($customFee['advanced']);
 
