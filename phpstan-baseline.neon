@@ -111,6 +111,11 @@ parameters:
 			path: src/Model/ResourceModel/Report/CustomOrderFees.php
 
 		-
+			message: "#^Return type \\(Magento\\\\Framework\\\\Data\\\\Form\\\\Element\\\\AbstractElement\\) of method JosephLeedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\Quote\\:\\:getAttributeElement\\(\\) should be compatible with return type \\(\\$this\\(Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\)\\) of method Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\:\\:getAttributeElement\\(\\)$#"
+			count: 1
+			path: src/Model/Rule/Condition/Quote.php
+
+		-
 			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\QuoteAddress\\:\\:getValueSelectOptions\\(\\) should return array\\{country_id\\?\\: array\\{value\\: string, label\\: Magento\\\\Framework\\\\Phrase\\}, region_id\\?\\: array\\{value\\: string, label\\: Magento\\\\Framework\\\\Phrase\\}, shipping_method\\?\\: array\\{value\\: string, label\\: Magento\\\\Framework\\\\Phrase\\}\\} but returns mixed\\.$#"
 			count: 2
 			path: src/Model/Rule/Condition/QuoteAddress.php

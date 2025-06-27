@@ -11,6 +11,7 @@ use Magento\Rule\Model\Condition\Context;
 use function __;
 use function array_keys;
 use function array_map;
+use function array_merge;
 use function array_merge_recursive;
 use function array_values;
 
@@ -25,6 +26,7 @@ class Combine extends CoreCombineConditionModel
      */
     public function __construct(
         Context $context,
+        private readonly Quote $quoteCondition,
         private readonly QuoteAddress $quoteAddressCondition,
         private readonly Product $productCondition,
         array $data = [],
@@ -49,6 +51,16 @@ class Combine extends CoreCombineConditionModel
             array_keys($productAttributeOptions),
             array_values($productAttributeOptions),
         );
+        /** @var array<string, Phrase> $quoteAttributesOptions */
+        $quoteAttributesOptions = $this->quoteCondition->loadAttributeOptions()->getAttributeOption();
+        $quoteAttributes = array_map(
+            static fn(string $code, Phrase $label): array => [
+                'value' => Quote::class . '|' . $code,
+                'label' => $label,
+            ],
+            array_keys($quoteAttributesOptions),
+            array_values($quoteAttributesOptions),
+        );
         /** @var array<string, Phrase> $quoteAddressAttributesOptions */
         $quoteAddressAttributesOptions = $this->quoteAddressCondition->loadAttributeOptions()->getAttributeOption();
         $quoteAddressAttributes = array_map(
@@ -71,7 +83,7 @@ class Combine extends CoreCombineConditionModel
                     'label' => __('Product Attribute'),
                 ],
                 [
-                    'value' => $quoteAddressAttributes,
+                    'value' => array_merge($quoteAttributes, $quoteAddressAttributes),
                     'label' => __('Cart Attribute'),
                 ],
             ],

@@ -36,7 +36,6 @@ class QuoteAddress extends AbstractCondition
         $attributes = [
             'base_subtotal' => __('Subtotal'),
             'base_subtotal_total_incl_tax' => __('Subtotal (Incl. Tax)'),
-            'total_qty' => __('Total Items Quantity'),
             'weight' => __('Total Weight'),
             'shipping_method' => __('Shipping Method'),
             'postcode' => __('Shipping Postcode'),
@@ -63,7 +62,7 @@ class QuoteAddress extends AbstractCondition
     public function getInputType(): string
     {
         return match ($this->getAttribute()) {
-            'base_subtotal', 'base_subtotal_total_incl_tax', 'weight', 'total_qty' => 'numeric',
+            'base_subtotal', 'base_subtotal_total_incl_tax', 'weight' => 'numeric',
             'shipping_method', 'country_id', 'region_id' => 'select',
             default => 'string',
         };
