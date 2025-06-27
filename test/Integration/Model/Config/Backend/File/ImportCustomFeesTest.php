@@ -572,7 +572,7 @@ final class ImportCustomFeesTest extends TestCase
             ->where('path = ?', ConfigInterface::CONFIG_PATH_CUSTOM_FEES)
             ->limit(1);
         $rawCustomFees = $connection->query($select)->fetchColumn() ?: '[]';
-        $customFees = json_decode($rawCustomFees, true, JSON_THROW_ON_ERROR);
+        $customFees = json_decode($rawCustomFees, true, 512, JSON_THROW_ON_ERROR);
 
         return $customFees;
     }
