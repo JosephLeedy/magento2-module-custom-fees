@@ -26,6 +26,20 @@ class CustomFees implements ArgumentInterface
      *     type: value-of<FeeType>,
      *     value: float,
      *     advanced: array{
+     *         conditions?: array{
+     *             type: class-string,
+     *             aggregator: string,
+     *             value: '0'|'1',
+     *             conditions: array<
+     *                 int,
+     *                 array{
+     *                     type: class-string,
+     *                     attribute: string,
+     *                     operator: string,
+     *                     value: string
+     *                 }
+     *             >
+     *         },
      *         show_percentage: bool,
      *     }
      * }[]
