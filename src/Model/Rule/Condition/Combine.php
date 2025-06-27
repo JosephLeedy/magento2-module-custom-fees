@@ -26,9 +26,9 @@ class Combine extends CoreCombineConditionModel
      */
     public function __construct(
         Context $context,
+        private readonly Product $productCondition,
         private readonly Quote $quoteCondition,
         private readonly QuoteAddress $quoteAddressCondition,
-        private readonly Product $productCondition,
         array $data = [],
     ) {
         parent::__construct($context, $data);
