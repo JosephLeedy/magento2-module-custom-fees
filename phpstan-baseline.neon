@@ -26,9 +26,54 @@ parameters:
 			path: src/Block/System/Config/Form/Field/CustomFees.php
 
 		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Block\\\\System\\\\Config\\\\Form\\\\Field\\\\CustomFees\\\\Advanced\\\\Form\\:\\:getConfig\\(\\) should return array\\{conditions\\?\\: array\\{type\\: class\\-string, aggregator\\: string, value\\: '0'\\|'1', conditions\\: array\\<int, array\\{type\\: class\\-string, attribute\\: string, operator\\: string, value\\: string\\}\\>\\}, show_percentage\\?\\: bool\\} but returns array\\|float\\|int\\<min, \\-1\\>\\|int\\<1, max\\>\\|non\\-falsy\\-string\\|true\\.$#"
+			count: 1
+			path: src/Block/System/Config/Form/Field/CustomFees/Advanced/Form.php
+
+		-
+			message: "#^Parameter \\#1 \\$form of method Magento\\\\Rule\\\\Model\\\\Condition\\\\Combine\\:\\:setJsFormObject\\(\\) expects Magento\\\\Framework\\\\Data\\\\Form, string given\\.$#"
+			count: 1
+			path: src/Block/System/Config/Form/Field/CustomFees/Advanced/Form.php
+
+		-
+			message: "#^Setter methods like Magento\\\\Backend\\\\Block\\\\Widget\\\\Form\\\\Renderer\\\\Fieldset\\:\\:setTemplate\\(\\) are deprecated in Block classes, use constructor arguments instead$#"
+			count: 1
+			path: src/Block/System/Config/Form/Field/CustomFees/Advanced/Form.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: src/Block/System/Config/Form/Field/ImportCustomFees.php
+
+		-
 			message: "#^Method JosephLeedy\\\\CustomFees\\\\Controller\\\\Adminhtml\\\\Report\\\\CustomOrderFees\\:\\:execute\\(\\) should return Magento\\\\Framework\\\\App\\\\ResponseInterface\\|Magento\\\\Framework\\\\Controller\\\\ResultInterface but return statement is missing\\.$#"
 			count: 1
 			path: src/Controller/Adminhtml/Report/CustomOrderFees.php
+
+		-
+			message: "#^Call to an undefined method Magento\\\\Rule\\\\Model\\\\Condition\\\\ConditionInterface\\:\\:setAttribute\\(\\)\\.$#"
+			count: 1
+			path: src/Controller/Adminhtml/System/Config/CustomFees/Advanced/NewConditionHtml.php
+
+		-
+			message: "#^Cannot call method setId\\(\\) on mixed\\.$#"
+			count: 1
+			path: src/Controller/Adminhtml/System/Config/CustomFees/Advanced/NewConditionHtml.php
+
+		-
+			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\<string\\>\\|string, mixed given\\.$#"
+			count: 1
+			path: src/Controller/Adminhtml/System/Config/CustomFees/Advanced/NewConditionHtml.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: src/Model/Config/Backend/File/ImportCustomFees.php
+
+		-
+			message: "#^Call to an undefined method Magento\\\\Store\\\\Api\\\\Data\\\\WebsiteInterface\\:\\:getDefaultStore\\(\\)\\.$#"
+			count: 1
+			path: src/Model/Config/Backend/File/ImportCustomFees.php
 
 		-
 			message: "#^Parameter \\#1 \\$items of method Magento\\\\Framework\\\\Api\\\\SearchResultsInterface\\:\\:setItems\\(\\) expects array\\<Magento\\\\Framework\\\\Api\\\\ExtensibleDataInterface\\>, array\\<Magento\\\\Framework\\\\DataObject\\> given\\.$#"
@@ -66,7 +111,22 @@ parameters:
 			path: src/Model/ResourceModel/Report/CustomOrderFees.php
 
 		-
-			message: "#^Parameter \\#1 \\$customFees of method Magento\\\\Quote\\\\Api\\\\Data\\\\CartExtensionInterface\\:\\:setCustomFees\\(\\) expects array\\<mixed\\>, array\\<array\\<string, float\\|Magento\\\\Framework\\\\Phrase\\|string\\>\\> given\\.$#"
+			message: "#^Return type \\(Magento\\\\Framework\\\\Data\\\\Form\\\\Element\\\\AbstractElement\\) of method JosephLeedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\Quote\\:\\:getAttributeElement\\(\\) should be compatible with return type \\(\\$this\\(Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\)\\) of method Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\:\\:getAttributeElement\\(\\)$#"
+			count: 1
+			path: src/Model/Rule/Condition/Quote.php
+
+		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\QuoteAddress\\:\\:getValueSelectOptions\\(\\) should return array\\{country_id\\?\\: array\\{value\\: string, label\\: Magento\\\\Framework\\\\Phrase\\}, region_id\\?\\: array\\{value\\: string, label\\: Magento\\\\Framework\\\\Phrase\\}, shipping_method\\?\\: array\\{value\\: string, label\\: Magento\\\\Framework\\\\Phrase\\}\\} but returns mixed\\.$#"
+			count: 2
+			path: src/Model/Rule/Condition/QuoteAddress.php
+
+		-
+			message: "#^Return type \\(Magento\\\\Framework\\\\Data\\\\Form\\\\Element\\\\AbstractElement\\) of method JosephLeedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\QuoteAddress\\:\\:getAttributeElement\\(\\) should be compatible with return type \\(\\$this\\(Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\)\\) of method Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\:\\:getAttributeElement\\(\\)$#"
+			count: 1
+			path: src/Model/Rule/Condition/QuoteAddress.php
+
+		-
+			message: "#^Parameter \\#1 \\$customFees of method Magento\\\\Quote\\\\Api\\\\Data\\\\CartExtensionInterface\\:\\:setCustomFees\\(\\) expects array\\<mixed\\>, array\\<array\\<string, bool\\|float\\|Magento\\\\Framework\\\\Phrase\\|string\\|null\\>\\> given\\.$#"
 			count: 1
 			path: src/Model/Total/Quote/CustomFees.php
 
@@ -74,6 +134,31 @@ parameters:
 			message: "#^Parameter \\#2 \\$scope of method Magento\\\\Framework\\\\Pricing\\\\PriceCurrencyInterface\\:\\:convert\\(\\) expects bool\\|int\\|Magento\\\\Framework\\\\App\\\\ScopeInterface\\|string\\|null, Magento\\\\Store\\\\Api\\\\Data\\\\StoreInterface given\\.$#"
 			count: 1
 			path: src/Model/Total/Quote/CustomFees.php
+
+		-
+			message: "#^Parameter \\#4 \\$after of method Magento\\\\Framework\\\\Data\\\\Form\\\\Element\\\\Fieldset\\:\\:addField\\(\\) expects bool, string given\\.$#"
+			count: 1
+			path: src/Observer/AddFieldToProductAttributeEditForm.php
+
+		-
+			message: "#^Parameter \\#1 \\$scopeId of method Magento\\\\Framework\\\\App\\\\ScopeResolverInterface\\:\\:getScope\\(\\) expects int\\|null, string\\|null given\\.$#"
+			count: 1
+			path: src/Service/ConfigUpdater.php
+
+		-
+			message: "#^Use service contracts to persist entities in favour of JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFees\\:\\:save\\(\\) method$#"
+			count: 1
+			path: src/Setup/Patch/Data/AddFieldsToCustomOrderFeesPatch.php
+
+		-
+			message: "#^Parameter \\#1 \\(array\\|string\\) of echo cannot be converted to string\\.$#"
+			count: 1
+			path: src/view/adminhtml/templates/system/config/form/field/custom_fees/advanced.phtml
+
+		-
+			message: "#^Parameter \\#1 \\(array\\|string\\) of echo cannot be converted to string\\.$#"
+			count: 2
+			path: src/view/adminhtml/templates/system/config/form/field/custom_fees/advanced/form/fieldset/conditions.phtml
 
 		-
 			message: "#^Call to method require\\(\\) on an unknown class Hyva\\\\Theme\\\\Model\\\\ViewModelRegistry\\.$#"

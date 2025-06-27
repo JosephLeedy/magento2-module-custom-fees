@@ -18,7 +18,7 @@ class OrderRepositoryInterfacePlugin
     public function afterGet(
         OrderRepositoryInterface $subject,
         OrderInterface $result,
-        int|string $id
+        int|string $id,
     ): OrderInterface {
         $orderExtension = $result->getExtensionAttributes();
 

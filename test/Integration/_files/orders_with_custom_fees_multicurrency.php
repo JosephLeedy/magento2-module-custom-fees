@@ -33,12 +33,18 @@ $testCustomFees = [
     '_1727299122629_629' => [
         'code' => 'test_fee_0',
         'title' => 'Test Fee',
+        'type' => 'fixed',
+        'percent' => null,
+        'show_percentage' => false,
         'base_value' => 5.00,
         'value' => 5.00,
     ],
     '_1727299257083_083' => [
         'code' => 'test_fee_1',
         'title' => 'Another Test Fee',
+        'type' => 'fixed',
+        'percent' => null,
+        'show_percentage' => false,
         'base_value' => 1.50,
         'value' => 1.50,
     ],

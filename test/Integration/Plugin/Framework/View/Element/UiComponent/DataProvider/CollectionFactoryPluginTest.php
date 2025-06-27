@@ -42,7 +42,7 @@ final class CollectionFactoryPluginTest extends TestCase
                 'collections' => [
                     'sales_order_grid_data_source' => OrderGridCollection::class,
                 ],
-            ]
+            ],
         );
 
         $report = $collectionFactory->getReport('sales_order_grid_data_source');
@@ -61,7 +61,7 @@ final class CollectionFactoryPluginTest extends TestCase
                 'collections' => [
                     'product_grid_data_source' => ProductCollection::class,
                 ],
-            ]
+            ],
         );
 
         $report = $collectionFactory->getReport('product_grid_data_source');

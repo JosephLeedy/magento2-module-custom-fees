@@ -6,6 +6,7 @@ namespace JosephLeedy\CustomFees\Observer;
 
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterfaceFactory;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Quote\Api\Data\CartExtensionInterface;
@@ -22,8 +23,7 @@ use function count;
  */
 class BeforeQuoteSubmitObserver implements ObserverInterface
 {
-    public function __construct(private readonly CustomOrderFeesInterfaceFactory $customOrderFeesFactory)
-    {}
+    public function __construct(private readonly CustomOrderFeesInterfaceFactory $customOrderFeesFactory) {}
 
     public function execute(Observer $observer): void
     {
@@ -34,7 +34,17 @@ class BeforeQuoteSubmitObserver implements ObserverInterface
         $order = $event->getData('order');
         /** @var CartExtensionInterface $quoteExtension */
         $quoteExtension = $quote->getExtensionAttributes();
-        /** @var array<string, array{code: string, title: string, base_value: float, value: float}>|null $customFees */
+        /**
+         * @var array<string, array{
+         *      code: string,
+         *      title: string,
+         *      type: value-of<FeeType>,
+         *      percent: float|null,
+         *      show_percentage: bool,
+         *      base_value: float,
+         *      value: float
+         *  }>|null $customFees
+         */
         $customFees = $quoteExtension->getCustomFees();
         /** @var OrderExtensionInterface $orderExtension */
         $orderExtension = $order->getExtensionAttributes();

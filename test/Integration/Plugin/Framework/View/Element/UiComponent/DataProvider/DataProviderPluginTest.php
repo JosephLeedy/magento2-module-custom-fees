@@ -40,7 +40,7 @@ final class DataProviderPluginTest extends TestCase
                 'name' => 'sales_order_grid_data_source',
                 'requestFieldName' => 'id',
                 'primaryFieldName' => 'main_table.entity_id',
-            ]
+            ],
         );
 
         /**
@@ -72,7 +72,7 @@ final class DataProviderPluginTest extends TestCase
                 'name' => 'sales_order_invoice_grid_data_source',
                 'requestFieldName' => 'id',
                 'primaryFieldName' => 'entity_id',
-            ]
+            ],
         );
 
         /**

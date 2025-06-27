@@ -34,14 +34,14 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
         private readonly SerializerInterface $serializer,
         ?AbstractResource $resource = null,
         ?AbstractDb $resourceCollection = null,
-        array $data = []
+        array $data = [],
     ) {
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
     public function setOrderId(int|string $orderId): CustomOrderFeesInterface
     {
-        $this->setData(self::ORDER_ID, (int)$orderId);
+        $this->setData(self::ORDER_ID, (int) $orderId);
 
         return $this;
     }
@@ -52,7 +52,7 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
         $orderId = $this->getData(self::ORDER_ID);
 
         if ($orderId !== null) {
-            $orderId = (int)$orderId;
+            $orderId = (int) $orderId;
         }
 
         return $orderId;
@@ -62,12 +62,12 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
     {
         if (is_string($customFees)) {
             try {
-                $customFees = (array)(
+                $customFees = (array) (
                     $this->serializer->unserialize($customFees)
-                        ?: throw new InvalidArgumentException((string)__('Invalid custom fees'))
+                        ?: throw new InvalidArgumentException((string) __('Invalid custom fees'))
                 );
             } catch (InvalidArgumentException) {
-                throw new InvalidArgumentException((string)__('Invalid custom fees'));
+                throw new InvalidArgumentException((string) __('Invalid custom fees'));
             }
         }
 
@@ -82,6 +82,9 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
          * @var array<string, array{
          *     code: string,
          *     title: string,
+         *     type: value-of<FeeType>,
+         *     percent: float|null,
+         *     show_percentage: bool,
          *     base_value: float,
          *     value: float
          * }>|string|null $customFees

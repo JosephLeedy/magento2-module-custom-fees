@@ -1,0 +1,52 @@
+<?php
+
+declare(strict_types=1);
+
+use JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\Advanced;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Helper\SecureHtmlRenderer;
+
+/** @var Advanced $block */
+/** @var Escaper $escaper */
+/** @var SecureHtmlRenderer $secureRenderer */
+
+// phpcs:disable Generic.PHP.DisallowAlternativePHPTags.MaybeASPOpenTagFound,Generic.Files.LineLength.TooLong
+
+$buttonId = $block->getButtonId();
+$modalId = $block->getModalId();
+?>
+<input type="hidden" id="<?= /* @noEscape */ $block->getInputId() ?>" name="<?= /* @noEscape */ $block->getInputName() ?>" value="<%- <?= /* @noEscape */ $block->getColumnName() ?> %>">
+<button type="button" class="action-custom-fees-advanced-config" id="<?= /* @noEscape */ $buttonId ?>" title="<?= $escaper->escapeHtmlAttr((string) __('Advanced Settings')) ?>">
+    <span><?= $escaper->escapeHtml((string) __('Advanced')) ?></span>
+</button>
+
+<div id="<?= /* @noEscape */ $modalId ?>" class="system-config-custom-fees-advanced-modal" data-row-id="<?= /* @noEscape */ $block->getRowId() ?>" data-input-id="<?= /* @noEscape */ $block->getInputId() ?>">
+</div>
+
+<?php
+$script = <<<JAVASCRIPT
+    require(
+        [
+            'prototype',
+            'JosephLeedy_CustomFees/js/system/config/form/field/custom_fees/advanced'
+        ],
+        function (prototype, advancedCustomFeesSettings) {
+            function handleAdvancedButtonClick() {
+                advancedCustomFeesSettings(
+                    {
+                        buttonId: "$buttonId",
+                        inputId: "{$block->getInputId()}",
+                        rowId: "{$block->getRowId()}",
+                        formKey: "{$block->getFormKey()}",
+                        formUrl: "{$block->getFormUrl()}"
+                    },
+                    $('$modalId')
+                );
+            }
+
+            Event.observe('$buttonId', 'click', handleAdvancedButtonClick);
+        }
+    );
+    JAVASCRIPT;
+/* @noEscape */ echo $secureRenderer->renderTag('script', [], $script, false);
+?>

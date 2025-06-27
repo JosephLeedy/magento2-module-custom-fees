@@ -26,8 +26,8 @@ class CustomOrderFees extends AbstractDb
     protected $_serializableFields = [
         'custom_fees' => [
             [],
-            []
-        ]
+            [],
+        ],
     ];
     /**
      * Mark `order_entity_id` field as unique
@@ -37,15 +37,15 @@ class CustomOrderFees extends AbstractDb
     protected $_uniqueFields = [
         [
             'field' => 'order_entity_id',
-            'title' => 'Custom fees order ID'
-        ]
+            'title' => 'Custom fees order ID',
+        ],
     ];
     private OrderInterface $order;
 
     public function __construct(
         Context $context,
         private readonly OrderRepositoryInterface $orderRepository,
-        $connectionName = null
+        $connectionName = null,
     ) {
         parent::__construct($context, $connectionName);
     }
@@ -64,7 +64,7 @@ class CustomOrderFees extends AbstractDb
         } catch (InputException) { // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
             // No-op; this exception will never be thrown
         } catch (NoSuchEntityException) {
-            throw new InvalidArgumentException((string)__('Order with ID "%1" does not exist.', $orderId));
+            throw new InvalidArgumentException((string) __('Order with ID "%1" does not exist.', $orderId));
         }
 
         return $this->order;

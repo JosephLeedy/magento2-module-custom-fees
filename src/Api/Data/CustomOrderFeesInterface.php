@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Api\Data;
 
 use InvalidArgumentException;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Sales\Api\Data\OrderInterface;
 
 /**
@@ -33,6 +34,9 @@ interface CustomOrderFeesInterface
      * @phpstan-param string|array<string, array{
      *     code: string,
      *     title: string,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
      *     base_value: float,
      *     value: float
      * }> $customFees
@@ -42,7 +46,15 @@ interface CustomOrderFeesInterface
 
     /**
      * @return string[]|float[]
-     * @phpstan-return array{}|array<string, array{code: string, title: string, base_value: float, value: float}>
+     * @phpstan-return array{}|array<string, array{
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     base_value: float,
+     *     value: float
+     * }>
      */
     public function getCustomFees(): array;
 

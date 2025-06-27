@@ -34,12 +34,12 @@ final class CustomFeesTest extends TestCase
             '_1727299833817_817' => [
                 'amount' => '$5.00',
                 'label' => 'Test Fee:',
-                'font_size' => 7
+                'font_size' => 7,
             ],
             '_1727299843197_197' => [
                 'amount' => '$1.50',
                 'label' => 'Another Test Fee:',
-                'font_size' => 7
+                'font_size' => 7,
             ],
         ];
         $actualCustomFeesTotals = $customFeesOrderPdfModel->getTotalsForDisplay();
@@ -130,11 +130,11 @@ final class CustomFeesTest extends TestCase
     {
         return [
             'order does not have custom fees' => [
-                'canDisplayZero' => 'true'
+                'canDisplayZero' => 'true',
             ],
             'order has custom fees with zero amount' => [
-                'canDisplayZero' => 'false'
-            ]
+                'canDisplayZero' => 'false',
+            ],
         ];
     }
 
@@ -158,7 +158,7 @@ final class CustomFeesTest extends TestCase
                 'hasCustomFees' => false,
                 'canDisplayZero' => 'false',
                 'expectedCanDisplay' => false,
-            ]
+            ],
         ];
     }
 }

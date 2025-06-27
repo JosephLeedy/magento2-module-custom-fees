@@ -56,12 +56,12 @@ final class TotalsTest extends TestCase
                     'context' => $objectManager->get(Context::class),
                     'customFeesRetriever' => $objectManager->create(CustomFeesRetriever::class),
                     'dataObjectFactory' => $objectManager->get(DataObjectFactory::class),
-                    'data' => []
-                ]
+                    'data' => [],
+                ],
             )->onlyMethods(
                 [
                     'getParentBlock',
-                ]
+                ],
             )->getMock();
 
         $order->loadByIncrementId('100000001');
@@ -97,28 +97,28 @@ final class TotalsTest extends TestCase
         return [
             'does initialize totals for order with custom fees' => [
                 'totalsType' => 'order',
-                'condition' => 'does'
+                'condition' => 'does',
             ],
             'does initialize totals for invoice with custom fees' => [
                 'totalsType' => 'invoice',
-                'condition' => 'does'
+                'condition' => 'does',
             ],
             'does initialize totals for creditmemo with custom fees' => [
                 'totalsType' => 'creditmemo',
-                'condition' => 'does'
+                'condition' => 'does',
             ],
             'does not initialize totals for order without custom fees' => [
                 'totalsType' => 'order',
-                'condition' => 'does not'
+                'condition' => 'does not',
             ],
             'does not initialize totals for invoice without custom fees' => [
                 'totalsType' => 'invoice',
-                'condition' => 'does not'
+                'condition' => 'does not',
             ],
             'does not initialize totals for creditmemo without custom fees' => [
                 'totalsType' => 'creditmemo',
-                'condition' => 'does not'
-            ]
+                'condition' => 'does not',
+            ],
         ];
     }
 }

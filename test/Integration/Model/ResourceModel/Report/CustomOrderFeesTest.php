@@ -62,7 +62,7 @@ final class CustomOrderFeesTest extends TestCase
             CustomOrderFees::class,
             [
                 'context' => $contextStub,
-            ]
+            ],
         );
 
         $customOrderFeesReport->aggregate();
@@ -73,7 +73,7 @@ final class CustomOrderFeesTest extends TestCase
      */
     public function testChecksIfDatabaseServerVersionIsSupported(
         string $databaseServerVersion,
-        bool $expectedResult
+        bool $expectedResult,
     ): void {
         $connectionStub = $this->createStub(AdapterInterface::class);
         $resourcesStub = $this->createStub(ResourceConnection::class);
@@ -97,7 +97,7 @@ final class CustomOrderFeesTest extends TestCase
             CustomOrderFees::class,
             [
                 'context' => $contextStub,
-            ]
+            ],
         );
 
         $actualResult = $customOrderFeesReport->isDatabaseServerSupported($databaseServerVersion);
