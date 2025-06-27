@@ -187,14 +187,8 @@ define(
             type: 'slide',
             responsive: true,
             innerScroll: true,
-            title: $.mage.__('Advanced Settings'),
             modalCloseBtnHandler: handelModalClose,
             buttons: [
-                {
-                    text: $.mage.__('Close'),
-                    class: 'modal-close',
-                    click: handelModalClose,
-                },
                 {
                     text: $.mage.__('Done'),
                     class: 'primary',
@@ -213,6 +207,8 @@ define(
 
             if (feeName.trim() !== '') {
                 modalOptions.title = $.mage.__('Advanced Settings for %1').replace('%1', feeName);
+            } else {
+                modalOptions.title = $.mage.__('Advanced Settings');
             }
 
             modal(modalOptions, element);
