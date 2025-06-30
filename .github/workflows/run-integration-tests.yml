@@ -13,21 +13,23 @@ jobs:
     strategy:
       matrix:
         include:
-          - PHP_VERSION: php81-fpm
+          - PHP_FPM_VERSION: php81-fpm
+            PHP_VERSION: 8.1
             MAGENTO_VERSION: 2.4.5-p12
             generate_coverage: false
-          - PHP_VERSION: php84-fpm
+          - PHP_FPM_VERSION: php84-fpm
+            PHP_VERSION: 8.4
             MAGENTO_VERSION: 2.4.8
             generate_coverage: true
 
-    name: Magento ${{ matrix.MAGENTO_VERSION }} on ${{ matrix.PHP_VERSION }}
+    name: Magento ${{ matrix.MAGENTO_VERSION }} on PHP ${{ matrix.PHP_VERSION }}
 
     runs-on: ubuntu-latest
 
     timeout-minutes: 60
 
     container:
-      image: michielgerritsen/magento-project-community-edition:${{ matrix.PHP_VERSION }}-magento${{ matrix.MAGENTO_VERSION }}
+      image: michielgerritsen/magento-project-community-edition:${{ matrix.PHP_FPM_VERSION }}-magento${{ matrix.MAGENTO_VERSION }}
 
     steps:
       - name: Check out repository
