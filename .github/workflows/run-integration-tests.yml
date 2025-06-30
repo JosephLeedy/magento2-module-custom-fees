@@ -15,11 +15,11 @@ jobs:
         include:
           - PHP_FPM_VERSION: php81-fpm
             PHP_VERSION: 8.1
-            MAGENTO_VERSION: 2.4.5-p12
+            MAGENTO_VERSION: 2.4.5-p13
             generate_coverage: false
           - PHP_FPM_VERSION: php84-fpm
             PHP_VERSION: 8.4
-            MAGENTO_VERSION: 2.4.8
+            MAGENTO_VERSION: 2.4.8-p1
             generate_coverage: true
 
     name: Magento ${{ matrix.MAGENTO_VERSION }} on PHP ${{ matrix.PHP_VERSION }}
