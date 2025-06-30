@@ -43,7 +43,7 @@ jobs:
 
       - name: Install Xdebug
         if: matrix.generate_coverage
-        run: pecl install xdebug && echo "zend_extension=xdebug" >> /usr/local/etc/php/conf.d/00-xdebug.ini
+        run: dpkg -s php${{ matrix.PHP_VERSION }}-xdebug >/dev/null 2>&1 || apt install -y php${{ matrix.PHP_VERSION }}-xdebug
 
       - name: Copy extension to Magento codebase
         run: mkdir /data/extensions/module-custom-fees && cp -r . /data/extensions/module-custom-fees
