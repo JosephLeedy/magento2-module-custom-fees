@@ -30,13 +30,13 @@ final class BeforeQuoteSubmitObserverTest extends TestCase
         self::assertArrayHasKey('add_custom_fees_to_order', $observers);
         self::assertSame(
             ltrim(BeforeQuoteSubmitObserver::class, '\\'),
-            $observers['add_custom_fees_to_order']['instance']
+            $observers['add_custom_fees_to_order']['instance'],
         );
     }
 
     /**
      * @phpcs:ignore Generic.Files.LineLength.TooLong
-     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","value":"4.00"},{"code":"test_fee_1","title":"Another Fee","value":"1.00"}]
+     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","advanced":"{\"show_percentage\":\"0\"}"},{"code":"test_fee_1","title":"Another Fee","type":"fixed","value":"1.00","advanced":"{\"show_percentage\":\"0\"}"}]
      * @magentoDataFixture Magento/Checkout/_files/quote_with_shipping_method.php
      */
     public function testAddsCustomFeesToOrder(): void
@@ -63,13 +63,13 @@ final class BeforeQuoteSubmitObserverTest extends TestCase
             'sales_model_service_quote_submit_before',
             [
                 'quote' => $quote,
-                'order' => $order
-            ]
+                'order' => $order,
+            ],
         );
 
         self::assertInstanceOf(
             CustomOrderFeesInterface::class,
-            $order->getExtensionAttributes()?->getCustomOrderFees()
+            $order->getExtensionAttributes()?->getCustomOrderFees(),
         );
     }
 }

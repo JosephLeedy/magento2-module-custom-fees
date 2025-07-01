@@ -1,0 +1,46 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Backend\Block\Widget\Form\Renderer\Fieldset;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Helper\SecureHtmlRenderer;
+
+/** @var Fieldset $block */
+/** @var SecureHtmlRenderer $secureRenderer */
+/** @var Escaper $escaper */
+
+// phpcs:disable Generic.Files.LineLength.TooLong
+
+$element = $block->getElement();
+/** @var string $jsObjectName */
+$jsObjectName = ($block->getFieldSetId() ?? $element->getHtmlId());
+?>
+<div class="rule-tree">
+    <fieldset id="<?= /* @noEscape */ $jsObjectName ?>" <?= /* @noEscape */ $element->serialize(['class']) ?> class="fieldset">
+        <legend class="legend"><span><?= $escaper->escapeHtml($element->getLegend()) ?></span></legend>
+        <br>
+        <?php if ($element->getComment()): ?>
+            <div class="messages">
+                <div class="message message-notice"><?= $escaper->escapeHtml($element->getComment()) ?></div>
+            </div>
+        <?php endif ?>
+        <div class="rule-tree-wrapper">
+            <?= /* @noEscape */ $element->getChildrenHtml() ?>
+        </div>
+    </fieldset>
+</div>
+<?php
+$script = <<<JAVASCRIPT
+    require(
+        [
+            'Magento_Rule/rules',
+            'prototype'
+        ],
+        function(VarienRulesForm) {
+            window.{$escaper->escapeJs($jsObjectName)} = new VarienRulesForm('{$escaper->escapeJs($jsObjectName)}', '{$escaper->escapeUrl($block->getNewChildUrl())}');
+        }
+    );
+    JAVASCRIPT;
+?>
+<?= /* @noEscape */ $secureRenderer->renderTag('script', [], $script, false) ?>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Plugin\Framework\View\Element\UiComponent\DataProvider;
 
 use InvalidArgumentException;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider;
@@ -58,6 +59,9 @@ class DataProviderPlugin
                      * @var array<string, array{
                      *     code: string,
                      *     title: string,
+                     *     type: value-of<FeeType>,
+                     *     percent: float|null,
+                     *     show_percentage: bool,
                      *     base_value: float,
                      *     value: float
                      * }> $customFees
@@ -70,24 +74,32 @@ class DataProviderPlugin
                 array_walk(
                     $customFees,
                     /**
-                     * @param array{code: string, title: string, base_value: float, value: float} $customFee
+                     * @param array{
+                     *     code: string,
+                     *     title: string,
+                     *     type: value-of<FeeType>,
+                     *     percent: float|null,
+                     *     show_percentage: bool,
+                     *     base_value: float,
+                     *     value: float
+                     * } $customFee
                      */
                     function (array $customFee) use (&$orderData): void {
                         $orderData[$customFee['code'] . '_base'] = $this->priceCurrency->format(
                             amount: $customFee['base_value'],
                             includeContainer: false,
                             scope: $orderData['store_id'],
-                            currency: $orderData['base_currency_code']
+                            currency: $orderData['base_currency_code'],
                         );
                         $orderData[$customFee['code']] = $this->priceCurrency->format(
                             amount: $customFee['value'],
                             includeContainer: false,
                             scope: $orderData['store_id'],
-                            currency: $orderData['order_currency_code']
+                            currency: $orderData['order_currency_code'],
                         );
-                    }
+                    },
                 );
-            }
+            },
         );
 
         return $result;

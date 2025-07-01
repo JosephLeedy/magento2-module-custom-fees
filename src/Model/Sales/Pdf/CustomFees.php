@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Model\Sales\Pdf;
 
+use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\Phrase;
 use Magento\Sales\Model\Order\Pdf\Total\DefaultTotal;
@@ -28,7 +29,15 @@ use const FILTER_VALIDATE_BOOLEAN;
 class CustomFees extends DefaultTotal
 {
     /**
-     * @var array{}|array<string, array{code: string, title: string, base_value: float, value: float}>|null
+     * @var array{}|array<string, array{
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     base_value: float,
+     *     value: float,
+     * }>|null
      */
     private array|null $customFees = null;
 
@@ -65,12 +74,17 @@ class CustomFees extends DefaultTotal
 
         $fontSize = $this->getFontSize() ?? 7;
         $totals = array_map(
-            fn (array $customFees): array => [
+            fn(array $customFees): array => [
                 'amount' => $this->getOrder()->formatPriceTxt($customFees['value']),
-                'label' => __($customFees['title']) . ':',
-                'font_size' => $fontSize
+                'label' => (
+                    FeeType::Percent->equals($customFees['type']) && $customFees['percent'] !== null
+                        && $customFees['show_percentage']
+                        ? __($customFees['title'] . ' (%1%)', $customFees['percent'])
+                        : __($customFees['title'])
+                ) . ':',
+                'font_size' => $fontSize,
             ],
-            $allCustomFees
+            $allCustomFees,
         );
 
         return $totals;
@@ -85,7 +99,15 @@ class CustomFees extends DefaultTotal
     }
 
     /**
-     * @return array{}|array<string, array{code: string, title: string, base_value: float, value: float}>
+     * @return array{}|array<string, array{
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     base_value: float,
+     *     value: float,
+     * }>
      */
     private function getCustomFees(): array
     {

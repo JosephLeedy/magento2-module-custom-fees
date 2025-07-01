@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Plugin\Ui\Component;
 
 use InvalidArgumentException;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Sales\Model\Order;
@@ -45,7 +46,15 @@ class AbstractComponentPlugin
 
             try {
                 /**
-                 * @var array<string, array{code: string, title: string, base_value: float, value: float}> $customFees
+                 * @var array<string, array{
+                 *     code: string,
+                 *     title: string,
+                 *     type: value-of<FeeType>,
+                 *     percent: float|null,
+                 *     show_percentage: bool,
+                 *     base_value: float,
+                 *     value: float
+                 * }> $customFees
                  */
                 $customFees = $this->serializer->unserialize($customFeesJson);
             } catch (InvalidArgumentException) {
@@ -69,15 +78,15 @@ class AbstractComponentPlugin
                     'componentType' => 'column',
                     'visible' => false,
                     '__disableTmpl' => [
-                        'label' => true
-                    ]
+                        'label' => true,
+                    ],
                 ],
                 'js_config' => [
                     'component' => 'Magento_Ui/js/form/element/text',
-                    'extends' => 'sales_order_grid'
-                ]
+                    'extends' => 'sales_order_grid',
+                ],
             ],
-            'context' => $subject->getContext()
+            'context' => $subject->getContext(),
         ];
 
         array_walk(
@@ -96,7 +105,7 @@ class AbstractComponentPlugin
 
                 $subject->addComponent($customFeeCode . '_base', $baseColumn);
                 $subject->addComponent($customFeeCode, $column);
-            }
+            },
         );
     }
 }

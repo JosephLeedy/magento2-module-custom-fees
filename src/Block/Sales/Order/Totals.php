@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Block\Sales\Order;
 
+use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
@@ -67,15 +68,18 @@ class Totals extends Template
         array_walk(
             $customFees,
             function (array $customFee, string|int $key) use ($firstFeeKey, &$previousFeeCode) {
-                $customFee['label'] = __($customFee['title']);
+                $customFee['label'] = FeeType::Percent->equals($customFee['type']) && $customFee['percent'] !== null
+                    && $customFee['show_percentage']
+                    ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
+                    : __($customFee['title']);
 
                 unset($customFee['title']);
 
                 /** @var DataObject $total */
                 $total = $this->dataObjectFactory->create(
                     [
-                        'data' => $customFee
-                    ]
+                        'data' => $customFee,
+                    ],
                 );
 
                 if ($key === $firstFeeKey) {
@@ -89,7 +93,7 @@ class Totals extends Template
                 }
 
                 $previousFeeCode = $customFee['code'];
-            }
+            },
         );
 
         return $this;

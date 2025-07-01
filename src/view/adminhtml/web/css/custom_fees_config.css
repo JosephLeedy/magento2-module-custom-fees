@@ -1,0 +1,69 @@
+#sales_custom_order_fees {
+    .label {
+        display: none;
+    }
+
+    .value {
+        width: 84%;
+    }
+
+    .use-default {
+        padding-right: 0;
+    }
+
+    label.import-fees-label {
+        display: block;
+        padding-bottom: 6px;
+        color: #303030;
+        font-size: 14px;
+        font-weight: 600;
+    }
+}
+
+#sales_custom_order_fees_custom_fees {
+    .fee-value {
+        max-width: 95px;
+    }
+
+    select[name$="[type]"] {
+        min-width: 105px;
+    }
+}
+
+.action-custom-fees-advanced-config {
+    &:before {
+        font-family: 'Admin Icons';
+        font-size: 2rem;
+        font-style: normal;
+        font-weight: normal;
+        content: '\e610';
+        line-height: 1;
+    }
+
+    &, &:hover, &:active, &:focus {
+        background-color: transparent;
+        border-color: transparent;
+        box-shadow: none;
+    }
+
+    padding-left: 0;
+    padding-right: 0;
+
+    span {
+        display: none;
+    }
+}
+
+.system-config-custom-fees-advanced-modal {
+    display: none;
+
+    .admin__collapsible-block-wrapper .admin__fieldset-wrapper-title .admin__collapsible-title {
+        &:before {
+            content: '\e615';
+        }
+
+        &.collapsed:before {
+            content: '\e616';
+        }
+    }
+}

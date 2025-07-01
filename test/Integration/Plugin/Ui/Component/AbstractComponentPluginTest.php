@@ -43,14 +43,14 @@ final class AbstractComponentPluginTest extends TestCase
                 'name' => 'sales_order_grid_data_source',
                 'requestFieldName' => 'id',
                 'primaryFieldName' => 'main_table.entity_id',
-            ]
+            ],
         );
         /** @var ContextInterface $context */
         $context = $objectManager->create(
             ContextInterface::class,
             [
                 'dataProvider' => $dataProvider,
-            ]
+            ],
         );
         /** @var Columns $salesOrderGridColumns */
         $salesOrderGridColumns = $objectManager->create(
@@ -59,8 +59,8 @@ final class AbstractComponentPluginTest extends TestCase
                 'context' => $context,
                 'data' => [
                     'name' => 'sales_order_columns',
-                ]
-            ]
+                ],
+            ],
         );
 
         $salesOrderGridColumns->prepare();
@@ -82,8 +82,8 @@ final class AbstractComponentPluginTest extends TestCase
             [
                 'data' => [
                     'name' => 'sales_order_invoice_columns',
-                ]
-            ]
+                ],
+            ],
         );
 
         $columns->prepare();

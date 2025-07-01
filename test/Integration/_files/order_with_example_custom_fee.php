@@ -28,9 +28,12 @@ $customFees = [
     [
         'code' => 'example_fee',
         'title' => 'Example Fee',
+        'type' => 'fixed',
+        'percent' => null,
+        'show_percentage' => false,
         'base_value' => 0.00,
-        'value' => 0.00
-    ]
+        'value' => 0.00,
+    ],
 ];
 
 $orderResource->load($order, '100000001', 'increment_id');

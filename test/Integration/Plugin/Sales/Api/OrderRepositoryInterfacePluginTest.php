@@ -57,15 +57,21 @@ final class OrderRepositoryInterfacePluginTest extends TestCase
             '_1727299833817_817' => [
                 'code' => 'test_fee_0',
                 'title' => 'Test Fee',
+                'type' => 'fixed',
+                'percent' => null,
+                'show_percentage' => false,
                 'base_value' => 5.00,
-                'value' => 5.00
+                'value' => 5.00,
             ],
             '_1727299843197_197' => [
                 'code' => 'test_fee_1',
                 'title' => 'Another Test Fee',
+                'type' => 'fixed',
+                'percent' => null,
+                'show_percentage' => false,
                 'base_value' => 1.50,
-                'value' => 1.50
-            ]
+                'value' => 1.50,
+            ],
         ];
 
         // Load the order by its increment ID to avoid hard-coding the entity ID, which can change.
@@ -112,16 +118,22 @@ final class OrderRepositoryInterfacePluginTest extends TestCase
                 '_1726874777_074' => [
                     'code' => 'test_fee_0',
                     'title' => 'Test Fee',
+                    'type' => 'fixed',
+                    'percent' => null,
                     'base_value' => 5.00,
-                    'value' => 4.50
+                    'show_percentage' => false,
+                    'value' => 4.50,
                 ],
                 '_1726874800_591' => [
                     'code' => 'test_fee_1',
                     'title' => 'Another Test Fee',
+                    'type' => 'fixed',
+                    'percent' => null,
+                    'show_percentage' => false,
                     'base_value' => 1.50,
-                    'value' => 1.35
-                ]
-            ]
+                    'value' => 1.35,
+                ],
+            ],
         );
 
         $order->getExtensionAttributes()

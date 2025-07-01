@@ -22,7 +22,7 @@ final class CustomFeesTest extends TestCase
 {
     /**
      * @phpcs:ignore Generic.Files.LineLength.TooLong
-     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","value":"4.00"},{"code":"test_fee_1","title":"Another Fee","value":"1.00"}]
+     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","advanced":"{\"show_percentage\":\"0\"}"},{"code":"test_fee_1","title":"Another Fee","type":"percent","value":"5","advanced": "{\"show_percentage\":\"1\"}"}]
      * @magentoDataFixture Magento/Checkout/_files/quote_with_address.php
      */
     public function testCollectsCustomFeesTotals(): void
@@ -45,17 +45,23 @@ final class CustomFeesTest extends TestCase
             [
                 'code' => 'test_fee_0',
                 'title' => __('Test Fee'),
-                'value' => 4.00
+                'type' => 'fixed',
+                'percent' => null,
+                'show_percentage' => false,
+                'value' => 4.00,
             ],
-            $collectedTotals['test_fee_0']->getData()
+            $collectedTotals['test_fee_0']->getData(),
         );
         self::assertEquals(
             [
                 'code' => 'test_fee_1',
-                'title' => __('Another Fee'),
-                'value' => 1.00
+                'title' => __('Another Fee (5%)'),
+                'type' => 'percent',
+                'percent' => 5,
+                'show_percentage' => true,
+                'value' => 1.00,
             ],
-            $collectedTotals['test_fee_1']->getData()
+            $collectedTotals['test_fee_1']->getData(),
         );
         self::assertNotNull($quote->getExtensionAttributes()?->getCustomFees());
         self::assertEquals(
@@ -63,23 +69,29 @@ final class CustomFeesTest extends TestCase
                 [
                     'code' => 'test_fee_0',
                     'title' => __('Test Fee'),
+                    'type' => 'fixed',
+                    'percent' => null,
+                    'show_percentage' => false,
                     'base_value' => 4.00,
-                    'value' => 4.00
+                    'value' => 4.00,
                 ],
                 [
                     'code' => 'test_fee_1',
                     'title' => __('Another Fee'),
+                    'type' => 'percent',
+                    'percent' => 5,
+                    'show_percentage' => true,
                     'base_value' => 1.00,
-                    'value' => 1.00
-                ]
+                    'value' => 1.00,
+                ],
             ],
-            $quote->getExtensionAttributes()->getCustomFees()
+            $quote->getExtensionAttributes()->getCustomFees(),
         );
     }
 
     /**
      * @phpcs:ignore Generic.Files.LineLength.TooLong
-     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","value":"4.00"},{"code":"test_fee_1","title":"Another Fee","value":"1.00"}]
+     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","advanced":"{\"show_percentage\":\"0\"}"},{"code":"test_fee_1","title":"Another Fee","type":"percent","value":"5","advanced":"{\"show_percentage\":\"1\"}"}]
      * @magentoDataFixture Magento/Checkout/_files/quote_with_address.php
      */
     public function testFetchesCustomFeesTotals(): void
@@ -96,17 +108,25 @@ final class CustomFeesTest extends TestCase
 
         $quoteResource->load($quote, 'test_order_1', 'reserved_order_id');
 
+        $total->setBaseSubtotal(20.00);
+
         $expectedCustomFees = [
             [
                 'code' => 'test_fee_0',
                 'title' => __('Test Fee'),
-                'value' => 4.00
+                'type' => 'fixed',
+                'percent' => null,
+                'show_percentage' => false,
+                'value' => 4.00,
             ],
             [
                 'code' => 'test_fee_1',
-                'title' => __('Another Fee'),
-                'value' => 1.00
-            ]
+                'title' => __('Another Fee (5%)'),
+                'type' => 'percent',
+                'percent' => 5,
+                'show_percentage' => true,
+                'value' => 1.00,
+            ],
         ];
         $actualCustomFees = $customFeesTotalCollector->fetch($quote, $total);
 
