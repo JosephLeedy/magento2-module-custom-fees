@@ -34,9 +34,13 @@ and Hyvä Checkout CSP)
 ## Requirements
 
 - PHP 8.1 or greater
-- Magento Open Source 2.4.4 or greater _or_ Adobe Commerce 2.4.4 or greater
+- Magento Open Source 2.4.4 or greater, Adobe Commerce 2.4.4 or greater, _or_
+Mage-OS 1.0 or greater*
 - MySQL 8.0.4 or greater, MariaDB 10.6.0 or greater, _or_ a MySQL 8-compatible 
 database server (for generating reports)
+
+<small><strong>Note:</strong> Mage-OS compatibility has not been tested, but it 
+is functionally equivalent to Magento Open Source 2.4.6 or greater.</small>
 
 ## Installation
 
