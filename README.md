@@ -139,6 +139,11 @@ improve and maintain this tool, please see the [CONTRIBUTING.md] file.
 
 ## Shout-Outs
 
+### Contributors
+
+These wonderful people have helped this extension become what it is today, and 
+I am truly grateful to them for their contributions:
+
 - A huge thanks to [@pykettk], [@Vinai] and [@hostep] for reviewing the Hyvä 
 compatibility implementation in [pull request #16] and suggesting improvements!️
 
