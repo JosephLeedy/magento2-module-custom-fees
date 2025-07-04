@@ -147,6 +147,13 @@ I am truly grateful to them for their contributions:
 - A huge thanks to [@pykettk], [@Vinai] and [@hostep] for reviewing the Hyvä 
 compatibility implementation in [pull request #16] and suggesting improvements!️
 
+### Supporters
+
+I owe the following fine folks a debt of gratitude for their continuing 
+support:
+
+- [@paulcdejean]
+
 [Hyvä]: https://hyva.io
 [Composer]: https://getcomposer.org
 [Packagist]: https://packagist.org
@@ -159,3 +166,4 @@ compatibility implementation in [pull request #16] and suggesting improvements!�
 [@Vinai]: https://github.com/Vinai
 [@hostep]: https://github.com/hostep
 [pull request #16]: https://github.com/JosephLeedy/magento2-module-custom-fees/pull/16
+[@paulcdejean]: https://github.com/paulcdejean
