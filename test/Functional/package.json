@@ -25,7 +25,7 @@
   "dependencies": {
   },
   "devDependencies": {
-    "@elgentos/magento2-playwright": "^2.0.1-alpha",
+    "@elgentos/magento2-playwright": "^2.1.0-alpha",
     "@playwright/test": "1.53.2",
     "@types/node": "^24.0.10",
     "dotenv": "^16.4.5"
