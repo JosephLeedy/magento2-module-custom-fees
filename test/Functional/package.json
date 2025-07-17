@@ -8,6 +8,9 @@
   "scripts": {
     "build": "playwright install",
     "test": "playwright test",
+    "test:frontend": "playwright test --grep @frontend",
+    "test:admin": "playwright test --grep @admin",
+    "test:all": "playwright test --grep '@frontend|@admin'",
     "test:ui": "playwright test --ui"
   },
   "repository": {
