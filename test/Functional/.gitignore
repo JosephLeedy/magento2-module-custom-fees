@@ -6,7 +6,6 @@
 /playwright-report/
 /playwright/.cache/
 /test-results/
-/tests/config/
 /.env
 /bypass-captcha.config.ts
 /package-lock.json
