@@ -10,5 +10,4 @@
 /bypass-captcha.config.ts
 /package-lock.json
 /playwright.config.ts
-/tests.config.ts
 /tsconfig.json
