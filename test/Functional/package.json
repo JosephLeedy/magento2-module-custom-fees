@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@elgentos/magento2-playwright": "^2.1.0-alpha",
-    "@playwright/test": "1.53.2",
+    "@playwright/test": "1.54.1",
     "@types/node": "^24.0.10",
     "dotenv": "^16.4.5"
   }
