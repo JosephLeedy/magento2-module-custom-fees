@@ -84,9 +84,14 @@ browser at https\://playwright.$WARDEN_ENV.test/ (e.g. https://playwright.magent
 
 ### Before First Run
 
-Create test customer accounts and run other setup tasks by running the following command:
+1. Apply patches to the Elgentos Testing Suite code:
 
-    npm run test -- --grep @setup
+        patch -p0 < patches/playwright.config.ts.patch
+        patch -p0 < patches/bypass-captcha.config.ts.patch
+        patch -p0 < patches/register.page.ts.patch
+2. Create test customer accounts and run other setup tasks by running the following command:
+
+        npm run test -- --grep @setup
 
 ### Running the tests
 
