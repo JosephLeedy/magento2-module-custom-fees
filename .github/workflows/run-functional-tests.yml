@@ -1,0 +1,183 @@
+name: Run Functional Tests
+on:
+  pull_request:
+    paths:
+      - '**.css'
+      - '**.html'
+      - '**.js'
+      - '**.json'
+      - '**.php'
+      - '**.phtml'
+      - '**.ts'
+
+  workflow_dispatch:
+
+jobs:
+  run-functional-tests:
+    name: ${{ matrix.theme }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - theme: Luma
+          - theme: Hyvä
+          - theme: Hyvä CSP
+
+    timeout-minutes: 60
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: michielgerritsen/magento-project-community-edition:php84-fpm-magento2.4.8-p1-sample-data
+      options: --user root
+
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright-browsers
+      HOME: /root
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Start services
+        run: /bin/bash /data/start-services
+
+      - name: Change Magento URL
+        working-directory: /data
+        run: /bin/bash /data/change-base-url http://magento.test/ && echo "127.0.0.1 magento.test" >> /etc/hosts
+
+      - name: Configure Magento settings
+        working-directory: /data
+        run: |
+          php bin/magento config:set currency/options/allow USD,EUR
+          php bin/magento config:set currency/options/base USD
+          php bin/magento config:set currency/options/default USD
+
+      - name: Install and configure Hyvä theme
+        if: startsWith(matrix.theme, 'Hyvä')
+        working-directory: /data
+        run: |
+          # Install Hyvä GitLab SSH key
+          mkdir /root/.ssh && chmod 700 /root/.ssh
+          touch /root/.ssh/id_ed25519 && chmod 600 /root/.ssh/id_ed25519
+          echo "${{ secrets.HYVA_GITLAB_KEY }}" > /root/.ssh/id_ed25519
+          touch /root/.ssh/known_hosts && chmod 600 /root/.ssh/known_hosts
+          ssh-keyscan -H gitlab.hyva.io > /root/.ssh/known_hosts
+          # Configure Hyvä Composer repositories
+          /usr/local/bin/composer config repositories.hyva-themes/magento2-theme-module git \
+            git@gitlab.hyva.io:hyva-themes/magento2-theme-module.git
+          /usr/local/bin/composer config repositories.hyva-themes/magento2-reset-theme git \
+            git@gitlab.hyva.io:hyva-themes/magento2-reset-theme.git
+          /usr/local/bin/composer config repositories.hyva-themes/magento2-email-module git \
+            git@gitlab.hyva.io:hyva-themes/magento2-email-module.git
+          /usr/local/bin/composer config repositories.hyva-themes/magento2-default-theme git \
+            git@gitlab.hyva.io:hyva-themes/magento2-default-theme.git
+          /usr/local/bin/composer config repositories.hyva-themes/magento2-default-theme-csp git \
+            git@gitlab.hyva.io:hyva-themes/magento2-default-theme-csp.git
+          /usr/local/bin/composer config repositories.hyva-themes/magento2-order-cancellation-webapi git \
+            git@gitlab.hyva.io:hyva-themes/magento2-order-cancellation-webapi.git
+          /usr/local/bin/composer config repositories.hyva-themes/magento2-compat-module-fallback git \
+            git@gitlab.hyva.io:hyva-themes/magento2-compat-module-fallback.git
+          /usr/local/bin/composer config repositories.hyva-themes/magento2-mollie-theme-bundle git \
+            git@gitlab.hyva.io:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git
+          /usr/local/bin/composer config repositories.hyva-themes/hyva-checkout git \
+            git@gitlab.hyva.io:hyva-checkout/checkout.git
+          /usr/local/bin/composer config repositories.hyva-themes/hyva-checkout-csp git \
+            git@gitlab.hyva.io:hyva-checkout/checkout-csp.git
+          # Install Hyvä theme
+          if [ "${{ matrix.theme }}" = "Hyvä CSP" ]; then
+            /usr/local/bin/composer require hyva-themes/magento2-default-theme-csp
+            /usr/local/bin/composer require hyva-themes/magento2-hyva-checkout-csp
+            THEME_NAME="Hyva/default-csp"
+          else
+            /usr/local/bin/composer require hyva-themes/magento2-default-theme
+            /usr/local/bin/composer require hyva-themes/magento2-hyva-checkout
+            THEME_NAME="Hyva/default"
+          fi
+          php bin/magento setup:upgrade
+          # Configure Magento to use the Hyvä theme
+          THEME_ID="$(/usr/local/bin/n98-magerun2 dev:theme:list --format=csv | grep $THEME_NAME | cut -d, -f1)"; \
+            test -n "${THEME_ID}" && /usr/local/bin/n98-magerun2 config:set design/theme/theme_id "${THEME_ID}"
+          php bin/magento config:set customer/captcha/enable 0
+          # Configure Hyvä Checkout
+          php bin/magento config:set hyva_themes_checkout/general/checkout default
+
+      - name: Disable Magento Admin Analytics module
+        working-directory: /data
+        run: php bin/magento module:disable Magento_AdminAnalytics
+
+      - name: Disable two-factor authentication in Magento Admin
+        working-directory: /data
+        run: |
+          /usr/local/bin/composer require --dev markshust/magento2-module-disabletwofactorauth && \
+            php bin/magento module:enable MarkShust_DisableTwoFactorAuth
+
+      - name: Copy extension to Magento codebase
+        run: mkdir /data/extensions/module-custom-fees && cp -r . /data/extensions/module-custom-fees
+
+      - name: Install extension
+        working-directory: /data
+        run: |
+          /usr/local/bin/composer config repo.packagist false
+          /usr/local/bin/composer require joseph-leedy/module-custom-fees:@dev
+
+      - name: Enable extension
+        working-directory: /data
+        run: php bin/magento module:enable JosephLeedy_CustomFees
+
+      - name: Install database schema
+        working-directory: /data
+        run: php bin/magento setup:upgrade
+
+      - name: Recompile generated classes
+        working-directory: /data
+        run: rm -rf "generated/*"; php bin/magento setup:di:compile
+
+      - name: Create test admin user
+        working-directory: /data
+        run: |
+          php bin/magento admin:user:create --admin-user=e2e_test_admin --admin-password=P@55w0rd \
+            --admin-email=e2e_test_admin@magento.test --admin-firstname=Test --admin-lastname=Admin
+
+      - name: Install test dependencies
+        working-directory: /data/extensions/module-custom-fees/test/Functional
+        run: npm i
+
+      - name: Configure environment variables
+        working-directory: /data/extensions/module-custom-fees/test/Functional
+        run: rm -f .env && cp .env.ci .env
+
+      - name: Apply patches
+        working-directory: /data/extensions/module-custom-fees/test/Functional
+        run: |
+          patch -p0 < patches/playwright.config.ts.patch
+          patch -p0 < patches/bypass-captcha.config.ts.patch
+          patch -p0 < patches/register.page.ts.patch
+
+      - name: Install test browsers
+        working-directory: /data/extensions/module-custom-fees/test/Functional
+        run: npx -y playwright install --with-deps
+
+      - name: Prepare Magento to run tests
+        working-directory: /data/extensions/module-custom-fees/test/Functional
+        continue-on-error: true
+        run: npx playwright test --workers=1 --reporter=dot --grep '@setup' --grep-invert '@hot'
+
+      - name: Perform post-test-preparation tasks
+        working-directory: /data
+        run: |
+          # Create Chromium test customer if setup test failed
+          /usr/local/bin/n98-magerun2 customer:list e2e_user+chromium@magento.test | grep -q "No customers found" && \
+            /usr/local/bin/n98-magerun2 customer:create e2e_user+chromium@magento.test "P@55w0rd" Test Admin base
+
+      - name: Run tests
+        working-directory: /data/extensions/module-custom-fees/test/Functional
+        run: npx playwright test --workers=1 --reporter=dot,github,html --grep '@frontend|@admin' --pass-with-no-tests
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: /data/extensions/module-custom-fees/test/Functional/playwright-report/
