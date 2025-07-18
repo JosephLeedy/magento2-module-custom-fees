@@ -169,7 +169,8 @@ jobs:
         run: |
           # Create Chromium test customer if setup test failed
           /usr/local/bin/n98-magerun2 customer:list e2e_user+chromium@magento.test | grep -q "No customers found" && \
-            /usr/local/bin/n98-magerun2 customer:create e2e_user+chromium@magento.test "P@55w0rd" Test Admin base
+            /usr/local/bin/n98-magerun2 customer:create e2e_user+chromium@magento.test "P@55w0rd" Test Admin base || \
+            true
 
       - name: Run tests
         working-directory: /data/extensions/module-custom-fees/test/Functional
