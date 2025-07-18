@@ -2,6 +2,7 @@
   "customFeesConfigurationPage": {
     "salesTabLabel": "Sales",
     "customOrderFeesSectionLabel": "Custom Order Fees",
+    "customOrderFeesSystemCheckbox": "#sales_custom_order_fees_custom_fees_inherit",
     "customOrderFeesField": "#sales_custom_order_fees_custom_fees",
     "customOrderFeesFields": {
       "addCustomFeeButtonLabel": "Add Custom Fee",
