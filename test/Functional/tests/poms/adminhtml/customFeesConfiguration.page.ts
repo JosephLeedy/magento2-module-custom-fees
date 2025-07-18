@@ -8,6 +8,10 @@ class CustomFeesConfigurationPage extends MagentoAdminPage
     {
         await this.navigateToCustomFeesConfiguration();
 
+        await this.page
+            .locator(UIReferenceCustomFees.customFeesConfigurationPage.customOrderFeesSystemCheckbox)
+            .uncheck();
+
         for (const feeName in inputValuesCustomFees.customFees) {
             await this.configureCustomFee(
                 inputValuesCustomFees.customFees[feeName].code,
