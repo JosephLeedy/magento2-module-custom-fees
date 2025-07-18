@@ -176,9 +176,14 @@ jobs:
         working-directory: /data/extensions/module-custom-fees/test/Functional
         run: npx playwright test --workers=1 --reporter=dot,github,html --grep '@frontend|@admin' --pass-with-no-tests
 
+      - id: generate-artifact-name-suffix
+        name: Generate artifact name suffix
+        if: ${{ !cancelled() }}
+        run: echo "artifact-name-suffix="$(echo "${{ matrix.theme }}" | sed "s/ /_/g") >> "$GITHUB_OUTPUT"
+
       - name: Upload test report
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report
+          name: playwright-report-${{ steps.generate-artifact-name-suffix.outputs.artifact-name-suffix }}
           path: /data/extensions/module-custom-fees/test/Functional/playwright-report/
