@@ -1,0 +1,13 @@
+--- bypass-captcha.config.ts	2025-07-04 14:53:07.299431888 -0600
++++ bypass-captcha.config.ts	2025-07-08 16:00:02.716600863 -0600
+@@ -27,8 +27,8 @@
+         // Set the global cookie to bypass CAPTCHA
+         await context.addCookies([{
+           name: 'disable_captcha', // this cookie will be read by 'magento2-bypass-captcha-cookie' module.
+-          value: '', // Fill with generated token.
+-          domain: 'hyva-demo.elgentos.io', // Replace with your domain
++          value: process.env.CAPTCHA_BYPASS_TOKEN || '',
++          domain: process.env.MAGENTO_COOKIE_DOMAIN || '',
+           path: '/',
+           httpOnly: true,
+           secure: true,

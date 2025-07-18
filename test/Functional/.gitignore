@@ -1,0 +1,13 @@
+# Playwright
+/auth-storage/
+/base-tests/
+/blob-report/
+/node_modules/
+/playwright-report/
+/playwright/.cache/
+/test-results/
+/.env
+/bypass-captcha.config.ts
+/package-lock.json
+/playwright.config.ts
+/tsconfig.json

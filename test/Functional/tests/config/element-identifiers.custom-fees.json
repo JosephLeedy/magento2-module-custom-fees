@@ -1,0 +1,23 @@
+{
+  "customFeesConfigurationPage": {
+    "salesTabLabel": "Sales",
+    "customOrderFeesSectionLabel": "Custom Order Fees",
+    "customOrderFeesField": "#sales_custom_order_fees_custom_fees",
+    "customOrderFeesFields": {
+      "addCustomFeeButtonLabel": "Add Custom Fee",
+      "feeCodeField": "#sales_custom_order_fees_custom_fees tbody > tr:last-child input[id$=code]",
+      "feeTitleField": "#sales_custom_order_fees_custom_fees tbody > tr:last-child input[id$=title]",
+      "feeTypeField": "#sales_custom_order_fees_custom_fees tbody > tr:last-child select[name$='[type]']",
+      "feeAmountField": "#sales_custom_order_fees_custom_fees tbody > tr:last-child input[id$=value]",
+      "advancedSettingsButton": "#sales_custom_order_fees_custom_fees tbody > tr:last-child .action-custom-fees-advanced-config",
+      "advancedSettingsField": "#sales_custom_order_fees_custom_fees tbody > tr:last-child input[id$=advanced]",
+      "advancedSettingsFields": {
+        "conditionsSectionLabel": "Conditions",
+        "displaySectionLabel": "Display",
+        "displayFields": {
+          "showPercentageField": "#show_percentage"
+        }
+      }
+    }
+  }
+}

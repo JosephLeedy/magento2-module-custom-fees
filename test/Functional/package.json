@@ -1,0 +1,36 @@
+{
+  "name": "@joseph-leedy/custom-fees-functional-tests",
+  "description": "Functional tests for the Custom Fees Magento extension",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "playwright install",
+    "test": "playwright test",
+    "test:frontend": "playwright test --grep @frontend",
+    "test:admin": "playwright test --grep @admin",
+    "test:all": "playwright test --grep '@frontend|@admin'",
+    "test:ui": "playwright test --ui"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JosephLeedy/magento2-module-custom-fees.git"
+  },
+  "keywords": ["magento", "magento 2", "mage-os", "adobe commerce", "hyvä", "fees", "surcharges"],
+  "author": "Joseph Leedy",
+  "license": "OSL-3.0",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/JosephLeedy/magento2-module-custom-fees/issues"
+  },
+  "homepage": "https://github.com/JosephLeedy/magento2-module-custom-fees",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@elgentos/magento2-playwright": "^2.1.0-alpha",
+    "@playwright/test": "1.54.1",
+    "@types/node": "^24.0.10",
+    "dotenv": "^16.4.5"
+  }
+}

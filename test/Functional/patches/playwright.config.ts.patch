@@ -1,0 +1,19 @@
+--- playwright.config.ts	2025-07-04 14:53:07.304431951 -0600
++++ playwright.config.ts	2025-07-10 11:06:21.675146623 -0600
+@@ -14,7 +14,7 @@
+     return Array.from(baseFiles);
+   }
+
+-  const customFiles = fs.readdirSync(customDir).filter(file => file.endsWith('.spec.ts'));
++  const customFiles = fs.readdirSync(customDir, { recursive: true }).filter(file => file.endsWith('.spec.ts'));
+
+   if(customFiles.length === 0) {
+     return Array.from(baseFiles);
+@@ -49,6 +49,7 @@
+  * See https://playwright.dev/docs/test-configuration.
+  */
+ export default defineConfig({
++  testDir: __dirname,
+   /* Run tests in files in parallel */
+   fullyParallel: true,
+   /* Fail the build on CI if you accidentally left test.only in the source code. */

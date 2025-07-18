@@ -1,0 +1,11 @@
+--- base-tests/poms/frontend/register.page.ts	2025-07-15 10:21:51.648286443 -0600
++++ base-tests/poms/frontend/register.page.ts	2025-07-15 10:27:08.374565605 -0600
+@@ -17,7 +17,7 @@
+     this.accountCreationFirstNameField = page.getByLabel(UIReference.personalInformation.firstNameLabel);
+     this.accountCreationLastNameField = page.getByLabel(UIReference.personalInformation.lastNameLabel);
+     this.accountCreationEmailField = page.getByLabel(UIReference.credentials.emailFieldLabel, { exact: true});
+-    this.accountCreationPasswordField = page.getByLabel(UIReference.credentials.passwordFieldLabel, { exact: true });
++    this.accountCreationPasswordField = page.locator('.form-create-account').getByLabel(UIReference.credentials.passwordFieldLabel, { exact: true });
+     this.accountCreationPasswordRepeatField = page.getByLabel(UIReference.credentials.passwordConfirmFieldLabel);
+     this.accountCreationConfirmButton = page.getByRole('button', {name: UIReference.accountCreation.createAccountButtonLabel});
+   }
