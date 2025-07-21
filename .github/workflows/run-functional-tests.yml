@@ -83,18 +83,15 @@ jobs:
             git@gitlab.hyva.io:hyva-themes/hyva-compat/magento2-mollie-theme-bundle.git
           /usr/local/bin/composer config repositories.hyva-themes/hyva-checkout git \
             git@gitlab.hyva.io:hyva-checkout/checkout.git
-          /usr/local/bin/composer config repositories.hyva-themes/hyva-checkout-csp git \
-            git@gitlab.hyva.io:hyva-checkout/checkout-csp.git
           # Install Hyvä theme
           if [ "${{ matrix.theme }}" = "Hyvä CSP" ]; then
             /usr/local/bin/composer require hyva-themes/magento2-default-theme-csp
-            /usr/local/bin/composer require hyva-themes/magento2-hyva-checkout-csp
             THEME_NAME="Hyva/default-csp"
           else
             /usr/local/bin/composer require hyva-themes/magento2-default-theme
-            /usr/local/bin/composer require hyva-themes/magento2-hyva-checkout
             THEME_NAME="Hyva/default"
           fi
+          /usr/local/bin/composer require hyva-themes/magento2-hyva-checkout
           php bin/magento setup:upgrade
           # Configure Magento to use the Hyvä theme
           THEME_ID="$(/usr/local/bin/n98-magerun2 dev:theme:list --format=csv | grep $THEME_NAME | cut -d, -f1)"; \
