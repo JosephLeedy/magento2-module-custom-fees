@@ -97,6 +97,12 @@ jobs:
           THEME_ID="$(/usr/local/bin/n98-magerun2 dev:theme:list --format=csv | grep $THEME_NAME | cut -d, -f1)"; \
             test -n "${THEME_ID}" && /usr/local/bin/n98-magerun2 config:set design/theme/theme_id "${THEME_ID}"
           php bin/magento config:set customer/captcha/enable 0
+          if [ "${{ matrix.theme }}" = "Hyvä CSP" ]; then
+            /usr/local/bin/n98-magerun2 config:env:set system/default/csp/policies/storefront/scripts/inline 0
+            /usr/local/bin/n98-magerun2 config:env:set system/default/csp/policies/storefront/scripts/eval 0
+            /usr/local/bin/n98-magerun2 config:env:set system/default/csp/mode/storefront/report_only 0
+            php bin/magento app:config:import
+          fi
           # Configure Hyvä Checkout
           php bin/magento config:set hyva_themes_checkout/general/checkout default
 
