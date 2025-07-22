@@ -5,7 +5,7 @@
       "title": "Test Fixed Fee",
       "type": "Fixed",
       "base_amount": "5.00",
-      "amount": "5.00",
+      "amount": "3.53",
       "advanced": {}
     },
     "percent_shown": {
