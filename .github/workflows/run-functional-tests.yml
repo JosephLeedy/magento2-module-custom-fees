@@ -157,6 +157,8 @@ jobs:
           patch -p0 < patches/playwright.config.ts.patch
           patch -p0 < patches/bypass-captcha.config.ts.patch
           patch -p0 < patches/register.page.ts.patch
+          patch -p0 < patches/product.page.ts.patch
+          patch -p0 < patches/element-identifiers.json.patch
 
       - name: Install test browsers
         working-directory: /data/extensions/module-custom-fees/test/Functional

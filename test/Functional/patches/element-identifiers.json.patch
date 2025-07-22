@@ -1,0 +1,11 @@
+--- base-tests/config/element-identifiers.json	2025-07-14 14:10:41.498085976 -0600
++++ base-tests/config/element-identifiers.json	2025-07-22 10:41:30.864900916 -0600
+@@ -31,7 +31,7 @@
+     "saveSubscriptionsButton": "Save"
+   },
+   "productPage": {
+-    "addToCartButtonLocator": "shopping-cart Add to Cart",
++    "addToCartButtonLocator": "Add to Cart",
+     "addToCompareButtonLabel": "Add to Compare",
+     "addToWishlistButtonLabel": "Add to Wish List",
+     "simpleProductTitle": "Push It Messenger Bag",
