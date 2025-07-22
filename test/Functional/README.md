@@ -77,7 +77,7 @@ services:
       - .${WARDEN_WEB_ROOT:-}/${PLAYWRIGHT_TEST_DIR}/:/data:cached
 ```
 
-Lastly, run `docker compose up playwright` to start the Docker container. The Playwright UI is accesible in your Web 
+Lastly, run `warden env up playwright` to start the Docker container. The Playwright UI is accesible in your Web 
 browser at https\://playwright.$WARDEN_ENV.test/ (e.g. https://playwright.magento.test/).
 
 ## Usage
