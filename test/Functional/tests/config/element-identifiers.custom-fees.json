@@ -1,4 +1,15 @@
 {
+  "cartPage": {
+    "cartSummaryLocator": ".cart-summary",
+    "subtotalTotalLabel": "Subtotal"
+  },
+  "common": {
+    "currencySwitcher": {
+      "containerLocator": "#switcher-currency, #currency-heading + div",
+      "euroLabel": "EUR - Euro",
+      "usDollarLabel": "USD - US Dollar"
+    }
+  },
   "customFeesConfigurationPage": {
     "salesTabLabel": "Sales",
     "customOrderFeesSectionLabel": "Custom Order Fees",
