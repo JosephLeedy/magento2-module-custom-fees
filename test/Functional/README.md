@@ -91,6 +91,7 @@ browser at https\://playwright.$WARDEN_ENV.test/ (e.g. https://playwright.magent
         patch -p0 < patches/register.page.ts.patch
         patch -p0 < patches/product.page.ts.patch
         patch -p0 < patches/element-identifiers.json.patch
+        patch -p0 < patches/login.page.ts.patch
 2. Create test customer accounts and run other setup tasks by running the following command:
 
         npm run test -- --grep @setup
