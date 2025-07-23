@@ -5,19 +5,20 @@ import BaseCartPage from 'base-tests/poms/frontend/cart.page';
 class CartPage extends BaseCartPage
 {
     public async getCustomFees(inEuro: boolean = false): Promise<void> {
+        const cartSummary = this.page.locator(UIReferenceCustomFees.cartPage.cartSummaryLocator);
+        const currencySymbol = inEuro ? '€' : '$';
+        /* The regex below is naïve in that it does not account for the currency format, but it's not necessary to
+           do so right now. If it becomes necessary, we'll look into improving this logic. */
+        const subtotal = parseFloat(
+            (
+                await cartSummary
+                    .getByText(`${UIReferenceCustomFees.cartPage.subtotalTotalLabel} ${currencySymbol}`)
+                    .textContent()
+                ?? '0'
+            ).replace(/[^\d.]+/, '')
+        );
+
         for (const feeName in inputValuesCustomFees.customFees) {
-            const cartSummary = this.page.locator(UIReferenceCustomFees.cartPage.cartSummaryLocator);
-            const currencySymbol = inEuro ? '€' : '$';
-            /* The regex below is naïve in that it does not account for the currency format, but it's not necessary to
-               do so right now. If it becomes necessary, we'll look into improving this logic. */
-            const subtotal = parseFloat(
-                (
-                    await cartSummary
-                        .getByText(`${UIReferenceCustomFees.cartPage.subtotalTotalLabel} ${currencySymbol}`)
-                        .textContent()
-                    ?? '0'
-                ).replace(/[^\d.]+/, '')
-            );
             let label = inputValuesCustomFees.customFees[feeName].title;
             let amount = !inEuro
                 ? inputValuesCustomFees.customFees[feeName].base_amount
