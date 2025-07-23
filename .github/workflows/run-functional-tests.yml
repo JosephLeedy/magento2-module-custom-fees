@@ -154,12 +154,9 @@ jobs:
       - name: Apply patches
         working-directory: /data/extensions/module-custom-fees/test/Functional
         run: |
-          patch -p0 < patches/playwright.config.ts.patch
-          patch -p0 < patches/bypass-captcha.config.ts.patch
-          patch -p0 < patches/register.page.ts.patch
-          patch -p0 < patches/product.page.ts.patch
-          patch -p0 < patches/element-identifiers.json.patch
-          patch -p0 < patches/login.page.ts.patch
+          for patchFile in patches/*.patch; do
+            patch -p0 < "$patchFile"
+          done
 
       - name: Install test browsers
         working-directory: /data/extensions/module-custom-fees/test/Functional
