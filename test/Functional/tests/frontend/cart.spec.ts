@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { slugs, UIReference, UIReferenceCustomFees } from '@config';
+import { inputValuesCustomFees, slugs, UIReference, UIReferenceCustomFees } from '@config';
 import { requireEnv } from "@utils/env.utils";
 import ProductPage from '@poms/frontend/product.page';
 import CartPage from '@poms/frontend/cart.page';
@@ -59,6 +59,9 @@ test.describe('Custom fees in cart', (): void => {
             { tag: ['@frontend', '@cart', '@cold'] },
             async ({ page, browserName }): Promise<void> => {
                 const cartPage = new CartPage(page);
+                const excludedFees = Object
+                    .keys(inputValuesCustomFees.customFees)
+                    .filter((key) => key.includes('conditional'));
 
                 if (asCustomer) {
                     await test.step('Log in with account', async (): Promise<void> => {
@@ -90,8 +93,72 @@ test.describe('Custom fees in cart', (): void => {
                     });
                 }
 
-                await cartPage.hasCustomFees(inEuro);
+                await cartPage.hasCustomFees(inEuro, excludedFees);
             }
         );
     });
+});
+
+test.describe('Conditional custom fees in cart', (): void => {
+    /**
+     * @feature Conditional custom fees are added to quote
+     * @scenario Guest or customer adds a product to their cart
+     * @given I have added a product to my cart
+     * @and I am on the cart page
+     * @then I should see the matching custom fees in my cart
+     */
+    test(
+        'Adds conditional custom fees to cart for matching product',
+        { tag: ['@frontend', '@cart', '@cold'] },
+        async ({ page }): Promise<void> => {
+            const cartPage = new CartPage(page);
+            const excludedFees = Object
+                .keys(inputValuesCustomFees.customFees)
+                .filter(key => !key.includes('conditional'));
+
+            await test.step('Add product to cart', async (): Promise<void> => {
+                const productPage = new ProductPage(page);
+
+                await productPage.addSimpleProductToCart(
+                    UIReference.productPage.simpleProductTitle,
+                    slugs.productpage.simpleProductSlug
+                );
+            });
+
+            await page.goto(slugs.cart.cartSlug);
+
+            await cartPage.hasCustomFees(false, excludedFees);
+        }
+    );
+
+    /**
+     * @feature Conditional custom fees are not added to quote
+     * @scenario Guest or customer adds a product to their cart
+     * @given I have added a product to my cart
+     * @and I am on the cart page
+     * @then I should not see the non-matching custom fees in my cart
+     */
+    test(
+        'Does not add conditional custom fees to cart for non-matching product',
+        { tag: ['@frontend', '@cart', '@cold'] },
+        async ({ page }): Promise<void> => {
+            const cartPage = new CartPage(page);
+            const excludedFees = Object
+                .keys(inputValuesCustomFees.customFees)
+                .filter(key => !key.includes('conditional'));
+
+            await test.step('Add product to cart', async (): Promise<void> => {
+                const productPage = new ProductPage(page);
+
+                await productPage.addSimpleProductToCart(
+                    UIReference.productPage.secondSimpleProducTitle,
+                    slugs.productpage.secondSimpleProductSlug
+                );
+            });
+
+            await page.goto(slugs.cart.cartSlug);
+
+            await cartPage.doesNotHaveCustomFees(false, excludedFees);
+        }
+    );
 });

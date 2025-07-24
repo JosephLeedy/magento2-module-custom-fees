@@ -21,7 +21,24 @@ class CartPage extends BaseCartPage
         ).toBeVisible();
     }
 
-    public async hasCustomFees(inEuro: boolean = false): Promise<void> {
+    public async hasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void> {
+        const customFees = await this.getCustomFees(inEuro, exclude);
+
+        for (const customFee of customFees) {
+            await expect(customFee).toBeVisible();
+        }
+    }
+
+    public async doesNotHaveCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void> {
+        const customFees = await this.getCustomFees(inEuro, exclude);
+
+        for (const customFee of customFees) {
+            await expect(customFee).not.toBeVisible();
+        }
+    }
+
+    private async getCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<Locator[]> {
+        const customFees = [];
         const cartSummary = this.page.locator(UIReferenceCustomFees.cartPage.cartSummaryLocator);
         const currencySymbol = inEuro ? '€' : '$';
         /* The regex below is naïve in that it does not account for the currency format, but it's not necessary to
@@ -41,6 +58,10 @@ class CartPage extends BaseCartPage
                 ? inputValuesCustomFees.customFees[feeName].base_amount
                 : inputValuesCustomFees.customFees[feeName].amount;
 
+            if (exclude.includes(feeName)) {
+                continue;
+            }
+
             if (
                 inputValuesCustomFees.customFees[feeName].hasOwnProperty('advanced')
                 && inputValuesCustomFees.customFees[feeName].advanced.hasOwnProperty('show_percentage')
@@ -55,8 +76,10 @@ class CartPage extends BaseCartPage
 
             label += ` ${currencySymbol}${amount}`;
 
-            await expect(cartSummary.getByText(label, { exact: true })).toBeVisible();
+            customFees.push(cartSummary.getByText(label, { exact: true }));
         }
+
+        return customFees;
     }
 }
 

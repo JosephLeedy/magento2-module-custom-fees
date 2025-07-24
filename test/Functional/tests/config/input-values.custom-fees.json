@@ -8,6 +8,28 @@
       "amount": "3.53",
       "advanced": {}
     },
+    "fixed_conditional": {
+      "code": "test_conditional_fixed_fee",
+      "title": "Test Conditional Fixed Fee",
+      "type": "Fixed",
+      "base_amount": "10.00",
+      "amount": "7.07",
+      "advanced": {
+        "conditions": {
+          "type": "JosephLeedy\\CustomFees\\Model\\Rule\\Condition\\Combine",
+          "aggregator": "all",
+          "value": "1",
+          "conditions": [
+            {
+              "type": "JosephLeedy\\CustomFees\\Model\\Rule\\Condition\\Product",
+              "attribute": "sku",
+              "operator": "==",
+              "value": "24-WB04"
+            }
+          ]
+        }
+      }
+    },
     "percent_shown": {
       "code": "test_percent_fee_percentage_shown",
       "title": "Test Percent Fee (percentage shown)",
