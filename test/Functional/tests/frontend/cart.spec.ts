@@ -19,6 +19,12 @@ test.describe('Custom fees in cart', (): void => {
         await page.goto(slugs.cart.cartSlug);
     });
 
+    test.afterEach(async ({ page }): Promise<void> => {
+        const cartPage = new CartPage(page);
+
+        await cartPage.emptyCart();
+    });
+
     [
         {
             asCustomer: false,

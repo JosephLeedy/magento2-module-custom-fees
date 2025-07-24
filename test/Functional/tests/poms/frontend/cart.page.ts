@@ -1,9 +1,26 @@
-import { expect } from '@playwright/test';
+import { expect, Locator } from '@playwright/test';
 import { inputValuesCustomFees, UIReferenceCustomFees } from '@config';
 import BaseCartPage from 'base-tests/poms/frontend/cart.page';
 
 class CartPage extends BaseCartPage
 {
+    public async emptyCart(): Promise<void> {
+        const removeItemButtons = await this.page.locator(UIReferenceCustomFees.cartPage.removeItemButtonLocator).all();
+        let removeItemButton: Locator;
+
+        for (removeItemButton of removeItemButtons) {
+            removeItemButton.click();
+        }
+
+        await this.page.waitForLoadState('networkidle');
+
+        await expect(
+            this.page
+                .locator(UIReferenceCustomFees.cartPage.emptyCartMessageContainerLocator)
+                .getByText(UIReferenceCustomFees.cartPage.emptyCartMessage)
+        ).toBeVisible();
+    }
+
     public async getCustomFees(inEuro: boolean = false): Promise<void> {
         const cartSummary = this.page.locator(UIReferenceCustomFees.cartPage.cartSummaryLocator);
         const currencySymbol = inEuro ? '€' : '$';
