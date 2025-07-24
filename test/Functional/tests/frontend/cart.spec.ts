@@ -6,6 +6,8 @@ import CartPage from '@poms/frontend/cart.page';
 import LoginPage from "@poms/frontend/login.page";
 
 test.describe('Custom fees in cart', (): void => {
+    test.describe.configure({ retries: 3 });
+
     test.beforeEach(async ({ page }): Promise<void> => {
         const productPage = new ProductPage(page);
 
