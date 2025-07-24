@@ -6,6 +6,10 @@
     "removeItemButtonLocator": ".item-actions .action-delete",
     "subtotalTotalLabel": "Subtotal"
   },
+  "checkoutPage": {
+    "orderSummaryLocator": "#quote-summary, .opc-block-summary",
+    "subtotalTotalLocator": ".subtotal, .totals.sub"
+  },
   "common": {
     "currencySwitcher": {
       "containerLocator": "#switcher-currency, #currency-heading + div",
