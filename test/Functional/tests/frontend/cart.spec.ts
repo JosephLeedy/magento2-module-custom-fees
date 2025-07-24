@@ -90,7 +90,7 @@ test.describe('Custom fees in cart', (): void => {
                     });
                 }
 
-                await cartPage.getCustomFees(inEuro);
+                await cartPage.hasCustomFees(inEuro);
             }
         );
     });

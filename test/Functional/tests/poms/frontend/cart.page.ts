@@ -21,7 +21,7 @@ class CartPage extends BaseCartPage
         ).toBeVisible();
     }
 
-    public async getCustomFees(inEuro: boolean = false): Promise<void> {
+    public async hasCustomFees(inEuro: boolean = false): Promise<void> {
         const cartSummary = this.page.locator(UIReferenceCustomFees.cartPage.cartSummaryLocator);
         const currencySymbol = inEuro ? '€' : '$';
         /* The regex below is naïve in that it does not account for the currency format, but it's not necessary to
