@@ -4,7 +4,8 @@ import BaseCartPage from 'base-tests/poms/frontend/cart.page';
 
 class CartPage extends BaseCartPage
 {
-    public async emptyCart(): Promise<void> {
+    public async emptyCart(): Promise<void>
+    {
         const removeItemButtons = await this.page.locator(UIReferenceCustomFees.cartPage.removeItemButtonLocator).all();
         let removeItemButton: Locator;
 
@@ -21,7 +22,8 @@ class CartPage extends BaseCartPage
         ).toBeVisible();
     }
 
-    public async hasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void> {
+    public async hasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
+    {
         const customFees = await this.getCustomFees(inEuro, exclude);
 
         for (const customFee of customFees) {
@@ -29,7 +31,8 @@ class CartPage extends BaseCartPage
         }
     }
 
-    public async doesNotHaveCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void> {
+    public async doesNotHaveCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
+    {
         const customFees = await this.getCustomFees(inEuro, exclude);
 
         for (const customFee of customFees) {
@@ -37,7 +40,8 @@ class CartPage extends BaseCartPage
         }
     }
 
-    private async getCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<Locator[]> {
+    private async getCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<Locator[]>
+    {
         const customFees = [];
         const cartSummary = this.page.locator(UIReferenceCustomFees.cartPage.cartSummaryLocator);
         const currencySymbol = inEuro ? '€' : '$';
