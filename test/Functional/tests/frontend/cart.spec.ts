@@ -1,5 +1,6 @@
-import { expect, test } from '@playwright/test';
-import { inputValuesCustomFees, slugs, UIReference, UIReferenceCustomFees } from '@config';
+import { test } from '@playwright/test';
+import { inputValuesCustomFees, slugs, UIReference } from '@config';
+import CurrencySwitcher from "@utils/currencySwitcher.utils";
 import { requireEnv } from "@utils/env.utils";
 import ProductPage from '@poms/frontend/product.page';
 import CartPage from '@poms/frontend/cart.page';
@@ -78,18 +79,7 @@ test.describe('Custom fees in cart', (): void => {
 
                 if (inEuro) {
                     await test.step('Change currency to Euro', async (): Promise<void> => {
-                        const currencySwitcherContainer = page.locator(
-                            UIReferenceCustomFees.common.currencySwitcher.containerLocator,
-                        );
-
-                        await currencySwitcherContainer
-                            .getByText(UIReferenceCustomFees.common.currencySwitcher.usDollarLabel)
-                            .click();
-                        await currencySwitcherContainer
-                            .getByText(UIReferenceCustomFees.common.currencySwitcher.euroLabel)
-                            .click();
-                        await expect(currencySwitcherContainer.getByRole('button'))
-                            .toHaveText(UIReferenceCustomFees.common.currencySwitcher.euroLabel);
+                        await new CurrencySwitcher(page).switchCurrencyToEuro();
                     });
                 }
 
