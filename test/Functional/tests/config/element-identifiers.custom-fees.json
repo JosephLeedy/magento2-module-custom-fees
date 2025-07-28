@@ -3,8 +3,7 @@
     "cartSummaryLocator": ".cart-summary",
     "emptyCartMessageContainerLocator": ".cart-empty",
     "emptyCartMessage": "You have no items in your shopping cart.",
-    "removeItemButtonLocator": ".item-actions .action-delete",
-    "subtotalTotalLabel": "Subtotal"
+    "removeItemButtonLocator": ".item-actions .action-delete"
   },
   "common": {
     "currencySwitcher": {
