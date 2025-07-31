@@ -5,6 +5,15 @@
     "emptyCartMessage": "You have no items in your shopping cart.",
     "removeItemButtonLocator": ".item-actions .action-delete"
   },
+  "checkoutPage": {
+    "addressRegionLabel": "State/Province",
+    "orderSummaryLocator": "#quote-summary, .opc-block-summary",
+    "paymentMethodSectionLabel": "Payment Method",
+    "proceedToReviewStepButtonLocator": ".checkout-nav .btn-next, #shipping-method-buttons-container button.continue",
+    "selectExistingShippingAddressButtonLocator": "input[name=address_shipping], .action-select-shipping-item",
+    "shippingAddressFormLocator": "form#shipping, form#co-shipping-form",
+    "subtotalTotalLabel": "Subtotal"
+  },
   "common": {
     "currencySwitcher": {
       "containerLocator": "#switcher-currency, #currency-heading + div",
