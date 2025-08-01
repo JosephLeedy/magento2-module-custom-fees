@@ -54,10 +54,10 @@ test.describe('Custom fees display in checkout', (): void => {
     ].forEach(({ asCustomer, inEuro, testTitle }): void => {
         /**
          * @feature Custom Fees are displayed in checkout
-         * @scenario Guest or customer places an order with custom fees applied
-         * @given I have added a product to my cart
-         * @and I am in the checkout
-         * @then I should see the custom fees in the order totals
+         * @scenario Guest or customer sees custom fees in the checkout
+         * @given A guest or customer has added a product to the cart
+         * @when They check out
+         * @then They should see the custom fees in the order totals
          */
         test(testTitle, { tag: ['@frontend', '@checkout', '@cold'] }, async ({ page, browserName }): Promise<void> => {
             const checkoutPage = new CheckoutPage(page);
