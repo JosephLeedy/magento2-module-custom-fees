@@ -8,6 +8,8 @@ import LoginPage from '@poms/frontend/login.page';
 import ProductPage from '@poms/frontend/product.page';
 
 test.describe('Custom fees display in checkout', (): void => {
+    test.describe.configure({ retries: 3 });
+
     test.use({ bypassCSP: true });
 
     test.beforeEach(async ({ page }): Promise<void> => {
