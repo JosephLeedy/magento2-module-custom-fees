@@ -50,10 +50,10 @@ test.describe('Custom fees are added to cart', (): void => {
     ].forEach(({ asCustomer, inEuro, testTitle }): void => {
         /**
          * @feature Custom Fees are added to quote
-         * @scenario Guest or customer adds a product to their cart
-         * @given I have added a product to my cart
-         * @and I am on the cart page
-         * @then I should see the custom fees in my cart
+         * @scenario Guest or customer sees custom fees in their cart
+         * @given A guest or customer has added a product to the cart
+         * @when They visit the cart page
+         * @then They should see the custom fees in the cart totals
          */
         test(testTitle, { tag: ['@frontend', '@cart', '@cold'] }, async ({ page, browserName }): Promise<void> => {
             const cartPage = new CartPage(page);
@@ -87,11 +87,11 @@ test.describe('Custom fees are added to cart', (): void => {
 
 test.describe('Conditional custom fees', (): void => {
     /**
-     * @feature Conditional custom fees are added to quote
-     * @scenario Guest or customer adds a product to their cart
-     * @given I have added a product to my cart
-     * @and I am on the cart page
-     * @then I should see the matching custom fees in my cart
+     * @feature Matching conditional custom fees are added to quote
+     * @scenario Guest or customer sees matching conditional custom fees in their cart
+     * @given A guest or customer has added a product to the cart matching specific conditions
+     * @when They visit the cart page
+     * @then They should see the custom fees in the cart totals that match the conditions
      */
     test(
         'are added to cart for matching product',
@@ -118,11 +118,11 @@ test.describe('Conditional custom fees', (): void => {
     );
 
     /**
-     * @feature Conditional custom fees are not added to quote
-     * @scenario Guest or customer adds a product to their cart
-     * @given I have added a product to my cart
-     * @and I am on the cart page
-     * @then I should not see the non-matching custom fees in my cart
+     * @feature Non-matching conditional custom fees are not added to quote
+     * @scenario Guest or customer does not see non-matching conditional custom fees in their cart
+     * @given A guest or customer has added a product to the cart not matching specific conditions
+     * @when They visit the cart page
+     * @then They should not see the custom fees in the cart totals that do not match the conditions
      */
     test(
         'are not added to cart for non-matching product',
