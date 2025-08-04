@@ -58,7 +58,7 @@ class CheckoutPage extends BaseCheckoutPage
             .fill(faker.location.streetAddress());
         await this.page.getByLabel(UIReference.newAddress.zipCodeLabel).fill(faker.location.zipCode());
         await this.page.getByLabel(UIReference.newAddress.cityNameLabel).fill(faker.location.city());
-        await this.page.getByLabel(UIReference.newAddress.phoneNumberLabel).fill(faker.phone.number());
+        await this.page.getByLabel(UIReference.newAddress.phoneNumberLabel).fill(this.generatePhoneNumber());
         await this.page.getByLabel('Country').selectOption('US');
         await this.page
             .getByRole('combobox', { name: UIReferenceCustomFees.checkoutPage.addressRegionLabel })
@@ -137,6 +137,18 @@ class CheckoutPage extends BaseCheckoutPage
         for (const customFee of customFees) {
             await expect(customFee).not.toBeVisible();
         }
+    }
+
+    private generatePhoneNumber(): string
+    {
+        let phoneNumber = faker.phone.number();
+
+        // Remove the extension from the generated phone number if necessary as it fails Magento's validation logic
+        if (phoneNumber.indexOf('x') !== -1) {
+            phoneNumber = phoneNumber.replace(/\sx(\d{1,})/, '');
+        }
+
+        return phoneNumber;
     }
 }
 
