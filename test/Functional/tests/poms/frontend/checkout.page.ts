@@ -1,6 +1,6 @@
 import { expect, Locator } from '@playwright/test';
 import { faker } from '@faker-js/faker';
-import { slugs, UIReference, UIReferenceCustomFees } from '@config';
+import { outcomeMarker, slugs, UIReference, UIReferenceCustomFees } from '@config';
 import CustomFees from '@utils/customFees.utils';
 import HyvaUtils from '@utils/hyva.utils';
 import BaseCheckoutPage from 'base-tests/poms/frontend/checkout.page';
@@ -129,6 +129,30 @@ class CheckoutPage extends BaseCheckoutPage
             await this.waitForMagewireRequests();
             await this.proceedToReviewStep();
         }
+    }
+
+    public async placeMultiStepOrder(): Promise<string|null>
+    {
+        const orderPlacedNotification = outcomeMarker.checkout.orderPlacedNotification;
+        let orderNumber: string|null = null;
+
+        await this.fillShippingAddress();
+        await this.selectShippingMethod();
+        await this.proceedToReviewStep();
+        await this.selectPaymentMethod('check');
+        await this.placeOrderButton.click();
+        await this.waitForMagewireRequests();
+
+        await expect.soft(this.page.getByText(orderPlacedNotification)).toBeVisible();
+
+        orderNumber = await this.page
+            .locator(UIReferenceCustomFees.checkoutSuccessPage.orderNumberLocator)
+            .textContent();
+
+        await expect(this.continueShoppingButton, `${outcomeMarker.checkout.orderPlacedNumberText} ${orderNumber}`)
+            .toBeVisible();
+
+        return orderNumber;
     }
 
     public async hasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>

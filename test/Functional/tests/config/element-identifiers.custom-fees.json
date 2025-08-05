@@ -14,6 +14,9 @@
     "shippingAddressFormLocator": "form#shipping, form#co-shipping-form",
     "subtotalTotalLabel": "Subtotal"
   },
+  "checkoutSuccessPage": {
+    "orderNumberLocator": ".checkout-success .order-number"
+  },
   "common": {
     "currencySwitcher": {
       "containerLocator": "#switcher-currency, #currency-heading + div",
@@ -42,5 +45,13 @@
         }
       }
     }
+  },
+  "orderHistoryPage": {
+    "viewOrderLabel": "view order"
+  },
+  "customerOrderPage": {
+    "orderDetailsTitle": "Order #",
+    "orderLinksLocator": ".order-links",
+    "orderTotalsContainerLocator": ".order-items + div, table.table-order-items > tfoot"
   }
 }

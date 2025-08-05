@@ -38,7 +38,7 @@ class CustomFees
 
             label += ` ${currencySymbol}${amount}`;
 
-            customFees.push(containerLocator.getByText(label, { exact: true }));
+            customFees.push(containerLocator.getByText(label));
         }
 
         return customFees;

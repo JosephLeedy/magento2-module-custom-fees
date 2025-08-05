@@ -9,3 +9,12 @@
      "addToCompareButtonLabel": "Add to Compare",
      "addToWishlistButtonLabel": "Add to Wish List",
      "simpleProductTitle": "Push It Messenger Bag",
+@@ -96,7 +96,7 @@
+     "openCartButtonLabelCont": "item",
+     "openCartButtonLabelContMultiple": "items",
+     "openDiscountFormLabel": "Apply Discount Code",
+-    "paymentOptionCheckLabel": "Check / Money order Free",
++    "paymentOptionCheckLabel": "Check / Money order",
+     "paymentOptionCreditCardLabel": "Credit Card",
+     "paymentOptionPaypalLabel": "PayPal",
+     "creditCardNumberLabel": "Credit Card Number",
