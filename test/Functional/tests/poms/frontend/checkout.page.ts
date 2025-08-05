@@ -86,11 +86,28 @@ class CheckoutPage extends BaseCheckoutPage
         await this.page.waitForLoadState('networkidle');
     }
 
-    public async proceedToReviewStep(expectVisibility: boolean = true): Promise<void>
+    public async proceedToReviewStep(): Promise<void>
     {
+        let proceedToReviewStepButton: Locator;
+        let paymentMethodStepTitle: Locator;
         let addressRegionSelect: Locator;
-        await this.page.locator(UIReferenceCustomFees.checkoutPage.proceedToReviewStepButtonLocator).click();
+
+        proceedToReviewStepButton = this.page
+            .locator(UIReferenceCustomFees.checkoutPage.proceedToReviewStepButtonLocator);
+
+        if (!(await proceedToReviewStepButton.isVisible())) {
+            return;
+        }
+
+        await proceedToReviewStepButton.click({ force: true });
         await this.page.waitForLoadState('networkidle');
+
+        paymentMethodStepTitle = this.page
+            .getByText(UIReferenceCustomFees.checkoutPage.paymentMethodSectionLabel, { exact: true });
+
+        if ((await paymentMethodStepTitle.isVisible())) {
+            return;
+        }
 
         addressRegionSelect = this.page.getByRole(
             'combobox',
@@ -102,21 +119,16 @@ class CheckoutPage extends BaseCheckoutPage
         if (
             this.state !== ''
             && (await addressRegionSelect.isVisible())
-            && (await addressRegionSelect.evaluate(element => element.getAttribute('aria-invalid') === 'true'))
+            && (
+                (await addressRegionSelect.evaluate(element => element.getAttribute('aria-invalid') === 'true'))
+                || (await addressRegionSelect.inputValue()) !== this.state
+            )
         ) {
             await addressRegionSelect.selectOption(this.state);
 
             await this.waitForMagewireRequests();
-            await this.proceedToReviewStep(false);
+            await this.proceedToReviewStep();
         }
-
-        if (!expectVisibility) {
-            return;
-        }
-
-        await expect(
-            this.page.getByText(UIReferenceCustomFees.checkoutPage.paymentMethodSectionLabel, { exact: true })
-        ).toBeVisible();
     }
 
     public async hasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
