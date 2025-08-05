@@ -1,5 +1,5 @@
 import { expect, Locator } from '@playwright/test';
-import { UIReferenceCustomFees } from '@config';
+import { slugs, UIReferenceCustomFees } from '@config';
 import CustomFees from '@utils/customFees.utils';
 import BaseCartPage from 'base-tests/poms/frontend/cart.page';
 
@@ -7,8 +7,15 @@ class CartPage extends BaseCartPage
 {
     public async emptyCart(): Promise<void>
     {
-        const removeItemButtons = await this.page.locator(UIReferenceCustomFees.cartPage.removeItemButtonLocator).all();
+        let removeItemButtons: Array<Locator>;
         let removeItemButton: Locator;
+
+        if (!this.page.url().includes(slugs.cart.cartSlug)) {
+            await this.page.goto(slugs.cart.cartSlug);
+            await this.page.waitForLoadState('networkidle');
+        }
+
+        removeItemButtons = await this.page.locator(UIReferenceCustomFees.cartPage.removeItemButtonLocator).all();
 
         for (removeItemButton of removeItemButtons) {
             removeItemButton.click();
