@@ -10,6 +10,11 @@ document.
 
 ## [Unreleased]
 
+### Fixed
+
+- Custom fees were not calculated correctly when calculating totals for 
+  orders with multiple invoices
+
 ## [1.2.0]
 
 ### Added

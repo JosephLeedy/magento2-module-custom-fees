@@ -52,10 +52,17 @@ class Totals extends Template
     public function initTotals(): self
     {
         $source = $this->getSource();
-        $order = match (true) {
-            $source instanceof Order => $source,
-            $source instanceof Invoice, $source instanceof Creditmemo => $source->getOrder(),
-        };
+        /** @var Order $order */
+        $order = $source;
+        $baseDelta = 1;
+        $delta = 1;
+
+        if ($source instanceof Invoice || $source instanceof Creditmemo) {
+            $order = $source->getOrder();
+            $baseDelta = (float) $source->getBaseSubtotal() / (float) $order->getBaseSubtotal();
+            $delta = (float) $source->getSubtotal() / (float) $order->getSubtotal();
+        }
+
         $customFees = $this->customFeesRetriever->retrieve($order);
 
         if (count($customFees) === 0) {
@@ -67,11 +74,13 @@ class Totals extends Template
 
         array_walk(
             $customFees,
-            function (array $customFee, string|int $key) use ($firstFeeKey, &$previousFeeCode) {
+            function (array $customFee, string|int $key) use ($baseDelta, $delta, $firstFeeKey, &$previousFeeCode) {
                 $customFee['label'] = FeeType::Percent->equals($customFee['type']) && $customFee['percent'] !== null
                     && $customFee['show_percentage']
                     ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
                     : __($customFee['title']);
+                $customFee['base_value'] *= $baseDelta;
+                $customFee['value'] *= $delta;
 
                 unset($customFee['title']);
 
