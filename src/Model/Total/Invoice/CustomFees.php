@@ -35,9 +35,14 @@ class CustomFees extends AbstractTotal
 
         $baseTotalCustomFees = array_sum(array_column($customFees, 'base_value'));
         $totalCustomFees = array_sum(array_column($customFees, 'value'));
+        $baseInvoicedCustomFeeAmount = (
+            (float) $invoice->getBaseSubtotal() / (float) $invoice->getOrder()->getBaseSubtotal()
+        ) * $baseTotalCustomFees;
+        $totalInvoicedCustomFeeAmount = ((float) $invoice->getSubtotal() / (float) $invoice->getOrder()->getSubtotal())
+            * $totalCustomFees;
 
-        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $baseTotalCustomFees);
-        $invoice->setGrandTotal($invoice->getGrandTotal() + $totalCustomFees);
+        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $baseInvoicedCustomFeeAmount);
+        $invoice->setGrandTotal($invoice->getGrandTotal() + $totalInvoicedCustomFeeAmount);
 
         return $this;
     }

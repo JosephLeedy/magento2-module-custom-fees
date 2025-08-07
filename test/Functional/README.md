@@ -36,7 +36,7 @@
 
 ### Setting Up Warden To Run Tests With Playwright UI
 
-If you're Magento environment is running inside of a [Warden] Docker container, you may also want to run the 
+If your Magento environment is running inside of a [Warden] Docker container, you may also want to run the 
 [Playwright UI] in separate container rather than running the tests locally on your machine. To do so, add the 
 following settings to your `.env` file (found in the root of your Warden project):
 
@@ -77,7 +77,7 @@ services:
       - .${WARDEN_WEB_ROOT:-}/${PLAYWRIGHT_TEST_DIR}/:/data:cached
 ```
 
-Lastly, run `docker compose up playwright` to start the Docker container. The Playwright UI is accesible in your Web 
+Lastly, run `warden env up playwright` to start the Docker container. The Playwright UI is accesible in your Web 
 browser at https\://playwright.$WARDEN_ENV.test/ (e.g. https://playwright.magento.test/).
 
 ## Usage

@@ -34,6 +34,31 @@ final class CustomFeesTest extends TestCase
     }
 
     /**
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/invoices_with_custom_fees.php
+     */
+    public function testCollectsCustomFeesTotalsForMultipleInvoices(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var OrderResource $orderResource */
+        $orderResource = $objectManager->create(OrderResource::class);
+
+        $orderResource->load($order, '100000001', 'increment_id');
+
+        /** @var Invoice[] $invoices */
+        $invoices = $order->getInvoiceCollection();
+
+        foreach ($invoices as $invoice) {
+            self::assertEquals(13.50, $invoice->getBaseGrandTotal());
+            self::assertEquals(13.50, $invoice->getGrandTotal());
+        }
+
+        self::assertEquals(27.00, $order->getTotalPaid());
+    }
+
+    /**
      * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/invoice.php
      */
     public function testDoesNotCollectsCustomFeesTotals(): void
