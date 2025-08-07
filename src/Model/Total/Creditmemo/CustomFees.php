@@ -35,9 +35,15 @@ class CustomFees extends AbstractTotal
 
         $baseTotalCustomFees = array_sum(array_column($customFees, 'base_value'));
         $totalCustomFees = array_sum(array_column($customFees, 'value'));
+        $baseRefundedCustomFeeAmount = (
+            (float) $creditmemo->getBaseSubtotal() / (float) $creditmemo->getOrder()->getBaseSubtotal()
+        ) * $baseTotalCustomFees;
+        $totalRefundedCustomFeeAmount = (
+            (float) $creditmemo->getSubtotal() / (float) $creditmemo->getOrder()->getSubtotal()
+        ) * $totalCustomFees;
 
-        $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $baseTotalCustomFees);
-        $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $totalCustomFees);
+        $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $baseRefundedCustomFeeAmount);
+        $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $totalRefundedCustomFeeAmount);
 
         return $this;
     }

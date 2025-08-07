@@ -14,6 +14,8 @@ document.
 
 - Custom fees were not calculated correctly when calculating totals for 
   orders with multiple invoices
+- Custom fees were not calculated correctly when calculating totals for 
+  orders with multiple credit memos
 
 ## [1.2.0]
 
