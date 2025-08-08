@@ -1,4 +1,11 @@
 {
+  "adminSalesOrderGridPage": {
+    "navigation": {
+      "salesMenuLabel": "Sales",
+      "ordersMenuItemLabel": "Orders"
+    },
+    "pageTitle": "Orders"
+  },
   "cartPage": {
     "cartSummaryLocator": ".cart-summary",
     "emptyCartMessageContainerLocator": ".cart-empty",
