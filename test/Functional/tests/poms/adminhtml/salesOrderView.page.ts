@@ -67,7 +67,7 @@ class SalesOrderViewPage
             throw new Error('No invoices found.');
         }
 
-        invoiceIncrementId = await firstInvoiceRowIdCell.textContent();
+        invoiceIncrementId = (await firstInvoiceRowIdCell.textContent())?.trim() ?? null;
 
         return invoiceIncrementId;
     }
