@@ -2,6 +2,9 @@ import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import CurrencySwitcher from '@utils/currencySwitcher.utils';
 import { requireEnv } from '@utils/env.utils';
+import MagentoAdminPage from '@poms/adminhtml/magentoAdmin.page';
+import SalesOrderGridPage from '@poms/adminhtml/salesOrderGrid.page';
+import SalesOrderViewPage from '@poms/adminhtml/salesOrderView.page';
 import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
 import CustomerOrderPage from '@poms/frontend/customerOrder.page';
@@ -95,6 +98,89 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
 
                 await orderPage.navigateToOrderPage(orderNumber);
                 await orderPage.orderHasCustomFees(inEuro);
+            }
+        );
+    });
+
+    [
+        {
+            testSuffix: '',
+            inEuro: false,
+        },
+        {
+            testSuffix: ', in Euro',
+            inEuro: true,
+        },
+    ].forEach(({ testSuffix, inEuro }): void => {
+        /**
+         * @feature Custom fees on customer invoice page
+         * @scenario Customer places an order, views its invoice and sees the custom fees
+         * @given The customer has placed an order with custom fees that has been invoiced
+         * @when They view the invoice from the My Orders page of the Customer Account Dashboard
+         * @then They should see the custom fees in the invoice totals
+         */
+        test(
+            `for an invoice${testSuffix}`,
+            { tag: ['@frontend', '@account', '@cold'] },
+            async ({ page, browserName }, testInfo): Promise<void> => {
+                const orderPage = new CustomerOrderPage(page);
+                const adminPage = new MagentoAdminPage(page);
+                const adminSalesOrderGridPage = new SalesOrderGridPage(page);
+                const adminSalesOrderViewPage = new SalesOrderViewPage(page);
+                const adminUsername = requireEnv('MAGENTO_ADMIN_USERNAME');
+                const adminPassword = requireEnv('MAGENTO_ADMIN_PASSWORD');
+                let orderNumber: string|null = '';
+                let invoiceNumber: string|null = '';
+
+                test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
+
+                if (inEuro) {
+                    await test.step('Change currency to Euro', async (): Promise<void> => {
+                        await new CurrencySwitcher(page).switchCurrencyToEuro();
+                    });
+                }
+
+                await test.step('Place order', async (): Promise<void> => {
+                    orderNumber = await new CheckoutPage(page).placeMultiStepOrder();
+
+                    if (orderNumber === null) {
+                        throw new Error(
+                            'Something went wrong while placing the order. Please check the logs for more information.'
+                        );
+                    }
+
+                    testInfo.annotations.push({
+                        type: 'Order number',
+                        description: orderNumber
+                    });
+                });
+
+                await test.step('Create invoice', async (): Promise<void> => {
+                    await adminPage.login(adminUsername, adminPassword);
+                    await adminSalesOrderGridPage.navigateToSalesOrderGrid();
+                    await adminSalesOrderGridPage.navigateToSalesOrderViewPage(<string>orderNumber);
+
+                    invoiceNumber = await adminSalesOrderViewPage.createInvoice();
+
+                    if (invoiceNumber === null) {
+                        throw new Error(
+                            'Something went wrong while creating the invoice. Please check the logs for more '
+                            + 'information.'
+                        );
+                    }
+
+                    testInfo.annotations.push({
+                        type: 'Invoice number',
+                        description: invoiceNumber
+                    });
+                });
+
+                await page.goto(slugs.account.orderHistorySlug);
+                await page.waitForLoadState('networkidle');
+
+                await orderPage.navigateToOrderPage(orderNumber);
+                await orderPage.navigateToInvoicesPage();
+                await orderPage.invoiceHasCustomFees(invoiceNumber, inEuro);
             }
         );
     });
