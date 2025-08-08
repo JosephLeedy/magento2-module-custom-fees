@@ -6,6 +6,19 @@
     },
     "pageTitle": "Orders"
   },
+  "adminSalesOrderInvoiceNewPage": {
+    "itemQuantityInputLocator": ".qty-input",
+    "pageTitle": "New Invoice",
+    "submitInvoiceButtonLabel": "Submit Invoice",
+    "updateItemQuanitiesButtonLabel": "Update Qty's"
+  },
+  "adminSalesOrderViewPage": {
+    "createInvoiceButtonLabel": "Invoice",
+    "invoicesTab": {
+      "label": "Invoices",
+      "firstInvoiceLocator": "#sales_order_view_tabs_order_invoices_content .data-grid .data-row:first-child td:nth-child(2)"
+    }
+  },
   "cartPage": {
     "cartSummaryLocator": ".cart-summary",
     "emptyCartMessageContainerLocator": ".cart-empty",
