@@ -10,7 +10,7 @@ class SalesOrderViewPage
 {
     public constructor(private readonly page: Page) {}
 
-    public async createInvoice(itemQuantities: [SkuAndQuantity]|[] = []): Promise<string|null>
+    public async createInvoice(itemQuantities: SkuAndQuantity[] = []): Promise<string|null>
     {
         let skuAndQuantity: SkuAndQuantity;
         let invoiceItemRow: Locator;
