@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { UIReferenceCustomFees } from '@config';
+import { outcomeMarkersCustomFees, UIReference, UIReferenceCustomFees } from '@config';
 
 type SkuAndQuantity = {
     sku: string,
@@ -51,6 +51,15 @@ class SalesOrderViewPage
             .getByRole('button', { name: UIReferenceCustomFees.adminSalesOrderInvoiceNewPage.submitInvoiceButtonLabel })
             .click();
         await this.page.waitForLoadState('networkidle');
+
+        expect(
+            this.page.locator(
+                UIReference.general.successMessageLocator,
+                {
+                    hasText: outcomeMarkersCustomFees.adminSalesOrderViewPage.invoiceCreatedNotificationMessage
+                }
+            )
+        ).toBeVisible();
 
         return await this.getFirstInvoiceIncrementId();
     }
