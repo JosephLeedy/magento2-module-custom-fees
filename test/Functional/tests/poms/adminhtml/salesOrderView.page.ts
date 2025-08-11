@@ -1,13 +1,18 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { UIReferenceCustomFees } from '@config';
 
+type SkuAndQuantity = {
+    sku: string,
+    quantity: number,
+};
+
 class SalesOrderViewPage
 {
     public constructor(private readonly page: Page) {}
 
-    public async createInvoice(itemQuantities: [{ sku: string; quantity: number }]|[] = []): Promise<string|null>
+    public async createInvoice(itemQuantities: [SkuAndQuantity]|[] = []): Promise<string|null>
     {
-        let skuAndQuantity: { sku: string, quantity: number };
+        let skuAndQuantity: SkuAndQuantity;
         let invoiceItemRow: Locator;
 
         await this.page
@@ -74,3 +79,4 @@ class SalesOrderViewPage
 }
 
 export default SalesOrderViewPage;
+export { SkuAndQuantity };
