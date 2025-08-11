@@ -1,5 +1,6 @@
 {
   "adminSalesOrderViewPage": {
+    "creditMemoCreatedNotificationMessage": "You created the credit memo.",
     "invoiceCreatedNotificationMessage": "The invoice has been created."
   }
 }

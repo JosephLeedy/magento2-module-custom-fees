@@ -49,6 +49,18 @@ class CustomerOrderPage
         await expect(this.page.getByText(UIReferenceCustomFees.customerOrderPage.invoiceDetailsTitle)).toBeVisible();
     }
 
+    public async navigateToCreditMemosPage(): Promise<void>
+    {
+        const creditMemosLink = this.page
+            .locator(UIReferenceCustomFees.customerOrderPage.orderLinksLocator)
+            .getByRole('link', { name: UIReferenceCustomFees.customerOrderPage.creditMemosLinkLabel });
+
+        await creditMemosLink.click();
+        await this.page.waitForLoadState();
+
+        await expect(this.page.getByText(UIReferenceCustomFees.customerOrderPage.creditMemoDetailsTitle)).toBeVisible();
+    }
+
     public async orderHasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
     {
         await this.hasCustomFees(
@@ -64,6 +76,14 @@ class CustomerOrderPage
         exclude: string[] = []
     ): Promise<void> {
         await this.hasCustomFees((await this.getInvoiceItemsContainer(invoiceIncrementId)), inEuro, exclude);
+    }
+
+    public async creditMemoHasCustomFees(
+        creditMemoIncrementId: string = '',
+        inEuro: boolean = false,
+        exclude: string[] = []
+    ): Promise<void> {
+        await this.hasCustomFees((await this.getCreditMemoItemsContainer(creditMemoIncrementId)), inEuro, exclude);
     }
 
     public async orderDoesNotHaveCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
@@ -82,6 +102,18 @@ class CustomerOrderPage
     ): Promise<void> {
         await this.doesNotHaveCustomFees(
             (await this.getInvoiceItemsContainer(invoiceIncrementId)),
+            inEuro,
+            exclude
+        );
+    }
+
+    public async creditMemoDoesNotHaveCustomFees(
+        creditMemoIncrementId: string = '',
+        inEuro: boolean = false,
+        exclude: string[] = []
+    ): Promise<void> {
+        await this.doesNotHaveCustomFees(
+            (await this.getCreditMemoItemsContainer(creditMemoIncrementId)),
             inEuro,
             exclude
         );
@@ -135,6 +167,39 @@ class CustomerOrderPage
             .locator(UIReferenceCustomFees.customerOrderPage.invoiceTotalsContainerLocator);
 
         return invoiceTotalsContainer;
+    }
+
+    private async getCreditMemoItemsContainer(creditMemoIncrementId: string = ''): Promise<Locator>
+    {
+        const creditMemoTitle: Locator = this.page
+            .locator(
+                UIReferenceCustomFees.customerOrderPage.orderTitleLocator,
+                {
+                    hasText: `${UIReferenceCustomFees.customerOrderPage.creditMemoDetailsTitle} ${creditMemoIncrementId}`
+                }
+            ).or(
+                this.page.locator(
+                    UIReferenceCustomFees.customerOrderPage.orderTitleLocator,
+                    {
+                        hasText: `${UIReferenceCustomFees.customerOrderPage.creditMemoDetailsTitle}${creditMemoIncrementId}`
+                    }
+                )
+            );
+        let creditMemoTotalsContainer: Locator;
+        let errorMessage: string;
+
+        if (!(await creditMemoTitle.isVisible())) {
+            errorMessage = creditMemoIncrementId.length === 0
+                ? 'There are no credit memos. Please create one first.'
+                : `Credit memo with ID "${creditMemoIncrementId}" could not be found.`;
+
+            throw new Error(errorMessage);
+        }
+
+        creditMemoTotalsContainer = creditMemoTitle
+            .locator(UIReferenceCustomFees.customerOrderPage.creditMemoTotalsContainerLocator);
+
+        return creditMemoTotalsContainer;
     }
 }
 

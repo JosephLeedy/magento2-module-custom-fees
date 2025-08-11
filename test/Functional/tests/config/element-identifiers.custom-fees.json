@@ -1,4 +1,10 @@
 {
+  "adminSalesOrderCreditMemoNewPage": {
+    "itemQuantityInputLocator": ".qty-input",
+    "pageTitle": "New Memo",
+    "submitCreditMemoButtonLabel": "Refund Offline",
+    "updateItemQuanitiesButtonLabel": "Update Qty's"
+  },
   "adminSalesOrderGridPage": {
     "navigation": {
       "salesMenuLabel": "Sales",
@@ -13,7 +19,12 @@
     "updateItemQuanitiesButtonLabel": "Update Qty's"
   },
   "adminSalesOrderViewPage": {
+    "createCreditMemoButtonLabel": "Credit Memo",
     "createInvoiceButtonLabel": "Invoice",
+    "creditMemosTab": {
+      "label": "Credit Memos",
+      "firstCreditMemoLocator": "#sales_order_view_tabs_order_creditmemos_content .data-grid .data-row:first-child td:nth-child(2)"
+    },
     "invoicesTab": {
       "label": "Invoices",
       "firstInvoiceLocator": "#sales_order_view_tabs_order_invoices_content .data-grid .data-row:first-child td:nth-child(2)"
@@ -70,6 +81,9 @@
     "viewOrderLabel": "view order"
   },
   "customerOrderPage": {
+    "creditMemoDetailsTitle": "Refund #",
+    "creditMemoTotalsContainerLocator": "//following-sibling::div[contains(@class, \"creditmemo\")]/*[contains(@class, \"creditmemo\") or contains(@class, \"border-container\")]/child::*[last()]",
+    "creditMemosLinkLabel": "Refunds",
     "invoiceDetailsTitle": "Invoice #",
     "invoiceTotalsContainerLocator": "//following-sibling::div[contains(@class, \"invoice\")]/*[contains(@class, \"invoice\") or contains(@class, \"border-container\")]/child::*[last()]",
     "invoicesLinkLabel": "Invoices",
