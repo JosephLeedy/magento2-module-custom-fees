@@ -124,11 +124,6 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
             { tag: ['@frontend', '@account', '@cold'] },
             async ({ page, browserName }, testInfo): Promise<void> => {
                 const orderPage = new CustomerOrderPage(page);
-                const adminPage = new MagentoAdminPage(page);
-                const adminSalesOrderGridPage = new SalesOrderGridPage(page);
-                const adminSalesOrderViewPage = new SalesOrderViewPage(page);
-                const adminUsername = requireEnv('MAGENTO_ADMIN_USERNAME');
-                const adminPassword = requireEnv('MAGENTO_ADMIN_PASSWORD');
                 let orderNumber: string|null = '';
                 let invoiceNumber: string|null = '';
 
@@ -156,6 +151,12 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                 });
 
                 await test.step('Create invoice', async (): Promise<void> => {
+                    const adminPage = new MagentoAdminPage(page);
+                    const adminSalesOrderGridPage = new SalesOrderGridPage(page);
+                    const adminSalesOrderViewPage = new SalesOrderViewPage(page);
+                    const adminUsername = requireEnv('MAGENTO_ADMIN_USERNAME');
+                    const adminPassword = requireEnv('MAGENTO_ADMIN_PASSWORD');
+
                     await adminPage.login(adminUsername, adminPassword);
                     await adminSalesOrderGridPage.navigateToSalesOrderGrid();
                     await adminSalesOrderGridPage.navigateToSalesOrderViewPage(<string>orderNumber);
