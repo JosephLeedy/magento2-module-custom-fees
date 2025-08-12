@@ -46,7 +46,7 @@
     "subtotalTotalLabel": "Subtotal"
   },
   "checkoutSuccessPage": {
-    "orderNumberLocator": ".checkout-success .order-number"
+    "orderNumberLocator": ".checkout-success .order-number, .checkout-success p:first-child > span"
   },
   "common": {
     "currencySwitcher": {
@@ -77,8 +77,19 @@
       }
     }
   },
+  "guestOrderPage": {
+    "orderDetailsTitle": "Order #",
+    "orderTotalsContainerLocator": ".order-items + div, table.table-order-items > tfoot"
+  },
   "orderHistoryPage": {
     "viewOrderLabel": "view order"
+  },
+  "ordersAndReturnsPage": {
+    "billingLastNameFieldLabel": "Billing Last Name",
+    "emailFieldLabel": "Email",
+    "orderIdFieldLabel": "Order ID",
+    "pageTitle": "Orders and Returns",
+    "submitButtonLabel": "Continue"
   },
   "customerOrderPage": {
     "creditMemoDetailsTitle": "Refund #",
