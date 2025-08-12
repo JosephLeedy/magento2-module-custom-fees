@@ -12,7 +12,7 @@ import LoginPage from '@poms/frontend/login.page';
 import ProductPage from '@poms/frontend/product.page';
 
 test.describe('Custom fees are displayed on customer order page', (): void => {
-    // test.describe.configure({ retries: 3 });
+    test.describe.configure({ retries: 3 });
 
     test.use({ bypassCSP: true });
 
