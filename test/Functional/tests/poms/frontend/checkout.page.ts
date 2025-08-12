@@ -7,6 +7,8 @@ import BaseCheckoutPage from 'base-tests/poms/frontend/checkout.page';
 
 class CheckoutPage extends BaseCheckoutPage
 {
+    private email: string = '';
+    private lastName: string = '';
     private state: string = '';
 
     public async waitForMagewireRequests(): Promise<void>
@@ -42,16 +44,18 @@ class CheckoutPage extends BaseCheckoutPage
         emailField = this.page
             .getByRole('textbox', { name: UIReference.credentials.emailCheckoutFieldLabel })
             .first();
+        this.email = faker.internet.email();
+        this.lastName = faker.person.lastName();
         this.state = faker.location.state();
 
         // Fill required shipping address fields
 
         if (await emailField.isVisible()) {
-            await emailField.fill(faker.internet.email());
+            await emailField.fill(this.email);
         }
 
         await this.page.getByLabel(UIReference.personalInformation.firstNameLabel).fill(faker.person.firstName());
-        await this.page.getByLabel(UIReference.personalInformation.lastNameLabel).fill(faker.person.lastName());
+        await this.page.getByLabel(UIReference.personalInformation.lastNameLabel).fill(this.lastName);
         await this.page
             .getByLabel(UIReference.newAddress.streetAddressLabel)
             .first()
@@ -131,7 +135,7 @@ class CheckoutPage extends BaseCheckoutPage
         }
     }
 
-    public async placeMultiStepOrder(): Promise<string|null>
+    public async placeMultiStepOrder(): Promise<{ orderNumber: string|null, orderEmail: string, orderLastName: string }>
     {
         const orderPlacedNotification = outcomeMarker.checkout.orderPlacedNotification;
         let orderNumber: string|null = null;
@@ -152,7 +156,11 @@ class CheckoutPage extends BaseCheckoutPage
         await expect(this.continueShoppingButton, `${outcomeMarker.checkout.orderPlacedNumberText} ${orderNumber}`)
             .toBeVisible();
 
-        return orderNumber;
+        return {
+            orderNumber: orderNumber,
+            orderEmail: this.email,
+            orderLastName: this.lastName
+        };
     }
 
     public async hasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>

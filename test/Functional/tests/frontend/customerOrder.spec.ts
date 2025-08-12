@@ -79,7 +79,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                 }
 
                 await test.step('Place order', async (): Promise<void> => {
-                    orderNumber = await new CheckoutPage(page).placeMultiStepOrder();
+                   ({ orderNumber } = await new CheckoutPage(page).placeMultiStepOrder());
 
                     if (orderNumber === null) {
                         throw new Error(
@@ -136,7 +136,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                 }
 
                 await test.step('Place order', async (): Promise<void> => {
-                    orderNumber = await new CheckoutPage(page).placeMultiStepOrder();
+                    ({ orderNumber } = await new CheckoutPage(page).placeMultiStepOrder());
 
                     if (orderNumber === null) {
                         throw new Error(
@@ -221,7 +221,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                 }
 
                 await test.step('Place order', async (): Promise<void> => {
-                    orderNumber = await new CheckoutPage(page).placeMultiStepOrder();
+                    ({ orderNumber } = await new CheckoutPage(page).placeMultiStepOrder());
 
                     if (orderNumber === null) {
                         throw new Error(
