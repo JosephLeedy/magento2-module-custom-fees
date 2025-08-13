@@ -1,22 +1,18 @@
 import { test } from '@playwright/test';
 import { inputValuesCustomFees, slugs, UIReference } from '@config';
 import CurrencySwitcher from "@utils/currencySwitcher.utils";
+import AddProductToCartStep from '@steps/addProductToCart.step';
 import LoginAsCustomerStep from '@steps/loginAsCustomer.step';
-import ProductPage from '@poms/frontend/product.page';
 import CartPage from '@poms/frontend/cart.page';
 
 test.describe('Custom fees are added to cart', (): void => {
     test.describe.configure({ retries: 3 });
 
     test.beforeEach(async ({ page }): Promise<void> => {
-        const productPage = new ProductPage(page);
-
-        await productPage.addSimpleProductToCart(
+        await new AddProductToCartStep(page).addSimpleProductToCart(
             UIReference.productPage.simpleProductTitle,
             slugs.productpage.simpleProductSlug
         );
-
-        await page.goto(slugs.cart.cartSlug);
     });
 
     test.afterEach(async ({ page }): Promise<void> => {
@@ -92,16 +88,10 @@ test.describe('Conditional custom fees', (): void => {
                 .keys(inputValuesCustomFees.customFees)
                 .filter(key => !key.includes('conditional'));
 
-            await test.step('Add product to cart', async (): Promise<void> => {
-                const productPage = new ProductPage(page);
-
-                await productPage.addSimpleProductToCart(
-                    UIReference.productPage.simpleProductTitle,
-                    slugs.productpage.simpleProductSlug
-                );
-            });
-
-            await page.goto(slugs.cart.cartSlug);
+            await new AddProductToCartStep(page).addSimpleProductToCart(
+                UIReference.productPage.simpleProductTitle,
+                slugs.productpage.simpleProductSlug
+            );
 
             await cartPage.hasCustomFees(false, excludedFees);
         }
@@ -123,16 +113,10 @@ test.describe('Conditional custom fees', (): void => {
                 .keys(inputValuesCustomFees.customFees)
                 .filter(key => !key.includes('conditional'));
 
-            await test.step('Add product to cart', async (): Promise<void> => {
-                const productPage = new ProductPage(page);
-
-                await productPage.addSimpleProductToCart(
-                    UIReference.productPage.secondSimpleProducTitle,
-                    slugs.productpage.secondSimpleProductSlug
-                );
-            });
-
-            await page.goto(slugs.cart.cartSlug);
+            await new AddProductToCartStep(page).addSimpleProductToCart(
+                UIReference.productPage.simpleProductTitle,
+                slugs.productpage.simpleProductSlug
+            );
 
             await cartPage.doesNotHaveCustomFees(false, excludedFees);
         }

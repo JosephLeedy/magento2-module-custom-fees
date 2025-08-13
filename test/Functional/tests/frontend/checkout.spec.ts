@@ -1,10 +1,10 @@
 import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import CurrencySwitcher from '@utils/currencySwitcher.utils';
+import AddProductToCartStep from '@steps/addProductToCart.step';
 import LoginAsCustomerStep from '@steps/loginAsCustomer.step';
 import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
-import ProductPage from '@poms/frontend/product.page';
 
 test.describe('Custom fees display in checkout', (): void => {
     test.describe.configure({ retries: 3 });
@@ -12,15 +12,10 @@ test.describe('Custom fees display in checkout', (): void => {
     test.use({ bypassCSP: true });
 
     test.beforeEach(async ({ page }): Promise<void> => {
-        const productPage = new ProductPage(page);
-
-        await productPage.addSimpleProductToCart(
+        await new AddProductToCartStep(page).addSimpleProductToCart(
             UIReference.productPage.simpleProductTitle,
             slugs.productpage.simpleProductSlug
         );
-
-        await page.goto(slugs.checkout.checkoutSlug);
-        await page.waitForLoadState('networkidle');
     });
 
     test.afterEach(async ({ page }): Promise<void> => {

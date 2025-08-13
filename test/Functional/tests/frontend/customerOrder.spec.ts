@@ -1,6 +1,7 @@
 import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import CurrencySwitcher from '@utils/currencySwitcher.utils';
+import AddProductToCartStep from '@steps/addProductToCart.step';
 import LoginAsAdministratorStep from '@steps/loginAsAdministrator.step';
 import LoginAsCustomerStep from '@steps/loginAsCustomer.step';
 import SalesOrderGridPage from '@poms/adminhtml/salesOrderGrid.page';
@@ -8,7 +9,6 @@ import SalesOrderViewPage from '@poms/adminhtml/salesOrderView.page';
 import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
 import CustomerOrderPage from '@poms/frontend/customerOrder.page';
-import ProductPage from '@poms/frontend/product.page';
 
 test.describe('Custom fees are displayed on customer order page', (): void => {
     test.describe.configure({ retries: 3 });
@@ -18,12 +18,10 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
     test.beforeEach(async ({ page, browserName }): Promise<void> => {
         await new LoginAsCustomerStep(page, browserName).execute(slugs.checkout.checkoutSlug);
 
-        await test.step('Add product to cart', async (): Promise<void> => {
-            await new ProductPage(page).addSimpleProductToCart(
-                UIReference.productPage.simpleProductTitle,
-                slugs.productpage.simpleProductSlug
-            );
-        });
+        await new AddProductToCartStep(page).addSimpleProductToCart(
+            UIReference.productPage.simpleProductTitle,
+            slugs.productpage.simpleProductSlug
+        );
     });
 
     test.afterEach(async ({ page }): Promise<void> => {
