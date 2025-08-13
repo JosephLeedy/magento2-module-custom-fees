@@ -1,11 +1,10 @@
 import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import CurrencySwitcher from '@utils/currencySwitcher.utils';
-import { requireEnv } from '@utils/env.utils';
+import LoginAsAdministratorStep from '@steps/loginAsAdministrator.step';
 import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
 import GuestOrderPage from '@poms/frontend/guestOrder.page';
-import MagentoAdminPage from '@poms/adminhtml/magentoAdmin.page';
 import ProductPage from '@poms/frontend/product.page';
 import SalesOrderGridPage from '@poms/adminhtml/salesOrderGrid.page';
 import SalesOrderViewPage from '@poms/adminhtml/salesOrderView.page';
@@ -140,14 +139,12 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                     });
                 });
 
+                await new LoginAsAdministratorStep(page).execute();
+
                 await test.step('Create invoice', async (): Promise<void> => {
-                    const adminPage = new MagentoAdminPage(page);
                     const adminSalesOrderGridPage = new SalesOrderGridPage(page);
                     const adminSalesOrderViewPage = new SalesOrderViewPage(page);
-                    const adminUsername = requireEnv('MAGENTO_ADMIN_USERNAME');
-                    const adminPassword = requireEnv('MAGENTO_ADMIN_PASSWORD');
 
-                    await adminPage.login(adminUsername, adminPassword);
                     await adminSalesOrderGridPage.navigateToSalesOrderGrid();
                     await adminSalesOrderGridPage.navigateToSalesOrderViewPage(<string>orderNumber);
 
@@ -226,13 +223,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                     });
                 });
 
-                await test.step('Log into Magento Admin', async (): Promise<void> => {
-                    const adminPage = new MagentoAdminPage(page);
-                    const adminUsername = requireEnv('MAGENTO_ADMIN_USERNAME');
-                    const adminPassword = requireEnv('MAGENTO_ADMIN_PASSWORD');
-
-                    await adminPage.login(adminUsername, adminPassword);
-                });
+                await new LoginAsAdministratorStep(page).execute();
 
                 await test.step('Create invoice', async (): Promise<void> => {
                     const adminSalesOrderGridPage = new SalesOrderGridPage(page);
