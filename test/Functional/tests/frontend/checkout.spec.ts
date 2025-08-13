@@ -1,10 +1,9 @@
 import { test } from '@playwright/test';
 import { inputValuesCustomFees, slugs, UIReference } from '@config';
 import CurrencySwitcher from '@utils/currencySwitcher.utils';
-import { requireEnv } from '@utils/env.utils';
+import LoginAsCustomerStep from '@steps/loginAsCustomer.step';
 import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
-import LoginPage from '@poms/frontend/login.page';
 import ProductPage from '@poms/frontend/product.page';
 
 test.describe('Custom fees display in checkout', (): void => {
@@ -67,17 +66,7 @@ test.describe('Custom fees display in checkout', (): void => {
             test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
             if (asCustomer) {
-                await test.step('Log in with account', async (): Promise<void> => {
-                    const browserEngine = browserName?.toUpperCase() || 'UNKNOWN';
-                    const loginPage = new LoginPage(page);
-                    const emailInputValue = requireEnv(`MAGENTO_EXISTING_ACCOUNT_EMAIL_${browserEngine}`);
-                    const passwordInputValue = requireEnv('MAGENTO_EXISTING_ACCOUNT_PASSWORD');
-
-                    await loginPage.login(emailInputValue, passwordInputValue);
-
-                    await page.goto(slugs.checkout.checkoutSlug);
-                    await page.waitForLoadState('networkidle');
-                });
+                await new LoginAsCustomerStep(page, browserName).execute(slugs.checkout.checkoutSlug);
             }
 
             if (inEuro) {

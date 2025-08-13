@@ -2,13 +2,13 @@ import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import CurrencySwitcher from '@utils/currencySwitcher.utils';
 import { requireEnv } from '@utils/env.utils';
+import LoginAsCustomerStep from '@steps/loginAsCustomer.step';
 import MagentoAdminPage from '@poms/adminhtml/magentoAdmin.page';
 import SalesOrderGridPage from '@poms/adminhtml/salesOrderGrid.page';
 import SalesOrderViewPage from '@poms/adminhtml/salesOrderView.page';
 import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
 import CustomerOrderPage from '@poms/frontend/customerOrder.page';
-import LoginPage from '@poms/frontend/login.page';
 import ProductPage from '@poms/frontend/product.page';
 
 test.describe('Custom fees are displayed on customer order page', (): void => {
@@ -17,17 +17,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
     test.use({ bypassCSP: true });
 
     test.beforeEach(async ({ page, browserName }): Promise<void> => {
-        await test.step('Log in with account', async (): Promise<void> => {
-            const browserEngine = browserName?.toUpperCase() || 'UNKNOWN';
-            const loginPage = new LoginPage(page);
-            const emailInputValue = requireEnv(`MAGENTO_EXISTING_ACCOUNT_EMAIL_${browserEngine}`);
-            const passwordInputValue = requireEnv('MAGENTO_EXISTING_ACCOUNT_PASSWORD');
-
-            await loginPage.login(emailInputValue, passwordInputValue);
-
-            await page.goto(slugs.checkout.checkoutSlug);
-            await page.waitForLoadState('networkidle');
-        });
+        await new LoginAsCustomerStep(page, browserName).execute(slugs.checkout.checkoutSlug);
 
         await test.step('Add product to cart', async (): Promise<void> => {
             await new ProductPage(page).addSimpleProductToCart(

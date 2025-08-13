@@ -1,10 +1,9 @@
 import { test } from '@playwright/test';
 import { inputValuesCustomFees, slugs, UIReference } from '@config';
 import CurrencySwitcher from "@utils/currencySwitcher.utils";
-import { requireEnv } from "@utils/env.utils";
+import LoginAsCustomerStep from '@steps/loginAsCustomer.step';
 import ProductPage from '@poms/frontend/product.page';
 import CartPage from '@poms/frontend/cart.page';
-import LoginPage from "@poms/frontend/login.page";
 
 test.describe('Custom fees are added to cart', (): void => {
     test.describe.configure({ retries: 3 });
@@ -62,16 +61,7 @@ test.describe('Custom fees are added to cart', (): void => {
                 .filter((key) => key.includes('conditional'));
 
             if (asCustomer) {
-                await test.step('Log in with account', async (): Promise<void> => {
-                    const browserEngine = browserName?.toUpperCase() || 'UNKNOWN';
-                    const loginPage = new LoginPage(page);
-                    const emailInputValue = requireEnv(`MAGENTO_EXISTING_ACCOUNT_EMAIL_${browserEngine}`);
-                    const passwordInputValue = requireEnv('MAGENTO_EXISTING_ACCOUNT_PASSWORD');
-
-                    await loginPage.login(emailInputValue, passwordInputValue);
-
-                    await page.goto(slugs.cart.cartSlug);
-                });
+                await new LoginAsCustomerStep(page, browserName).execute(slugs.cart.cartSlug);
             }
 
             if (inEuro) {
