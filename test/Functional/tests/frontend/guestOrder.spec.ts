@@ -2,6 +2,7 @@ import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import CurrencySwitcher from '@utils/currencySwitcher.utils';
 import AddProductToCartStep from '@steps/addProductToCart.step';
+import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import LogInAsAdministratorStep from '@steps/logInAsAdministratorStep';
 import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
@@ -60,9 +61,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
                 if (inEuro) {
-                    await test.step('Change currency to Euro', async (): Promise<void> => {
-                        await new CurrencySwitcher(page).switchCurrencyToEuro();
-                    });
+                    await new ChangeCurrencyToEuroStep(page).execute();
                 }
 
                 await test.step('Place order', async (): Promise<void> => {
@@ -118,9 +117,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
                 if (inEuro) {
-                    await test.step('Change currency to Euro', async (): Promise<void> => {
-                        await new CurrencySwitcher(page).switchCurrencyToEuro();
-                    });
+                    await new ChangeCurrencyToEuroStep(page).execute();
                 }
 
                 await test.step('Place order', async (): Promise<void> => {
@@ -202,9 +199,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
                 if (inEuro) {
-                    await test.step('Change currency to Euro', async (): Promise<void> => {
-                        await new CurrencySwitcher(page).switchCurrencyToEuro();
-                    });
+                    await new ChangeCurrencyToEuroStep(page).execute();
                 }
 
                 await test.step('Place order', async (): Promise<void> => {

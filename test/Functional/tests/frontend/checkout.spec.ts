@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
-import CurrencySwitcher from '@utils/currencySwitcher.utils';
 import AddProductToCartStep from '@steps/addProductToCart.step';
+import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import LogInAsCustomerStep from '@steps/logInAsCustomerStep';
 import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
@@ -65,11 +65,7 @@ test.describe('Custom fees display in checkout', (): void => {
             }
 
             if (inEuro) {
-                await test.step('Change currency to Euro', async (): Promise<void> => {
-                    await new CurrencySwitcher(page).switchCurrencyToEuro();
-
-                    await page.waitForLoadState('networkidle');
-                });
+                await new ChangeCurrencyToEuroStep(page).execute();
             }
 
             await checkoutPage.fillShippingAddress();

@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 import { inputValuesCustomFees, slugs, UIReference } from '@config';
-import CurrencySwitcher from "@utils/currencySwitcher.utils";
 import AddProductToCartStep from '@steps/addProductToCart.step';
+import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import LogInAsCustomerStep from '@steps/logInAsCustomerStep';
 import CartPage from '@poms/frontend/cart.page';
 
@@ -61,9 +61,7 @@ test.describe('Custom fees are added to cart', (): void => {
             }
 
             if (inEuro) {
-                await test.step('Change currency to Euro', async (): Promise<void> => {
-                    await new CurrencySwitcher(page).switchCurrencyToEuro();
-                });
+                await new ChangeCurrencyToEuroStep(page).execute();
             }
 
             await cartPage.hasCustomFees(inEuro, excludedFees);
