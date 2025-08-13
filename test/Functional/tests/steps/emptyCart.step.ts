@@ -1,6 +1,5 @@
 import { Page } from '@playwright/test';
 import { step } from '@utils/stepDecorator.utils';
-import { slugs } from '@config';
 import CartPage from '@poms/frontend/cart.page';
 
 class EmptyCartStep
