@@ -2,8 +2,8 @@ import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import CurrencySwitcher from '@utils/currencySwitcher.utils';
 import AddProductToCartStep from '@steps/addProductToCart.step';
-import LoginAsAdministratorStep from '@steps/loginAsAdministrator.step';
-import LoginAsCustomerStep from '@steps/loginAsCustomer.step';
+import LogInAsAdministratorStep from '@steps/logInAsAdministratorStep';
+import LogInAsCustomerStep from '@steps/logInAsCustomerStep';
 import SalesOrderGridPage from '@poms/adminhtml/salesOrderGrid.page';
 import SalesOrderViewPage from '@poms/adminhtml/salesOrderView.page';
 import CartPage from '@poms/frontend/cart.page';
@@ -16,7 +16,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
     test.use({ bypassCSP: true });
 
     test.beforeEach(async ({ page, browserName }): Promise<void> => {
-        await new LoginAsCustomerStep(page, browserName).execute(slugs.checkout.checkoutSlug);
+        await new LogInAsCustomerStep(page, browserName).execute(slugs.checkout.checkoutSlug);
 
         await new AddProductToCartStep(page).addSimpleProductToCart(
             UIReference.productPage.simpleProductTitle,
@@ -135,7 +135,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                     });
                 });
 
-                await new LoginAsAdministratorStep(page).execute();
+                await new LogInAsAdministratorStep(page).execute();
 
                 await test.step('Create invoice', async (): Promise<void> => {
                     const adminSalesOrderGridPage = new SalesOrderGridPage(page);
@@ -216,7 +216,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                     });
                 });
 
-                await new LoginAsAdministratorStep(page).execute();
+                await new LogInAsAdministratorStep(page).execute();
 
                 await test.step('Create invoice', async (): Promise<void> => {
                     const adminSalesOrderGridPage = new SalesOrderGridPage(page);

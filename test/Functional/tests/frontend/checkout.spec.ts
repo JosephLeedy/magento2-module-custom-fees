@@ -2,7 +2,7 @@ import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import CurrencySwitcher from '@utils/currencySwitcher.utils';
 import AddProductToCartStep from '@steps/addProductToCart.step';
-import LoginAsCustomerStep from '@steps/loginAsCustomer.step';
+import LogInAsCustomerStep from '@steps/logInAsCustomerStep';
 import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
 
@@ -61,7 +61,7 @@ test.describe('Custom fees display in checkout', (): void => {
             test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
             if (asCustomer) {
-                await new LoginAsCustomerStep(page, browserName).execute(slugs.checkout.checkoutSlug);
+                await new LogInAsCustomerStep(page, browserName).execute(slugs.checkout.checkoutSlug);
             }
 
             if (inEuro) {

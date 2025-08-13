@@ -3,11 +3,11 @@ import { requireEnv } from '@utils/env.utils';
 import { step } from '@utils/stepDecorator.utils';
 import LoginPage from '@poms/frontend/login.page';
 
-class LoginAsCustomerStep
+class LogInAsCustomerStep
 {
     public constructor(private readonly page: Page, private readonly browserName?: string) {}
 
-    @step('Login as customer', { box: true })
+    @step('Log in as customer', { box: true })
     /**
      * Logs in as a customer using the configured account credentials.
      *
@@ -33,4 +33,4 @@ class LoginAsCustomerStep
     }
 }
 
-export default LoginAsCustomerStep;
+export default LogInAsCustomerStep;

@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import CurrencySwitcher from '@utils/currencySwitcher.utils';
-import LoginAsAdministratorStep from '@steps/loginAsAdministrator.step';
+import LogInAsAdministratorStep from '@steps/logInAsAdministratorStep';
 import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
 import GuestOrderPage from '@poms/frontend/guestOrder.page';
@@ -139,7 +139,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                     });
                 });
 
-                await new LoginAsAdministratorStep(page).execute();
+                await new LogInAsAdministratorStep(page).execute();
 
                 await test.step('Create invoice', async (): Promise<void> => {
                     const adminSalesOrderGridPage = new SalesOrderGridPage(page);
@@ -223,7 +223,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                     });
                 });
 
-                await new LoginAsAdministratorStep(page).execute();
+                await new LogInAsAdministratorStep(page).execute();
 
                 await test.step('Create invoice', async (): Promise<void> => {
                     const adminSalesOrderGridPage = new SalesOrderGridPage(page);

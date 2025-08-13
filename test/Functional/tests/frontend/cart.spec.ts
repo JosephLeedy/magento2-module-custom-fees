@@ -2,7 +2,7 @@ import { test } from '@playwright/test';
 import { inputValuesCustomFees, slugs, UIReference } from '@config';
 import CurrencySwitcher from "@utils/currencySwitcher.utils";
 import AddProductToCartStep from '@steps/addProductToCart.step';
-import LoginAsCustomerStep from '@steps/loginAsCustomer.step';
+import LogInAsCustomerStep from '@steps/logInAsCustomerStep';
 import CartPage from '@poms/frontend/cart.page';
 
 test.describe('Custom fees are added to cart', (): void => {
@@ -57,7 +57,7 @@ test.describe('Custom fees are added to cart', (): void => {
                 .filter((key) => key.includes('conditional'));
 
             if (asCustomer) {
-                await new LoginAsCustomerStep(page, browserName).execute(slugs.cart.cartSlug);
+                await new LogInAsCustomerStep(page, browserName).execute(slugs.cart.cartSlug);
             }
 
             if (inEuro) {

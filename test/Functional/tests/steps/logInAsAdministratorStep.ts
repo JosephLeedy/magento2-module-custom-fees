@@ -3,11 +3,11 @@ import { requireEnv } from '@utils/env.utils';
 import { step } from '@utils/stepDecorator.utils';
 import MagentoAdminPage from '@poms/adminhtml/magentoAdmin.page';
 
-class LoginAsAdministratorStep
+class LogInAsAdministratorStep
 {
     public constructor(private readonly page: Page) {}
 
-    @step('Login as administrator', { box: true })
+    @step('Log in as administrator', { box: true })
     /**
      * Logs into the Magento Admin using the configured adminstrator credentials.
      *
@@ -24,4 +24,4 @@ class LoginAsAdministratorStep
     }
 }
 
-export default LoginAsAdministratorStep;
+export default LogInAsAdministratorStep;
