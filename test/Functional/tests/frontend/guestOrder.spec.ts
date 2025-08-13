@@ -174,4 +174,112 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
             }
         );
     });
+
+    [
+        {
+            testSuffix: '',
+            inEuro: false,
+        },
+        {
+            testSuffix: ', in Euro',
+            inEuro: true,
+        },
+    ].forEach(({ testSuffix, inEuro }): void => {
+        /**
+         * @feature Custom fees on guest credit memo page
+         * @scenario Guest places an order, requests a refund, views its credit memo and sees the custom fees
+         * @given The guest has placed an order with custom fees that has been invoiced and refunded
+         * @when They view the credit memo from the Orders and Returns page
+         * @then They should see the refunded custom fees in the credit memo totals
+         */
+        test(
+            `for a credit memo${testSuffix}`,
+            { tag: ['@frontend', '@guest', '@cold'] },
+            async ({ page, browserName }, testInfo): Promise<void> => {
+                const guestOrderPage = new GuestOrderPage(page);
+                let orderNumber: string|null = '';
+                let orderEmail: string = '';
+                let orderLastName: string = '';
+                let invoiceNumber: string|null = '';
+                let creditMemoNumber: string|null = '';
+
+                test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
+
+                if (inEuro) {
+                    await test.step('Change currency to Euro', async (): Promise<void> => {
+                        await new CurrencySwitcher(page).switchCurrencyToEuro();
+                    });
+                }
+
+                await test.step('Place order', async (): Promise<void> => {
+                    ({ orderNumber, orderEmail, orderLastName } = await new CheckoutPage(page).placeMultiStepOrder());
+
+                    if (orderNumber === null) {
+                        throw new Error(
+                            'Something went wrong while placing the order. Please check the logs for more information.'
+                        );
+                    }
+
+                    testInfo.annotations.push({
+                        type: 'Order number',
+                        description: orderNumber
+                    });
+                });
+
+                await test.step('Log into Magento Admin', async (): Promise<void> => {
+                    const adminPage = new MagentoAdminPage(page);
+                    const adminUsername = requireEnv('MAGENTO_ADMIN_USERNAME');
+                    const adminPassword = requireEnv('MAGENTO_ADMIN_PASSWORD');
+
+                    await adminPage.login(adminUsername, adminPassword);
+                });
+
+                await test.step('Create invoice', async (): Promise<void> => {
+                    const adminSalesOrderGridPage = new SalesOrderGridPage(page);
+                    const adminSalesOrderViewPage = new SalesOrderViewPage(page);
+
+                    await adminSalesOrderGridPage.navigateToSalesOrderGrid();
+                    await adminSalesOrderGridPage.navigateToSalesOrderViewPage(<string>orderNumber);
+
+                    invoiceNumber = await adminSalesOrderViewPage.createInvoice();
+
+                    if (invoiceNumber === null) {
+                        throw new Error(
+                            'Something went wrong while creating the invoice. Please check the logs for more '
+                            + 'information.'
+                        );
+                    }
+
+                    testInfo.annotations.push({
+                        type: 'Invoice number',
+                        description: invoiceNumber
+                    });
+                });
+
+                await test.step('Create credit memo', async (): Promise<void> => {
+                    const adminSalesOrderViewPage = new SalesOrderViewPage(page);
+
+                    creditMemoNumber = await adminSalesOrderViewPage.createCreditMemo();
+
+                    if (creditMemoNumber === null) {
+                        throw new Error(
+                            'Something went wrong while creating the credit memo. Please check the logs for more '
+                            + 'information.'
+                        );
+                    }
+
+                    testInfo.annotations.push({
+                        type: 'Credit memo number',
+                        description: creditMemoNumber
+                    });
+                });
+
+                await guestOrderPage.navigateToOrdersAndReturnsPage();
+                await guestOrderPage.fillOrderDetails(orderNumber, orderEmail, orderLastName);
+                await guestOrderPage.assertOrderIsVisible(orderNumber);
+                await guestOrderPage.navigateToCreditMemosPage();
+                await guestOrderPage.assertCreditMemoHasCustomFees(creditMemoNumber, inEuro);
+            }
+        );
+    });
 });
