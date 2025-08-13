@@ -4,12 +4,15 @@ import OrderPage from '@poms/frontend/order.page';
 
 class CustomerOrderPage extends OrderPage
 {
+    public async navigateToOrderHistoryPage(): Promise<void>
+    {
+        await this.page.goto(slugs.account.orderHistorySlug);
+        await this.page.waitForLoadState('networkidle');
+    }
+
     public async navigateToOrderPage(orderIncrementId: string): Promise<void>
     {
         let orderRow: Locator;
-
-        await this.page.goto(slugs.account.orderHistorySlug);
-        await this.page.waitForLoadState();
 
         orderRow = this.page.getByRole('row').filter({ hasText: orderIncrementId });
 
