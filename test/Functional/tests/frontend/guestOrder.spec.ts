@@ -1,13 +1,11 @@
 import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
-import CurrencySwitcher from '@utils/currencySwitcher.utils';
 import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import EmptyCartStep from '@steps/emptyCart.step';
 import LogInAsAdministratorStep from '@steps/logInAsAdministratorStep';
 import CheckoutPage from '@poms/frontend/checkout.page';
 import GuestOrderPage from '@poms/frontend/guestOrder.page';
-import ProductPage from '@poms/frontend/product.page';
 import SalesOrderGridPage from '@poms/adminhtml/salesOrderGrid.page';
 import SalesOrderViewPage from '@poms/adminhtml/salesOrderView.page';
 
