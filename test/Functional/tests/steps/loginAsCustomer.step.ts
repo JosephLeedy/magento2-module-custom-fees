@@ -9,12 +9,13 @@ class LoginAsCustomerStep
 
     @step('Login as customer', { box: true })
     /**
+     * Logs in as a customer using the configured account credentials.
+     *
+     * If a `returnTo` URL is provided, it navigates to the specified URL after logging in.
+     *
      * @param {string} returnTo - The URL to navigate to after logging in.
      * @returns {Promise<void>} - A promise that resolves when the login process is complete.
      * @throws {Error} - Throws an error if the customer account credentials are not configured in the `.env` file.
-     * @description Logs in as a customer using the configured account credentials.
-     *
-     * If a `returnTo` URL is provided, it navigates to the specified URL after logging in.
      */
     public async execute(returnTo?: string): Promise<void>
     {
