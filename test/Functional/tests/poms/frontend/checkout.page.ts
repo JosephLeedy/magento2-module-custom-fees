@@ -135,7 +135,7 @@ class CheckoutPage extends BaseCheckoutPage
         }
     }
 
-    public async placeMultiStepOrder(): Promise<{ orderNumber: string|null, orderEmail: string, orderLastName: string }>
+    public async placeMultiStepOrder(): Promise<OrderDetails>
     {
         const orderPlacedNotification = outcomeMarker.checkout.orderPlacedNotification;
         let orderNumber: string|null = null;
