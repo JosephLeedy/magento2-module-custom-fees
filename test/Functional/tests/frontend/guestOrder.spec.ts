@@ -1,6 +1,7 @@
 import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import CurrencySwitcher from '@utils/currencySwitcher.utils';
+import AddProductToCartStep from '@steps/addProductToCart.step';
 import LogInAsAdministratorStep from '@steps/logInAsAdministratorStep';
 import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
@@ -15,12 +16,10 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
     test.use({ bypassCSP: true });
 
     test.beforeEach(async ({ page }): Promise<void> => {
-        await test.step('Add product to cart', async (): Promise<void> => {
-            await new ProductPage(page).addSimpleProductToCart(
-                UIReference.productPage.simpleProductTitle,
-                slugs.productpage.simpleProductSlug
-            );
-        });
+        await new AddProductToCartStep(page).addSimpleProductToCart(
+            UIReference.productPage.simpleProductTitle,
+            slugs.productpage.simpleProductSlug
+        );
     });
 
     test.afterEach(async ({ page }): Promise<void> => {
