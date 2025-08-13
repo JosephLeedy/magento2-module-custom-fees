@@ -97,7 +97,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                 await page.waitForLoadState('networkidle');
 
                 await orderPage.navigateToOrderPage(orderNumber);
-                await orderPage.orderHasCustomFees(inEuro);
+                await orderPage.assertOrderHasCustomFees(inEuro);
             }
         );
     });
@@ -181,7 +181,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
 
                 await orderPage.navigateToOrderPage(orderNumber);
                 await orderPage.navigateToInvoicesPage();
-                await orderPage.invoiceHasCustomFees(invoiceNumber, inEuro);
+                await orderPage.assertInvoiceHasCustomFees(invoiceNumber, inEuro);
             }
         );
     });
@@ -288,7 +288,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
 
                 await orderPage.navigateToOrderPage(orderNumber);
                 await orderPage.navigateToCreditMemosPage();
-                await orderPage.creditMemoHasCustomFees(creditMemoNumber, inEuro);
+                await orderPage.assertCreditMemoHasCustomFees(creditMemoNumber, inEuro);
             }
         );
     });

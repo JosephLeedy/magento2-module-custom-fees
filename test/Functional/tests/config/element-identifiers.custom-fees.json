@@ -88,7 +88,6 @@
     "invoiceTotalsContainerLocator": "//following-sibling::div[contains(@class, \"invoice\")]/*[contains(@class, \"invoice\") or contains(@class, \"border-container\")]/child::*[last()]",
     "invoicesLinkLabel": "Invoices",
     "orderDetailsTitle": "Order #",
-    "orderLinksLocator": ".order-links",
     "orderTitleLocator": ".order-title",
     "orderTotalsContainerLocator": ".order-items + div, table.table-order-items > tfoot"
   },
