@@ -39,7 +39,7 @@ class GuestOrderPage
             this.page.getByRole(
                 'heading',
                 {
-                    name: `${UIReferenceCustomFees.guestOrderPage.orderDetailsTitle} ${orderNumber}`
+                    name: `${UIReferenceCustomFees.orderPage.orderDetailsTitle} ${orderNumber}`
                 }
             )
         ).toBeVisible();
@@ -48,7 +48,7 @@ class GuestOrderPage
     public async assertOrderHasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
     {
         await this.assertHasCustomFees(
-            this.page.locator(UIReferenceCustomFees.guestOrderPage.orderTotalsContainerLocator),
+            this.page.locator(UIReferenceCustomFees.orderPage.orderTotalsContainerLocator),
             inEuro,
             exclude
         );
@@ -57,7 +57,7 @@ class GuestOrderPage
     public async assertOrderDoesNotHaveCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
     {
         await this.assertDoesNotHaveCustomFees(
-            this.page.locator(UIReferenceCustomFees.guestOrderPage.orderTotalsContainerLocator),
+            this.page.locator(UIReferenceCustomFees.orderPage.orderTotalsContainerLocator),
             inEuro,
             exclude
         );

@@ -20,7 +20,7 @@ class CustomerOrderPage
         }
 
         await orderRow
-            .getByRole('link', { name: UIReferenceCustomFees.customerOrderPage.viewOrderLabel })
+            .getByRole('link', { name: UIReferenceCustomFees.orderPage.viewOrderLabel })
             .first()
             .click();
 
@@ -31,7 +31,7 @@ class CustomerOrderPage
                 .getByRole(
                     'heading',
                     {
-                        name: `${UIReferenceCustomFees.customerOrderPage.orderDetailsTitle} ${orderIncrementId}`
+                        name: `${UIReferenceCustomFees.orderPage.orderDetailsTitle} ${orderIncrementId}`
                     }
                 )
         ).toBeVisible();
@@ -40,31 +40,31 @@ class CustomerOrderPage
     public async navigateToInvoicesPage(): Promise<void>
     {
         const invoicesLink = this.page
-            .locator(UIReferenceCustomFees.customerOrderPage.orderLinksLocator)
-            .getByRole('link', { name: UIReferenceCustomFees.customerOrderPage.invoicesLinkLabel });
+            .locator(UIReferenceCustomFees.orderPage.orderLinksLocator)
+            .getByRole('link', { name: UIReferenceCustomFees.orderPage.invoicesLinkLabel });
 
         await invoicesLink.click();
         await this.page.waitForLoadState();
 
-        await expect(this.page.getByText(UIReferenceCustomFees.customerOrderPage.invoiceDetailsTitle)).toBeVisible();
+        await expect(this.page.getByText(UIReferenceCustomFees.orderPage.invoiceDetailsTitle)).toBeVisible();
     }
 
     public async navigateToCreditMemosPage(): Promise<void>
     {
         const creditMemosLink = this.page
-            .locator(UIReferenceCustomFees.customerOrderPage.orderLinksLocator)
-            .getByRole('link', { name: UIReferenceCustomFees.customerOrderPage.creditMemosLinkLabel });
+            .locator(UIReferenceCustomFees.orderPage.orderLinksLocator)
+            .getByRole('link', { name: UIReferenceCustomFees.orderPage.creditMemosLinkLabel });
 
         await creditMemosLink.click();
         await this.page.waitForLoadState();
 
-        await expect(this.page.getByText(UIReferenceCustomFees.customerOrderPage.creditMemoDetailsTitle)).toBeVisible();
+        await expect(this.page.getByText(UIReferenceCustomFees.orderPage.creditMemoDetailsTitle)).toBeVisible();
     }
 
     public async orderHasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
     {
         await this.hasCustomFees(
-            this.page.locator(UIReferenceCustomFees.customerOrderPage.orderTotalsContainerLocator),
+            this.page.locator(UIReferenceCustomFees.orderPage.orderTotalsContainerLocator),
             inEuro,
             exclude
         );
@@ -89,7 +89,7 @@ class CustomerOrderPage
     public async orderDoesNotHaveCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
     {
         await this.doesNotHaveCustomFees(
-            this.page.locator(UIReferenceCustomFees.customerOrderPage.orderTotalsContainerLocator),
+            this.page.locator(UIReferenceCustomFees.orderPage.orderTotalsContainerLocator),
             inEuro,
             exclude
         );
@@ -147,9 +147,9 @@ class CustomerOrderPage
     {
         const invoiceTitle: Locator = this.page
             .locator(
-                UIReferenceCustomFees.customerOrderPage.orderTitleLocator,
+                UIReferenceCustomFees.orderPage.orderTitleLocator,
                 {
-                    hasText: `${UIReferenceCustomFees.customerOrderPage.invoiceDetailsTitle}${invoiceIncrementId}`
+                    hasText: `${UIReferenceCustomFees.orderPage.invoiceDetailsTitle}${invoiceIncrementId}`
                 }
             );
         let invoiceTotalsContainer: Locator;
@@ -164,7 +164,7 @@ class CustomerOrderPage
         }
 
         invoiceTotalsContainer = invoiceTitle
-            .locator(UIReferenceCustomFees.customerOrderPage.invoiceTotalsContainerLocator);
+            .locator(UIReferenceCustomFees.orderPage.invoiceTotalsContainerLocator);
 
         return invoiceTotalsContainer;
     }
@@ -173,15 +173,15 @@ class CustomerOrderPage
     {
         const creditMemoTitle: Locator = this.page
             .locator(
-                UIReferenceCustomFees.customerOrderPage.orderTitleLocator,
+                UIReferenceCustomFees.orderPage.orderTitleLocator,
                 {
-                    hasText: `${UIReferenceCustomFees.customerOrderPage.creditMemoDetailsTitle} ${creditMemoIncrementId}`
+                    hasText: `${UIReferenceCustomFees.orderPage.creditMemoDetailsTitle} ${creditMemoIncrementId}`
                 }
             ).or(
                 this.page.locator(
-                    UIReferenceCustomFees.customerOrderPage.orderTitleLocator,
+                    UIReferenceCustomFees.orderPage.orderTitleLocator,
                     {
-                        hasText: `${UIReferenceCustomFees.customerOrderPage.creditMemoDetailsTitle}${creditMemoIncrementId}`
+                        hasText: `${UIReferenceCustomFees.orderPage.creditMemoDetailsTitle}${creditMemoIncrementId}`
                     }
                 )
             );
@@ -197,7 +197,7 @@ class CustomerOrderPage
         }
 
         creditMemoTotalsContainer = creditMemoTitle
-            .locator(UIReferenceCustomFees.customerOrderPage.creditMemoTotalsContainerLocator);
+            .locator(UIReferenceCustomFees.orderPage.creditMemoTotalsContainerLocator);
 
         return creditMemoTotalsContainer;
     }
