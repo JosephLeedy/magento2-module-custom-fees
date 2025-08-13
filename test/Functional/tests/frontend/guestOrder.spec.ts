@@ -3,8 +3,8 @@ import { slugs, UIReference } from '@config';
 import CurrencySwitcher from '@utils/currencySwitcher.utils';
 import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
+import EmptyCartStep from '@steps/emptyCart.step';
 import LogInAsAdministratorStep from '@steps/logInAsAdministratorStep';
-import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
 import GuestOrderPage from '@poms/frontend/guestOrder.page';
 import ProductPage from '@poms/frontend/product.page';
@@ -24,12 +24,8 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
     });
 
     test.afterEach(async ({ page }): Promise<void> => {
-        if (!page.url().includes(slugs.checkout.checkoutSlug)) {
-            return;
-        }
-
         // Assume the test failed if we're still in the Checkout and empty the cart to prevent future issues
-        await new CartPage(page).emptyCart();
+        await new EmptyCartStep(page).execute(slugs.checkout.checkoutSlug);
     });
 
     [

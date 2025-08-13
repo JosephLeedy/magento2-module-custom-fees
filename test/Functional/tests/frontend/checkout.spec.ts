@@ -2,8 +2,8 @@ import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
+import EmptyCartStep from '@steps/emptyCart.step';
 import LogInAsCustomerStep from '@steps/logInAsCustomerStep';
-import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
 
 test.describe('Custom fees display in checkout', (): void => {
@@ -19,11 +19,7 @@ test.describe('Custom fees display in checkout', (): void => {
     });
 
     test.afterEach(async ({ page }): Promise<void> => {
-        const cartPage = new CartPage(page);
-
-        await page.goto(slugs.cart.cartSlug);
-
-        await cartPage.emptyCart();
+        await new EmptyCartStep(page).execute();
     });
 
     [

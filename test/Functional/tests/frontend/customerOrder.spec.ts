@@ -2,11 +2,11 @@ import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
+import EmptyCartStep from '@steps/emptyCart.step';
 import LogInAsAdministratorStep from '@steps/logInAsAdministratorStep';
 import LogInAsCustomerStep from '@steps/logInAsCustomerStep';
 import SalesOrderGridPage from '@poms/adminhtml/salesOrderGrid.page';
 import SalesOrderViewPage from '@poms/adminhtml/salesOrderView.page';
-import CartPage from '@poms/frontend/cart.page';
 import CheckoutPage from '@poms/frontend/checkout.page';
 import CustomerOrderPage from '@poms/frontend/customerOrder.page';
 
@@ -25,12 +25,8 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
     });
 
     test.afterEach(async ({ page }): Promise<void> => {
-        if (!page.url().includes(slugs.checkout.checkoutSlug)) {
-            return;
-        }
-
         // Assume the test failed if we're still in the Checkout and empty the cart to prevent future issues
-        await new CartPage(page).emptyCart();
+        await new EmptyCartStep(page).execute(slugs.checkout.checkoutSlug);
     });
 
     [

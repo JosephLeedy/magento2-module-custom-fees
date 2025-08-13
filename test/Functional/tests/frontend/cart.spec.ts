@@ -2,6 +2,7 @@ import { test } from '@playwright/test';
 import { inputValuesCustomFees, slugs, UIReference } from '@config';
 import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
+import EmptyCartStep from '@steps/emptyCart.step';
 import LogInAsCustomerStep from '@steps/logInAsCustomerStep';
 import CartPage from '@poms/frontend/cart.page';
 
@@ -16,9 +17,7 @@ test.describe('Custom fees are added to cart', (): void => {
     });
 
     test.afterEach(async ({ page }): Promise<void> => {
-        const cartPage = new CartPage(page);
-
-        await cartPage.emptyCart();
+        await new EmptyCartStep(page).execute();
     });
 
     [
