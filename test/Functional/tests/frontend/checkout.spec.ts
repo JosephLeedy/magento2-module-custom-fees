@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { inputValuesCustomFees, slugs, UIReference } from '@config';
+import { slugs, UIReference } from '@config';
 import CurrencySwitcher from '@utils/currencySwitcher.utils';
 import LoginAsCustomerStep from '@steps/loginAsCustomer.step';
 import CartPage from '@poms/frontend/cart.page';
