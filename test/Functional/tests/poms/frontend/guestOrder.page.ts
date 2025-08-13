@@ -16,6 +16,14 @@ class GuestOrderPage
         ).toBeVisible();
     }
 
+    public async navigateToInvoicesPage(): Promise<void>
+    {
+        await this.page.getByRole('link', { name: UIReferenceCustomFees.orderPage.invoicesLinkLabel }).click();
+        await this.page.waitForLoadState();
+
+        await expect(this.page.getByText(UIReferenceCustomFees.orderPage.invoiceDetailsTitle)).toBeVisible();
+    }
+
     public async fillOrderDetails(orderNumber: string, email: string, lastName: string): Promise<void>
     {
         await this.page.getByLabel(UIReferenceCustomFees.ordersAndReturnsPage.orderIdFieldLabel).fill(orderNumber);
@@ -54,10 +62,30 @@ class GuestOrderPage
         );
     }
 
+    public async assertInvoiceHasCustomFees(
+        invoiceIncrementId: string = '',
+        inEuro: boolean = false,
+        exclude: string[] = []
+    ): Promise<void> {
+        await this.assertHasCustomFees((await this.getInvoiceItemsContainer(invoiceIncrementId)), inEuro, exclude);
+    }
+
     public async assertOrderDoesNotHaveCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
     {
         await this.assertDoesNotHaveCustomFees(
             this.page.locator(UIReferenceCustomFees.orderPage.orderTotalsContainerLocator),
+            inEuro,
+            exclude
+        );
+    }
+
+    public async assertInvoiceDoesNotHaveCustomFees(
+        invoiceIncrementId: string = '',
+        inEuro: boolean = false,
+        exclude: string[] = []
+    ): Promise<void> {
+        await this.assertDoesNotHaveCustomFees(
+            (await this.getInvoiceItemsContainer(invoiceIncrementId)),
             inEuro,
             exclude
         );
@@ -87,6 +115,32 @@ class GuestOrderPage
         for (customFee of customFees) {
             await expect(customFee).not.toBeVisible();
         }
+    }
+
+    private async getInvoiceItemsContainer(invoiceIncrementId: string = ''): Promise<Locator>
+    {
+        const invoiceTitle: Locator = this.page
+            .locator(
+                UIReferenceCustomFees.orderPage.orderTitleLocator,
+                {
+                    hasText: `${UIReferenceCustomFees.orderPage.invoiceDetailsTitle}${invoiceIncrementId}`
+                }
+            );
+        let invoiceTotalsContainer: Locator;
+        let errorMessage: string;
+
+        if (!(await invoiceTitle.isVisible())) {
+            errorMessage = invoiceIncrementId.length === 0
+                ? 'There are no invoices. Please create one first.'
+                : `Invoice with ID "${invoiceIncrementId}" could not be found.`;
+
+            throw new Error(errorMessage);
+        }
+
+        invoiceTotalsContainer = invoiceTitle
+            .locator(UIReferenceCustomFees.orderPage.invoiceTotalsContainerLocator);
+
+        return invoiceTotalsContainer;
     }
 }
 
