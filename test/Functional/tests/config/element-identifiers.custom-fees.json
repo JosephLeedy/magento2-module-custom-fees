@@ -80,13 +80,6 @@
   "orderHistoryPage": {
     "viewOrderLabel": "view order"
   },
-  "ordersAndReturnsPage": {
-    "billingLastNameFieldLabel": "Billing Last Name",
-    "emailFieldLabel": "Email",
-    "orderIdFieldLabel": "Order ID",
-    "pageTitle": "Orders and Returns",
-    "submitButtonLabel": "Continue"
-  },
   "orderPage": {
     "creditMemoDetailsTitle": "Refund #",
     "creditMemoTotalsContainerLocator": "//following-sibling::div[contains(@class, \"creditmemo\")]/*[contains(@class, \"creditmemo\") or contains(@class, \"border-container\")]/child::*[last()]",
@@ -98,5 +91,12 @@
     "orderLinksLocator": ".order-links",
     "orderTitleLocator": ".order-title",
     "orderTotalsContainerLocator": ".order-items + div, table.table-order-items > tfoot"
+  },
+  "ordersAndReturnsPage": {
+    "billingLastNameFieldLabel": "Billing Last Name",
+    "emailFieldLabel": "Email",
+    "orderIdFieldLabel": "Order ID",
+    "pageTitle": "Orders and Returns",
+    "submitButtonLabel": "Continue"
   }
 }
