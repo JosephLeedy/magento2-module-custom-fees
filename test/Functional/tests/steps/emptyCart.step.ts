@@ -21,7 +21,7 @@ class EmptyCartStep
      */
     public async execute(checkUrl: string|false = false): Promise<void>
     {
-        if (checkUrl !== false && !page.url().includes(checkUrl)) {
+        if (checkUrl !== false && !this.page.url().includes(checkUrl)) {
             return;
         }
 
