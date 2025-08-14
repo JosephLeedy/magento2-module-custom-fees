@@ -3,7 +3,7 @@ import { inputValuesCustomFees, slugs, UIReference } from '@config';
 import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import EmptyCartStep from '@steps/emptyCart.step';
-import LogInAsCustomerStep from '@steps/logInAsCustomerStep';
+import LogInAsCustomerStep from '@steps/logInAsCustomer.step';
 import CartPage from '@poms/frontend/cart.page';
 
 test.describe('Custom fees are added to cart', (): void => {

@@ -4,7 +4,7 @@ import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import EmptyCartStep from '@steps/emptyCart.step';
 import LogInAsAdministratorStep from '@steps/logInAsAdministrator.step';
-import LogInAsCustomerStep from '@steps/logInAsCustomerStep';
+import LogInAsCustomerStep from '@steps/logInAsCustomer.step';
 import SalesOrderGridPage from '@poms/adminhtml/salesOrderGrid.page';
 import SalesOrderViewPage from '@poms/adminhtml/salesOrderView.page';
 import CheckoutPage from '@poms/frontend/checkout.page';

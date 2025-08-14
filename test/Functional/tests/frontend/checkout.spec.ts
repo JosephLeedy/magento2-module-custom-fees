@@ -3,7 +3,7 @@ import { slugs, UIReference } from '@config';
 import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import EmptyCartStep from '@steps/emptyCart.step';
-import LogInAsCustomerStep from '@steps/logInAsCustomerStep';
+import LogInAsCustomerStep from '@steps/logInAsCustomer.step';
 import CheckoutPage from '@poms/frontend/checkout.page';
 
 test.describe('Custom fees display in checkout', (): void => {
