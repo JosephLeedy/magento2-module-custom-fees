@@ -57,13 +57,14 @@ test.describe('Custom fees display in checkout', (): void => {
             test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
             if (asCustomer) {
-                await new LogInAsCustomerStep(page, browserName).execute(slugs.checkout.checkoutSlug);
+                await new LogInAsCustomerStep(page, browserName).execute();
             }
 
             if (inEuro) {
                 await new ChangeCurrencyToEuroStep(page).execute();
             }
 
+            await checkoutPage.navigateToCheckoutPage();
             await checkoutPage.fillShippingAddress();
             await checkoutPage.selectShippingMethod();
             await checkoutPage.proceedToReviewStep();
