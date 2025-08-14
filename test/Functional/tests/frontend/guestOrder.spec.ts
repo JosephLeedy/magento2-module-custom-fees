@@ -3,7 +3,7 @@ import { slugs, UIReference } from '@config';
 import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import EmptyCartStep from '@steps/emptyCart.step';
-import LogInAsAdministratorStep from '@steps/logInAsAdministratorStep';
+import LogInAsAdministratorStep from '@steps/logInAsAdministrator.step';
 import CheckoutPage from '@poms/frontend/checkout.page';
 import GuestOrderPage from '@poms/frontend/guestOrder.page';
 import SalesOrderGridPage from '@poms/adminhtml/salesOrderGrid.page';
