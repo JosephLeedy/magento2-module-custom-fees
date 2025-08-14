@@ -2,11 +2,11 @@ import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
+import CreateInvoiceStep from '@steps/createInvoice.step';
 import EmptyCartStep from '@steps/emptyCart.step';
 import LogInAsAdministratorStep from '@steps/logInAsAdministrator.step';
 import PlaceOrderStep from '@steps/placeOrder.step';
 import GuestOrderPage from '@poms/frontend/guestOrder.page';
-import SalesOrderGridPage from '@poms/adminhtml/salesOrderGrid.page';
 import SalesOrderViewPage from '@poms/adminhtml/salesOrderView.page';
 
 test.describe('Custom fees are displayed on guest order page', (): void => {
@@ -105,27 +105,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
 
                 await new LogInAsAdministratorStep(page).execute();
 
-                await test.step('Create invoice', async (): Promise<void> => {
-                    const adminSalesOrderGridPage = new SalesOrderGridPage(page);
-                    const adminSalesOrderViewPage = new SalesOrderViewPage(page);
-
-                    await adminSalesOrderGridPage.navigateToSalesOrderGrid();
-                    await adminSalesOrderGridPage.navigateToSalesOrderViewPage(<string>orderNumber);
-
-                    invoiceNumber = await adminSalesOrderViewPage.createInvoice();
-
-                    if (invoiceNumber === null) {
-                        throw new Error(
-                            'Something went wrong while creating the invoice. Please check the logs for more '
-                            + 'information.'
-                        );
-                    }
-
-                    testInfo.annotations.push({
-                        type: 'Invoice number',
-                        description: invoiceNumber
-                    });
-                });
+                invoiceNumber = await new CreateInvoiceStep(page, testInfo).execute(<string>orderNumber);
 
                 await guestOrderPage.navigateToOrdersAndReturnsPage();
                 await guestOrderPage.fillOrderDetails(<string>orderNumber, orderEmail, orderLastName);
@@ -161,7 +141,6 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 let orderNumber: string|null = '';
                 let orderEmail: string = '';
                 let orderLastName: string = '';
-                let invoiceNumber: string|null = '';
                 let creditMemoNumber: string|null = '';
 
                 test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
@@ -173,28 +152,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 ({ orderNumber, orderEmail, orderLastName } = await new PlaceOrderStep(page, testInfo).execute());
 
                 await new LogInAsAdministratorStep(page).execute();
-
-                await test.step('Create invoice', async (): Promise<void> => {
-                    const adminSalesOrderGridPage = new SalesOrderGridPage(page);
-                    const adminSalesOrderViewPage = new SalesOrderViewPage(page);
-
-                    await adminSalesOrderGridPage.navigateToSalesOrderGrid();
-                    await adminSalesOrderGridPage.navigateToSalesOrderViewPage(<string>orderNumber);
-
-                    invoiceNumber = await adminSalesOrderViewPage.createInvoice();
-
-                    if (invoiceNumber === null) {
-                        throw new Error(
-                            'Something went wrong while creating the invoice. Please check the logs for more '
-                            + 'information.'
-                        );
-                    }
-
-                    testInfo.annotations.push({
-                        type: 'Invoice number',
-                        description: invoiceNumber
-                    });
-                });
+                await new CreateInvoiceStep(page, testInfo).execute(<string>orderNumber);
 
                 await test.step('Create credit memo', async (): Promise<void> => {
                     const adminSalesOrderViewPage = new SalesOrderViewPage(page);
