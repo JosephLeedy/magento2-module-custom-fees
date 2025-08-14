@@ -169,7 +169,7 @@ class CheckoutPage extends BaseCheckoutPage
         };
     }
 
-    public async hasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
+    public async assertHasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
     {
         const orderSummaryLocator = this.page.locator(UIReferenceCustomFees.checkoutPage.orderSummaryLocator);
         const customFees = await new CustomFees().getAll(orderSummaryLocator, inEuro, exclude);
@@ -179,7 +179,7 @@ class CheckoutPage extends BaseCheckoutPage
         }
     }
 
-    public async doesNotHaveCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
+    public async assertDoesNotHaveCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
     {
         const orderSummaryLocator = this.page.locator(UIReferenceCustomFees.checkoutPage.orderSummaryLocator);
         const customFees = await new CustomFees().getAll(orderSummaryLocator, inEuro, exclude);

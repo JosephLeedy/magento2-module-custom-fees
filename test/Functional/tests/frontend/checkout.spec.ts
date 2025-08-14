@@ -68,7 +68,7 @@ test.describe('Custom fees display in checkout', (): void => {
             await checkoutPage.fillShippingAddress();
             await checkoutPage.selectShippingMethod();
             await checkoutPage.proceedToReviewStep();
-            await checkoutPage.hasCustomFees(inEuro);
+            await checkoutPage.assertHasCustomFees(inEuro);
         });
     });
 });
