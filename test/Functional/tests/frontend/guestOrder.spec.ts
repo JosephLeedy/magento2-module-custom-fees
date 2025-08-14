@@ -2,12 +2,12 @@ import { test } from '@playwright/test';
 import { slugs, UIReference } from '@config';
 import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
+import CreateCreditMemoStep from '@steps/createCreditMemo.step';
 import CreateInvoiceStep from '@steps/createInvoice.step';
 import EmptyCartStep from '@steps/emptyCart.step';
 import LogInAsAdministratorStep from '@steps/logInAsAdministrator.step';
 import PlaceOrderStep from '@steps/placeOrder.step';
 import GuestOrderPage from '@poms/frontend/guestOrder.page';
-import SalesOrderViewPage from '@poms/adminhtml/salesOrderView.page';
 
 test.describe('Custom fees are displayed on guest order page', (): void => {
     test.describe.configure({ retries: 3 });
@@ -154,23 +154,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 await new LogInAsAdministratorStep(page).execute();
                 await new CreateInvoiceStep(page, testInfo).execute(<string>orderNumber);
 
-                await test.step('Create credit memo', async (): Promise<void> => {
-                    const adminSalesOrderViewPage = new SalesOrderViewPage(page);
-
-                    creditMemoNumber = await adminSalesOrderViewPage.createCreditMemo();
-
-                    if (creditMemoNumber === null) {
-                        throw new Error(
-                            'Something went wrong while creating the credit memo. Please check the logs for more '
-                            + 'information.'
-                        );
-                    }
-
-                    testInfo.annotations.push({
-                        type: 'Credit memo number',
-                        description: creditMemoNumber
-                    });
-                });
+                creditMemoNumber = await new CreateCreditMemoStep(page, testInfo).execute();
 
                 await guestOrderPage.navigateToOrdersAndReturnsPage();
                 await guestOrderPage.fillOrderDetails(<string>orderNumber, orderEmail, orderLastName);

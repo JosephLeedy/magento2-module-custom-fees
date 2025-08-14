@@ -1,4 +1,7 @@
 {
+  "admin": {
+    "salesOrderView": "/sales/order/view/"
+  },
   "guest": {
     "ordersAndReturnsSlug": "/sales/guest/form/"
   }
