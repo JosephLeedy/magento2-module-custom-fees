@@ -111,8 +111,8 @@ test.describe('Conditional custom fees', (): void => {
                 .filter(key => !key.includes('conditional'));
 
             await new AddProductToCartStep(page).addSimpleProductToCart(
-                UIReference.productPage.simpleProductTitle,
-                slugs.productpage.simpleProductSlug
+                UIReference.productPage.secondSimpleProducTitle,
+                slugs.productpage.secondSimpleProductSlug
             );
 
             await cartPage.assertDoesNotHaveCustomFees(false, excludedFees);
