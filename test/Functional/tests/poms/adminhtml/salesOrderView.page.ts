@@ -1,11 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { outcomeMarkersCustomFees, UIReference, UIReferenceCustomFees } from '@config';
 
-type SkuAndQuantity = {
-    sku: string,
-    quantity: number,
-};
-
 class SalesOrderViewPage
 {
     public constructor(private readonly page: Page) {}
