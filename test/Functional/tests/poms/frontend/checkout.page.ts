@@ -22,6 +22,12 @@ class CheckoutPage extends BaseCheckoutPage
         await super.waitForMagewireRequests();
     }
 
+    public async navigateToCheckoutPage(): Promise<void>
+    {
+        await this.page.goto(slugs.checkout.checkoutSlug);
+        await this.page.waitForLoadState('networkidle');
+    }
+
     public async fillShippingAddress(): Promise<void>
     {
         let hasAddressForm: boolean;

@@ -4,7 +4,7 @@ import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import EmptyCartStep from '@steps/emptyCart.step';
 import LogInAsAdministratorStep from '@steps/logInAsAdministrator.step';
-import CheckoutPage from '@poms/frontend/checkout.page';
+import PlaceOrderStep from '@steps/placeOrder.step';
 import GuestOrderPage from '@poms/frontend/guestOrder.page';
 import SalesOrderGridPage from '@poms/adminhtml/salesOrderGrid.page';
 import SalesOrderViewPage from '@poms/adminhtml/salesOrderView.page';
@@ -58,24 +58,11 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                     await new ChangeCurrencyToEuroStep(page).execute();
                 }
 
-                await test.step('Place order', async (): Promise<void> => {
-                    ({ orderNumber, orderEmail, orderLastName } = await new CheckoutPage(page).placeMultiStepOrder());
-
-                    if (orderNumber === null) {
-                        throw new Error(
-                            'Something went wrong while placing the order. Please check the logs for more information.'
-                        );
-                    }
-
-                    testInfo.annotations.push({
-                        type: 'Order number',
-                        description: orderNumber
-                    });
-                });
+                ({ orderNumber, orderEmail, orderLastName } = await new PlaceOrderStep(page, testInfo).execute());
 
                 await guestOrderPage.navigateToOrdersAndReturnsPage();
-                await guestOrderPage.fillOrderDetails(orderNumber, orderEmail, orderLastName);
-                await guestOrderPage.assertOrderIsVisible(orderNumber);
+                await guestOrderPage.fillOrderDetails(<string>orderNumber, orderEmail, orderLastName);
+                await guestOrderPage.assertOrderIsVisible(<string>orderNumber);
                 await guestOrderPage.assertOrderHasCustomFees(inEuro);
             }
         );
@@ -114,20 +101,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                     await new ChangeCurrencyToEuroStep(page).execute();
                 }
 
-                await test.step('Place order', async (): Promise<void> => {
-                    ({ orderNumber, orderEmail, orderLastName } = await new CheckoutPage(page).placeMultiStepOrder());
-
-                    if (orderNumber === null) {
-                        throw new Error(
-                            'Something went wrong while placing the order. Please check the logs for more information.'
-                        );
-                    }
-
-                    testInfo.annotations.push({
-                        type: 'Order number',
-                        description: orderNumber
-                    });
-                });
+                ({ orderNumber, orderEmail, orderLastName } = await new PlaceOrderStep(page, testInfo).execute());
 
                 await new LogInAsAdministratorStep(page).execute();
 
@@ -154,8 +128,8 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 });
 
                 await guestOrderPage.navigateToOrdersAndReturnsPage();
-                await guestOrderPage.fillOrderDetails(orderNumber, orderEmail, orderLastName);
-                await guestOrderPage.assertOrderIsVisible(orderNumber);
+                await guestOrderPage.fillOrderDetails(<string>orderNumber, orderEmail, orderLastName);
+                await guestOrderPage.assertOrderIsVisible(<string>orderNumber);
                 await guestOrderPage.navigateToInvoicesPage();
                 await guestOrderPage.assertInvoiceHasCustomFees(invoiceNumber, inEuro);
             }
@@ -196,20 +170,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                     await new ChangeCurrencyToEuroStep(page).execute();
                 }
 
-                await test.step('Place order', async (): Promise<void> => {
-                    ({ orderNumber, orderEmail, orderLastName } = await new CheckoutPage(page).placeMultiStepOrder());
-
-                    if (orderNumber === null) {
-                        throw new Error(
-                            'Something went wrong while placing the order. Please check the logs for more information.'
-                        );
-                    }
-
-                    testInfo.annotations.push({
-                        type: 'Order number',
-                        description: orderNumber
-                    });
-                });
+                ({ orderNumber, orderEmail, orderLastName } = await new PlaceOrderStep(page, testInfo).execute());
 
                 await new LogInAsAdministratorStep(page).execute();
 
@@ -254,8 +215,8 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 });
 
                 await guestOrderPage.navigateToOrdersAndReturnsPage();
-                await guestOrderPage.fillOrderDetails(orderNumber, orderEmail, orderLastName);
-                await guestOrderPage.assertOrderIsVisible(orderNumber);
+                await guestOrderPage.fillOrderDetails(<string>orderNumber, orderEmail, orderLastName);
+                await guestOrderPage.assertOrderIsVisible(<string>orderNumber);
                 await guestOrderPage.navigateToCreditMemosPage();
                 await guestOrderPage.assertCreditMemoHasCustomFees(creditMemoNumber, inEuro);
             }

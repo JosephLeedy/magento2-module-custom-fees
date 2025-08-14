@@ -5,9 +5,9 @@ import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import EmptyCartStep from '@steps/emptyCart.step';
 import LogInAsAdministratorStep from '@steps/logInAsAdministrator.step';
 import LogInAsCustomerStep from '@steps/logInAsCustomer.step';
+import PlaceOrderStep from '@steps/placeOrder.step';
 import SalesOrderGridPage from '@poms/adminhtml/salesOrderGrid.page';
 import SalesOrderViewPage from '@poms/adminhtml/salesOrderView.page';
-import CheckoutPage from '@poms/frontend/checkout.page';
 import CustomerOrderPage from '@poms/frontend/customerOrder.page';
 
 test.describe('Custom fees are displayed on customer order page', (): void => {
@@ -51,7 +51,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
             { tag: ['@frontend', '@account', '@cold'] },
             async ({ page, browserName }, testInfo): Promise<void> => {
                 const orderPage = new CustomerOrderPage(page);
-                let orderNumber = '';
+                let orderNumber: string|null = '';
 
                 test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
@@ -59,23 +59,10 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                     await new ChangeCurrencyToEuroStep(page).execute();
                 }
 
-                await test.step('Place order', async (): Promise<void> => {
-                   ({ orderNumber } = await new CheckoutPage(page).placeMultiStepOrder());
-
-                    if (orderNumber === null) {
-                        throw new Error(
-                            'Something went wrong while placing the order. Please check the logs for more information.'
-                        );
-                    }
-
-                    testInfo.annotations.push({
-                        type: 'Order number',
-                        description: orderNumber
-                    });
-                });
+                ({ orderNumber } = await new PlaceOrderStep(page, testInfo).execute());
 
                 await orderPage.navigateToOrderHistoryPage();
-                await orderPage.navigateToOrderPage(orderNumber);
+                await orderPage.navigateToOrderPage(<string>orderNumber);
                 await orderPage.assertOrderHasCustomFees(inEuro);
             }
         );
@@ -112,20 +99,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                     await new ChangeCurrencyToEuroStep(page).execute();
                 }
 
-                await test.step('Place order', async (): Promise<void> => {
-                    ({ orderNumber } = await new CheckoutPage(page).placeMultiStepOrder());
-
-                    if (orderNumber === null) {
-                        throw new Error(
-                            'Something went wrong while placing the order. Please check the logs for more information.'
-                        );
-                    }
-
-                    testInfo.annotations.push({
-                        type: 'Order number',
-                        description: orderNumber
-                    });
-                });
+                ({ orderNumber} = await new PlaceOrderStep(page, testInfo).execute());
 
                 await new LogInAsAdministratorStep(page).execute();
 
@@ -152,7 +126,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                 });
 
                 await orderPage.navigateToOrderHistoryPage();
-                await orderPage.navigateToOrderPage(orderNumber);
+                await orderPage.navigateToOrderPage(<string>orderNumber);
                 await orderPage.navigateToInvoicesPage();
                 await orderPage.assertInvoiceHasCustomFees(invoiceNumber, inEuro);
             }
@@ -191,20 +165,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                     await new ChangeCurrencyToEuroStep(page).execute();
                 }
 
-                await test.step('Place order', async (): Promise<void> => {
-                    ({ orderNumber } = await new CheckoutPage(page).placeMultiStepOrder());
-
-                    if (orderNumber === null) {
-                        throw new Error(
-                            'Something went wrong while placing the order. Please check the logs for more information.'
-                        );
-                    }
-
-                    testInfo.annotations.push({
-                        type: 'Order number',
-                        description: orderNumber
-                    });
-                });
+                ({ orderNumber } = await new PlaceOrderStep(page, testInfo).execute());
 
                 await new LogInAsAdministratorStep(page).execute();
 
@@ -249,7 +210,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                 });
 
                 await orderPage.navigateToOrderHistoryPage();
-                await orderPage.navigateToOrderPage(orderNumber);
+                await orderPage.navigateToOrderPage(<string>orderNumber);
                 await orderPage.navigateToCreditMemosPage();
                 await orderPage.assertCreditMemoHasCustomFees(creditMemoNumber, inEuro);
             }
