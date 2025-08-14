@@ -1,5 +1,5 @@
 import { expect, Locator } from '@playwright/test';
-import { slugs, UIReferenceCustomFees } from '@config';
+import { outcomeMarkersCustomFees, slugs, UIReferenceCustomFees } from '@config';
 import CustomFees from '@utils/customFees.utils';
 import BaseCartPage from 'base-tests/poms/frontend/cart.page';
 
@@ -26,7 +26,7 @@ class CartPage extends BaseCartPage
         await expect(
             this.page
                 .locator(UIReferenceCustomFees.cartPage.emptyCartMessageContainerLocator)
-                .getByText(UIReferenceCustomFees.cartPage.emptyCartMessage)
+                .getByText(outcomeMarkersCustomFees.cartPage.emptyCartMessage)
         ).toBeVisible();
     }
 

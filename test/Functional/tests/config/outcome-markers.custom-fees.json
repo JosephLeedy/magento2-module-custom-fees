@@ -2,5 +2,8 @@
   "adminSalesOrderViewPage": {
     "creditMemoCreatedNotificationMessage": "You created the credit memo.",
     "invoiceCreatedNotificationMessage": "The invoice has been created."
+  },
+  "cartPage": {
+    "emptyCartMessage": "You have no items in your shopping cart."
   }
 }
