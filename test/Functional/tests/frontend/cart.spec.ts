@@ -63,7 +63,7 @@ test.describe('Custom fees are added to cart', (): void => {
                 await new ChangeCurrencyToEuroStep(page).execute();
             }
 
-            await cartPage.hasCustomFees(inEuro, excludedFees);
+            await cartPage.assertHasCustomFees(inEuro, excludedFees);
         });
     });
 });
@@ -90,7 +90,7 @@ test.describe('Conditional custom fees', (): void => {
                 slugs.productpage.simpleProductSlug
             );
 
-            await cartPage.hasCustomFees(false, excludedFees);
+            await cartPage.assertHasCustomFees(false, excludedFees);
         }
     );
 
@@ -115,7 +115,7 @@ test.describe('Conditional custom fees', (): void => {
                 slugs.productpage.simpleProductSlug
             );
 
-            await cartPage.doesNotHaveCustomFees(false, excludedFees);
+            await cartPage.assertDoesNotHaveCustomFees(false, excludedFees);
         }
     );
 });

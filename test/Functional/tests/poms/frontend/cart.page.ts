@@ -30,7 +30,7 @@ class CartPage extends BaseCartPage
         ).toBeVisible();
     }
 
-    public async hasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
+    public async assertHasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
     {
         const cartSummaryLocator = this.page.locator(UIReferenceCustomFees.cartPage.cartSummaryLocator);
         const customFees = await new CustomFees().getAll(cartSummaryLocator, inEuro, exclude);
@@ -40,7 +40,7 @@ class CartPage extends BaseCartPage
         }
     }
 
-    public async doesNotHaveCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
+    public async assertDoesNotHaveCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
     {
         const cartSummaryLocator = this.page.locator(UIReferenceCustomFees.cartPage.cartSummaryLocator);
         const customFees = await new CustomFees().getAll(cartSummaryLocator, inEuro, exclude);
