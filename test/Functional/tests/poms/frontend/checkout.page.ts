@@ -198,6 +198,9 @@ class CheckoutPage extends BaseCheckoutPage
             phoneNumber = phoneNumber.replace(/\sx(\d{1,})/, '');
         }
 
+        // Remove any invalid characters from the generated phone number
+        phoneNumber = phoneNumber.replace(/[^\d\+\-\(\)\s]/g, '');
+
         return phoneNumber;
     }
 }
