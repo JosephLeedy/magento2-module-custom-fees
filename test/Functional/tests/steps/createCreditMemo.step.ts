@@ -19,7 +19,7 @@ class CreateCreditMemoStep
      * @returns {Promise<string>} - A promise that resolves to the created credit memo number.
      * @throws {Error} - Throws an error if the credit memo cannot be created.
      */
-    public async execute(orderNumber?: string): Promise<string>
+    public async createCreditMemo(orderNumber?: string): Promise<string>
     {
         const adminSalesOrderViewPage = new SalesOrderViewPage(this.page);
         let adminSalesOrderGridPage: SalesOrderGridPage;

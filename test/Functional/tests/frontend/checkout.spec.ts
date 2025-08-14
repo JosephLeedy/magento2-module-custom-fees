@@ -19,7 +19,7 @@ test.describe('Custom fees display in checkout', (): void => {
     });
 
     test.afterEach(async ({ page }): Promise<void> => {
-        await new EmptyCartStep(page).execute();
+        await new EmptyCartStep(page).emptyCart();
     });
 
     [
@@ -57,11 +57,11 @@ test.describe('Custom fees display in checkout', (): void => {
             test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
             if (asCustomer) {
-                await new LogInAsCustomerStep(page, browserName).execute();
+                await new LogInAsCustomerStep(page, browserName).login();
             }
 
             if (inEuro) {
-                await new ChangeCurrencyToEuroStep(page).execute();
+                await new ChangeCurrencyToEuroStep(page).changeCurrency();
             }
 
             await checkoutPage.navigateToCheckoutPage();

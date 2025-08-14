@@ -14,7 +14,7 @@ class LogInAsAdministratorStep
      * @returns {Promise<void>} - A promise that resolves when the login process is complete.
      * @throws {Error} - Throws an error if the administrator credentials are not configured in the `.env` file.
      */
-    public async execute(): Promise<void>
+    public async login(): Promise<void>
     {
         const adminPage = new MagentoAdminPage(this.page);
         const adminUsername = requireEnv('MAGENTO_ADMIN_USERNAME');

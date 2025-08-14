@@ -17,7 +17,7 @@ test.describe('Custom fees are added to cart', (): void => {
     });
 
     test.afterEach(async ({ page }): Promise<void> => {
-        await new EmptyCartStep(page).execute();
+        await new EmptyCartStep(page).emptyCart();
     });
 
     [
@@ -56,11 +56,11 @@ test.describe('Custom fees are added to cart', (): void => {
                 .filter((key) => key.includes('conditional'));
 
             if (asCustomer) {
-                await new LogInAsCustomerStep(page, browserName).execute(slugs.cart.cartSlug);
+                await new LogInAsCustomerStep(page, browserName).login(slugs.cart.cartSlug);
             }
 
             if (inEuro) {
-                await new ChangeCurrencyToEuroStep(page).execute();
+                await new ChangeCurrencyToEuroStep(page).changeCurrency();
             }
 
             await cartPage.assertHasCustomFees(inEuro, excludedFees);

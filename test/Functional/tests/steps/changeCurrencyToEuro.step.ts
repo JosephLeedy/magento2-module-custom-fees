@@ -13,7 +13,7 @@ class ChangeCurrencyToEuroStep
      * @returns {Promise<void>} - A promise that resolves when the currency is switched.
      * @throws {Error} - Throws an error if the currency cannot be switched.
      */
-    public async execute(): Promise<void>
+    public async changeCurrency(): Promise<void>
     {
         await new CurrencySwitcher(this.page).switchCurrencyToEuro();
         await this.page.waitForLoadState('networkidle');

@@ -18,7 +18,7 @@ class AddProductToCartStep
      * @returns {Promise<void>} - A promise that resolves when the product is added to the cart.
      * @throws {Error} - Throws an error if the product cannot be added to the cart.
      */
-    public async execute(
+    public async addProductToCart(
         productType: 'simple' | 'configurable',
         productTitle: string,
         productUrl: string,
@@ -50,7 +50,7 @@ class AddProductToCartStep
      */
     public async addSimpleProductToCart(productTitle: string, productUrl: string, quantity?: string): Promise<void>
     {
-        await this.execute('simple', productTitle, productUrl, quantity);
+        await this.addProductToCart('simple', productTitle, productUrl, quantity);
     }
 
     @step('Add configurable product to cart', { box: true })
@@ -68,7 +68,7 @@ class AddProductToCartStep
         productUrl: string,
         quantity?: string
     ): Promise<void> {
-        await this.execute('configurable', productTitle, productUrl, quantity);
+        await this.addProductToCart('configurable', productTitle, productUrl, quantity);
     }
 }
 

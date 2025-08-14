@@ -17,7 +17,7 @@ class LogInAsCustomerStep
      * @returns {Promise<void>} - A promise that resolves when the login process is complete.
      * @throws {Error} - Throws an error if the customer account credentials are not configured in the `.env` file.
      */
-    public async execute(returnTo?: string): Promise<void>
+    public async login(returnTo?: string): Promise<void>
     {
         const browserEngine = this.browserName?.toUpperCase() || 'UNKNOWN';
         const loginPage = new LoginPage(this.page);

@@ -18,7 +18,7 @@ class EmptyCartStep
      * @returns {Promise<void>} - A promise that resolves when the cart is empty.
      * @throws {Error} - Throws an error if the cart cannot be emptied.
      */
-    public async execute(checkUrl: string|false = false): Promise<void>
+    public async emptyCart(checkUrl: string|false = false): Promise<void>
     {
         if (checkUrl !== false && !this.page.url().includes(checkUrl)) {
             return;

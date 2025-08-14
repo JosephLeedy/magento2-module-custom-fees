@@ -15,7 +15,7 @@ class CreateInvoiceStep
      * @returns {Promise<string>} - A promise that resolves to the created invoice number.
      * @throws {Error} - Throws an error if the invoice cannot be created.
      */
-    public async execute(orderNumber: string): Promise<string>
+    public async createInvoice(orderNumber: string): Promise<string>
     {
         const adminSalesOrderGridPage = new SalesOrderGridPage(this.page);
         const adminSalesOrderViewPage = new SalesOrderViewPage(this.page);

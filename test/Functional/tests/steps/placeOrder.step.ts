@@ -13,7 +13,7 @@ class PlaceOrderStep
      * @returns {Promise<OrderDetails>} - A promise that resolves to an object containing the order details.
      * @throws {Error} - Throws an error if the order cannot be placed.
      */
-    public async execute(): Promise<OrderDetails>
+    public async placeOrder(): Promise<OrderDetails>
     {
         const checkoutPage = new CheckoutPage(this.page);
         let orderNumber: string|null = '';

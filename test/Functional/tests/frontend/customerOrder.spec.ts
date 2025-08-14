@@ -16,7 +16,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
     test.use({ bypassCSP: true });
 
     test.beforeEach(async ({ page, browserName }): Promise<void> => {
-        await new LogInAsCustomerStep(page, browserName).execute(slugs.checkout.checkoutSlug);
+        await new LogInAsCustomerStep(page, browserName).login(slugs.checkout.checkoutSlug);
 
         await new AddProductToCartStep(page).addSimpleProductToCart(
             UIReference.productPage.simpleProductTitle,
@@ -26,7 +26,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
 
     test.afterEach(async ({ page }): Promise<void> => {
         // Assume the test failed if we're still in the Checkout and empty the cart to prevent future issues
-        await new EmptyCartStep(page).execute(slugs.checkout.checkoutSlug);
+        await new EmptyCartStep(page).emptyCart(slugs.checkout.checkoutSlug);
     });
 
     [
@@ -56,10 +56,10 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                 test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
                 if (inEuro) {
-                    await new ChangeCurrencyToEuroStep(page).execute();
+                    await new ChangeCurrencyToEuroStep(page).changeCurrency();
                 }
 
-                ({ orderNumber } = await new PlaceOrderStep(page, testInfo).execute());
+                ({ orderNumber } = await new PlaceOrderStep(page, testInfo).placeOrder());
 
                 await orderPage.navigateToOrderHistoryPage();
                 await orderPage.navigateToOrderPage(<string>orderNumber);
@@ -96,14 +96,14 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                 test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
                 if (inEuro) {
-                    await new ChangeCurrencyToEuroStep(page).execute();
+                    await new ChangeCurrencyToEuroStep(page).changeCurrency();
                 }
 
-                ({ orderNumber} = await new PlaceOrderStep(page, testInfo).execute());
+                ({ orderNumber} = await new PlaceOrderStep(page, testInfo).placeOrder());
 
-                await new LogInAsAdministratorStep(page).execute();
+                await new LogInAsAdministratorStep(page).login();
 
-                invoiceNumber = await new CreateInvoiceStep(page, testInfo).execute(<string>orderNumber);
+                invoiceNumber = await new CreateInvoiceStep(page, testInfo).createInvoice(<string>orderNumber);
 
                 await orderPage.navigateToOrderHistoryPage();
                 await orderPage.navigateToOrderPage(<string>orderNumber);
@@ -141,15 +141,15 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                 test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
                 if (inEuro) {
-                    await new ChangeCurrencyToEuroStep(page).execute();
+                    await new ChangeCurrencyToEuroStep(page).changeCurrency();
                 }
 
-                ({ orderNumber } = await new PlaceOrderStep(page, testInfo).execute());
+                ({ orderNumber } = await new PlaceOrderStep(page, testInfo).placeOrder());
 
-                await new LogInAsAdministratorStep(page).execute();
-                await new CreateInvoiceStep(page, testInfo).execute(<string>orderNumber);
+                await new LogInAsAdministratorStep(page).login();
+                await new CreateInvoiceStep(page, testInfo).createInvoice(<string>orderNumber);
 
-                creditMemoNumber = await new CreateCreditMemoStep(page, testInfo).execute();
+                creditMemoNumber = await new CreateCreditMemoStep(page, testInfo).createCreditMemo();
 
                 await orderPage.navigateToOrderHistoryPage();
                 await orderPage.navigateToOrderPage(<string>orderNumber);
