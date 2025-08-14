@@ -163,4 +163,3 @@ class SalesOrderViewPage
 }
 
 export default SalesOrderViewPage;
-export { SkuAndQuantity };
