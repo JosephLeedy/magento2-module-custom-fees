@@ -12,8 +12,6 @@ import GuestOrderPage from '@poms/frontend/guestOrder.page';
 test.describe('Custom fees are displayed on guest order page', (): void => {
     test.describe.configure({ retries: 3 });
 
-    test.use({ bypassCSP: true });
-
     test.beforeEach(async ({ page }): Promise<void> => {
         await new AddProductToCartStep(page).addSimpleProductToCart(
             UIReference.productPage.simpleProductTitle,

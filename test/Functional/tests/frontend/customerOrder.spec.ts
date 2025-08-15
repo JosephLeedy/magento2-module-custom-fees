@@ -13,8 +13,6 @@ import CustomerOrderPage from '@poms/frontend/customerOrder.page';
 test.describe('Custom fees are displayed on customer order page', (): void => {
     test.describe.configure({ retries: 3 });
 
-    test.use({ bypassCSP: true });
-
     test.beforeEach(async ({ page, browserName }): Promise<void> => {
         await new LogInAsCustomerStep(page, browserName).login(slugs.checkout.checkoutSlug);
 

@@ -9,8 +9,6 @@ import CheckoutPage from '@poms/frontend/checkout.page';
 test.describe('Custom fees display in checkout', (): void => {
     test.describe.configure({ retries: 3 });
 
-    test.use({ bypassCSP: true });
-
     test.beforeEach(async ({ page }): Promise<void> => {
         await new AddProductToCartStep(page).addSimpleProductToCart(
             UIReference.productPage.simpleProductTitle,
