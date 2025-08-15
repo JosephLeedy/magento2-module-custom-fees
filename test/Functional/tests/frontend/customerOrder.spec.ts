@@ -47,11 +47,9 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
         test(
             `for an order${testSuffix}`,
             { tag: ['@frontend', '@account', '@cold'] },
-            async ({ page, browserName }, testInfo): Promise<void> => {
+            async ({ page }, testInfo): Promise<void> => {
                 const orderPage = new CustomerOrderPage(page);
                 let orderNumber: string|null = '';
-
-                test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
                 if (inEuro) {
                     await new ChangeCurrencyToEuroStep(page).changeCurrency();
@@ -86,12 +84,10 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
         test(
             `for an invoice${testSuffix}`,
             { tag: ['@frontend', '@account', '@cold'] },
-            async ({ page, browserName }, testInfo): Promise<void> => {
+            async ({ page }, testInfo): Promise<void> => {
                 const orderPage = new CustomerOrderPage(page);
                 let orderNumber: string|null = '';
                 let invoiceNumber: string|null = '';
-
-                test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
                 if (inEuro) {
                     await new ChangeCurrencyToEuroStep(page).changeCurrency();
@@ -131,12 +127,10 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
         test(
             `for a credit memo${testSuffix}`,
             { tag: ['@frontend', '@account', '@cold'] },
-            async ({ page, browserName }, testInfo): Promise<void> => {
+            async ({ page }, testInfo): Promise<void> => {
                 const orderPage = new CustomerOrderPage(page);
                 let orderNumber: string|null = '';
                 let creditMemoNumber: string|null = '';
-
-                test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
                 if (inEuro) {
                     await new ChangeCurrencyToEuroStep(page).changeCurrency();

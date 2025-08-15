@@ -52,8 +52,6 @@ test.describe('Custom fees display in checkout', (): void => {
         test(testTitle, { tag: ['@frontend', '@checkout', '@cold'] }, async ({ page, browserName }): Promise<void> => {
             const checkoutPage = new CheckoutPage(page);
 
-            test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
-
             if (asCustomer) {
                 await new LogInAsCustomerStep(page, browserName).login();
             }

@@ -44,13 +44,11 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
         test(
             `for an order${testSuffix}`,
             { tag: ['@frontend', '@guest', '@cold'] },
-            async ({ page, browserName }, testInfo): Promise<void> => {
+            async ({ page }, testInfo): Promise<void> => {
                 const guestOrderPage = new GuestOrderPage(page);
                 let orderNumber: string|null = '';
                 let orderEmail: string = '';
                 let orderLastName: string = '';
-
-                test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
                 if (inEuro) {
                     await new ChangeCurrencyToEuroStep(page).changeCurrency();
@@ -86,14 +84,12 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
         test(
             `for an invoice${testSuffix}`,
             { tag: ['@frontend', '@guest', '@cold'] },
-            async ({ page, browserName }, testInfo): Promise<void> => {
+            async ({ page }, testInfo): Promise<void> => {
                 const guestOrderPage = new GuestOrderPage(page);
                 let orderNumber: string|null = '';
                 let orderEmail: string = '';
                 let orderLastName: string = '';
                 let invoiceNumber: string|null = '';
-
-                test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
                 if (inEuro) {
                     await new ChangeCurrencyToEuroStep(page).changeCurrency();
@@ -134,14 +130,12 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
         test(
             `for a credit memo${testSuffix}`,
             { tag: ['@frontend', '@guest', '@cold'] },
-            async ({ page, browserName }, testInfo): Promise<void> => {
+            async ({ page }, testInfo): Promise<void> => {
                 const guestOrderPage = new GuestOrderPage(page);
                 let orderNumber: string|null = '';
                 let orderEmail: string = '';
                 let orderLastName: string = '';
                 let creditMemoNumber: string|null = '';
-
-                test.skip(browserName === 'webkit', 'Skipping test for Webkit due to an issue with CSP');
 
                 if (inEuro) {
                     await new ChangeCurrencyToEuroStep(page).changeCurrency();
