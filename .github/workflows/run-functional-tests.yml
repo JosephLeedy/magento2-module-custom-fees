@@ -87,9 +87,11 @@ jobs:
           if [ "${{ matrix.theme }}" = "Hyvä CSP" ]; then
             /usr/local/bin/composer require hyva-themes/magento2-default-theme-csp
             THEME_NAME="Hyva/default-csp"
+            PATCH_PATH="vendor/hyva-themes/magento2-default-theme-csp"
           else
             /usr/local/bin/composer require hyva-themes/magento2-default-theme
             THEME_NAME="Hyva/default"
+            PATCH_PATH="vendor/hyva-themes/magento2-default-theme"
           fi
           /usr/local/bin/composer require hyva-themes/magento2-hyva-checkout
           php bin/magento setup:upgrade
@@ -105,6 +107,22 @@ jobs:
           fi
           # Configure Hyvä Checkout
           php bin/magento config:set hyva_themes_checkout/general/checkout default
+          # Patch Hyvä to fix currency switcher
+          cat << EOP | patch -p1
+          diff --git a/$PATCH_PATH/Magento_Directory/templates/currency.phtml b/$PATCH_PATH/Magento_Directory/templates/currency.phtml
+          index 887fc1a8..b932dfac 100644
+          --- a/$PATCH_PATH/Magento_Directory/templates/currency.phtml
+          +++ b/$PATCH_PATH/Magento_Directory/templates/currency.phtml
+          @@ -87,7 +87,7 @@ \$currencyViewModel = \$viewModels->require(Currency::class);
+                               return this.open() ? 'true' : 'false';
+                           },
+                           switchCurrency() {
+          -                    hyva.postForm(this.\$el.dataset.currencyData)
+          +                    hyva.postForm(JSON.parse(this.\$el.dataset.currencyData))
+                           }
+                       });
+                   }
+          EOP
 
       - name: Disable Magento Admin Analytics module
         working-directory: /data
