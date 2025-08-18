@@ -104,6 +104,7 @@ jobs:
             /usr/local/bin/n98-magerun2 config:env:set system/default/csp/policies/storefront/scripts/eval 0
             /usr/local/bin/n98-magerun2 config:env:set system/default/csp/mode/storefront/report_only 0
             php bin/magento app:config:import
+            php bin/magento cache:disable full_page
           fi
           # Configure Hyvä Checkout
           php bin/magento config:set hyva_themes_checkout/general/checkout default
