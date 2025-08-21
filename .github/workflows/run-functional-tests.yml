@@ -14,15 +14,14 @@ on:
 
 jobs:
   run-functional-tests:
-    name: ${{ matrix.theme }}
+    name: ${{ matrix.theme }} (${{ matrix.shard-index }}/${{ matrix.shard-count }})
 
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - theme: Luma
-          - theme: Hyvä
-          - theme: Hyvä CSP
+        theme: [Luma, Hyvä, Hyvä CSP]
+        shard-index: [1, 2, 3, 4]
+        shard-count: [4]
 
     timeout-minutes: 120
 
@@ -178,16 +177,73 @@ jobs:
 
       - name: Run tests
         working-directory: /data/extensions/module-custom-fees/test/Functional
-        run: npx playwright test --workers=1 --reporter=dot,github,html --grep '@frontend|@admin' --pass-with-no-tests
+        run: |
+          npx playwright test --reporter=dot,github,blob --grep '@frontend|@admin' \
+            --shard=${{ matrix.shard-index }}/${{ matrix.shard-count }}
 
-      - id: generate-artifact-name-suffix
-        name: Generate artifact name suffix
+      - id: generate-artifact-name
+        name: Generate artifact name
         if: ${{ !cancelled() }}
-        run: echo "artifact-name-suffix="$(echo "${{ matrix.theme }}" | sed "s/ /_/g") >> "$GITHUB_OUTPUT"
+        run: echo "artifact-name="$(echo "${{ matrix.theme }}" | sed "s/ /_/g") >> "$GITHUB_OUTPUT"
 
       - name: Upload test report
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-${{ steps.generate-artifact-name-suffix.outputs.artifact-name-suffix }}
-          path: /data/extensions/module-custom-fees/test/Functional/playwright-report/
+          name: playwright-report-${{ steps.generate-artifact-name.outputs.artifact-name }}-${{ matrix.shard-index }}
+          path: /data/extensions/module-custom-fees/test/Functional/blob-report/
+          retention-days: 1
+
+  merge-test-reports:
+    name: Merge ${{ matrix.theme }} test reports
+
+    if: ${{ !cancelled() }}
+
+    needs: [run-functional-tests]
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./test/Functional
+
+    strategy:
+      fail-fast: false
+      matrix:
+        theme: [Luma, Hyvä, Hyvä CSP]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: test/Functional
+          sparse-checkout-cone-mode: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm i
+
+      - id: generate-artifact-name
+        run: echo "artifact-name="$(echo "${{ matrix.theme }}" | sed "s/ /_/g") >> "$GITHUB_OUTPUT"
+
+      - name: Download test reports
+        uses: actions/download-artifact@v4
+        with:
+          path: ./test/Functional/test-reports-${{ steps.generate-artifact-name.outputs.artifact-name }}
+          pattern: playwright-report-${{ steps.generate-artifact-name.outputs.artifact-name }}-*
+          merge-multiple: true
+
+      - name: Merge test reports
+        run: |
+          npx playwright merge-reports --reporter html \
+            ./test-reports-${{ steps.generate-artifact-name.outputs.artifact-name }}
+
+      - name: Upload merged test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ steps.generate-artifact-name.outputs.artifact-name }}
+          path: ./test/Functional/playwright-report
