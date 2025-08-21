@@ -17,7 +17,7 @@ class CustomFeesConfigurationPage extends MagentoAdminPage
                 inputValuesCustomFees.customFees[feeName].code,
                 inputValuesCustomFees.customFees[feeName].title,
                 inputValuesCustomFees.customFees[feeName].type,
-                inputValuesCustomFees.customFees[feeName].amount,
+                inputValuesCustomFees.customFees[feeName].base_amount,
                 inputValuesCustomFees.customFees[feeName].advanced,
             );
         }

@@ -1,4 +1,59 @@
 {
+  "adminSalesOrderCreditMemoNewPage": {
+    "itemQuantityInputLocator": ".qty-input",
+    "pageTitle": "New Memo",
+    "submitCreditMemoButtonLabel": "Refund Offline",
+    "updateItemQuanitiesButtonLabel": "Update Qty's"
+  },
+  "adminSalesOrderGridPage": {
+    "navigation": {
+      "salesMenuLabel": "Sales",
+      "ordersMenuItemLabel": "Orders"
+    },
+    "pageTitle": "Orders"
+  },
+  "adminSalesOrderInvoiceNewPage": {
+    "itemQuantityInputLocator": ".qty-input",
+    "pageTitle": "New Invoice",
+    "submitInvoiceButtonLabel": "Submit Invoice",
+    "updateItemQuanitiesButtonLabel": "Update Qty's"
+  },
+  "adminSalesOrderViewPage": {
+    "createCreditMemoButtonLabel": "Credit Memo",
+    "createInvoiceButtonLabel": "Invoice",
+    "creditMemosTab": {
+      "label": "Credit Memos",
+      "firstCreditMemoLocator": "#sales_order_view_tabs_order_creditmemos_content .data-grid .data-row:first-child td:nth-child(2)"
+    },
+    "invoicesTab": {
+      "label": "Invoices",
+      "firstInvoiceLocator": "#sales_order_view_tabs_order_invoices_content .data-grid .data-row:first-child td:nth-child(2)"
+    }
+  },
+  "cartPage": {
+    "cartSummaryLocator": ".cart-summary",
+    "emptyCartMessageContainerLocator": ".cart-empty",
+    "removeItemButtonLocator": ".item-actions .action-delete"
+  },
+  "checkoutPage": {
+    "addressRegionLabel": "State/Province",
+    "orderSummaryLocator": "#quote-summary, .opc-block-summary",
+    "paymentMethodSectionLabel": "Payment Method",
+    "proceedToReviewStepButtonLocator": ".checkout-nav .btn-next, #shipping-method-buttons-container button.continue",
+    "selectExistingShippingAddressButtonLocator": "input[name=address_shipping], .action-select-shipping-item",
+    "shippingAddressFormLocator": "form#shipping, form#co-shipping-form",
+    "subtotalTotalLabel": "Subtotal"
+  },
+  "checkoutSuccessPage": {
+    "orderNumberLocator": ".checkout-success .order-number, .checkout-success p:first-child > span"
+  },
+  "common": {
+    "currencySwitcher": {
+      "containerLocator": "#switcher-currency, #currency-heading + div",
+      "euroLabel": "EUR - Euro",
+      "usDollarLabel": "USD - US Dollar"
+    }
+  },
   "customFeesConfigurationPage": {
     "salesTabLabel": "Sales",
     "customOrderFeesSectionLabel": "Custom Order Fees",
@@ -20,5 +75,26 @@
         }
       }
     }
+  },
+  "orderHistoryPage": {
+    "viewOrderLabel": "view order"
+  },
+  "orderPage": {
+    "creditMemoDetailsTitle": "Refund #",
+    "creditMemoTotalsContainerLocator": "//following-sibling::div[contains(@class, \"creditmemo\")]/*[contains(@class, \"creditmemo\") or contains(@class, \"border-container\")]/child::*[last()]",
+    "creditMemosLinkLabel": "Refunds",
+    "invoiceDetailsTitle": "Invoice #",
+    "invoiceTotalsContainerLocator": "//following-sibling::div[contains(@class, \"invoice\")]/*[contains(@class, \"invoice\") or contains(@class, \"border-container\")]/child::*[last()]",
+    "invoicesLinkLabel": "Invoices",
+    "orderDetailsTitle": "Order #",
+    "orderTitleLocator": ".order-title",
+    "orderTotalsContainerLocator": ".order-items + div, table.table-order-items > tfoot"
+  },
+  "ordersAndReturnsPage": {
+    "billingLastNameFieldLabel": "Billing Last Name",
+    "emailFieldLabel": "Email",
+    "orderIdFieldLabel": "Order ID",
+    "pageTitle": "Orders and Returns",
+    "submitButtonLabel": "Continue"
   }
 }

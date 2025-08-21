@@ -24,7 +24,7 @@ jobs:
           - theme: Hyvä
           - theme: Hyvä CSP
 
-    timeout-minutes: 60
+    timeout-minutes: 120
 
     runs-on: ubuntu-latest
 
@@ -87,9 +87,11 @@ jobs:
           if [ "${{ matrix.theme }}" = "Hyvä CSP" ]; then
             /usr/local/bin/composer require hyva-themes/magento2-default-theme-csp
             THEME_NAME="Hyva/default-csp"
+            PATCH_PATH="vendor/hyva-themes/magento2-default-theme-csp"
           else
             /usr/local/bin/composer require hyva-themes/magento2-default-theme
             THEME_NAME="Hyva/default"
+            PATCH_PATH="vendor/hyva-themes/magento2-default-theme"
           fi
           /usr/local/bin/composer require hyva-themes/magento2-hyva-checkout
           php bin/magento setup:upgrade
@@ -102,9 +104,26 @@ jobs:
             /usr/local/bin/n98-magerun2 config:env:set system/default/csp/policies/storefront/scripts/eval 0
             /usr/local/bin/n98-magerun2 config:env:set system/default/csp/mode/storefront/report_only 0
             php bin/magento app:config:import
+            php bin/magento cache:disable full_page
           fi
           # Configure Hyvä Checkout
           php bin/magento config:set hyva_themes_checkout/general/checkout default
+          # Patch Hyvä to fix currency switcher
+          cat << EOP | patch -p1
+          diff --git a/$PATCH_PATH/Magento_Directory/templates/currency.phtml b/$PATCH_PATH/Magento_Directory/templates/currency.phtml
+          index 887fc1a8..b932dfac 100644
+          --- a/$PATCH_PATH/Magento_Directory/templates/currency.phtml
+          +++ b/$PATCH_PATH/Magento_Directory/templates/currency.phtml
+          @@ -87,7 +87,7 @@ \$currencyViewModel = \$viewModels->require(Currency::class);
+                               return this.open() ? 'true' : 'false';
+                           },
+                           switchCurrency() {
+          -                    hyva.postForm(this.\$el.dataset.currencyData)
+          +                    hyva.postForm(JSON.parse(this.\$el.dataset.currencyData))
+                           }
+                       });
+                   }
+          EOP
 
       - name: Disable Magento Admin Analytics module
         working-directory: /data
@@ -154,9 +173,9 @@ jobs:
       - name: Apply patches
         working-directory: /data/extensions/module-custom-fees/test/Functional
         run: |
-          patch -p0 < patches/playwright.config.ts.patch
-          patch -p0 < patches/bypass-captcha.config.ts.patch
-          patch -p0 < patches/register.page.ts.patch
+          for patchFile in patches/*.patch; do
+            patch -p0 < "$patchFile"
+          done
 
       - name: Install test browsers
         working-directory: /data/extensions/module-custom-fees/test/Functional

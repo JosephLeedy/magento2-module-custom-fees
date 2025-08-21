@@ -1,0 +1,11 @@
+--- base-tests/poms/frontend/product.page.ts	2025-07-14 14:10:41.509086120 -0600
++++ base-tests/poms/frontend/product.page.ts	2025-07-22 10:42:18.894529405 -0600
+@@ -13,7 +13,7 @@
+
+   constructor(page: Page) {
+     this.page = page;
+-    this.addToCartButton = page.getByRole('button', { name: UIReference.productPage.addToCartButtonLocator });
++    this.addToCartButton = page.getByRole('button', { name: UIReference.productPage.addToCartButtonLocator, exact: true });
+     this.addToCompareButton = page.getByLabel(UIReference.productPage.addToCompareButtonLabel, { exact: true });
+     this.addToWishlistButton = page.getByLabel(UIReference.productPage.addToWishlistButtonLabel, { exact: true });
+   }
