@@ -18,4 +18,13 @@ enum FeeStatus: int
             self::Enabled => __('Enabled'),
         };
     }
+
+    public function equals(string|int|self $feeStatus): bool
+    {
+        if (!($feeStatus instanceof self)) {
+            $feeStatus = self::tryFrom((int) $feeStatus);
+        }
+
+        return $feeStatus === $this;
+    }
 }
