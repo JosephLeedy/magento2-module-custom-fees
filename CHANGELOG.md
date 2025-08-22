@@ -10,6 +10,10 @@ document.
 
 ## [Unreleased]
 
+### Added
+
+- Custom fees can be enabled or disabled
+
 ## [1.2.1]
 
 ### Fixed
