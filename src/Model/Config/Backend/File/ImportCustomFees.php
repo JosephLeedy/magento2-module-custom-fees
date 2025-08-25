@@ -260,7 +260,7 @@ class ImportCustomFees extends File
             $this->customFees,
             static function (array &$customFee) use ($store): void {
                 $customFee['code'] = preg_replace('/[^A-z0-9_]+/', '_', $customFee['code']);
-                $customFee['status'] = (string) match (strtolower((string) ($customFee['status'] ?? '1'))) {
+                $customFee['status'] = (string) match (strtolower((string) $customFee['status'])) {
                     '0', 'disabled' => FeeStatus::Disabled->value,
                     '1', 'enabled' => FeeStatus::Enabled->value,
                 };
