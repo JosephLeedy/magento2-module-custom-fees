@@ -14,12 +14,12 @@ use function sprintf;
  * @method string getName()
  * @method string getInputId()
  * @method array{
- *      label: Phrase|string,
- *      class: string|null,
- *      size: false|string,
- *      style: string|null,
- *      renderer: false|AbstractBlock
- *  } getColumn()
+ *     label: Phrase|string,
+ *     class: string|null,
+ *     size: false|string,
+ *     style: string|null,
+ *     renderer: false|AbstractBlock
+ * } getColumn()
  */
 class FeeStatus extends AbstractBlock
 {
