@@ -62,7 +62,7 @@ class ImportCustomFees extends File
      *     code: string,
      *     title: string,
      *     type: value-of<FeeType>,
-     *     status: value-of<FeeStatus>,
+     *     status: value-of<FeeStatus>|'0'|'1'|'disabled'|'enabled',
      *     show_percentage?: string,
      *     value: float,
      *     advanced?: string
