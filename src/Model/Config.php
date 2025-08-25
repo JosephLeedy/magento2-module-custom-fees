@@ -52,6 +52,7 @@ class Config implements ConfigInterface
              *     title: string,
              *     type: value-of<FeeType>,
              *     value: float,
+             *     status: value-of<FeeStatus>,
              *     advanced?: string
              * }[] $customFees
              */
@@ -104,6 +105,7 @@ class Config implements ConfigInterface
          *      title: string,
          *      type: value-of<FeeType>,
          *      value: float,
+         *      status: value-of<FeeStatus>,
          *      advanced: array{
          *          conditions?: array{
          *              type: class-string,

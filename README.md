@@ -88,14 +88,15 @@ spreadsheet containing the following columns:
 | code            | A unique code identifying the custom fee (allowed characters: "A-Z", "a-z", "0-9", "_")                   | example_fee   |
 | title           | A short label describing the custom fee                                                                   | "Example Fee" |
 | type            | The type of custom fee ("fixed" or "percent" \[of order subtotal\])                                       | "fixed"       |
+| status          | Whether the custom fee is enabled or diasbled ("0", "disabled", "1", "enabled")                           | "enabled"     |
 | show_percentage | _Optional_ - Whether or not to show the percentage next to the fee name ("0", "n", "no", "1", "y", "yes") | "yes"         |
 | value           | The amount of the custom fee, in the store's default currency                                             | 5.00          |
 
 ##### Example CSV Import Spreadsheet
 
 ```csv
-code,title,type,show_percentage,value
-example_fee,"Example Fee",fixed,0,5.00
+code,title,type,status,show_percentage,value
+example_fee,"Example Fee",fixed,enabled,0,5.00
 ```
 
 #### Configuring Adavanced Settings

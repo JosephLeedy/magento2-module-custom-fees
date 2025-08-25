@@ -49,7 +49,7 @@ class ExampleCsv extends Action implements HttpGetActionInterface
         $stream = $directory->openFile($filePath, 'w+');
 
         $stream->lock();
-        $stream->write('code,title,type,value');
+        $stream->write('code,title,type,status,value');
         $stream->unlock();
         $stream->close();
 

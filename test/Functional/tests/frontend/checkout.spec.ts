@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { slugs, UIReference } from '@config';
+import { inputValuesCustomFees, slugs, UIReference } from '@config';
 import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import EmptyCartStep from '@steps/emptyCart.step';
@@ -51,6 +51,9 @@ test.describe('Custom fees display in checkout', (): void => {
          */
         test(testTitle, { tag: ['@frontend', '@checkout', '@cold'] }, async ({ page, browserName }): Promise<void> => {
             const checkoutPage = new CheckoutPage(page);
+            const excludedFees = Object
+                .keys(inputValuesCustomFees.customFees)
+                .filter(key => key.includes('disabled'));
 
             if (asCustomer) {
                 await new LogInAsCustomerStep(page, browserName).login();
@@ -64,7 +67,7 @@ test.describe('Custom fees display in checkout', (): void => {
             await checkoutPage.fillShippingAddress();
             await checkoutPage.selectShippingMethod();
             await checkoutPage.proceedToReviewStep();
-            await checkoutPage.assertHasCustomFees(inEuro);
+            await checkoutPage.assertHasCustomFees(inEuro, excludedFees);
         });
     });
 });

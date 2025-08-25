@@ -22,7 +22,7 @@ final class CustomFeesTest extends TestCase
 {
     /**
      * @phpcs:ignore Generic.Files.LineLength.TooLong
-     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","advanced":"{\"show_percentage\":\"0\"}"},{"code":"test_fee_1","title":"Another Fee","type":"percent","value":"5","advanced": "{\"show_percentage\":\"1\"}"}]
+     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","status":"1","advanced":"{\"show_percentage\":\"0\"}"},{"code":"test_fee_1","title":"Another Fee","type":"percent","value":"5","status":"1","advanced": "{\"show_percentage\":\"1\"}"}]
      * @magentoDataFixture Magento/Checkout/_files/quote_with_address.php
      */
     public function testCollectsCustomFeesTotals(): void
@@ -91,7 +91,7 @@ final class CustomFeesTest extends TestCase
 
     /**
      * @phpcs:ignore Generic.Files.LineLength.TooLong
-     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","advanced":"{\"show_percentage\":\"0\"}"},{"code":"test_fee_1","title":"Another Fee","type":"percent","value":"5","advanced":"{\"show_percentage\":\"1\"}"}]
+     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","status":"1","advanced":"{\"show_percentage\":\"0\"}"},{"code":"test_fee_1","title":"Another Fee","type":"percent","value":"5","status":"1","advanced":"{\"show_percentage\":\"1\"}"}]
      * @magentoDataFixture Magento/Checkout/_files/quote_with_address.php
      */
     public function testFetchesCustomFeesTotals(): void

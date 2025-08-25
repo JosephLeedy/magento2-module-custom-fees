@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { slugs, UIReference } from '@config';
+import { inputValuesCustomFees, slugs, UIReference } from '@config';
 import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import CreateCreditMemoStep from '@steps/createCreditMemo.step';
@@ -46,6 +46,9 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
             { tag: ['@frontend', '@guest', '@cold'] },
             async ({ page }, testInfo): Promise<void> => {
                 const guestOrderPage = new GuestOrderPage(page);
+                const excludedFees = Object
+                    .keys(inputValuesCustomFees.customFees)
+                    .filter(key => key.includes('disabled'));
                 let orderNumber: string|null = '';
                 let orderEmail: string = '';
                 let orderLastName: string = '';
@@ -59,7 +62,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 await guestOrderPage.navigateToOrdersAndReturnsPage();
                 await guestOrderPage.fillOrderDetails(<string>orderNumber, orderEmail, orderLastName);
                 await guestOrderPage.assertOrderIsVisible(<string>orderNumber);
-                await guestOrderPage.assertOrderHasCustomFees(inEuro);
+                await guestOrderPage.assertOrderHasCustomFees(inEuro, excludedFees);
             }
         );
     });
@@ -86,6 +89,9 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
             { tag: ['@frontend', '@guest', '@cold'] },
             async ({ page }, testInfo): Promise<void> => {
                 const guestOrderPage = new GuestOrderPage(page);
+                const excludedFees = Object
+                    .keys(inputValuesCustomFees.customFees)
+                    .filter(key => key.includes('disabled'));
                 let orderNumber: string|null = '';
                 let orderEmail: string = '';
                 let orderLastName: string = '';
@@ -105,7 +111,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 await guestOrderPage.fillOrderDetails(<string>orderNumber, orderEmail, orderLastName);
                 await guestOrderPage.assertOrderIsVisible(<string>orderNumber);
                 await guestOrderPage.navigateToInvoicesPage();
-                await guestOrderPage.assertInvoiceHasCustomFees(invoiceNumber, inEuro);
+                await guestOrderPage.assertInvoiceHasCustomFees(invoiceNumber, inEuro, excludedFees);
             }
         );
     });
@@ -132,6 +138,9 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
             { tag: ['@frontend', '@guest', '@cold'] },
             async ({ page }, testInfo): Promise<void> => {
                 const guestOrderPage = new GuestOrderPage(page);
+                const excludedFees = Object
+                    .keys(inputValuesCustomFees.customFees)
+                    .filter(key => key.includes('disabled'));
                 let orderNumber: string|null = '';
                 let orderEmail: string = '';
                 let orderLastName: string = '';
@@ -152,7 +161,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 await guestOrderPage.fillOrderDetails(<string>orderNumber, orderEmail, orderLastName);
                 await guestOrderPage.assertOrderIsVisible(<string>orderNumber);
                 await guestOrderPage.navigateToCreditMemosPage();
-                await guestOrderPage.assertCreditMemoHasCustomFees(creditMemoNumber, inEuro);
+                await guestOrderPage.assertCreditMemoHasCustomFees(creditMemoNumber, inEuro, excludedFees);
             }
         );
     });
