@@ -11,6 +11,7 @@ use function __;
 use function sprintf;
 
 /**
+ * @method self setName(string $name)
  * @method string getName()
  * @method string getInputId()
  * @method array{
