@@ -33,6 +33,11 @@ use function count;
 class Totals extends Template
 {
     /**
+     * @var array<string, DataObject>
+     */
+    protected $customFeeTotals = [];
+
+    /**
      * @param array{} $data
      */
     public function __construct(
@@ -101,10 +106,19 @@ class Totals extends Template
                     $this->getParentBlock()->addTotal($total, $previousFeeCode);
                 }
 
+                $this->customFeeTotals[$customFee['code']] = $total;
                 $previousFeeCode = $customFee['code'];
             },
         );
 
         return $this;
+    }
+
+    /**
+     * @return DataObject[]
+     */
+    public function getCustomFeeTotals(): array
+    {
+        return $this->customFeeTotals;
     }
 }
