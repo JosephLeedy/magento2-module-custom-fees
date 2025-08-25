@@ -38,14 +38,15 @@ class FeeStatus extends AbstractBlock
         }
 
         $html = sprintf(
-            '<input type="hidden" id="%s" name="%s" value="<%%- status %%>">',
+            '<input type="hidden" id="%s" name="%s" value="<%%- status.length > 0 ? status : \'1\' %%>">',
             $this->getInputId(),
             $this->getName(),
         );
         $html .= sprintf(
             '<input type="checkbox" id="%s"%s title="%s"'
                 . ' onclick="document.getElementById(\'%s\').value = this.checked ? 1 : 0;"'
-                . '<%%= typeof(status) !== "undefined" && status == "1" ? " checked=\"checked\"" : "" %%>>',
+                . '<%%= typeof(status) === "undefined" || status.length === 0 || status == "1" ? " checked=\"checked\""'
+                . ' : "" %%>>',
             $this->getInputId() . '_toggle',
             $classAttribute,
             __('Enable'),
