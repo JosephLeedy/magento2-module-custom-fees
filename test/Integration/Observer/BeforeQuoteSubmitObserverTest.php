@@ -36,7 +36,7 @@ final class BeforeQuoteSubmitObserverTest extends TestCase
 
     /**
      * @phpcs:ignore Generic.Files.LineLength.TooLong
-     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","advanced":"{\"show_percentage\":\"0\"}"},{"code":"test_fee_1","title":"Another Fee","type":"fixed","value":"1.00","advanced":"{\"show_percentage\":\"0\"}"}]
+     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","status":"1","advanced":"{\"show_percentage\":\"0\"}"},{"code":"test_fee_1","title":"Another Fee","type":"fixed","value":"1.00","status":"1","advanced":"{\"show_percentage\":\"0\"}"}]
      * @magentoDataFixture Magento/Checkout/_files/quote_with_shipping_method.php
      */
     public function testAddsCustomFeesToOrder(): void

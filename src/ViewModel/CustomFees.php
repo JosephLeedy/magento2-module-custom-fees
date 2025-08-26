@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\ViewModel;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Model\FeeStatus;
 use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
@@ -25,6 +26,7 @@ class CustomFees implements ArgumentInterface
      *     title: string,
      *     type: value-of<FeeType>,
      *     value: float,
+     *     status: value-of<FeeStatus>,
      *     advanced: array{
      *         conditions?: array{
      *             type: class-string,

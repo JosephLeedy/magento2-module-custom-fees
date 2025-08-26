@@ -8,6 +8,7 @@ use DateTimeImmutableFactory;
 use DateTimeInterface;
 use Exception;
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Model\FeeStatus;
 use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Config\Model\Config\Backend\File;
 use Magento\Config\Model\Config\Backend\File\RequestData\RequestDataInterface;
@@ -53,6 +54,7 @@ class ImportCustomFees extends File
         'code',
         'title',
         'type',
+        'status',
         'value',
     ];
     /**
@@ -60,6 +62,7 @@ class ImportCustomFees extends File
      *     code: string,
      *     title: string,
      *     type: value-of<FeeType>,
+     *     status: value-of<FeeStatus>|'0'|'1'|'disabled'|'enabled',
      *     show_percentage?: string,
      *     value: float,
      *     advanced?: string
@@ -140,6 +143,7 @@ class ImportCustomFees extends File
              * @var array<string, array{
              *     code: string,
              *     title: string,
+             *     status: value-of<FeeStatus>,
              *     value: float,
              *     advanced?: string
              * }> $originalCustomFees
@@ -202,6 +206,7 @@ class ImportCustomFees extends File
              *     code: string,
              *     title: string,
              *     type: value-of<FeeType>,
+             *     status: value-of<FeeStatus>|'0'|'1'|'disabled'|'enabled',
              *     show_percentage?: string,
              *     value: float
              * } $customFee
@@ -255,6 +260,10 @@ class ImportCustomFees extends File
             $this->customFees,
             static function (array &$customFee) use ($store): void {
                 $customFee['code'] = preg_replace('/[^A-z0-9_]+/', '_', $customFee['code']);
+                $customFee['status'] = (string) match (strtolower((string) $customFee['status'])) {
+                    '0', 'disabled' => FeeStatus::Disabled->value,
+                    '1', 'enabled' => FeeStatus::Enabled->value,
+                };
                 $customFee['advanced'] = '{"show_percentage":"'
                     . match (strtolower($customFee['show_percentage'] ?? '')) {
                         '0', 'n', 'no', 'false' => '0',

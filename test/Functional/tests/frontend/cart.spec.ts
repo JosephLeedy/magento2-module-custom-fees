@@ -53,7 +53,7 @@ test.describe('Custom fees are added to cart', (): void => {
             const cartPage = new CartPage(page);
             const excludedFees = Object
                 .keys(inputValuesCustomFees.customFees)
-                .filter((key) => key.includes('conditional'));
+                .filter((key) => key.includes('conditional') || key.includes('disabled'));
 
             if (asCustomer) {
                 await new LogInAsCustomerStep(page, browserName).login(slugs.cart.cartSlug);
@@ -83,7 +83,7 @@ test.describe('Conditional custom fees', (): void => {
             const cartPage = new CartPage(page);
             const excludedFees = Object
                 .keys(inputValuesCustomFees.customFees)
-                .filter(key => !key.includes('conditional'));
+                .filter(key => !key.includes('conditional') || key.includes('disabled'));
 
             await new AddProductToCartStep(page).addSimpleProductToCart(
                 UIReference.productPage.simpleProductTitle,
@@ -108,7 +108,7 @@ test.describe('Conditional custom fees', (): void => {
             const cartPage = new CartPage(page);
             const excludedFees = Object
                 .keys(inputValuesCustomFees.customFees)
-                .filter(key => !key.includes('conditional'));
+                .filter(key => !key.includes('conditional') || key.includes('disabled'));
 
             await new AddProductToCartStep(page).addSimpleProductToCart(
                 UIReference.productPage.secondSimpleProducTitle,
@@ -118,4 +118,18 @@ test.describe('Conditional custom fees', (): void => {
             await cartPage.assertDoesNotHaveCustomFees(false, excludedFees);
         }
     );
+});
+
+test('Disabled custom fees are not added to cart', async ({ page }): Promise<void> => {
+    const cartPage = new CartPage(page);
+    const excludedFees = Object
+        .keys(inputValuesCustomFees.customFees)
+        .filter(key => !key.includes('disabled'));
+
+    await new AddProductToCartStep(page).addSimpleProductToCart(
+        UIReference.productPage.simpleProductTitle,
+        slugs.productpage.simpleProductSlug
+    );
+
+    await cartPage.assertDoesNotHaveCustomFees(false, excludedFees);
 });

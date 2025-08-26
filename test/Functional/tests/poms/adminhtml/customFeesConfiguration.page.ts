@@ -17,6 +17,7 @@ class CustomFeesConfigurationPage extends MagentoAdminPage
                 inputValuesCustomFees.customFees[feeName].code,
                 inputValuesCustomFees.customFees[feeName].title,
                 inputValuesCustomFees.customFees[feeName].type,
+                inputValuesCustomFees.customFees[feeName].status,
                 inputValuesCustomFees.customFees[feeName].base_amount,
                 inputValuesCustomFees.customFees[feeName].advanced,
             );
@@ -56,6 +57,7 @@ class CustomFeesConfigurationPage extends MagentoAdminPage
         code: string,
         title: string,
         type: string,
+        status: string,
         amount: string,
         advanced: object
     ): Promise<void> {
@@ -63,6 +65,13 @@ class CustomFeesConfigurationPage extends MagentoAdminPage
             'button',
             { name: UIReferenceCustomFees.customFeesConfigurationPage.customOrderFeesFields.addCustomFeeButtonLabel }
         ).click();
+
+        if (status === 'disabled') {
+            await this.page.locator(
+                UIReferenceCustomFees.customFeesConfigurationPage.customOrderFeesFields.feeStatusField
+            ).uncheck();
+        }
+
         await this.page.locator(
             UIReferenceCustomFees.customFeesConfigurationPage.customOrderFeesFields.feeCodeField
         ).fill(code);

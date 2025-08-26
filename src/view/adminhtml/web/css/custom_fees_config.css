@@ -21,6 +21,11 @@
 }
 
 #sales_custom_order_fees_custom_fees {
+    td:has(> .fee-status) {
+        padding-right: 1rem;
+        line-height: 33px;
+    }
+
     .fee-value {
         max-width: 95px;
     }
