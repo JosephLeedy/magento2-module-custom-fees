@@ -119,6 +119,10 @@ class CheckoutPage extends BaseCheckoutPage
             return;
         }
 
+        if (!(await new HyvaUtils(this.page).isHyva())) {
+            return;
+        }
+
         addressRegionSelect = this.page.getByRole(
             'combobox',
             { name: UIReferenceCustomFees.checkoutPage.addressRegionLabel }
