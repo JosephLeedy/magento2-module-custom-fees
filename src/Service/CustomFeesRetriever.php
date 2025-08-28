@@ -47,14 +47,14 @@ class CustomFeesRetriever
          * }> $customFees
          */
         $customFees = $orderExtension->getCustomOrderFees()
-            ?->getCustomFees();
+            ?->getCustomFeesOrdered();
 
         if ($customFees === null) {
             try {
                 /** @var int|string|null $orderId */
                 $orderId = $order->getEntityId();
                 $customFees = $this->customOrderFeesRepository->getByOrderId($orderId ?? 0)
-                    ->getCustomFees();
+                    ->getCustomFeesOrdered();
             } catch (NoSuchEntityException) {
                 $customFees = [];
             }

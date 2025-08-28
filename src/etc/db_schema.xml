@@ -3,7 +3,7 @@
     <table name="custom_order_fees" resource="default" engine="innodb" comment="Custom fees applied to an order">
         <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="Record identifier"/>
         <column xsi:type="int" name="order_entity_id" unsigned="true" nullable="false" identity="false" comment="Related order identifier"/>
-        <column xsi:type="json" name="custom_fees" nullable="false" comment="All custom fees applied to the related order"/>
+        <column xsi:type="json" name="custom_fees_ordered" nullable="false" comment="All custom fees applied to the related order" onCreate="migrateDataFrom(custom_fees)"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="id"/>
         </constraint>

@@ -42,7 +42,7 @@ $orderResource->load($order, '100000001', 'increment_id');
 $orderId = $order->getEntityId() ?? 0;
 
 $customOrderFees->setOrderId($orderId);
-$customOrderFees->setCustomFees($customFees);
+$customOrderFees->setCustomFeesOrdered($customFees);
 
 $customOrderFeesRepository->save($customOrderFees);
 

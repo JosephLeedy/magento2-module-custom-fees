@@ -3,7 +3,8 @@
     "column": {
       "id": true,
       "order_entity_id": true,
-      "custom_fees": true
+      "custom_fees": true,
+      "custom_fees_ordered": true
     },
     "constraint": {
       "PRIMARY": true,

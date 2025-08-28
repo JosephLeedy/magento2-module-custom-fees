@@ -48,9 +48,9 @@ class DataProviderPlugin
              * } $orderData
              */
             function (array &$orderData): void {
-                $customFeesJson = $orderData['custom_fees'];
+                $customFeesOrderedJson = $orderData['custom_fees_ordered'];
 
-                if ($customFeesJson === null) {
+                if ($customFeesOrderedJson === null) {
                     return;
                 }
 
@@ -66,7 +66,7 @@ class DataProviderPlugin
                      *     value: float
                      * }> $customFees
                      */
-                    $customFees = $this->serializer->unserialize($customFeesJson);
+                    $customFees = $this->serializer->unserialize($customFeesOrderedJson);
                 } catch (InvalidArgumentException) {
                     return;
                 }

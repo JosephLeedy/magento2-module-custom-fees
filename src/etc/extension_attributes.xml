@@ -11,7 +11,7 @@
             <join reference_table="custom_order_fees" reference_field="order_entity_id" join_on_field="entity_id">
                 <field>id</field>
                 <field column="order_entity_id">order_id</field>
-                <field>custom_fees</field>
+                <field>custom_fees_ordered</field>
             </join>
         </attribute>
     </extension_attributes>

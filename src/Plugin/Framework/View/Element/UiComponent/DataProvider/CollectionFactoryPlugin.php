@@ -28,7 +28,7 @@ class CollectionFactoryPlugin
             ->joinLeft(
                 $customOrderFeesTable,
                 "$customOrderFeesTable.order_entity_id = main_table.$idFieldName",
-                "$customOrderFeesTable.custom_fees",
+                "$customOrderFeesTable.custom_fees_ordered",
             );
 
         return $result;

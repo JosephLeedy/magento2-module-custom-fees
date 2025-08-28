@@ -57,7 +57,7 @@ final class AddFieldsToCustomOrderFeesPatchTest extends TestCase
             ],
         ];
         $actualCustomOrderFees = array_map(
-            static fn(CustomOrderFees $customOrderFees): array => $customOrderFees->getCustomFees(),
+            static fn(CustomOrderFees $customOrderFees): array => $customOrderFees->getCustomFeesOrdered(),
             array_values($allCustomOrderFees),
         );
 

@@ -10,6 +10,11 @@ document.
 
 ## [Unreleased]
 
+### Changed
+
+- Renamed the `custom_fees` column in the `custom_order_fees` table to clarify 
+  its purpose (new name: `custom_fees_ordered`)
+
 ## [1.2.1]
 
 ### Fixed

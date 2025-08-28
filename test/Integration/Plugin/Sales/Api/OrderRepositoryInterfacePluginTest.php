@@ -86,7 +86,7 @@ final class OrderRepositoryInterfacePluginTest extends TestCase
 
         $actualCustomOrderFees = $fullOrder->getExtensionAttributes()
             ?->getCustomOrderFees()
-            ?->getCustomFees();
+            ?->getCustomFeesOrdered();
 
         self::assertEquals($expectedCustomOrderFees, $actualCustomOrderFees);
     }
@@ -113,7 +113,7 @@ final class OrderRepositoryInterfacePluginTest extends TestCase
         $orderId = $order->getEntityId();
 
         $customOrderFees->setOrderId($orderId);
-        $customOrderFees->setCustomFees(
+        $customOrderFees->setCustomFeesOrdered(
             [
                 '_1726874777_074' => [
                     'code' => 'test_fee_0',
