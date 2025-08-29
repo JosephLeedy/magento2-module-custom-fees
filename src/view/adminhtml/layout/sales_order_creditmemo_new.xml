@@ -2,7 +2,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="creditmemo_totals">
-            <block class="JosephLeedy\CustomFees\Block\Sales\Order\Totals" name="custom_fees_creditmemo_totals"/>
+            <block class="JosephLeedy\CustomFees\Block\Adminhtml\Sales\Order\Creditmemo\Create\Totals" name="custom_fees_creditmemo_totals" template="JosephLeedy_CustomFees::sales/order/creditmemo/create/totals.phtml"/>
         </referenceBlock>
     </body>
 </page>

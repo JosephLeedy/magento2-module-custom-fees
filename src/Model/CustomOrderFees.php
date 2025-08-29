@@ -98,6 +98,47 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
         return $customFeesOrdered ?? [];
     }
 
+    public function setCustomFeesRefunded(string|array $customFeesRefunded): CustomOrderFeesInterface
+    {
+        if (is_string($customFeesRefunded)) {
+            try {
+                $customFeesRefunded = (array) (
+                    $this->serializer->unserialize($customFeesRefunded)
+                        ?: throw new InvalidArgumentException((string) __('Invalid custom fees'))
+                );
+            } catch (InvalidArgumentException) {
+                throw new InvalidArgumentException((string) __('Invalid custom fees'));
+            }
+        }
+
+        $this->setData(self::CUSTOM_FEES_REFUNDED, $customFeesRefunded);
+
+        return $this;
+    }
+
+    public function getCustomFeesRefunded(): array
+    {
+        /**
+         * @var array<string, array{
+         *     credit_memo_id: int,
+         *     code: string,
+         *     title: string,
+         *     type: value-of<FeeType>,
+         *     percent: float|null,
+         *     show_percentage: bool,
+         *     base_value: float,
+         *     value: float
+         * }>|string|null $customFeesRefunded
+         */
+        $customFeesRefunded = $this->getData(self::CUSTOM_FEES_REFUNDED);
+
+        if (is_string($customFeesRefunded)) {
+            $customFeesRefunded = (array) $this->serializer->unserialize($customFeesRefunded);
+        }
+
+        return $customFeesRefunded ?? [];
+    }
+
     public function getOrder(): ?OrderInterface
     {
         if ($this->order === null && $this->getOrderId() !== null) {

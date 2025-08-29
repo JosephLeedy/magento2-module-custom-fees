@@ -19,12 +19,19 @@ class CustomOrderFees extends AbstractDb
     public const TABLE_NAME = 'custom_order_fees';
 
     /**
-     * Mark `custom_fees_ordered` field as serializable
+     * Mark JSON fields as serializable
      *
-     * @var array{custom_fees_ordered: array{array{}}}
+     * @var array{
+     *     custom_fees_ordered: array{array{}},
+     *     custom_fees_refunded: array{array{}},
+     * }
      */
     protected $_serializableFields = [
         'custom_fees_ordered' => [
+            [],
+            [],
+        ],
+        'custom_fees_refunded' => [
             [],
             [],
         ],

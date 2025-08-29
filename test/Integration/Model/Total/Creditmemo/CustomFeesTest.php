@@ -65,6 +65,32 @@ final class CustomFeesTest extends TestCase
     }
 
     /**
+     * @magentoAppArea adminhtml
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/creditmemo_with_partially_refunded_custom_fees.php
+     */
+    public function testCollectsPartiallyRefundedCustomFeesTotals(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var OrderResource $orderResource */
+        $orderResource = $objectManager->create(OrderResource::class);
+
+        $orderResource->load($order, '100000001', 'increment_id');
+
+        /** @var CreditmemoCollection $creditmemosCollection */
+        $creditmemosCollection = $order->getCreditmemosCollection()
+            ?: $objectManager->create(CreditmemoCollection::class);
+
+        /** @var Creditmemo $creditmemo */
+        $creditmemo = $creditmemosCollection->getFirstItem();
+
+        self::assertEquals(25.00, $creditmemo->getBaseGrandTotal());
+        self::assertEquals(25.00, $creditmemo->getGrandTotal());
+    }
+
+    /**
      * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/creditmemo.php
      */
     public function testDoesNotCollectsCustomFeesTotals(): void

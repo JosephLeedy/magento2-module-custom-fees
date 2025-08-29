@@ -10,6 +10,12 @@ document.
 
 ## [Unreleased]
 
+### Added
+
+- Custom fees can be refunded from credit memos without requiring an 
+  adjustment fee (the previous work-around was to create an adjustment fee of 
+  the same amount as the custom fee)
+
 ### Changed
 
 - Renamed the `custom_fees` column in the `custom_order_fees` table to clarify 
