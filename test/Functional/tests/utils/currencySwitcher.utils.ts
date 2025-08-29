@@ -10,14 +10,13 @@ class CurrencySwitcher
         const currencySwitcherContainer = this.page.locator(
             UIReferenceCustomFees.common.currencySwitcher.containerLocator,
         );
-        const euroCurrencySwitcher = currencySwitcherContainer
-            .getByText(UIReferenceCustomFees.common.currencySwitcher.euroLabel);
 
         await currencySwitcherContainer
             .getByText(UIReferenceCustomFees.common.currencySwitcher.usDollarLabel)
             .click();
-        await euroCurrencySwitcher.waitFor();
-        await euroCurrencySwitcher.click();
+        await currencySwitcherContainer
+            .getByText(UIReferenceCustomFees.common.currencySwitcher.euroLabel)
+            .click();
         await expect(currencySwitcherContainer.getByRole('button'))
             .toHaveText(UIReferenceCustomFees.common.currencySwitcher.euroLabel);
     }
