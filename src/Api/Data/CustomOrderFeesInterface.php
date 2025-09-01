@@ -17,6 +17,7 @@ interface CustomOrderFeesInterface
 {
     public const ORDER_ID = 'order_entity_id';
     public const CUSTOM_FEES_ORDERED = 'custom_fees_ordered';
+    public const CUSTOM_FEES_REFUNDED = 'custom_fees_refunded';
 
     /**
      * @param int|string $orderId
@@ -57,6 +58,37 @@ interface CustomOrderFeesInterface
      * }>
      */
     public function getCustomFeesOrdered(): array;
+
+    /**
+     * @param string|string[]|float[] $customFeesRefunded
+     * @phpstan-param string|array<string, array{
+     *     credit_memo_id: int,
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     base_value: float,
+     *     value: float
+     * }> $customFeesRefunded
+     * @throws InvalidArgumentException
+     */
+    public function setCustomFeesRefunded(string|array $customFeesRefunded): CustomOrderFeesInterface;
+
+    /**
+     * @return string[]|float[]
+     * @phpstan-return array{}|array<string, array{
+     *     credit_memo_id: int,
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     base_value: float,
+     *     value: float
+     * }>
+     */
+    public function getCustomFeesRefunded(): array;
 
     /**
      * @return \Magento\Sales\Api\Data\OrderInterface|null
