@@ -23,7 +23,7 @@ class DataProviderPlugin
      * @param DataProvider $subject
      * @param array{
      *     items: array<int, array{
-     *         custom_fees: string|null,
+     *         custom_fees_ordered: string|null,
      *         store_id: string,
      *         base_currency_code: string,
      *         order_currency_code: string
@@ -41,7 +41,7 @@ class DataProviderPlugin
             $result['items'],
             /**
              * @param array{
-             *     custom_fees: string|null,
+             *     custom_fees_ordered: string|null,
              *     store_id: string,
              *     base_currency_code: string,
              *     order_currency_code: string
