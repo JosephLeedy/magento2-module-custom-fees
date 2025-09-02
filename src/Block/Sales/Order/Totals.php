@@ -43,7 +43,7 @@ class Totals extends Template
     public function __construct(
         Context $context,
         private readonly CustomFeesRetriever $customFeesRetriever,
-        private readonly DataObjectFactory $dataObjectFactory,
+        protected readonly DataObjectFactory $dataObjectFactory,
         array $data = [],
     ) {
         parent::__construct($context, $data);

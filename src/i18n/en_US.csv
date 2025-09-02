@@ -11,6 +11,7 @@ Amount,Amount
 "Amount Invoiced","Amount Invoiced"
 CSV,CSV
 "Excel XML","Excel XML"
+"Refund %1","Refund %1"
 Code,Code
 Name,Name
 Type,Type
@@ -64,6 +65,7 @@ Subtotal,Subtotal
 "%1 (Purchased)","%1 (Purchased)"
 "Could not get identifier for scope ""%1"".","Could not get identifier for scope ""%1""."
 "Could not serialize custom fees.","Could not serialize custom fees."
+"Please enter a positive number in this field.","Please enter a positive number in this field."
 "Advanced Settings","Advanced Settings"
 Advanced,Advanced
 "Are you sure you want to close Advanced Settings?","Are you sure you want to close Advanced Settings?"
