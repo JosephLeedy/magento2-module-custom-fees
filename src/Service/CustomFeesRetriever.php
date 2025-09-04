@@ -8,6 +8,7 @@ use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
 use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Creditmemo;
 
 /**
  * @api
@@ -61,5 +62,35 @@ class CustomFeesRetriever
         }
 
         return $customFees;
+    }
+
+    /**
+     * @return array{}|array<string, array{
+     *     credit_memo_id: int,
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     base_value: float,
+     *     value: float
+     * }>
+     */
+    public function retrieveRefundedCustomFees(Creditmemo $creditmemo): array
+    {
+        try {
+            $customFeesRefunded = $this->customOrderFeesRepository
+                ->getByOrderId($creditmemo->getOrderId())
+                ->getCustomFeesRefunded();
+        } catch (NoSuchEntityException) {
+            $customFeesRefunded = [];
+        }
+
+        $customFeesRefunded = array_filter(
+            $customFeesRefunded,
+            static fn(array $customFee): bool => $customFee['credit_memo_id'] !== $creditmemo->getId(),
+        );
+
+        return $customFeesRefunded;
     }
 }

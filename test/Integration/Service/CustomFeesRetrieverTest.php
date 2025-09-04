@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Service;
 
+use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Creditmemo;
 use Magento\Sales\Model\ResourceModel\Order as OrderResource;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
@@ -103,6 +105,70 @@ final class CustomFeesRetrieverTest extends TestCase
         $customFees = $customFeesRetriever->retrieve($order);
 
         self::assertEmpty($customFees);
+    }
+
+    /**
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/creditmemo_with_partially_refunded_custom_fees.php
+     */
+    public function testRetrievesCustomFeesForCreditMemo(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var CustomFeesRetriever $customFeesRetriever */
+        $customFeesRetriever = $objectManager->create(CustomFeesRetriever::class);
+
+        $order->loadByIncrementId('100000001');
+
+        /** @var Creditmemo $creditMemo */
+        $creditMemo = $order->getCreditmemosCollection()->getFirstItem();
+
+        $expectedCustomFees = [
+            'test_fee_0' => [
+                'credit_memo_id' => $creditMemo->getId(),
+                'code' => 'test_fee_0',
+                'title' => 'Test Fee',
+                'type' => FeeType::Fixed->value,
+                'percent' => null,
+                'show_percentage' => false,
+                'base_value' => 5.00,
+                'value' => 5.00,
+            ],
+            'test_fee_1' => [
+                'credit_memo_id' => $creditMemo->getId(),
+                'code' => 'test_fee_1',
+                'title' => 'Another Test Fee',
+                'type' => FeeType::Fixed->value,
+                'percent' => null,
+                'show_percentage' => false,
+                'base_value' => 0.00,
+                'value' => 0.00,
+            ],
+        ];
+        $actualCustomFees = $customFeesRetriever->retrieveRefundedCustomFees($creditMemo);
+
+        self::assertEquals($expectedCustomFees, $actualCustomFees);
+    }
+
+    /**
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/creditmemo.php
+     */
+    public function testDoesNotRetrieveCustomFeesForCreditMemoIfNoneExist(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var CustomFeesRetriever $customFeesRetriever */
+        $customFeesRetriever = $objectManager->create(CustomFeesRetriever::class);
+
+        $order->loadByIncrementId('100000001');
+
+        /** @var Creditmemo $creditMemo */
+        $creditMemo = $order->getCreditmemosCollection()->getFirstItem();
+
+        self::assertEmpty($customFeesRetriever->retrieveRefundedCustomFees($creditMemo));
     }
 
     /**
