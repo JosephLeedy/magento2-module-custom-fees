@@ -21,7 +21,7 @@ use function current;
 final class CustomFeesRetrieverTest extends TestCase
 {
     /**
-     * @dataProvider retrievesCustomFeesDataProvider
+     * @dataProvider retrievesCustomOrderFeesDataProvider
      * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees.php
      */
     public function testRetrievesCustomFeesForOrder(string $source): void
@@ -78,7 +78,7 @@ final class CustomFeesRetrieverTest extends TestCase
     }
 
     /**
-     * @dataProvider doesNotRetrieveCustomFeesDataProvider
+     * @dataProvider doesNotRetrieveCustomOrderFeesDataProvider
      * @magentoDataFixture Magento/Sales/_files/order.php
      */
     public function testDoesNotRetrieveCustomFeesForOrder(string $condition): void
@@ -174,7 +174,7 @@ final class CustomFeesRetrieverTest extends TestCase
     /**
      * @return array<string, array<string, string>>
      */
-    public function retrievesCustomFeesDataProvider(): array
+    public function retrievesCustomOrderFeesDataProvider(): array
     {
         return [
             'from extension attribute' => [
@@ -189,7 +189,7 @@ final class CustomFeesRetrieverTest extends TestCase
     /**
      * @return array<string, array<string, string>>
      */
-    public function doesNotRetrieveCustomFeesDataProvider(): array
+    public function doesNotRetrieveCustomOrderFeesDataProvider(): array
     {
         return [
             'extension attribute not instantiated' => [
