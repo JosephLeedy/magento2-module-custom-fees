@@ -72,7 +72,7 @@ final class CustomFeesRetrieverTest extends TestCase
                 'value' => 1.50,
             ],
         ];
-        $actualCustomFees = $customFeesRetriever->retrieve($order);
+        $actualCustomFees = $customFeesRetriever->retrieveOrderedCustomFees($order);
 
         self::assertEquals($expectedCustomFees, $actualCustomFees);
     }
@@ -102,7 +102,7 @@ final class CustomFeesRetrieverTest extends TestCase
             $orderResource->load($order, '100000001', 'increment_id');
         }
 
-        $customFees = $customFeesRetriever->retrieve($order);
+        $customFees = $customFeesRetriever->retrieveOrderedCustomFees($order);
 
         self::assertEmpty($customFees);
     }

@@ -27,7 +27,7 @@ class CustomFees extends AbstractTotal
     {
         parent::collect($invoice);
 
-        $customFees = $this->customFeesRetriever->retrieve($invoice->getOrder());
+        $customFees = $this->customFeesRetriever->retrieveOrderedCustomFees($invoice->getOrder());
 
         if (count($customFees) === 0) {
             return $this;

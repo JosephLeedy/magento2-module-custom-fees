@@ -68,7 +68,7 @@ class Totals extends Template
             $delta = (float) $source->getSubtotal() / (float) $order->getSubtotal();
         }
 
-        $customFees = $this->customFeesRetriever->retrieve($order);
+        $customFees = $this->customFeesRetriever->retrieveOrderedCustomFees($order);
 
         if (count($customFees) === 0) {
             return $this;

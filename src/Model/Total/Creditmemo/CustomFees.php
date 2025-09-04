@@ -32,7 +32,7 @@ class CustomFees extends AbstractTotal
     {
         parent::collect($creditmemo);
 
-        $customFees = $this->customFeesRetriever->retrieve($creditmemo->getOrder());
+        $customFees = $this->customFeesRetriever->retrieveOrderedCustomFees($creditmemo->getOrder());
 
         if (count($customFees) === 0) {
             return $this;

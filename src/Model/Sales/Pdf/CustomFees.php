@@ -115,7 +115,7 @@ class CustomFees extends DefaultTotal
             return $this->customFees;
         }
 
-        $this->customFees = $this->customFeesRetriever->retrieve($this->getOrder());
+        $this->customFees = $this->customFeesRetriever->retrieveOrderedCustomFees($this->getOrder());
 
         return $this->customFees;
     }
