@@ -102,10 +102,7 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
     {
         if (is_string($customFeesRefunded)) {
             try {
-                $customFeesRefunded = (array) (
-                    $this->serializer->unserialize($customFeesRefunded)
-                        ?: throw new InvalidArgumentException((string) __('Invalid custom fees'))
-                );
+                $customFeesRefunded = (array) $this->serializer->unserialize($customFeesRefunded);
             } catch (InvalidArgumentException) {
                 throw new InvalidArgumentException((string) __('Invalid custom fees'));
             }
