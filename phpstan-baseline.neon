@@ -146,6 +146,11 @@ parameters:
 			path: src/Service/ConfigUpdater.php
 
 		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: src/Service/RefundedCustomFeesRecorder.php
+
+		-
 			message: "#^Use service contracts to persist entities in favour of JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFees\\:\\:save\\(\\) method$#"
 			count: 1
 			path: src/Setup/Patch/Data/AddFieldsToCustomOrderFeesPatch.php
