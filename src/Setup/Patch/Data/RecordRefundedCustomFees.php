@@ -7,7 +7,7 @@ namespace JosephLeedy\CustomFees\Setup\Patch\Data;
 use JosephLeedy\CustomFees\Service\RefundedCustomFeesRecorder;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 
-class RecordRefundedCustomFeesPatch implements DataPatchInterface
+class RecordRefundedCustomFees implements DataPatchInterface
 {
     public function __construct(private readonly RefundedCustomFeesRecorder $refundedCustomFeesRecorder) {}
 
