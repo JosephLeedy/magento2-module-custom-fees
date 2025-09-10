@@ -88,6 +88,7 @@ class CustomOrderFees extends AbstractReport
                             SELECT SUM(fee.`value`)
                             FROM $salesInvoiceTable AS si
                             WHERE si.order_id = cof.order_entity_id
+                            GROUP BY si.order_id
                         ),
                         0.0000
                     )
