@@ -75,43 +75,43 @@ class CustomOrderFees extends AbstractReport
             );
             // phpcs:disable Magento2.SQL.RawQuery.FoundRawSql
             $query = <<<SQL
-            SELECT
-                $periodExpression AS period,
-                so.store_id AS store_id,
-                fee.title AS fee_title,
-                SUM(fee.base_value) AS base_fee_amount,
-                SUM(fee.`value`) AS paid_fee_amount,
-                so.order_currency_code AS paid_order_currency,
-                CAST(
-                    IFNULL(
-                        (
-                            SELECT SUM(fee.`value`)
-                            FROM $salesInvoiceTable AS si
-                            WHERE si.order_id = cof.order_entity_id
-                            GROUP BY si.order_id
-                        ),
-                        0.0000
+                SELECT
+                    $periodExpression AS period,
+                    so.store_id AS store_id,
+                    fee.title AS fee_title,
+                    SUM(fee.base_value) AS base_fee_amount,
+                    SUM(fee.`value`) AS paid_fee_amount,
+                    so.order_currency_code AS paid_order_currency,
+                    CAST(
+                        IFNULL(
+                            (
+                                SELECT SUM(fee.`value`)
+                                FROM $salesInvoiceTable AS si
+                                WHERE si.order_id = cof.order_entity_id
+                                GROUP BY si.order_id
+                            ),
+                            0.0000
+                        )
+                        AS DECIMAL (20,4)
+                    ) AS invoiced_fee_amount
+                FROM $customOrderFeesTable AS cof
+                CROSS JOIN JSON_TABLE(
+                    JSON_UNQUOTE(cof.custom_fees),
+                    '$' COLUMNS (
+                        NESTED PATH '$.*' COLUMNS (
+                            title VARCHAR(255) PATH '$.title',
+                            `value` DECIMAL(20, 4) PATH '$.value',
+                            base_value DECIMAL(20, 4) PATH '$.base_value'
+                        )
                     )
-                    AS DECIMAL (20,4)
-                ) AS invoiced_fee_amount
-            FROM $customOrderFeesTable AS cof
-            CROSS JOIN JSON_TABLE(
-                JSON_UNQUOTE(cof.custom_fees),
-                '$' COLUMNS (
-                    NESTED PATH '$.*' COLUMNS (
-                        title VARCHAR(255) PATH '$.title',
-                        `value` DECIMAL(20, 4) PATH '$.value',
-                        base_value DECIMAL(20, 4) PATH '$.base_value'
-                    )
-                )
-            ) AS fee
-            LEFT JOIN $salesOrderTable AS so ON so.entity_id = cof.order_entity_id
-            GROUP BY
-                so.store_id,
-                $periodExpression,
-                so.order_currency_code,
-                fee.title
-            SQL;
+                ) AS fee
+                LEFT JOIN $salesOrderTable AS so ON so.entity_id = cof.order_entity_id
+                GROUP BY
+                    so.store_id,
+                    $periodExpression,
+                    so.order_currency_code,
+                    fee.title
+                SQL;
             // phpcs:enable
 
             if ($subSelect !== null) {
