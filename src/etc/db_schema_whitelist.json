@@ -10,7 +10,9 @@
     "constraint": {
       "PRIMARY": true,
       "FK_CUSTOM_ORDER_FEES_ORDER_ENTITY_ID_SALES_ORDER_ENTITY_ID": true,
-      "UK_CUSTOM_ORDER_FEES_ORDER_ENTITY_ID": true
+      "UK_CUSTOM_ORDER_FEES_ORDER_ENTITY_ID": true,
+      "CUSTOM_ORDER_FEES_ORDER_ENTITY_ID_SALES_ORDER_ENTITY_ID": true,
+      "CUSTOM_ORDER_FEES_ORDER_ENTITY_ID": true
     }
   },
   "report_custom_order_fees_aggregated": {
