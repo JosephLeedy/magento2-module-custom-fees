@@ -96,7 +96,7 @@ class CustomOrderFees extends AbstractReport
                 ) AS invoiced_fee_amount
             FROM $customOrderFeesTable AS cof
             CROSS JOIN JSON_TABLE(
-                cof.custom_fees,
+                JSON_UNQUOTE(cof.custom_fees),
                 '$' COLUMNS (
                     NESTED PATH '$.*' COLUMNS (
                         title VARCHAR(255) PATH '$.title',
