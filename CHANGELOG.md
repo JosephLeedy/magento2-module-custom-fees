@@ -10,6 +10,13 @@ document.
 
 ## [Unreleased]
 
+### Fixed
+
+- The Custom Order Fees Report did not aggregate custom fees if the custom 
+  order fee data was quoted in the database
+- The Custom Order Fees Report did not aggregate custom fees if the related
+  orders had multiple invoices
+
 ## [1.2.1]
 
 ### Fixed
