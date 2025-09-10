@@ -23,6 +23,7 @@
         <column xsi:type="decimal" name="paid_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Paid Order Fee Amount"/>
         <column xsi:type="varchar" name="paid_order_currency" length="3" nullable="false" comment="Paid Order Currency Code"/>
         <column xsi:type="decimal" name="invoiced_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Invoiced Order Fee Amount"/>
+        <column xsi:type="decimal" name="base_refunded_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Refunded Order Fee Amount"/>
         <column xsi:type="decimal" name="refunded_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Refunded Order Fee Amount"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="id"/>

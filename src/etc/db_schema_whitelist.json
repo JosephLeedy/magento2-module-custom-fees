@@ -25,6 +25,7 @@
       "paid_fee_amount": true,
       "paid_order_currency": true,
       "invoiced_fee_amount": true,
+      "base_refunded_fee_amount": true,
       "refunded_fee_amount": true
     },
     "index": {
