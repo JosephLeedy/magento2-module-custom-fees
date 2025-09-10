@@ -34,6 +34,18 @@ class CustomOrderFees extends Form
                 'label' => __('Show Base Amount'),
             ],
         );
+        $fieldset->addField(
+            'show_base_refunded_amount',
+            'select',
+            [
+                'name' => 'show_base_refunded_amount',
+                'options' => [
+                    '0' => __('No'),
+                    '1' => __('Yes'),
+                ],
+                'label' => __('Show Base Refunded Amount'),
+            ],
+        );
 
         return $this;
     }

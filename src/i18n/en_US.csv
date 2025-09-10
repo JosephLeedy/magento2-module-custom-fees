@@ -3,12 +3,15 @@
 No,No
 Yes,Yes
 "Show Base Amount","Show Base Amount"
+"Show Base Refunded Amount","Show Base Refunded Amount"
 Interval,Interval
 Total,Total
 Title,Title
 Amount,Amount
 "Amount Paid","Amount Paid"
 "Amount Invoiced","Amount Invoiced"
+Refunded,Refunded
+"Amount Refunded","Amount Refunded"
 CSV,CSV
 "Excel XML","Excel XML"
 "Refund %1","Refund %1"
