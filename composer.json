@@ -1,6 +1,6 @@
 {
   "name": "joseph-leedy/module-custom-fees",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Adds configurable custom fees to orders",
   "type": "magento2-module",
   "keywords": ["magento", "magento 2", "mage-os", "adobe commerce", "hyvä", "fees", "surcharges"],

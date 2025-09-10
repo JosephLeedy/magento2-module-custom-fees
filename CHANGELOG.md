@@ -14,6 +14,20 @@ document.
 
 - Custom fees can be enabled or disabled
 
+## [1.2.2]
+
+### Fixed
+
+- The Custom Order Fees Report did not aggregate custom fees if the custom 
+  order fee data was quoted in the database
+- The Custom Order Fees Report did not aggregate custom fees if the related
+  orders had multiple invoices
+
+### Changed
+
+- Regenerated the database schema allowlist to add missing constraints for the 
+  `custom_order_fees` table
+
 ## [1.2.1]
 
 ### Fixed
@@ -84,7 +98,8 @@ document.
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [README]: ./README.md
-[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.2.1...HEAD
+[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.2.2...HEAD
+[1.2.2]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.2.2
 [1.2.1]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.2.1
 [1.2.0]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.2.0
 [1.1.1]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.1.1
