@@ -22,12 +22,14 @@
       "base_fee_amount": true,
       "paid_fee_amount": true,
       "paid_order_currency": true,
-      "invoiced_fee_amount": true
+      "invoiced_fee_amount": true,
+      "refunded_fee_amount": true
     },
     "index": {
       "REPORT_CUSTOM_ORDER_FEES_AGGREGATED_PERIOD_STORE_ID_PAID_FEE_AMOUNT": true,
       "REPORT_CUSTOM_ORDER_FEES_AGGRED_PERIOD_STORE_ID_PAID_FEE_AMOUNT": true,
-      "IDX_913FBD51E62C7A7A2399BBDE04A6D7DB": true
+      "IDX_913FBD51E62C7A7A2399BBDE04A6D7DB": true,
+      "IDX_C237AEC5995F4659414FC774CBE2361E": true
     },
     "constraint": {
       "PRIMARY": true,
