@@ -19,6 +19,11 @@ document.
 - The Custom Order Fees Report did not aggregate custom fees if the related
   orders had multiple invoices
 
+### Changed
+
+- Regenerated the database schema allowlist to add missing constraints for the 
+  `custom_order_fees` table
+
 ## [1.2.1]
 
 ### Fixed
