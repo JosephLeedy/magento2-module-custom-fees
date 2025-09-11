@@ -10,6 +10,11 @@ document.
 
 ## [Unreleased]
 
+### Fixed
+
+- An exception was thrown when loading the Sales Order Grid in the Admin panel
+  if the JSON data in the `custom_order_fees` table was quoted
+
 ## [1.2.2]
 
 ### Fixed
