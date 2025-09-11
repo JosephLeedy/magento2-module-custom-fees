@@ -24,6 +24,7 @@
     "magento/module-tax": "~100.4.4",
     "magento/module-ui": "~101.2.4",
     "psr/log": ">= 1.0",
+    "symfony/polyfill-php83": "^1.27",
     "symfony/polyfill-php84": "^1.30"
   },
   "require-dev": {
