@@ -43,7 +43,7 @@ class CreditmemoRepositoryInterfacePlugin
         }
 
         $customFeesOrdered = $customOrderFees->getCustomFeesOrdered();
-        $customFeesRefunded = [];
+        $customFeesRefunded = $customOrderFees->getCustomFeesRefunded();
         $creditMemoId = (int) $result->getId();
 
         /**
