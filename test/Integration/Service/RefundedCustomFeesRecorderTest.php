@@ -9,6 +9,7 @@ use JosephLeedy\CustomFees\Model\CustomOrderFees;
 use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\RefundedCustomFeesRecorder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Sales\Api\CreditmemoRepositoryInterface;
 use Magento\TestFramework\Fixture\DataFixture;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
@@ -28,6 +29,10 @@ final class RefundedCustomFeesRecorderTest extends TestCase
             ->create();
         /** @var CustomOrderFeesRepositoryInterface $customOrderFeesRepository */
         $customOrderFeesRepository = $objectManager->create(CustomOrderFeesRepositoryInterface::class);
+        $creditMemoSearchCriteria = $searchCriteriaBuilder->create();
+        /** @var CreditmemoRepositoryInterface $creditMemoRepository */
+        $creditMemoRepository = $objectManager->create(CreditmemoRepositoryInterface::class);
+        $creditMemos = $creditMemoRepository->getList($creditMemoSearchCriteria)->getItems();
 
         $refundedCustomFeesRecorder->recordForExistingCreditMemos();
 
@@ -36,141 +41,34 @@ final class RefundedCustomFeesRecorderTest extends TestCase
             ->getList($customOrderFeesSearchCriteria)
             ->getItems();
 
-        $expectedRefundedCustomOrderFees = [
-            1 => [
-                'test_fee_0' => [
-                    'credit_memo_id' => 1,
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 5.00,
-                    'value' => 5.00,
-                ],
-                'test_fee_1' => [
-                    'credit_memo_id' => 1,
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 1.50,
-                    'value' => 1.50,
-                ],
-            ],
-            2 => [
-                'test_fee_0' => [
-                    'credit_memo_id' => 2,
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 5.00,
-                    'value' => 5.00,
-                ],
-                'test_fee_1' => [
-                    'credit_memo_id' => 2,
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 1.50,
-                    'value' => 1.50,
-                ],
-            ],
-            3 => [
-                'test_fee_0' => [
-                    'credit_memo_id' => 3,
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 5.00,
-                    'value' => 5.00,
-                ],
-                'test_fee_1' => [
-                    'credit_memo_id' => 3,
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 1.50,
-                    'value' => 1.50,
-                ],
-            ],
-            4 => [
-                'test_fee_0' => [
-                    'credit_memo_id' => 4,
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 5.00,
-                    'value' => 5.00,
-                ],
-                'test_fee_1' => [
-                    'credit_memo_id' => 4,
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 1.50,
-                    'value' => 1.50,
-                ],
-            ],
-            5 => [
-                'test_fee_0' => [
-                    'credit_memo_id' => 5,
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 5.00,
-                    'value' => 5.00,
-                ],
-                'test_fee_1' => [
-                    'credit_memo_id' => 5,
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 1.50,
-                    'value' => 1.50,
-                ],
-            ],
-            6 => [
-                'test_fee_0' => [
-                    'credit_memo_id' => 6,
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 5.00,
-                    'value' => 5.00,
-                ],
-                'test_fee_1' => [
-                    'credit_memo_id' => 6,
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 1.50,
-                    'value' => 1.50,
-                ],
-            ],
-        ];
+        $expectedRefundedCustomOrderFees = [];
         $actualRefundedCustomOrderFees = [];
+
+        foreach ($creditMemos as $creditMemo) {
+            $creditMemoId = $creditMemo->getEntityId();
+            $expectedRefundedCustomOrderFees[$creditMemoId] = [
+                'test_fee_0' => [
+                    'credit_memo_id' => $creditMemoId,
+                    'code' => 'test_fee_0',
+                    'title' => 'Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 5.00,
+                    'value' => 5.00,
+                ],
+                'test_fee_1' => [
+                    'credit_memo_id' => $creditMemoId,
+                    'code' => 'test_fee_1',
+                    'title' => 'Another Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 1.50,
+                    'value' => 1.50,
+                ],
+            ];
+        }
 
         foreach ($customOrderFeesItems as $customOrderFeesItem) {
             $actualRefundedCustomOrderFees += $customOrderFeesItem->getCustomFeesRefunded();
