@@ -37,7 +37,7 @@ class Totals extends OrderTotals
         return $this;
     }
 
-    public function formatValue(float $value): string
+    public function formatValue(float $value, bool $displayCurrencySymbol = false): string
     {
         /** @var Order $order */
         $order = $this->getSource()->getOrder();
@@ -48,7 +48,7 @@ class Totals extends OrderTotals
                 $value,
                 2,
                 [
-                    'display' => CurrencyData::NO_SYMBOL,
+                    'display' => !$displayCurrencySymbol ? CurrencyData::NO_SYMBOL : CurrencyData::USE_SYMBOL,
                 ],
                 false,
             );
