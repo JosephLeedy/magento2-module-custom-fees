@@ -68,18 +68,26 @@ class Totals extends Template
             $delta = (float) $source->getSubtotal() / (float) $order->getSubtotal();
         }
 
-        $customFees = $this->customFeesRetriever->retrieveOrderedCustomFees($order);
+        $orderedCustomFees = $this->customFeesRetriever->retrieveOrderedCustomFees($order);
 
-        if (count($customFees) === 0) {
+        if (count($orderedCustomFees) === 0) {
             return $this;
         }
 
-        $firstFeeKey = array_key_first($customFees);
+        $firstOrderedFeeKey = array_key_first($orderedCustomFees);
         $previousFeeCode = '';
 
         array_walk(
-            $customFees,
-            function (array $customFee, string|int $key) use ($baseDelta, $delta, $firstFeeKey, &$previousFeeCode) {
+            $orderedCustomFees,
+            function (
+                array $customFee,
+                string|int $key,
+            ) use (
+                $baseDelta,
+                $delta,
+                $firstOrderedFeeKey,
+                &$previousFeeCode,
+            ): void {
                 $customFee['label'] = FeeType::Percent->equals($customFee['type']) && $customFee['percent'] !== null
                     && $customFee['show_percentage']
                     ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
@@ -96,7 +104,7 @@ class Totals extends Template
                     ],
                 );
 
-                if ($key === $firstFeeKey) {
+                if ($key === $firstOrderedFeeKey) {
                     if ($this->getBeforeCondition() !== null) {
                         $this->getParentBlock()->addTotalBefore($total, $this->getBeforeCondition());
                     } else {
