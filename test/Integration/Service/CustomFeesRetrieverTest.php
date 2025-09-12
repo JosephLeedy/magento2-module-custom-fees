@@ -125,25 +125,27 @@ final class CustomFeesRetrieverTest extends TestCase
         $creditMemo = $order->getCreditmemosCollection()->getFirstItem();
 
         $expectedCustomFees = [
-            'test_fee_0' => [
-                'credit_memo_id' => $creditMemo->getId(),
-                'code' => 'test_fee_0',
-                'title' => 'Test Fee',
-                'type' => FeeType::Fixed->value,
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 5.00,
-                'value' => 5.00,
-            ],
-            'test_fee_1' => [
-                'credit_memo_id' => $creditMemo->getId(),
-                'code' => 'test_fee_1',
-                'title' => 'Another Test Fee',
-                'type' => FeeType::Fixed->value,
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 0.00,
-                'value' => 0.00,
+            $creditMemo->getId() => [
+                'test_fee_0' => [
+                    'credit_memo_id' => $creditMemo->getId(),
+                    'code' => 'test_fee_0',
+                    'title' => 'Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 5.00,
+                    'value' => 5.00,
+                ],
+                'test_fee_1' => [
+                    'credit_memo_id' => $creditMemo->getId(),
+                    'code' => 'test_fee_1',
+                    'title' => 'Another Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 0.00,
+                    'value' => 0.00,
+                ],
             ],
         ];
         $actualCustomFees = $customFeesRetriever->retrieveRefundedCustomFees($creditMemo);

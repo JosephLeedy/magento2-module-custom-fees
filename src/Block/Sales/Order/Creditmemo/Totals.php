@@ -14,9 +14,9 @@ use Magento\Sales\Block\Order\Creditmemo\Totals as CreditmemoTotals;
 use Magento\Sales\Model\Order\Creditmemo;
 
 use function __;
+use function array_key_exists;
 use function array_key_first;
 use function array_walk;
-use function count;
 
 /**
  * Initializes and renders Custom Fees credit memo total columns
@@ -48,11 +48,14 @@ class Totals extends Template
     public function initTotals(): self
     {
         $customFees = $this->customFeesRetriever->retrieveRefundedCustomFees($this->getSource());
+        /** @var int|string $creditMemoId */
+        $creditMemoId = $this->getSource()->getId();
 
-        if (count($customFees) === 0) {
+        if (!array_key_exists($creditMemoId, $customFees)) {
             return $this;
         }
 
+        $customFees = $customFees[$creditMemoId];
         $baseDelta = 1;
         $delta = 1;
         $firstFeeKey = array_key_first($customFees);

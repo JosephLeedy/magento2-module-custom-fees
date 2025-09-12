@@ -92,7 +92,7 @@ class CustomFeesRetriever
      *     show_percentage: bool,
      *     base_value: float,
      *     value: float
-     * }>
+     * }>[]
      */
     public function retrieveRefundedCustomFees(Creditmemo $creditmemo): array
     {
@@ -104,6 +104,6 @@ class CustomFeesRetriever
             $customFeesRefunded = [];
         }
 
-        return $customFeesRefunded[$creditmemo->getId()] ?? [];
+        return $customFeesRefunded;
     }
 }
