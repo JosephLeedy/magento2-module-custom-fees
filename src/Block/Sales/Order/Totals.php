@@ -21,6 +21,7 @@ use function __;
 use function array_key_first;
 use function array_walk;
 use function count;
+use function round;
 
 /**
  * Initializes and renders Custom Fees order total columns
@@ -74,6 +75,29 @@ class Totals extends Template
             return $this;
         }
 
+        $refundedCustomFeeValues = [
+            'base_value' => [],
+            'value' => [],
+        ];
+
+        if ($source instanceof Creditmemo) {
+            $refundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($source);
+
+            foreach ($refundedCustomFees as $fees) {
+                foreach ($fees as $fee) {
+                    $refundedCustomFeeValues['base_value'][$fee['code']] = round(
+                        (float) ($refundedCustomFeeValues['base_value'][$fee['code']] ?? 0)
+                        + (float) $fee['base_value'],
+                        2,
+                    );
+                    $refundedCustomFeeValues['value'][$fee['code']] = round(
+                        (float) ($refundedCustomFeeValues['value'][$fee['code']] ?? 0) + (float) $fee['value'],
+                        2,
+                    );
+                }
+            }
+        }
+
         $firstOrderedFeeKey = array_key_first($orderedCustomFees);
         $previousFeeCode = '';
 
@@ -85,6 +109,7 @@ class Totals extends Template
             ) use (
                 $baseDelta,
                 $delta,
+                $refundedCustomFeeValues,
                 $firstOrderedFeeKey,
                 &$previousFeeCode,
             ): void {
@@ -92,10 +117,24 @@ class Totals extends Template
                     && $customFee['show_percentage']
                     ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
                     : __($customFee['title']);
-                $customFee['base_value'] *= $baseDelta;
-                $customFee['value'] *= $delta;
+                $customFeeCode = $customFee['code'];
 
                 unset($customFee['title']);
+
+                if ($refundedCustomFeeValues['base_value'] !== []) {
+                    $customFee['base_value'] = round(
+                        (float) $customFee['base_value']
+                        - (float) ($refundedCustomFeeValues['base_value'][$customFeeCode] ?? 0),
+                        2,
+                    );
+                    $customFee['value'] = round(
+                        (float) $customFee['value'] - (float) ($refundedCustomFeeValues['value'][$customFeeCode] ?? 0),
+                        2,
+                    );
+                } else {
+                    $customFee['base_value'] *= $baseDelta;
+                    $customFee['value'] *= $delta;
+                }
 
                 /** @var DataObject $total */
                 $total = $this->dataObjectFactory->create(
@@ -114,8 +153,8 @@ class Totals extends Template
                     $this->getParentBlock()->addTotal($total, $previousFeeCode);
                 }
 
-                $this->customFeeTotals[$customFee['code']] = $total;
-                $previousFeeCode = $customFee['code'];
+                $this->customFeeTotals[$customFeeCode] = $total;
+                $previousFeeCode = $customFeeCode;
             },
         );
 
