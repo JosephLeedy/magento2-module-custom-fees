@@ -13,9 +13,6 @@ use Magento\TestFramework\Fixture\DataFixture;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
-use function array_map;
-use function array_values;
-
 final class RefundedCustomFeesRecorderTest extends TestCase
 {
     #[DataFixture('JosephLeedy_CustomFees::../test/Integration/_files/multiple_creditmemos_with_custom_fees.php')]
@@ -40,7 +37,7 @@ final class RefundedCustomFeesRecorderTest extends TestCase
             ->getItems();
 
         $expectedRefundedCustomOrderFees = [
-            [
+            1 => [
                 'test_fee_0' => [
                     'credit_memo_id' => 1,
                     'code' => 'test_fee_0',
@@ -62,7 +59,7 @@ final class RefundedCustomFeesRecorderTest extends TestCase
                     'value' => 1.50,
                 ],
             ],
-            [
+            2 => [
                 'test_fee_0' => [
                     'credit_memo_id' => 2,
                     'code' => 'test_fee_0',
@@ -84,7 +81,7 @@ final class RefundedCustomFeesRecorderTest extends TestCase
                     'value' => 1.50,
                 ],
             ],
-            [
+            3 => [
                 'test_fee_0' => [
                     'credit_memo_id' => 3,
                     'code' => 'test_fee_0',
@@ -106,7 +103,7 @@ final class RefundedCustomFeesRecorderTest extends TestCase
                     'value' => 1.50,
                 ],
             ],
-            [
+            4 => [
                 'test_fee_0' => [
                     'credit_memo_id' => 4,
                     'code' => 'test_fee_0',
@@ -128,7 +125,7 @@ final class RefundedCustomFeesRecorderTest extends TestCase
                     'value' => 1.50,
                 ],
             ],
-            [
+            5 => [
                 'test_fee_0' => [
                     'credit_memo_id' => 5,
                     'code' => 'test_fee_0',
@@ -150,7 +147,7 @@ final class RefundedCustomFeesRecorderTest extends TestCase
                     'value' => 1.50,
                 ],
             ],
-            [
+            6 => [
                 'test_fee_0' => [
                     'credit_memo_id' => 6,
                     'code' => 'test_fee_0',
@@ -173,12 +170,11 @@ final class RefundedCustomFeesRecorderTest extends TestCase
                 ],
             ],
         ];
-        $actualRefundedCustomOrderFees = array_values(
-            array_map(
-                static fn(CustomOrderFees $customOrderFees): array => $customOrderFees->getCustomFeesRefunded(),
-                $customOrderFeesItems,
-            ),
-        );
+        $actualRefundedCustomOrderFees = [];
+
+        foreach ($customOrderFeesItems as $customOrderFeesItem) {
+            $actualRefundedCustomOrderFees += $customOrderFeesItem->getCustomFeesRefunded();
+        }
 
         self::assertEquals($expectedRefundedCustomOrderFees, $actualRefundedCustomOrderFees);
     }

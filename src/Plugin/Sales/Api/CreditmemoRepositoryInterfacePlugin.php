@@ -44,14 +44,13 @@ class CreditmemoRepositoryInterfacePlugin
 
         $customFeesOrdered = $customOrderFees->getCustomFeesOrdered();
         $customFeesRefunded = [];
+        $creditMemoId = (int) $result->getId();
 
         /**
          * @var string $code
          * @var string|float $baseValue
          */
         foreach ($refundedCustomFees as $code => $baseValue) {
-            /** @var int|string $creditMemoId */
-            $creditMemoId = $result->getId();
             /**
              * @var array{
              *     code?: string,
@@ -66,8 +65,8 @@ class CreditmemoRepositoryInterfacePlugin
                 $customFeesOrdered,
                 static fn(array $customFeeOrdered): bool => $customFeeOrdered['code'] === $code,
             ) ?? [];
-            $customFeesRefunded[$code] = [
-                'credit_memo_id' => (int) $creditMemoId,
+            $customFeesRefunded[$creditMemoId][$code] = [
+                'credit_memo_id' => $creditMemoId,
                 'code' => $code,
                 'title' => $orderedCustomFee['title'] ?? '',
                 'type' => $orderedCustomFee['type'] ?? FeeType::Fixed->value,

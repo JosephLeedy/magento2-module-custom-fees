@@ -89,27 +89,30 @@ final class CreditmemoRepositoryInterfacePluginTest extends TestCase
 
         $creditMemoManagement->refund($creditMemo, true);
 
+        $creditMemoId = $creditMemo->getId();
         $customOrderFees = $customOrderFeesRepository->getByOrderId($order->getId());
         $expectedRefundedCustomFees = [
-            'test_fee_0' => [
-                'credit_memo_id' => $creditMemo->getId(),
-                'code' => 'test_fee_0',
-                'title' => 'Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 5.00,
-                'value' => 5.00,
-            ],
-            'test_fee_1' => [
-                'credit_memo_id' => $creditMemo->getId(),
-                'code' => 'test_fee_1',
-                'title' => 'Another Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 0.00,
-                'value' => 0.00,
+            $creditMemoId => [
+                'test_fee_0' => [
+                    'credit_memo_id' => $creditMemoId,
+                    'code' => 'test_fee_0',
+                    'title' => 'Test Fee',
+                    'type' => 'fixed',
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 5.00,
+                    'value' => 5.00,
+                ],
+                'test_fee_1' => [
+                    'credit_memo_id' => $creditMemoId,
+                    'code' => 'test_fee_1',
+                    'title' => 'Another Test Fee',
+                    'type' => 'fixed',
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 0.00,
+                    'value' => 0.00,
+                ],
             ],
         ];
         $actualRefundedCustomFees = $customOrderFees->getCustomFeesRefunded();

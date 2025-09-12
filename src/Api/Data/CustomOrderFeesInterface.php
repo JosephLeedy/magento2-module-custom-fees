@@ -70,7 +70,7 @@ interface CustomOrderFeesInterface
      *     show_percentage: bool,
      *     base_value: float,
      *     value: float
-     * }> $customFeesRefunded
+     * }>[] $customFeesRefunded
      * @throws InvalidArgumentException
      */
     public function setCustomFeesRefunded(string|array $customFeesRefunded): CustomOrderFeesInterface;
@@ -86,7 +86,7 @@ interface CustomOrderFeesInterface
      *     show_percentage: bool,
      *     base_value: float,
      *     value: float
-     * }>
+     * }>[]
      */
     public function getCustomFeesRefunded(): array;
 

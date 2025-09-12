@@ -104,11 +104,6 @@ class CustomFeesRetriever
             $customFeesRefunded = [];
         }
 
-        $customFeesRefunded = array_filter(
-            $customFeesRefunded,
-            static fn(array $customFee): bool => $customFee['credit_memo_id'] !== $creditmemo->getId(),
-        );
-
-        return $customFeesRefunded;
+        return $customFeesRefunded[$creditmemo->getId()] ?? [];
     }
 }

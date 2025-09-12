@@ -93,10 +93,11 @@ class RefundedCustomFeesRecorder
         foreach ($creditMemos as $creditMemo) {
             $baseDelta = (float) $creditMemo->getBaseSubtotal() / (float) $creditMemo->getOrder()->getBaseSubtotal();
             $delta = (float) $creditMemo->getSubtotal() / (float) $creditMemo->getOrder()->getSubtotal();
+            $creditMemoId = (int) $creditMemo->getId();
 
             foreach ($customFeesOrdered as $customFeeOrdered) {
-                $customFeesRefunded[$customFeeOrdered['code']] = [
-                    'credit_memo_id' => (int) $creditMemo->getId(),
+                $customFeesRefunded[$creditMemoId][$customFeeOrdered['code']] = [
+                    'credit_memo_id' => $creditMemoId,
                     'code' => $customFeeOrdered['code'],
                     'title' => $customFeeOrdered['title'],
                     'type' => $customFeeOrdered['type'],
