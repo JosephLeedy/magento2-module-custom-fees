@@ -107,16 +107,16 @@ class CustomOrderFees extends AbstractReport
                         )
                     )
                 ) AS fee
-                CROSS JOIN JSON_TABLE(
+                LEFT JOIN JSON_TABLE(
                     JSON_UNQUOTE(cof.custom_fees_refunded),
-                    '$' COLUMNS (
+                    '$.*' COLUMNS (
                         NESTED PATH '$.*' COLUMNS (
                             title VARCHAR(255) PATH '$.title',
                             `value` DECIMAL(20, 4) PATH '$.value',
                             base_value DECIMAL(20, 4) PATH '$.base_value'
                         )
                     )
-                ) AS refunded_fee
+                ) AS refunded_fee ON refunded_fee.title = fee.title
                 LEFT JOIN $salesOrderTable AS so ON so.entity_id = cof.order_entity_id
                 GROUP BY
                     so.store_id,
