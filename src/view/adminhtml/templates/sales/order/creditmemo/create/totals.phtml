@@ -29,60 +29,54 @@ endif;
             <div id="custom-fee-<?= $escaper->escapeHtmlAttr($code) ?>-advice-container"></div>
         </td>
         <td <?= /* @noEscape */ $block->getValueProperties() ?> class="value">
-            <?php if ((float) $customFeeTotal->getBaseValue() === 0.00): ?>
-                <span><?= /* @noEscape */ $block->formatValue((float) $customFeeTotal->getBaseValue(), true) ?></span>
-            <?php else: ?>
-                <input
-                    type="text"
-                    name="creditmemo[custom_fees][<?= $escaper->escapeHtmlAttr($code) ?>]"
-                    value="<?= /* @noEscape */ $block->formatValue((float) $customFeeTotal->getBaseValue()) ?>"
-                    class="input-text admin__control-text not-negative-amount"
-                    id="custom-fee-<?= $escaper->escapeHtmlAttr($code) ?>"
-                >
-                <?php
-                $script = <<<SCRIPT
-                    require(
-                        [
-                            'prototype'
-                        ],
-                        function () {
-                            Validation.addAllThese(
-                                [
-                                    'not-negative-amount',
-                                    '{$escaper->escapeJs(
-                                        (string) __('Please enter a positive number in this field.'),
-                                    )}',
-                                    function (validator) {
-                                        if (validator.length === 0) {
-                                            return true;
-                                        }
-
-                                        return /^\s*\d+([,.]\d+)*\s*$/.test(validator);
+            <input
+                type="text"
+                name="creditmemo[custom_fees][<?= $escaper->escapeHtmlAttr($code) ?>]"
+                value="<?= /* @noEscape */ $block->formatValue((float) $customFeeTotal->getBaseValue()) ?>"
+                class="input-text admin__control-text not-negative-amount"
+                id="custom-fee-<?= $escaper->escapeHtmlAttr($code) ?>"
+            >
+            <?php
+            $script = <<<SCRIPT
+                require(
+                    [
+                        'prototype'
+                    ],
+                    function () {
+                        Validation.addAllThese(
+                            [
+                                'not-negative-amount',
+                                '{$escaper->escapeJs((string) __('Please enter a positive number in this field.'))}',
+                                function (validator) {
+                                    if (validator.length === 0) {
+                                        return true;
                                     }
-                                ]
-                            );
 
-                            function unblockSubmit(id) {
-                                $(id).observe('focus', function (event) {
-                                    if ($$('button[class="scalable update-button disabled"]').size() > 0) {
-                                        enableElements('submit-button');
-                                    }
-                                });
-                                $(id).observe('change', function (event) {
+                                    return /^\s*\d+([,.]\d+)*\s*$/.test(validator);
+                                }
+                            ]
+                        );
+
+                        function unblockSubmit(id) {
+                            $(id).observe('focus', function (event) {
+                                if ($$('button[class="scalable update-button disabled"]').size() > 0) {
                                     enableElements('submit-button');
-                                });
-                            }
-
-                            $('custom-fee-{$escaper->escapeJs($code)}').advaiceContainer
-                                = 'custom-fee-{$escaper->escapeJs($code)}-advice-container';
-
-                            unblockSubmit('custom-fee-{$escaper->escapeJs($code)}');
+                                }
+                            });
+                            $(id).observe('change', function (event) {
+                                enableElements('submit-button');
+                            });
                         }
-                    );
-                    SCRIPT;
-                /* @noEscape */ echo $secureRenderer->renderTag('script', [], $script, false);
-                ?>
-            <?php endif ?>
+
+                        $('custom-fee-{$escaper->escapeJs($code)}').advaiceContainer
+                            = 'custom-fee-{$escaper->escapeJs($code)}-advice-container';
+
+                        unblockSubmit('custom-fee-{$escaper->escapeJs($code)}');
+                    }
+                );
+            SCRIPT;
+            /* @noEscape */ echo $secureRenderer->renderTag('script', [], $script, false);
+            ?>
         </td>
     </tr>
 <?php endforeach ?>
