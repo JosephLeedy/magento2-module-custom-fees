@@ -7,6 +7,7 @@ namespace JosephLeedy\CustomFees\Plugin\Framework\View\Element\UiComponent\DataP
 use JosephLeedy\CustomFees\Model\ResourceModel\CustomOrderFees as CustomOrderFeesResource;
 use Magento\Framework\Data\Collection;
 use Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory;
+use Zend_Db_Expr;
 
 use function method_exists;
 
@@ -28,7 +29,7 @@ class CollectionFactoryPlugin
             ->joinLeft(
                 $customOrderFeesTable,
                 "$customOrderFeesTable.order_entity_id = main_table.$idFieldName",
-                "$customOrderFeesTable.custom_fees_ordered",
+                new Zend_Db_Expr("JSON_UNQUOTE($customOrderFeesTable.custom_fees_ordered) AS custom_fees_ordered"),
             );
 
         return $result;

@@ -32,6 +32,13 @@ document.
 - The method `retrieve()` in the `CustomFeesRetriever` service has been 
   deprecated in favor of the `retrieveOrderedCustomFees()` method
 
+## [1.2.3]
+
+### Fixed
+
+- An exception was thrown when loading the Sales Order Grid in the Admin panel
+  if the JSON data in the `custom_order_fees` table was quoted
+
 ## [1.2.2]
 
 ### Fixed
@@ -116,7 +123,8 @@ document.
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [README]: ./README.md
-[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.2.2...HEAD
+[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.2.3...HEAD
+[1.2.3]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.2.3
 [1.2.2]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.2.2
 [1.2.1]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.2.1
 [1.2.0]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.2.0
