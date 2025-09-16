@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Block\Adminhtml\Sales\Order\Creditmemo\Create;
 
 use JosephLeedy\CustomFees\Block\Sales\Order\Totals as OrderTotals;
-use Magento\Framework\Currency\Data\Currency as CurrencyData;
 use Magento\Framework\DataObject;
 use Magento\Sales\Api\Data\CreditmemoExtensionInterface;
 use Magento\Sales\Model\Order;
@@ -48,7 +47,7 @@ class Totals extends OrderTotals
                 $value,
                 2,
                 [
-                    'display' => CurrencyData::NO_SYMBOL,
+                    'display' => 1,
                 ],
                 false,
             );
