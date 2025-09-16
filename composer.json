@@ -29,6 +29,7 @@
   },
   "require-dev": {
     "colinodell/psr-testlogger": "^v1.3",
+    "dms/phpunit-arraysubset-asserts": "^0.5.0",
     "squizlabs/php_codesniffer": "^3.10",
     "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
     "magento/magento-coding-standard": "*",
