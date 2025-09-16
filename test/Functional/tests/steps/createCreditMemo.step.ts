@@ -19,7 +19,7 @@ class CreateCreditMemoStep
      * @returns {Promise<string>} - A promise that resolves to the created credit memo number.
      * @throws {Error} - Throws an error if the credit memo cannot be created.
      */
-    public async createCreditMemo(orderNumber?: string): Promise<string>
+    public async createCreditMemo(orderNumber?: string, partial: boolean = false): Promise<string>
     {
         const adminSalesOrderViewPage = new SalesOrderViewPage(this.page);
         let adminSalesOrderGridPage: SalesOrderGridPage;
@@ -32,7 +32,7 @@ class CreateCreditMemoStep
             await adminSalesOrderGridPage.navigateToSalesOrderViewPage(orderNumber);
         }
 
-        creditMemoNumber = await adminSalesOrderViewPage.createCreditMemo();
+        creditMemoNumber = await adminSalesOrderViewPage.createCreditMemo([], partial);
 
         if (creditMemoNumber === null) {
             throw new Error(

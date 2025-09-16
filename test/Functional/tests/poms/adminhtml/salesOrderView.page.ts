@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { outcomeMarkersCustomFees, UIReference, UIReferenceCustomFees } from '@config';
+import { inputValuesCustomFees, outcomeMarkersCustomFees, UIReference, UIReferenceCustomFees } from '@config';
 
 class SalesOrderViewPage
 {
@@ -59,7 +59,7 @@ class SalesOrderViewPage
         return await this.getFirstInvoiceIncrementId();
     }
 
-    public async createCreditMemo(itemQuantities: SkuAndQuantity[] = []): Promise<string|null>
+    public async createCreditMemo(itemQuantities: SkuAndQuantity[] = [], partial: boolean = false): Promise<string|null>
     {
         let skuAndQuantity: SkuAndQuantity;
         let creditMemoItemRow: Locator;
@@ -94,6 +94,10 @@ class SalesOrderViewPage
                     }
                 ).click();
             await this.page.waitForLoadState('networkidle');
+        }
+
+        if (partial) {
+            await this.setRefundAmounts();
         }
 
         await this.page
@@ -137,6 +141,17 @@ class SalesOrderViewPage
         invoiceIncrementId = (await firstInvoiceRowIdCell.textContent())?.trim() ?? null;
 
         return invoiceIncrementId;
+    }
+
+    private async setRefundAmounts(): Promise<void>
+    {
+        let feeName;
+
+        for (feeName in inputValuesCustomFees.customFees) {
+            await this.page
+                .getByRole('textbox', { name: `Refund ${inputValuesCustomFees.customFees[feeName].title}` })
+                .fill(inputValuesCustomFees.customFees[feeName].base_refund_amount);
+        }
     }
 
     private async getFirstCreditMemoIncrementId(): Promise<string|null>

@@ -114,12 +114,24 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
         {
             testSuffix: '',
             inEuro: false,
+            partial: false,
         },
         {
             testSuffix: ', in Euro',
             inEuro: true,
+            partial: false,
         },
-    ].forEach(({ testSuffix, inEuro }): void => {
+        {
+            testSuffix: '',
+            inEuro: false,
+            partial: true,
+        },
+        {
+            testSuffix: ', in Euro',
+            inEuro: true,
+            partial: true,
+        },
+    ].forEach(({ testSuffix, inEuro, partial }): void => {
         /**
          * @feature Custom fees on guest credit memo page
          * @scenario Guest places an order, requests a refund, views its credit memo and sees the custom fees
@@ -128,7 +140,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
          * @then They should see the refunded custom fees in the credit memo totals
          */
         test(
-            `for a credit memo${testSuffix}`,
+            `for a${partial ? ' partial' : ''} credit memo${testSuffix}`,
             { tag: ['@frontend', '@guest', '@cold'] },
             async ({ page }, testInfo): Promise<void> => {
                 const guestOrderPage = new GuestOrderPage(page);
@@ -146,13 +158,13 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 await new LogInAsAdministratorStep(page).login();
                 await new CreateInvoiceStep(page, testInfo).createInvoice(<string>orderNumber);
 
-                creditMemoNumber = await new CreateCreditMemoStep(page, testInfo).createCreditMemo();
+                creditMemoNumber = await new CreateCreditMemoStep(page, testInfo).createCreditMemo(undefined, partial);
 
                 await guestOrderPage.navigateToOrdersAndReturnsPage();
                 await guestOrderPage.fillOrderDetails(<string>orderNumber, orderEmail, orderLastName);
                 await guestOrderPage.assertOrderIsVisible(<string>orderNumber);
                 await guestOrderPage.navigateToCreditMemosPage();
-                await guestOrderPage.assertCreditMemoHasCustomFees(creditMemoNumber, inEuro);
+                await guestOrderPage.assertCreditMemoHasCustomFees(creditMemoNumber, inEuro, [], partial);
             }
         );
     });

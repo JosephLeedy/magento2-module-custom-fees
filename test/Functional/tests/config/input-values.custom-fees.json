@@ -6,6 +6,8 @@
       "type": "Fixed",
       "base_amount": "5.00",
       "amount": "3.53",
+      "base_refund_amount": "5.00",
+      "refund_amount": "3.53",
       "advanced": {}
     },
     "fixed_conditional": {
@@ -14,6 +16,8 @@
       "type": "Fixed",
       "base_amount": "10.00",
       "amount": "7.07",
+      "base_refund_amount": "10.00",
+      "refund_amount": "7.07",
       "advanced": {
         "conditions": {
           "type": "JosephLeedy\\CustomFees\\Model\\Rule\\Condition\\Combine",
@@ -36,6 +40,8 @@
       "type": "Percent",
       "base_amount": "10",
       "amount": "10",
+      "base_refund_amount": "0.00",
+      "refund_amount": "0.00",
       "advanced": {
         "show_percentage": true
       }
@@ -46,6 +52,8 @@
       "type": "Percent",
       "base_amount": "5",
       "amount": "5",
+      "base_refund_amount": "0.00",
+      "refund_amount": "0.00",
       "advanced": {
         "show_percentage": false
       }
