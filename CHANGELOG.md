@@ -10,10 +10,27 @@ document.
 
 ## [Unreleased]
 
+### Added
+
+- Custom fees can be refunded from credit memos without requiring an adjustment 
+  fee (the previous work-around was to create an adjustment fee of the same 
+  amount as the custom fee)
+
 ### Changed
 
 - Renamed the `custom_fees` column in the `custom_order_fees` table to clarify 
   its purpose (new name: `custom_fees_ordered`)
+- The `custom_order_fees` table now includes a column called 
+  `custom_fees_refunded` to track the total amount of custom fees refunded for 
+  each credit memo related to the order
+- The Custom Order Fees Report now includes a column for the total amount of
+  custom fees refunded for each order, aggregated from the new 
+  `custom_fees_refunded` column in the `custom_order_fees` table
+
+### Deprecated
+
+- The method `retrieve()` in the `CustomFeesRetriever` service has been 
+  deprecated in favor of the `retrieveOrderedCustomFees()` method
 
 ## [1.2.2]
 
