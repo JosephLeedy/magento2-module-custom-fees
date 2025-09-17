@@ -121,9 +121,7 @@ jobs:
 
       - name: Install extension
         working-directory: /data
-        run: |
-          /usr/local/bin/composer config repo.packagist false
-          /usr/local/bin/composer require joseph-leedy/module-custom-fees:@dev
+        run: /usr/local/bin/composer require joseph-leedy/module-custom-fees:@dev
 
       - name: Enable extension
         working-directory: /data

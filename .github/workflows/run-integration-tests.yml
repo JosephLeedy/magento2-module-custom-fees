@@ -50,9 +50,7 @@ jobs:
 
       - name: Install extension
         working-directory: /data
-        run: |
-          composer config repo.packagist false
-          composer require joseph-leedy/module-custom-fees:@dev
+        run: /usr/local/bin/composer require joseph-leedy/module-custom-fees:@dev
 
       - name: Enable extension
         working-directory: /data
