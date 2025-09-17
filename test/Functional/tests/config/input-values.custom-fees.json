@@ -43,6 +43,8 @@
       "status": "disabled",
       "base_amount": "20.00",
       "amount": "14.14",
+      "base_refund_amount": "20.00",
+      "refund_amount": "14.14",
       "advanced": {}
     },
     "percent_shown": {
