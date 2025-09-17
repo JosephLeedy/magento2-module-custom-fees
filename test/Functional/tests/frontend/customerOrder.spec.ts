@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { slugs, UIReference } from '@config';
+import { inputValuesCustomFees, slugs, UIReference } from '@config';
 import AddProductToCartStep from '@steps/addProductToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import CreateCreditMemoStep from '@steps/createCreditMemo.step';
@@ -49,6 +49,9 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
             { tag: ['@frontend', '@account', '@cold'] },
             async ({ page }, testInfo): Promise<void> => {
                 const orderPage = new CustomerOrderPage(page);
+                const excludedFees = Object
+                    .keys(inputValuesCustomFees.customFees)
+                    .filter(key => key.includes('disabled'));
                 let orderNumber: string|null = '';
 
                 if (inEuro) {
@@ -59,7 +62,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
 
                 await orderPage.navigateToOrderHistoryPage();
                 await orderPage.navigateToOrderPage(<string>orderNumber);
-                await orderPage.assertOrderHasCustomFees(inEuro);
+                await orderPage.assertOrderHasCustomFees(inEuro, excludedFees);
             }
         );
     });
@@ -86,6 +89,9 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
             { tag: ['@frontend', '@account', '@cold'] },
             async ({ page }, testInfo): Promise<void> => {
                 const orderPage = new CustomerOrderPage(page);
+                const excludedFees = Object
+                    .keys(inputValuesCustomFees.customFees)
+                    .filter(key => key.includes('disabled'));
                 let orderNumber: string|null = '';
                 let invoiceNumber: string|null = '';
 
@@ -102,7 +108,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                 await orderPage.navigateToOrderHistoryPage();
                 await orderPage.navigateToOrderPage(<string>orderNumber);
                 await orderPage.navigateToInvoicesPage();
-                await orderPage.assertInvoiceHasCustomFees(invoiceNumber, inEuro);
+                await orderPage.assertInvoiceHasCustomFees(invoiceNumber, inEuro, excludedFees);
             }
         );
     });
@@ -141,6 +147,9 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
             { tag: ['@frontend', '@account', '@cold'] },
             async ({ page }, testInfo): Promise<void> => {
                 const orderPage = new CustomerOrderPage(page);
+                const excludedFees = Object
+                    .keys(inputValuesCustomFees.customFees)
+                    .filter(key => key.includes('disabled'));
                 let orderNumber: string|null = '';
                 let creditMemoNumber: string|null = '';
 
@@ -158,7 +167,7 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                 await orderPage.navigateToOrderHistoryPage();
                 await orderPage.navigateToOrderPage(<string>orderNumber);
                 await orderPage.navigateToCreditMemosPage();
-                await orderPage.assertCreditMemoHasCustomFees(creditMemoNumber, inEuro, [], partial);
+                await orderPage.assertCreditMemoHasCustomFees(creditMemoNumber, inEuro, excludedFees, partial);
             }
         );
     });

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model\Total\Quote;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Model\FeeStatus;
 use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\ConditionsApplier;
 use Magento\Framework\Exception\LocalizedException;
@@ -139,7 +140,7 @@ class CustomFees extends AbstractTotal
         }
 
         foreach ($customFees as $id => $customFee) {
-            if ($customFee['code'] === 'example_fee') {
+            if ($customFee['code'] === 'example_fee' || !FeeStatus::Enabled->equals($customFee['status'])) {
                 continue;
             }
 
@@ -171,7 +172,7 @@ class CustomFees extends AbstractTotal
 
             $customFee['show_percentage'] = $customFee['advanced']['show_percentage'];
 
-            unset($customFee['advanced']);
+            unset($customFee['status'], $customFee['advanced']);
 
             $customFee['title'] = __($customFee['title']);
             $baseCustomFees[$id] = $customFee;

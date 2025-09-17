@@ -12,6 +12,7 @@ document.
 
 ### Added
 
+- Custom fees can be enabled or disabled
 - Custom fees can be refunded from credit memos without requiring an adjustment 
   fee (the previous work-around was to create an adjustment fee of the same 
   amount as the custom fee)

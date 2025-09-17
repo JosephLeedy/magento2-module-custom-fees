@@ -4,6 +4,7 @@
       "code": "test_fixed_fee",
       "title": "Test Fixed Fee",
       "type": "Fixed",
+      "status": "enabled",
       "base_amount": "5.00",
       "amount": "3.53",
       "base_refund_amount": "5.00",
@@ -14,6 +15,7 @@
       "code": "test_conditional_fixed_fee",
       "title": "Test Conditional Fixed Fee",
       "type": "Fixed",
+      "status": "enabled",
       "base_amount": "10.00",
       "amount": "7.07",
       "base_refund_amount": "10.00",
@@ -34,10 +36,20 @@
         }
       }
     },
+    "fixed_disabled": {
+      "code": "test_disabled_fixed_fee",
+      "title": "Test Disabled Fixed Fee",
+      "type": "Fixed",
+      "status": "disabled",
+      "base_amount": "20.00",
+      "amount": "14.14",
+      "advanced": {}
+    },
     "percent_shown": {
       "code": "test_percent_fee_percentage_shown",
       "title": "Test Percent Fee (percentage shown)",
       "type": "Percent",
+      "status": "enabled",
       "base_amount": "10",
       "amount": "10",
       "base_refund_amount": "0.00",
@@ -50,6 +62,7 @@
       "code": "test_percent_fee_percentage_hidden",
       "title": "Test Percent Fee (percentage hidden)",
       "type": "Percent",
+      "status": "enabled",
       "base_amount": "5",
       "amount": "5",
       "base_refund_amount": "0.00",

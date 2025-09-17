@@ -25,6 +25,7 @@ Display,Display
 "Show Percentage","Show Percentage"
 "If ""Yes,"" the fee percentage will be shown next to its name (i.e. ""Processing (10%)"").","If ""Yes,"" the fee percentage will be shown next to its name (i.e. ""Processing (10%)"")."
 "Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2""","Could not process the advanced configuration data for custom fee ""%1"". Error: ""%2"""
+Enable,Enable
 "Import Custom Fees","Import Custom Fees"
 "Replace Existing Custom Fees","Replace Existing Custom Fees"
 Sales,Sales
@@ -43,6 +44,8 @@ Sales,Sales
 "Custom fees have already been saved for order with ID ""%1"".","Custom fees have already been saved for order with ID ""%1""."
 "Could not save custom fees for order with ID ""%1"". Error: ""%2""","Could not save custom fees for order with ID ""%1"". Error: ""%2"""
 "Could not delete custom fees for order with ID ""%1"". Error: ""%2""","Could not delete custom fees for order with ID ""%1"". Error: ""%2"""
+Disabled,Disabled
+Enabled,Enabled
 Fixed,Fixed
 Percent,Percent
 "Fixed fee amount","Fixed fee amount"

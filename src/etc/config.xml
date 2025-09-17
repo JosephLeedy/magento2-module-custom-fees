@@ -6,7 +6,7 @@
                 <custom_fees>50</custom_fees>
             </totals_sort>
             <custom_order_fees>
-                <custom_fees>[{"code":"example_fee","title":"Example Fee","type":"fixed","advanced":"{\"show_percentage\":\"0\"}","value":"0.00"}]</custom_fees>
+                <custom_fees>[{"code":"example_fee","title":"Example Fee","type":"fixed","status":"0","advanced":"{\"show_percentage\":\"0\"}","value":"0.00"}]</custom_fees>
             </custom_order_fees>
         </sales>
     </default>
