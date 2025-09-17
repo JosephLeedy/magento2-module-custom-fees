@@ -162,7 +162,11 @@ test.describe('Custom fees are displayed on customer order page', (): void => {
                 await new LogInAsAdministratorStep(page).login();
                 await new CreateInvoiceStep(page, testInfo).createInvoice(<string>orderNumber);
 
-                creditMemoNumber = await new CreateCreditMemoStep(page, testInfo).createCreditMemo(undefined, partial);
+                creditMemoNumber = await new CreateCreditMemoStep(page, testInfo).createCreditMemo(
+                    undefined,
+                    partial,
+                    excludedFees,
+                );
 
                 await orderPage.navigateToOrderHistoryPage();
                 await orderPage.navigateToOrderPage(<string>orderNumber);

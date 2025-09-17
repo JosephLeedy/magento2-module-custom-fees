@@ -167,7 +167,11 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 await new LogInAsAdministratorStep(page).login();
                 await new CreateInvoiceStep(page, testInfo).createInvoice(<string>orderNumber);
 
-                creditMemoNumber = await new CreateCreditMemoStep(page, testInfo).createCreditMemo(undefined, partial);
+                creditMemoNumber = await new CreateCreditMemoStep(page, testInfo).createCreditMemo(
+                    undefined,
+                    partial,
+                    excludedFees,
+                );
 
                 await guestOrderPage.navigateToOrdersAndReturnsPage();
                 await guestOrderPage.fillOrderDetails(<string>orderNumber, orderEmail, orderLastName);

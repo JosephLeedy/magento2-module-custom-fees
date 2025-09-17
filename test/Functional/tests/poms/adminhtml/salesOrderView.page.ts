@@ -59,8 +59,11 @@ class SalesOrderViewPage
         return await this.getFirstInvoiceIncrementId();
     }
 
-    public async createCreditMemo(itemQuantities: SkuAndQuantity[] = [], partial: boolean = false): Promise<string|null>
-    {
+    public async createCreditMemo(
+        itemQuantities: SkuAndQuantity[] = [],
+        partial: boolean = false,
+        excludedFees: string[] = [],
+    ): Promise<string|null> {
         let skuAndQuantity: SkuAndQuantity;
         let creditMemoItemRow: Locator;
 
@@ -97,7 +100,7 @@ class SalesOrderViewPage
         }
 
         if (partial) {
-            await this.setRefundAmounts();
+            await this.setRefundAmounts(excludedFees);
         }
 
         await this.page
@@ -143,14 +146,19 @@ class SalesOrderViewPage
         return invoiceIncrementId;
     }
 
-    private async setRefundAmounts(): Promise<void>
+    private async setRefundAmounts(excludedFees: string[]): Promise<void>
     {
-        let feeName;
+        const customFees: TCustomFees = Object.fromEntries(
+            (
+                Object.entries(inputValuesCustomFees.customFees) as Array<[string, CustomFee]>
+            ).filter(([feeCode]: [string, CustomFee]): boolean => !excludedFees.includes(feeCode))
+        );
+        let feeName: string;
 
-        for (feeName in inputValuesCustomFees.customFees) {
+        for (feeName in customFees) {
             await this.page
-                .getByRole('textbox', { name: `Refund ${inputValuesCustomFees.customFees[feeName].title}` })
-                .fill(inputValuesCustomFees.customFees[feeName].base_refund_amount);
+                .getByRole('textbox', { name: `Refund ${customFees[feeName].title}` })
+                .fill(String(customFees[feeName].base_refund_amount));
         }
     }
 
