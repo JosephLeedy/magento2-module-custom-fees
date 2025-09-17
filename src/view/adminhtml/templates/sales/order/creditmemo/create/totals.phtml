@@ -74,7 +74,7 @@ endif;
                         unblockSubmit('custom-fee-{$escaper->escapeJs($code)}');
                     }
                 );
-            SCRIPT;
+                SCRIPT;
             /* @noEscape */ echo $secureRenderer->renderTag('script', [], $script, false);
             ?>
         </td>
