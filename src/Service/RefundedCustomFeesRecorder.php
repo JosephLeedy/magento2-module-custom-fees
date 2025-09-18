@@ -11,6 +11,7 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Sales\Api\CreditmemoRepositoryInterface;
 use Magento\Sales\Api\Data\CreditmemoInterface;
 use Magento\Sales\Model\Order\Creditmemo;
+use Zend_Db_Expr;
 
 use function array_filter;
 use function array_map;
@@ -41,14 +42,14 @@ class RefundedCustomFeesRecorder
         $customOrderFeesCollection->addFieldToFilter(
             [
                 'custom_fees_refunded',
-                'custom_fees_refunded',
+                new Zend_Db_Expr('JSON_LENGTH(custom_fees_refunded)'),
             ],
             [
                 [
                     'null' => true,
                 ],
                 [
-                    'eq' => '[]',
+                    'eq' => 0,
                 ],
             ],
         );

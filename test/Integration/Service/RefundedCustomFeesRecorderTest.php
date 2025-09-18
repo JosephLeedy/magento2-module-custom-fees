@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Service;
 
-use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
 use JosephLeedy\CustomFees\Model\CustomOrderFees;
 use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Model\ResourceModel\CustomOrderFees\Collection as CustomOrderFeesCollection;
 use JosephLeedy\CustomFees\Service\RefundedCustomFeesRecorder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Sales\Api\CreditmemoRepositoryInterface;
 use Magento\TestFramework\Fixture\DataFixture;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
+use Zend_Db_Expr;
 
 final class RefundedCustomFeesRecorderTest extends TestCase
 {
@@ -22,13 +23,10 @@ final class RefundedCustomFeesRecorderTest extends TestCase
         $objectManager = Bootstrap::getObjectManager();
         /** @var RefundedCustomFeesRecorder $refundedCustomFeesRecorder */
         $refundedCustomFeesRecorder = $objectManager->create(RefundedCustomFeesRecorder::class);
+        /** @var CustomOrderFeesCollection $customOrderFeesCollection */
+        $customOrderFeesCollection = $objectManager->create(CustomOrderFeesCollection::class);
         /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
         $searchCriteriaBuilder = $objectManager->create(SearchCriteriaBuilder::class);
-        $customOrderFeesSearchCriteria = $searchCriteriaBuilder
-            ->addFilter('custom_fees_refunded', '[]', 'neq')
-            ->create();
-        /** @var CustomOrderFeesRepositoryInterface $customOrderFeesRepository */
-        $customOrderFeesRepository = $objectManager->create(CustomOrderFeesRepositoryInterface::class);
         $creditMemoSearchCriteria = $searchCriteriaBuilder->create();
         /** @var CreditmemoRepositoryInterface $creditMemoRepository */
         $creditMemoRepository = $objectManager->create(CreditmemoRepositoryInterface::class);
@@ -37,8 +35,9 @@ final class RefundedCustomFeesRecorderTest extends TestCase
         $refundedCustomFeesRecorder->recordForExistingCreditMemos();
 
         /** @var CustomOrderFees[] $customOrderFeesItems */
-        $customOrderFeesItems = $customOrderFeesRepository
-            ->getList($customOrderFeesSearchCriteria)
+        $customOrderFeesItems = $customOrderFeesCollection
+            ->addFieldToFilter([new Zend_Db_Expr('JSON_LENGTH(custom_fees_refunded)')], [['gt' => 0]])
+            ->load()
             ->getItems();
 
         $expectedRefundedCustomOrderFees = [];
@@ -83,20 +82,17 @@ final class RefundedCustomFeesRecorderTest extends TestCase
         $objectManager = Bootstrap::getObjectManager();
         /** @var RefundedCustomFeesRecorder $refundedCustomFeesRecorder */
         $refundedCustomFeesRecorder = $objectManager->create(RefundedCustomFeesRecorder::class);
-        /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
-        $searchCriteriaBuilder = $objectManager->create(SearchCriteriaBuilder::class);
-        $customOrderFeesSearchCriteria = $searchCriteriaBuilder
-            ->addFilter('custom_fees_refunded', '[]', 'neq')
-            ->create();
-        /** @var CustomOrderFeesRepositoryInterface $customOrderFeesRepository */
-        $customOrderFeesRepository = $objectManager->create(CustomOrderFeesRepositoryInterface::class);
+        /** @var CustomOrderFeesCollection $customOrderFeesCollection */
+        $customOrderFeesCollection = $objectManager->create(CustomOrderFeesCollection::class);
 
         $refundedCustomFeesRecorder->recordForExistingCreditMemos();
 
-        $customOrderFeesSearchResults = $customOrderFeesRepository->getList($customOrderFeesSearchCriteria);
+        $customOrderFeesCollection
+            ->addFieldToFilter([new Zend_Db_Expr('JSON_LENGTH(custom_fees_refunded)')], [['gt' => 0]])
+            ->load();
 
         // The fixture records six refunded custom order fees, and the service should not record them again.
-        self::assertSame(6, $customOrderFeesSearchResults->getTotalCount());
+        self::assertSame(6, $customOrderFeesCollection->count());
     }
 
     #[DataFixture('JosephLeedy_CustomFees::../test/Integration/_files/order_list_with_invoice_and_custom_fees.php')]
@@ -105,18 +101,15 @@ final class RefundedCustomFeesRecorderTest extends TestCase
         $objectManager = Bootstrap::getObjectManager();
         /** @var RefundedCustomFeesRecorder $refundedCustomFeesRecorder */
         $refundedCustomFeesRecorder = $objectManager->create(RefundedCustomFeesRecorder::class);
-        /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
-        $searchCriteriaBuilder = $objectManager->create(SearchCriteriaBuilder::class);
-        $customOrderFeesSearchCriteria = $searchCriteriaBuilder
-            ->addFilter('custom_fees_refunded', '[]', 'neq')
-            ->create();
-        /** @var CustomOrderFeesRepositoryInterface $customOrderFeesRepository */
-        $customOrderFeesRepository = $objectManager->create(CustomOrderFeesRepositoryInterface::class);
+        /** @var CustomOrderFeesCollection $customOrderFeesCollection */
+        $customOrderFeesCollection = $objectManager->create(CustomOrderFeesCollection::class);
 
         $refundedCustomFeesRecorder->recordForExistingCreditMemos();
 
-        $customOrderFeesSearchResults = $customOrderFeesRepository->getList($customOrderFeesSearchCriteria);
+        $customOrderFeesCollection
+            ->addFieldToFilter([new Zend_Db_Expr('JSON_LENGTH(custom_fees_refunded)')], [['gt' => 0]])
+            ->load();
 
-        self::assertSame(0, $customOrderFeesSearchResults->getTotalCount());
+        self::assertSame(0, $customOrderFeesCollection->count());
     }
 }
