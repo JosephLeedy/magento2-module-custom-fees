@@ -27,11 +27,16 @@ class CustomOrderFees extends AbstractDb
      *
      * @var array{
      *     custom_fees_ordered: array{array{}},
+     *     custom_fees_invoiced: array{array{}},
      *     custom_fees_refunded: array{array{}},
      * }
      */
     protected $_serializableFields = [
         'custom_fees_ordered' => [
+            [],
+            [],
+        ],
+        'custom_fees_invoiced' => [
             [],
             [],
         ],

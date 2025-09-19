@@ -98,6 +98,44 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
         return $customFeesOrdered ?? [];
     }
 
+    public function setCustomFeesInvoiced(string|array $customFeesInvoiced): CustomOrderFeesInterface
+    {
+        if (is_string($customFeesInvoiced)) {
+            try {
+                $customFeesInvoiced = (array) $this->serializer->unserialize($customFeesInvoiced);
+            } catch (InvalidArgumentException) {
+                throw new InvalidArgumentException((string) __('Invalid custom fees'));
+            }
+        }
+
+        $this->setData(self::CUSTOM_FEES_INVOICED, $customFeesInvoiced);
+
+        return $this;
+    }
+
+    public function getCustomFeesInvoiced(): array
+    {
+        /**
+         * @var array<string, array{
+         *     invoice_id: int,
+         *     code: string,
+         *     title: string,
+         *     type: value-of<FeeType>,
+         *     percent: float|null,
+         *     show_percentage: bool,
+         *     base_value: float,
+         *     value: float,
+         * }>|string|null $customFeesInvoiced
+         */
+        $customFeesInvoiced = $this->getData(self::CUSTOM_FEES_INVOICED);
+
+        if (is_string($customFeesInvoiced)) {
+            $customFeesInvoiced = (array) $this->serializer->unserialize($customFeesInvoiced);
+        }
+
+        return $customFeesInvoiced ?? [];
+    }
+
     public function setCustomFeesRefunded(string|array $customFeesRefunded): CustomOrderFeesInterface
     {
         if (is_string($customFeesRefunded)) {
