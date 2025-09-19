@@ -1,0 +1,82 @@
+<?php
+
+declare(strict_types=1);
+
+use JosephLeedy\CustomFees\Block\Adminhtml\Sales\Order\Creditmemo\Create\Totals;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Helper\SecureHtmlRenderer;
+
+/** @var Totals $block */
+/** @var Escaper $escaper */
+/** @var SecureHtmlRenderer $secureRenderer */
+
+$customFeeTotals = $block->getCustomFeeTotals();
+
+if (count($customFeeTotals) === 0):
+    return;
+endif;
+?>
+<?php foreach ($block->getCustomFeeTotals() as $code => $customFeeTotal): ?>
+    <tr class="col-<?= $escaper->escapeHtmlAttr($code) ?>">
+        <td <?= /* @noEscape */ $block->getLabelProperties() ?> class="label">
+            <label for="custom-fee-<?= $escaper->escapeHtmlAttr($code) ?>">
+                <?php if ($customFeeTotal->getStrong()): ?>
+                    <strong><?= $escaper->escapeHtml($customFeeTotal->getLabel()) ?></strong>
+                <?php else: ?>
+                    <?= $escaper->escapeHtml($customFeeTotal->getLabel()) ?>
+                <?php endif ?>
+            </label>
+            <div id="custom-fee-<?= $escaper->escapeHtmlAttr($code) ?>-advice-container"></div>
+        </td>
+        <td <?= /* @noEscape */ $block->getValueProperties() ?> class="value">
+            <input
+                type="text"
+                name="creditmemo[custom_fees][<?= $escaper->escapeHtmlAttr($code) ?>]"
+                value="<?= /* @noEscape */ $block->formatValue((float) $customFeeTotal->getBaseValue()) ?>"
+                class="input-text admin__control-text not-negative-amount"
+                id="custom-fee-<?= $escaper->escapeHtmlAttr($code) ?>"
+            >
+            <?php
+            $script = <<<SCRIPT
+                require(
+                    [
+                        'prototype'
+                    ],
+                    function () {
+                        Validation.addAllThese(
+                            [
+                                'not-negative-amount',
+                                '{$escaper->escapeJs((string) __('Please enter a positive number in this field.'))}',
+                                function (validator) {
+                                    if (validator.length === 0) {
+                                        return true;
+                                    }
+
+                                    return /^\s*\d+([,.]\d+)*\s*$/.test(validator);
+                                }
+                            ]
+                        );
+
+                        function unblockSubmit(id) {
+                            $(id).observe('focus', function (event) {
+                                if ($$('button[class="scalable update-button disabled"]').size() > 0) {
+                                    enableElements('submit-button');
+                                }
+                            });
+                            $(id).observe('change', function (event) {
+                                enableElements('submit-button');
+                            });
+                        }
+
+                        $('custom-fee-{$escaper->escapeJs($code)}').advaiceContainer
+                            = 'custom-fee-{$escaper->escapeJs($code)}-advice-container';
+
+                        unblockSubmit('custom-fee-{$escaper->escapeJs($code)}');
+                    }
+                );
+                SCRIPT;
+            /* @noEscape */ echo $secureRenderer->renderTag('script', [], $script, false);
+            ?>
+        </td>
+    </tr>
+<?php endforeach ?>

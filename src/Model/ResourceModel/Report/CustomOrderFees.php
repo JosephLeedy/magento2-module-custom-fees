@@ -93,10 +93,12 @@ class CustomOrderFees extends AbstractReport
                             0.0000
                         )
                         AS DECIMAL (20,4)
-                    ) AS invoiced_fee_amount
+                    ) AS invoiced_fee_amount,
+                    CAST(IFNULL(SUM(refunded_fee.base_value), 0.00) AS DECIMAL (20,4)) AS base_refunded_fee_amount,
+                    CAST(IFNULL(SUM(refunded_fee.`value`), 0.00) AS DECIMAL (20,4)) AS refunded_fee_amount
                 FROM $customOrderFeesTable AS cof
                 CROSS JOIN JSON_TABLE(
-                    JSON_UNQUOTE(cof.custom_fees),
+                    JSON_UNQUOTE(cof.custom_fees_ordered),
                     '$' COLUMNS (
                         NESTED PATH '$.*' COLUMNS (
                             title VARCHAR(255) PATH '$.title',
@@ -105,6 +107,16 @@ class CustomOrderFees extends AbstractReport
                         )
                     )
                 ) AS fee
+                LEFT JOIN JSON_TABLE(
+                    JSON_UNQUOTE(cof.custom_fees_refunded),
+                    '$.*' COLUMNS (
+                        NESTED PATH '$.*' COLUMNS (
+                            title VARCHAR(255) PATH '$.title',
+                            `value` DECIMAL(20, 4) PATH '$.value',
+                            base_value DECIMAL(20, 4) PATH '$.base_value'
+                        )
+                    )
+                ) AS refunded_fee ON refunded_fee.title = fee.title
                 LEFT JOIN $salesOrderTable AS so ON so.entity_id = cof.order_entity_id
                 GROUP BY
                     so.store_id,

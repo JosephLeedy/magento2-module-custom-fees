@@ -3,7 +3,8 @@
     "itemQuantityInputLocator": ".qty-input",
     "pageTitle": "New Memo",
     "submitCreditMemoButtonLabel": "Refund Offline",
-    "updateItemQuanitiesButtonLabel": "Update Qty's"
+    "updateItemQuanitiesButtonLabel": "Update Qty's",
+    "updateTotalsButtonLabel": "Update Totals"
   },
   "adminSalesOrderGridPage": {
     "navigation": {

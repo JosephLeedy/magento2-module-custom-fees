@@ -53,7 +53,7 @@ class AddFieldsToCustomOrderFeesPatch implements DataPatchInterface
                  *      value: float
                  *  }> $customFees
                  */
-                $customFees = $customOrderFees->getCustomFees();
+                $customFees = $customOrderFees->getCustomFeesOrdered();
                 $hasChanges = false;
 
                 array_walk(
@@ -89,7 +89,7 @@ class AddFieldsToCustomOrderFeesPatch implements DataPatchInterface
                  */
 
                 if ($hasChanges) {
-                    $customOrderFees->setCustomFees($customFees);
+                    $customOrderFees->setCustomFeesOrdered($customFees);
                     $customOrderFees->save();
                 }
             },

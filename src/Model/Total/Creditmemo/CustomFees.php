@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Model\Total\Creditmemo;
 
+use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Sales\Model\Order\Creditmemo;
 use Magento\Sales\Model\Order\Creditmemo\Total\AbstractTotal;
 
 use function array_column;
+use function array_key_exists;
 use function array_sum;
+use function array_walk;
+use function round;
 
 class CustomFees extends AbstractTotal
 {
@@ -18,6 +23,7 @@ class CustomFees extends AbstractTotal
      */
     public function __construct(
         private readonly CustomFeesRetriever $customFeesRetriever,
+        private readonly PriceCurrencyInterface $priceCurrency,
         array $data = [],
     ) {
         parent::__construct($data);
@@ -27,24 +33,113 @@ class CustomFees extends AbstractTotal
     {
         parent::collect($creditmemo);
 
-        $customFees = $this->customFeesRetriever->retrieve($creditmemo->getOrder());
+        $customFees = $this->customFeesRetriever->retrieveOrderedCustomFees($creditmemo->getOrder());
 
         if (count($customFees) === 0) {
             return $this;
         }
 
+        $refundedCustomFeeCount = $this->processRefundedCustomFees($creditmemo, $customFees);
         $baseTotalCustomFees = array_sum(array_column($customFees, 'base_value'));
         $totalCustomFees = array_sum(array_column($customFees, 'value'));
-        $baseRefundedCustomFeeAmount = (
-            (float) $creditmemo->getBaseSubtotal() / (float) $creditmemo->getOrder()->getBaseSubtotal()
-        ) * $baseTotalCustomFees;
-        $totalRefundedCustomFeeAmount = (
-            (float) $creditmemo->getSubtotal() / (float) $creditmemo->getOrder()->getSubtotal()
-        ) * $totalCustomFees;
+        $baseRefundedCustomFeeAmount = $baseTotalCustomFees;
+        $totalRefundedCustomFeeAmount = $totalCustomFees;
+
+        if ($refundedCustomFeeCount === 0) {
+            $baseRefundedCustomFeeAmount = (
+                (float) $creditmemo->getBaseSubtotal() / (float) $creditmemo->getOrder()->getBaseSubtotal()
+            ) * $baseTotalCustomFees;
+            $totalRefundedCustomFeeAmount = (
+                (float) $creditmemo->getSubtotal() / (float) $creditmemo->getOrder()->getSubtotal()
+            ) * $totalCustomFees;
+        }
 
         $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $baseRefundedCustomFeeAmount);
         $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $totalRefundedCustomFeeAmount);
 
         return $this;
+    }
+
+    /**
+     * @param array<string, array{
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     base_value: float,
+     *     value: float,
+     * }> $customFees
+     */
+    private function processRefundedCustomFees(Creditmemo $creditmemo, array &$customFees): int
+    {
+        $refundedCustomFeeCount = 0;
+        $creditmemoExtensionAttributes = $creditmemo->getExtensionAttributes();
+        /** @var array<string, float>|array{} $refundedCustomFees */
+        $refundedCustomFees = $creditmemoExtensionAttributes?->getRefundedCustomFees() ?? [];
+        $store = $creditmemo->getStore();
+        $existingRefundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($creditmemo);
+        $refundedCustomFeeValues = [
+            'base_value' => [],
+            'value' => [],
+        ];
+
+        foreach ($existingRefundedCustomFees as $fees) {
+            foreach ($fees as $fee) {
+                $refundedCustomFeeValues['base_value'][$fee['code']] = round(
+                    (float) ($refundedCustomFeeValues['base_value'][$fee['code']] ?? 0)
+                    + (float) $fee['base_value'],
+                    2,
+                );
+                $refundedCustomFeeValues['value'][$fee['code']] = round(
+                    (float) ($refundedCustomFeeValues['value'][$fee['code']] ?? 0) + (float) $fee['value'],
+                    2,
+                );
+            }
+        }
+
+        array_walk(
+            $customFees,
+            function (array &$customFee) use (
+                $refundedCustomFees,
+                $store,
+                $creditmemo,
+                &$refundedCustomFeeCount,
+                $refundedCustomFeeValues,
+            ): void {
+                $customFeeCode = $customFee['code'];
+
+                if (array_key_exists($customFeeCode, $refundedCustomFees)) {
+                    $customFee['base_value'] = $refundedCustomFees[$customFeeCode];
+                    $customFee['value'] = $this->priceCurrency->convert(
+                        $refundedCustomFees[$customFeeCode],
+                        $store,
+                        $creditmemo->getOrderCurrencyCode(),
+                    );
+
+                    $refundedCustomFeeCount++;
+
+                    return;
+                }
+
+                if ($refundedCustomFeeValues['base_value'] === []) {
+                    return;
+                }
+
+                $customFee['base_value'] = round(
+                    (float) $customFee['base_value']
+                    - (float) ($refundedCustomFeeValues['base_value'][$customFeeCode] ?? 0),
+                    2,
+                );
+                $customFee['value'] = round(
+                    (float) $customFee['value'] - (float) ($refundedCustomFeeValues['value'][$customFeeCode] ?? 0),
+                    2,
+                );
+
+                $refundedCustomFeeCount++;
+            },
+        );
+
+        return $refundedCustomFeeCount;
     }
 }

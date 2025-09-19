@@ -45,14 +45,18 @@ jobs:
         if: matrix.generate_coverage
         run: dpkg -s php${{ matrix.PHP_VERSION }}-xdebug >/dev/null 2>&1 || apt install -y php${{ matrix.PHP_VERSION }}-xdebug
 
+      - name: Install development dependencies
+        working-directory: /data
+        run: |
+          /usr/local/bin/composer require --dev colinodell/psr-testlogger
+          /usr/local/bin/composer require --dev dms/phpunit-arraysubset-asserts
+
       - name: Copy extension to Magento codebase
         run: mkdir /data/extensions/module-custom-fees && cp -r . /data/extensions/module-custom-fees
 
       - name: Install extension
         working-directory: /data
-        run: |
-          composer config repo.packagist false
-          composer require joseph-leedy/module-custom-fees:@dev
+        run: /usr/local/bin/composer require joseph-leedy/module-custom-fees:@dev
 
       - name: Enable extension
         working-directory: /data

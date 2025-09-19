@@ -16,6 +16,12 @@
     <type name="Magento\Reports\Model\ResourceModel\Refresh\Collection">
         <plugin name="add_custom_order_fees_to_grid" type="JosephLeedy\CustomFees\Plugin\Reports\Model\ResourceModel\Refresh\CollectionPlugin"/>
     </type>
+    <type name="Magento\Sales\Api\CreditmemoRepositoryInterface">
+        <plugin name="save_refunded_custom_fees" type="JosephLeedy\CustomFees\Plugin\Sales\Api\CreditmemoRepositoryInterfacePlugin"/>
+    </type>
+    <type name="Magento\Sales\Model\Convert\Order">
+        <plugin name="init_custom_fee_data" type="JosephLeedy\CustomFees\Plugin\Sales\Model\Convert\OrderPlugin"/>
+    </type>
     <type name="Magento\Ui\Component\AbstractComponent">
         <plugin name="add_custom_fees_columns_to_order_grid" type="JosephLeedy\CustomFees\Plugin\Ui\Component\AbstractComponentPlugin"/>
     </type>

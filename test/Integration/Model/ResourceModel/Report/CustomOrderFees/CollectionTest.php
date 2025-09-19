@@ -61,6 +61,8 @@ final class CollectionTest extends TestCase
                     'paid_fee_amount',
                     'paid_order_currency',
                     'invoiced_fee_amount',
+                    'base_refunded_fee_amount',
+                    'refunded_fee_amount',
                 ],
                 'expectedGroups' => [
                     new Zend_Db_Expr('DATE_FORMAT(period, \'%Y-%m-%d\')'),
@@ -74,12 +76,16 @@ final class CollectionTest extends TestCase
                     'paid_fee_amount' => 'sum(paid_fee_amount)',
                     'paid_order_currency' => 'paid_order_currency',
                     'invoiced_fee_amount' => 'sum(invoiced_fee_amount)',
+                    'base_refunded_fee_amount' => 'sum(base_refunded_fee_amount)',
+                    'refunded_fee_amount' => 'sum(refunded_fee_amount)',
                 ],
                 'expectedColumns' => [
                     'base_fee_amount',
                     'paid_fee_amount',
                     'paid_order_currency',
                     'invoiced_fee_amount',
+                    'base_refunded_fee_amount',
+                    'refunded_fee_amount',
                 ],
                 'expectedGroups' => [
                     'paid_order_currency',

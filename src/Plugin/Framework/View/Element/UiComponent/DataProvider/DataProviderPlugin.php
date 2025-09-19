@@ -23,7 +23,7 @@ class DataProviderPlugin
      * @param DataProvider $subject
      * @param array{
      *     items: array<int, array{
-     *         custom_fees: string|null,
+     *         custom_fees_ordered: string|null,
      *         store_id: string,
      *         base_currency_code: string,
      *         order_currency_code: string
@@ -41,16 +41,16 @@ class DataProviderPlugin
             $result['items'],
             /**
              * @param array{
-             *     custom_fees: string|null,
+             *     custom_fees_ordered: string|null,
              *     store_id: string,
              *     base_currency_code: string,
              *     order_currency_code: string
              * } $orderData
              */
             function (array &$orderData): void {
-                $customFeesJson = $orderData['custom_fees'];
+                $customFeesOrderedJson = $orderData['custom_fees_ordered'];
 
-                if ($customFeesJson === null) {
+                if ($customFeesOrderedJson === null) {
                     return;
                 }
 
@@ -66,7 +66,7 @@ class DataProviderPlugin
                      *     value: float
                      * }> $customFees
                      */
-                    $customFees = $this->serializer->unserialize($customFeesJson);
+                    $customFees = $this->serializer->unserialize($customFeesOrderedJson);
                 } catch (InvalidArgumentException) {
                     return;
                 }

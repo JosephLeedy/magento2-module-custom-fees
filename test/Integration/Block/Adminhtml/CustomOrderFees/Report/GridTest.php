@@ -32,6 +32,7 @@ final class GridTest extends TestCase
             [
                 'data' => [
                     'show_base_amount' => 1,
+                    'show_base_refunded_amount' => 1,
                 ],
             ],
         );
@@ -47,6 +48,8 @@ final class GridTest extends TestCase
             'base_fee_amount',
             'paid_fee_amount',
             'invoiced_fee_amount',
+            'base_refunded_fee_amount',
+            'refunded_fee_amount',
         ];
         $actualColumns = array_keys($grid->getColumns());
         $expectedExportTypes = [
@@ -76,6 +79,7 @@ final class GridTest extends TestCase
             [
                 'data' => [
                     'show_base_amount' => 1,
+                    'show_base_refunded_amount' => 1,
                     'period_type' => 'day',
                     'from' => '2025-01-01',
                     'to' => '2025-12-31',
@@ -93,6 +97,8 @@ final class GridTest extends TestCase
             'base_fee_amount' => '19.5',
             'paid_fee_amount' => '6.5000, 9.1872',
             'invoiced_fee_amount' => '0.0000, 0.0000',
+            'base_refunded_fee_amount' => '0.0000, 0.0000',
+            'refunded_fee_amount' => '0.0000, 0.0000',
             'paid_order_currency' => 'USD, EUR',
             'orig_data' => null,
         ];

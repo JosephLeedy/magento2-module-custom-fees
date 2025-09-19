@@ -67,7 +67,7 @@ class TotalsPlugin
             return $result;
         }
 
-        $customOrderFees = $this->customFeesRetriever->retrieve($subject->getOrder());
+        $customOrderFees = $this->customFeesRetriever->retrieveOrderedCustomFees($subject->getOrder());
 
         if (count($customOrderFees) === 0) {
             return $result;

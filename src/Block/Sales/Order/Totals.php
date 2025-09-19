@@ -21,6 +21,7 @@ use function __;
 use function array_key_first;
 use function array_walk;
 use function count;
+use function round;
 
 /**
  * Initializes and renders Custom Fees order total columns
@@ -33,12 +34,17 @@ use function count;
 class Totals extends Template
 {
     /**
+     * @var array<string, DataObject>
+     */
+    protected $customFeeTotals = [];
+
+    /**
      * @param array{} $data
      */
     public function __construct(
         Context $context,
         private readonly CustomFeesRetriever $customFeesRetriever,
-        private readonly DataObjectFactory $dataObjectFactory,
+        protected readonly DataObjectFactory $dataObjectFactory,
         array $data = [],
     ) {
         parent::__construct($context, $data);
@@ -63,26 +69,72 @@ class Totals extends Template
             $delta = (float) $source->getSubtotal() / (float) $order->getSubtotal();
         }
 
-        $customFees = $this->customFeesRetriever->retrieve($order);
+        $orderedCustomFees = $this->customFeesRetriever->retrieveOrderedCustomFees($order);
 
-        if (count($customFees) === 0) {
+        if (count($orderedCustomFees) === 0) {
             return $this;
         }
 
-        $firstFeeKey = array_key_first($customFees);
+        $refundedCustomFeeValues = [
+            'base_value' => [],
+            'value' => [],
+        ];
+
+        if ($source instanceof Creditmemo) {
+            $refundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($source);
+
+            foreach ($refundedCustomFees as $fees) {
+                foreach ($fees as $fee) {
+                    $refundedCustomFeeValues['base_value'][$fee['code']] = round(
+                        (float) ($refundedCustomFeeValues['base_value'][$fee['code']] ?? 0)
+                        + (float) $fee['base_value'],
+                        2,
+                    );
+                    $refundedCustomFeeValues['value'][$fee['code']] = round(
+                        (float) ($refundedCustomFeeValues['value'][$fee['code']] ?? 0) + (float) $fee['value'],
+                        2,
+                    );
+                }
+            }
+        }
+
+        $firstOrderedFeeKey = array_key_first($orderedCustomFees);
         $previousFeeCode = '';
 
         array_walk(
-            $customFees,
-            function (array $customFee, string|int $key) use ($baseDelta, $delta, $firstFeeKey, &$previousFeeCode) {
+            $orderedCustomFees,
+            function (
+                array $customFee,
+                string|int $key,
+            ) use (
+                $baseDelta,
+                $delta,
+                $refundedCustomFeeValues,
+                $firstOrderedFeeKey,
+                &$previousFeeCode,
+            ): void {
                 $customFee['label'] = FeeType::Percent->equals($customFee['type']) && $customFee['percent'] !== null
                     && $customFee['show_percentage']
                     ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
                     : __($customFee['title']);
-                $customFee['base_value'] *= $baseDelta;
-                $customFee['value'] *= $delta;
+                $customFeeCode = $customFee['code'];
 
                 unset($customFee['title']);
+
+                if ($refundedCustomFeeValues['base_value'] !== []) {
+                    $customFee['base_value'] = round(
+                        (float) $customFee['base_value']
+                        - (float) ($refundedCustomFeeValues['base_value'][$customFeeCode] ?? 0),
+                        2,
+                    );
+                    $customFee['value'] = round(
+                        (float) $customFee['value'] - (float) ($refundedCustomFeeValues['value'][$customFeeCode] ?? 0),
+                        2,
+                    );
+                } else {
+                    $customFee['base_value'] *= $baseDelta;
+                    $customFee['value'] *= $delta;
+                }
 
                 /** @var DataObject $total */
                 $total = $this->dataObjectFactory->create(
@@ -91,7 +143,7 @@ class Totals extends Template
                     ],
                 );
 
-                if ($key === $firstFeeKey) {
+                if ($key === $firstOrderedFeeKey) {
                     if ($this->getBeforeCondition() !== null) {
                         $this->getParentBlock()->addTotalBefore($total, $this->getBeforeCondition());
                     } else {
@@ -101,10 +153,19 @@ class Totals extends Template
                     $this->getParentBlock()->addTotal($total, $previousFeeCode);
                 }
 
-                $previousFeeCode = $customFee['code'];
+                $this->customFeeTotals[$customFeeCode] = $total;
+                $previousFeeCode = $customFeeCode;
             },
         );
 
         return $this;
+    }
+
+    /**
+     * @return DataObject[]
+     */
+    public function getCustomFeeTotals(): array
+    {
+        return $this->customFeeTotals;
     }
 }
