@@ -160,6 +160,15 @@ class SalesOrderViewPage
                 .getByRole('textbox', { name: `Refund ${customFees[feeName].title}` })
                 .fill(String(customFees[feeName].base_refund_amount));
         }
+
+        await this.page
+            .getByRole(
+                'button',
+                {
+                    name: UIReferenceCustomFees.adminSalesOrderCreditMemoNewPage.updateTotalsButtonLabel,
+                }
+            ).click();
+        await this.page.waitForLoadState('networkidle');
     }
 
     private async getFirstCreditMemoIncrementId(): Promise<string|null>
