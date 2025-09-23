@@ -8,11 +8,14 @@ use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\DB\Transaction;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Creditmemo;
+use Magento\Sales\Model\Order\Invoice;
 use Magento\Sales\Model\ResourceModel\Order as OrderResource;
+use Magento\Sales\Model\Service\InvoiceService;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
@@ -105,6 +108,88 @@ final class CustomFeesRetrieverTest extends TestCase
         $customFees = $customFeesRetriever->retrieveOrderedCustomFees($order);
 
         self::assertEmpty($customFees);
+    }
+
+    /**
+     * @magentoAppArea adminhtml
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees.php
+     */
+    public function testRetrievesCustomFeesForInvoice(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var InvoiceService $invoiceService */
+        $invoiceService = $objectManager->create(InvoiceService::class);
+        /** @var Transaction $transaction */
+        $transaction = $objectManager->create(Transaction::class);
+        /** @var CustomFeesRetriever $customFeesRetriever */
+        $customFeesRetriever = $objectManager->create(CustomFeesRetriever::class);
+
+        $order->loadByIncrementId('100000001');
+
+        /* We need to create the invoice here rather than using the `invoice_with_custom_fees` fixture because the
+           fixture ignores the area set by the `magentoAppArea` annotation, causing the plug-in that saves the invoiced
+           custom fees to not execute. */
+        $invoice = $invoiceService->prepareInvoice($order);
+
+        $invoice->register();
+
+        $transaction
+            ->addObject($invoice)
+            ->addObject($order)
+            ->save();
+
+        $invoiceId = (int) $invoice->getEntityId();
+
+        $expectedCustomFees = [
+            $invoiceId => [
+                'test_fee_0' => [
+                    'invoice_id' => $invoiceId,
+                    'code' => 'test_fee_0',
+                    'title' => 'Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 5.00,
+                    'value' => 5.00,
+                ],
+                'test_fee_1' => [
+                    'invoice_id' => $invoiceId,
+                    'code' => 'test_fee_1',
+                    'title' => 'Another Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 1.50,
+                    'value' => 1.50,
+                ],
+            ],
+        ];
+        $actualCustomFees = $customFeesRetriever->retrieveInvoicedCustomFees($invoice);
+
+        self::assertEquals($expectedCustomFees, $actualCustomFees);
+    }
+
+    /**
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/invoice.php
+     */
+    public function testDoesNotRetrieveCustomFeesForInvoiceIfNoneExist(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var CustomFeesRetriever $customFeesRetriever */
+        $customFeesRetriever = $objectManager->create(CustomFeesRetriever::class);
+
+        $order->loadByIncrementId('100000001');
+
+        /** @var Invoice $invoice */
+        $invoice = $order->getInvoiceCollection()->getFirstItem();
+
+        self::assertEmpty($customFeesRetriever->retrieveInvoicedCustomFees($invoice));
     }
 
     /**
