@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model\Total\Invoice;
 
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
+use Magento\Sales\Api\Data\InvoiceExtensionInterface;
 use Magento\Sales\Model\Order\Invoice;
 use Magento\Sales\Model\Order\Invoice\Total\AbstractTotal;
 
@@ -43,6 +44,11 @@ class CustomFees extends AbstractTotal
 
         $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $baseInvoicedCustomFeeAmount);
         $invoice->setGrandTotal($invoice->getGrandTotal() + $totalInvoicedCustomFeeAmount);
+
+        /** @var InvoiceExtensionInterface $invoiceExtensionAttributes */
+        $invoiceExtensionAttributes = $invoice->getExtensionAttributes();
+
+        $invoiceExtensionAttributes->setInvoicedCustomFees($customFees);
 
         return $this;
     }

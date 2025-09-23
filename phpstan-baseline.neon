@@ -146,6 +146,11 @@ parameters:
 			path: src/Plugin/Sales/Api/CreditmemoRepositoryInterfacePlugin.php
 
 		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: src/Plugin/Sales/Model/Order/InvoicePlugin.php
+
+		-
 			message: "#^Parameter \\#1 \\$scopeId of method Magento\\\\Framework\\\\App\\\\ScopeResolverInterface\\:\\:getScope\\(\\) expects int\\|null, string\\|null given\\.$#"
 			count: 1
 			path: src/Service/ConfigUpdater.php

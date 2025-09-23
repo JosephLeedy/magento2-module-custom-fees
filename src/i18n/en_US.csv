@@ -68,6 +68,7 @@ Subtotal,Subtotal
 "Custom Fees","Custom Fees"
 "Custom Order Fees","Custom Order Fees"
 "Could not save refunded custom fees. Error: ""%1""","Could not save refunded custom fees. Error: ""%1"""
+"Could not save invoiced custom fees. Error: ""%1""","Could not save invoiced custom fees. Error: ""%1"""
 "%1 (Base)","%1 (Base)"
 "%1 (Purchased)","%1 (Purchased)"
 "Could not get identifier for scope ""%1"".","Could not get identifier for scope ""%1""."

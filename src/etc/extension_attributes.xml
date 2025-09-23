@@ -9,6 +9,9 @@
     <extension_attributes for="Magento\Sales\Api\Data\CreditmemoInterface">
         <attribute code="refunded_custom_fees" type="float[]"/>
     </extension_attributes>
+    <extension_attributes for="Magento\Sales\Api\Data\InvoiceInterface">
+        <attribute code="invoiced_custom_fees" type="mixed[]"/>
+    </extension_attributes>
     <extension_attributes for="Magento\Sales\Api\Data\OrderInterface">
         <attribute code="custom_order_fees" type="JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface">
             <join reference_table="custom_order_fees" reference_field="order_entity_id" join_on_field="entity_id">

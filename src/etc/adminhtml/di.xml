@@ -22,6 +22,9 @@
     <type name="Magento\Sales\Model\Convert\Order">
         <plugin name="init_custom_fee_data" type="JosephLeedy\CustomFees\Plugin\Sales\Model\Convert\OrderPlugin"/>
     </type>
+    <type name="Magento\Sales\Model\Order\Invoice">
+        <plugin name="save_invoiced_custom_fees" type="JosephLeedy\CustomFees\Plugin\Sales\Model\Order\InvoicePlugin"/>
+    </type>
     <type name="Magento\Ui\Component\AbstractComponent">
         <plugin name="add_custom_fees_columns_to_order_grid" type="JosephLeedy\CustomFees\Plugin\Ui\Component\AbstractComponentPlugin"/>
     </type>
