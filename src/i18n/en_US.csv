@@ -3,12 +3,14 @@
 No,No
 Yes,Yes
 "Show Base Amount","Show Base Amount"
+"Show Base Invoiced Amount","Show Base Invoiced Amount"
 "Show Base Refunded Amount","Show Base Refunded Amount"
 Interval,Interval
 Total,Total
 Title,Title
 Amount,Amount
 "Amount Paid","Amount Paid"
+Invoiced,Invoiced
 "Amount Invoiced","Amount Invoiced"
 Refunded,Refunded
 "Amount Refunded","Amount Refunded"
