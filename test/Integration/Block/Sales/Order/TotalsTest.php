@@ -10,7 +10,6 @@ use Magento\Framework\DataObjectFactory;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Sales\Block\Order\Creditmemo\Totals as CreditmemoTotalsBlock;
-use Magento\Sales\Block\Order\Invoice\Totals as InvoiceTotalsBlock;
 use Magento\Sales\Block\Order\Totals as OrderTotalsBlock;
 use Magento\Sales\Model\Order;
 use Magento\TestFramework\Annotation\DataFixture;
@@ -22,7 +21,7 @@ final class TotalsTest extends TestCase
 {
     /**
      * @dataProvider initTotalsDataProvider
-     * @param 'order'|'invoice'|'creditmemo' $totalsType
+     * @param 'order'|'creditmemo' $totalsType
      * @param 'does'|'does not' $condition
      */
     public function testInitTotals(string $totalsType, string $condition): void
@@ -44,10 +43,9 @@ final class TotalsTest extends TestCase
         $objectManager = Bootstrap::getObjectManager();
         /** @var Order $order */
         $order = $objectManager->create(Order::class);
-        /** @var OrderTotalsBlock|InvoiceTotalsBlock|CreditmemoTotalsBlock $totalsBlock */
+        /** @var OrderTotalsBlock|CreditmemoTotalsBlock $totalsBlock */
         $totalsBlock = match ($totalsType) {
             'order' => $objectManager->create(OrderTotalsBlock::class),
-            'invoice' => $objectManager->create(InvoiceTotalsBlock::class),
             'creditmemo' => $objectManager->create(CreditmemoTotalsBlock::class),
         };
         $customOrderFeesTotalsBlock = $this->getMockBuilder(CustomOrderFeesTotalsBlock::class)
@@ -70,10 +68,6 @@ final class TotalsTest extends TestCase
             ->willReturn($totalsBlock);
 
         $totalsBlock->setOrder($order);
-
-        if ($totalsType === 'invoice') {
-            $totalsBlock->setInvoice($order->getInvoiceCollection()->getFirstItem());
-        }
 
         if ($totalsType === 'creditmemo') {
             $totalsBlock->setCreditmemo($order->getCreditmemosCollection()->getFirstItem());
@@ -99,20 +93,12 @@ final class TotalsTest extends TestCase
                 'totalsType' => 'order',
                 'condition' => 'does',
             ],
-            'does initialize totals for invoice with custom fees' => [
-                'totalsType' => 'invoice',
-                'condition' => 'does',
-            ],
             'does initialize totals for creditmemo with custom fees' => [
                 'totalsType' => 'creditmemo',
                 'condition' => 'does',
             ],
             'does not initialize totals for order without custom fees' => [
                 'totalsType' => 'order',
-                'condition' => 'does not',
-            ],
-            'does not initialize totals for invoice without custom fees' => [
-                'totalsType' => 'invoice',
                 'condition' => 'does not',
             ],
             'does not initialize totals for creditmemo without custom fees' => [
