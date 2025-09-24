@@ -126,7 +126,7 @@ parameters:
 			path: src/Model/Rule/Condition/QuoteAddress.php
 
 		-
-			message: "#^Parameter \\#1 \\$invoicedCustomFees of method Magento\\\\Sales\\\\Api\\\\Data\\\\InvoiceExtensionInterface\\:\\:setInvoicedCustomFees\\(\\) expects array\\<mixed\\>, array\\<array\\<string, bool\\|float\\|string\\|null\\>\\> given\\.$#"
+			message: "#^Parameter \\#1 \\$invoicedCustomFees of method Magento\\\\Sales\\\\Api\\\\Data\\\\InvoiceExtensionInterface\\:\\:setInvoicedCustomFees\\(\\) expects array\\<mixed\\>, array\\<string, array\\<string, bool\\|float\\|string\\|null\\>\\> given\\.$#"
 			count: 1
 			path: src/Model/Total/Invoice/CustomFees.php
 
