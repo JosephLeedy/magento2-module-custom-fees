@@ -56,29 +56,17 @@ class Totals extends Template
         }
 
         $customFees = $customFees[$creditMemoId];
-        $baseDelta = 1;
-        $delta = 1;
         $firstFeeKey = array_key_first($customFees);
         $previousFeeCode = '';
 
         array_walk(
             $customFees,
-            function (
-                array $customFee,
-                string|int $key,
-            ) use (
-                $baseDelta,
-                $delta,
-                $firstFeeKey,
-                &$previousFeeCode,
-            ): void {
+            function (array $customFee, string|int $key) use ($firstFeeKey, &$previousFeeCode): void {
                 $customFee['label'] = FeeType::Percent->equals($customFee['type'])
                     && $customFee['percent'] !== null
                     && $customFee['show_percentage']
                     ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
                     : __($customFee['title']);
-                $customFee['base_value'] *= $baseDelta;
-                $customFee['value'] *= $delta;
 
                 unset($customFee['title']);
 
