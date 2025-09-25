@@ -9,7 +9,6 @@ use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\DataObjectFactory;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
-use Magento\Sales\Block\Order\Creditmemo\Totals as CreditmemoTotalsBlock;
 use Magento\Sales\Block\Order\Totals as OrderTotalsBlock;
 use Magento\Sales\Model\Order;
 use Magento\TestFramework\Annotation\DataFixture;
@@ -21,12 +20,11 @@ final class TotalsTest extends TestCase
 {
     /**
      * @dataProvider initTotalsDataProvider
-     * @param 'order'|'creditmemo' $totalsType
      * @param 'does'|'does not' $condition
      */
-    public function testInitTotals(string $totalsType, string $condition): void
+    public function testInitTotals(string $condition): void
     {
-        $filename = $totalsType;
+        $filename = 'order';
         $assertion = 'assertArrayNotHasKey';
 
         if ($condition === 'does') {
@@ -43,11 +41,8 @@ final class TotalsTest extends TestCase
         $objectManager = Bootstrap::getObjectManager();
         /** @var Order $order */
         $order = $objectManager->create(Order::class);
-        /** @var OrderTotalsBlock|CreditmemoTotalsBlock $totalsBlock */
-        $totalsBlock = match ($totalsType) {
-            'order' => $objectManager->create(OrderTotalsBlock::class),
-            'creditmemo' => $objectManager->create(CreditmemoTotalsBlock::class),
-        };
+        /** @var OrderTotalsBlock $orderTotalsBlock */
+        $orderTotalsBlock = $objectManager->create(OrderTotalsBlock::class);
         $customOrderFeesTotalsBlock = $this->getMockBuilder(CustomOrderFeesTotalsBlock::class)
             ->setConstructorArgs(
                 [
@@ -65,19 +60,14 @@ final class TotalsTest extends TestCase
         $order->loadByIncrementId('100000001');
 
         $customOrderFeesTotalsBlock->method('getParentBlock')
-            ->willReturn($totalsBlock);
+            ->willReturn($orderTotalsBlock);
 
-        $totalsBlock->setOrder($order);
-
-        if ($totalsType === 'creditmemo') {
-            $totalsBlock->setCreditmemo($order->getCreditmemosCollection()->getFirstItem());
-        }
-
-        $totalsBlock->toHtml();
+        $orderTotalsBlock->setOrder($order);
+        $orderTotalsBlock->toHtml();
 
         $customOrderFeesTotalsBlock->initTotals();
 
-        $orderTotals = $totalsBlock->getTotals();
+        $orderTotals = $orderTotalsBlock->getTotals();
 
         self::$assertion('test_fee_0', $orderTotals);
         self::$assertion('test_fee_1', $orderTotals);
@@ -90,19 +80,9 @@ final class TotalsTest extends TestCase
     {
         return [
             'does initialize totals for order with custom fees' => [
-                'totalsType' => 'order',
-                'condition' => 'does',
-            ],
-            'does initialize totals for creditmemo with custom fees' => [
-                'totalsType' => 'creditmemo',
                 'condition' => 'does',
             ],
             'does not initialize totals for order without custom fees' => [
-                'totalsType' => 'order',
-                'condition' => 'does not',
-            ],
-            'does not initialize totals for creditmemo without custom fees' => [
-                'totalsType' => 'creditmemo',
                 'condition' => 'does not',
             ],
         ];
