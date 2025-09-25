@@ -68,7 +68,13 @@ class Totals extends Template
                     ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
                     : __($customFee['title']);
 
-                unset($customFee['title']);
+                unset(
+                    $customFee['credit_memo_id'],
+                    $customFee['title'],
+                    $customFee['type'],
+                    $customFee['percent'],
+                    $customFee['show_percentage'],
+                );
 
                 /** @var DataObject $total */
                 $total = $this->dataObjectFactory->create(
