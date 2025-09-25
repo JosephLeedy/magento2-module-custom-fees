@@ -47,7 +47,7 @@ class Totals extends Template
 
     public function initTotals(): self
     {
-        $customFees = $this->customFeesRetriever->retrieveRefundedCustomFees($this->getSource());
+        $customFees = $this->customFeesRetriever->retrieveRefundedCustomFees($this->getSource()->getOrder());
         /** @var int|string $creditMemoId */
         $creditMemoId = $this->getSource()->getId();
 

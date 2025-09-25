@@ -74,7 +74,7 @@ class Totals extends Template
         if ($source instanceof Creditmemo) {
             $baseDelta = (float) $source->getBaseSubtotal() / (float) $order->getBaseSubtotal();
             $delta = (float) $source->getSubtotal() / (float) $order->getSubtotal();
-            $refundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($source);
+            $refundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($order);
 
             foreach ($refundedCustomFees as $fees) {
                 foreach ($fees as $fee) {

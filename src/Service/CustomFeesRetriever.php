@@ -120,11 +120,14 @@ class CustomFeesRetriever
      *     value: float
      * }>[]
      */
-    public function retrieveRefundedCustomFees(Creditmemo $creditmemo): array
+    public function retrieveRefundedCustomFees(Order $order): array
     {
+        /** @var int|string|null $orderId */
+        $orderId = $order->getEntityId();
+
         try {
             $customFeesRefunded = $this->customOrderFeesRepository
-                ->getByOrderId($creditmemo->getOrderId())
+                ->getByOrderId($orderId)
                 ->getCustomFeesRefunded();
         } catch (NoSuchEntityException) {
             $customFeesRefunded = [];

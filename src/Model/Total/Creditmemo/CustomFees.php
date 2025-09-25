@@ -78,7 +78,7 @@ class CustomFees extends AbstractTotal
         /** @var array<string, float>|array{} $refundedCustomFees */
         $refundedCustomFees = $creditmemoExtensionAttributes?->getRefundedCustomFees() ?? [];
         $store = $creditmemo->getStore();
-        $existingRefundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($creditmemo);
+        $existingRefundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($creditmemo->getOrder());
         $refundedCustomFeeValues = [
             'base_value' => [],
             'value' => [],
