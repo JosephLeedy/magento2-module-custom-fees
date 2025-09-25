@@ -32,6 +32,7 @@ final class GridTest extends TestCase
             [
                 'data' => [
                     'show_base_amount' => 1,
+                    'show_base_invoiced_amount' => 1,
                     'show_base_refunded_amount' => 1,
                 ],
             ],
@@ -47,6 +48,7 @@ final class GridTest extends TestCase
             'fee_title',
             'base_fee_amount',
             'paid_fee_amount',
+            'base_invoiced_fee_amount',
             'invoiced_fee_amount',
             'base_refunded_fee_amount',
             'refunded_fee_amount',
@@ -79,6 +81,7 @@ final class GridTest extends TestCase
             [
                 'data' => [
                     'show_base_amount' => 1,
+                    'show_base_invoiced_amount' => 1,
                     'show_base_refunded_amount' => 1,
                     'period_type' => 'day',
                     'from' => '2025-01-01',
@@ -96,6 +99,7 @@ final class GridTest extends TestCase
         $expectedTotalData = [
             'base_fee_amount' => '19.5',
             'paid_fee_amount' => '6.5000, 9.1872',
+            'base_invoiced_fee_amount' => '0.0000, 0.0000',
             'invoiced_fee_amount' => '0.0000, 0.0000',
             'base_refunded_fee_amount' => '0.0000, 0.0000',
             'refunded_fee_amount' => '0.0000, 0.0000',

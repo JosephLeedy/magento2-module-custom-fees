@@ -17,6 +17,7 @@ interface CustomOrderFeesInterface
 {
     public const ORDER_ID = 'order_entity_id';
     public const CUSTOM_FEES_ORDERED = 'custom_fees_ordered';
+    public const CUSTOM_FEES_INVOICED = 'custom_fees_invoiced';
     public const CUSTOM_FEES_REFUNDED = 'custom_fees_refunded';
 
     /**
@@ -58,6 +59,37 @@ interface CustomOrderFeesInterface
      * }>
      */
     public function getCustomFeesOrdered(): array;
+
+    /**
+     * @param string|string[]|float[] $customFeesInvoiced
+     * @phpstan-param string|array<string, array{
+     *     invoice_id: int,
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     base_value: float,
+     *     value: float
+     * }>[] $customFeesInvoiced
+     * @throws InvalidArgumentException
+     */
+    public function setCustomFeesInvoiced(string|array $customFeesInvoiced): CustomOrderFeesInterface;
+
+    /**
+     * @return string[]|float[]
+     * @phpstan-return array{}|array<string, array{
+     *     invoice_id: int,
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     base_value: float,
+     *     value: float
+     * }>[]
+     */
+    public function getCustomFeesInvoiced(): array;
 
     /**
      * @param string|string[]|float[] $customFeesRefunded

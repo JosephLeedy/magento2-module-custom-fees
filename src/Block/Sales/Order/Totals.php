@@ -11,11 +11,9 @@ use Magento\Framework\DataObjectFactory;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Sales\Block\Order\Creditmemo\Totals as CreditmemoTotals;
-use Magento\Sales\Block\Order\Invoice\Totals as InvoiceTotals;
 use Magento\Sales\Block\Order\Totals as OrderTotals;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Creditmemo;
-use Magento\Sales\Model\Order\Invoice;
 
 use function __;
 use function array_key_first;
@@ -27,7 +25,7 @@ use function round;
  * Initializes and renders Custom Fees order total columns
  *
  * @api
- * @method OrderTotals|InvoiceTotals|CreditmemoTotals getParentBlock()
+ * @method OrderTotals|CreditmemoTotals getParentBlock()
  * @method string|null getBeforeCondition()
  * @method string|null getAfterCondition()
  */
@@ -50,7 +48,7 @@ class Totals extends Template
         parent::__construct($context, $data);
     }
 
-    public function getSource(): Order|Invoice|Creditmemo
+    public function getSource(): Order|Creditmemo
     {
         return $this->getParentBlock()->getSource();
     }
@@ -59,28 +57,23 @@ class Totals extends Template
     {
         $source = $this->getSource();
         /** @var Order $order */
-        $order = $source;
-        $baseDelta = 1;
-        $delta = 1;
-
-        if ($source instanceof Invoice || $source instanceof Creditmemo) {
-            $order = $source->getOrder();
-            $baseDelta = (float) $source->getBaseSubtotal() / (float) $order->getBaseSubtotal();
-            $delta = (float) $source->getSubtotal() / (float) $order->getSubtotal();
-        }
-
+        $order = $source instanceof Order ? $source : $source->getOrder();
         $orderedCustomFees = $this->customFeesRetriever->retrieveOrderedCustomFees($order);
 
         if (count($orderedCustomFees) === 0) {
             return $this;
         }
 
+        $baseDelta = 1;
+        $delta = 1;
         $refundedCustomFeeValues = [
             'base_value' => [],
             'value' => [],
         ];
 
         if ($source instanceof Creditmemo) {
+            $baseDelta = (float) $source->getBaseSubtotal() / (float) $order->getBaseSubtotal();
+            $delta = (float) $source->getSubtotal() / (float) $order->getSubtotal();
             $refundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($source);
 
             foreach ($refundedCustomFees as $fees) {

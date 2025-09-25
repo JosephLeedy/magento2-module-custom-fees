@@ -27,6 +27,9 @@ document.
 - The Custom Order Fees Report now includes a column for the total amount of
   custom fees refunded for each order, aggregated from the new 
   `custom_fees_refunded` column in the `custom_order_fees` table
+- The `custom_order_fees` table now includes a column called
+  `custom_fees_invoiced` to track the total amount of custom fees invoiced for
+  each invoice related to the order
 
 ### Deprecated
 

@@ -10,6 +10,7 @@ use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Creditmemo;
+use Magento\Sales\Model\Order\Invoice;
 
 /**
  * @api
@@ -80,6 +81,31 @@ class CustomFeesRetriever
         }
 
         return $customFees;
+    }
+
+    /**
+     * @return array{}|array<string, array{
+     *     invoice_id: int,
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     base_value: float,
+     *     value: float
+     * }>[]
+     */
+    public function retrieveInvoicedCustomFees(Invoice $invoice): array
+    {
+        try {
+            $customFeesInvoiced = $this->customOrderFeesRepository
+                ->getByOrderId($invoice->getOrderId())
+                ->getCustomFeesInvoiced();
+        } catch (NoSuchEntityException) {
+            $customFeesInvoiced = [];
+        }
+
+        return $customFeesInvoiced;
     }
 
     /**

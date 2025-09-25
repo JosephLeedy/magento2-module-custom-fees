@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model\Total\Invoice;
 
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
+use Magento\Sales\Api\Data\InvoiceExtensionInterface;
 use Magento\Sales\Model\Order\Invoice;
 use Magento\Sales\Model\Order\Invoice\Total\AbstractTotal;
 
-use function array_column;
-use function array_sum;
+use function array_walk;
 
 class CustomFees extends AbstractTotal
 {
@@ -33,16 +33,33 @@ class CustomFees extends AbstractTotal
             return $this;
         }
 
-        $baseTotalCustomFees = array_sum(array_column($customFees, 'base_value'));
-        $totalCustomFees = array_sum(array_column($customFees, 'value'));
-        $baseInvoicedCustomFeeAmount = (
-            (float) $invoice->getBaseSubtotal() / (float) $invoice->getOrder()->getBaseSubtotal()
-        ) * $baseTotalCustomFees;
-        $totalInvoicedCustomFeeAmount = ((float) $invoice->getSubtotal() / (float) $invoice->getOrder()->getSubtotal())
-            * $totalCustomFees;
+        $baseSubtotalDelta = (float) $invoice->getBaseSubtotal() / (float) $invoice->getOrder()->getBaseSubtotal();
+        $subtotalDelta = (float) $invoice->getSubtotal() / (float) $invoice->getOrder()->getSubtotal();
+        $baseTotalCustomFees = 0;
+        $totalCustomFees = 0;
 
-        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $baseInvoicedCustomFeeAmount);
-        $invoice->setGrandTotal($invoice->getGrandTotal() + $totalInvoicedCustomFeeAmount);
+        array_walk(
+            $customFees,
+            static function (&$customFee) use (
+                $baseSubtotalDelta,
+                $subtotalDelta,
+                &$baseTotalCustomFees,
+                &$totalCustomFees,
+            ): void {
+                $customFee['base_value'] *= $baseSubtotalDelta;
+                $customFee['value'] *= $subtotalDelta;
+                $baseTotalCustomFees += $customFee['base_value'];
+                $totalCustomFees += $customFee['value'];
+            },
+        );
+
+        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $baseTotalCustomFees);
+        $invoice->setGrandTotal($invoice->getGrandTotal() + $totalCustomFees);
+
+        /** @var InvoiceExtensionInterface $invoiceExtensionAttributes */
+        $invoiceExtensionAttributes = $invoice->getExtensionAttributes();
+
+        $invoiceExtensionAttributes->setInvoicedCustomFees($customFees);
 
         return $this;
     }
