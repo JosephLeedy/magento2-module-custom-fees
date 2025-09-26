@@ -13,7 +13,6 @@ use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Creditmemo;
-use Magento\Sales\Model\Order\Invoice;
 use Magento\Sales\Model\ResourceModel\Order as OrderResource;
 use Magento\Sales\Model\Service\InvoiceService;
 use Magento\TestFramework\Helper\Bootstrap;
@@ -167,7 +166,7 @@ final class CustomFeesRetrieverTest extends TestCase
                 ],
             ],
         ];
-        $actualCustomFees = $customFeesRetriever->retrieveInvoicedCustomFees($invoice);
+        $actualCustomFees = $customFeesRetriever->retrieveInvoicedCustomFees($order);
 
         self::assertEquals($expectedCustomFees, $actualCustomFees);
     }
@@ -186,10 +185,7 @@ final class CustomFeesRetrieverTest extends TestCase
 
         $order->loadByIncrementId('100000001');
 
-        /** @var Invoice $invoice */
-        $invoice = $order->getInvoiceCollection()->getFirstItem();
-
-        self::assertEmpty($customFeesRetriever->retrieveInvoicedCustomFees($invoice));
+        self::assertEmpty($customFeesRetriever->retrieveInvoicedCustomFees($order));
     }
 
     /**

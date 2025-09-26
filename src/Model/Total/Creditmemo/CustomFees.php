@@ -54,6 +54,7 @@ class CustomFees extends AbstractTotal
             ) * $totalCustomFees;
         }
 
+        $creditmemo->getExtensionAttributes()?->setRefundedCustomFees($customFees);
         $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $baseRefundedCustomFeeAmount);
         $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $totalRefundedCustomFeeAmount);
 
