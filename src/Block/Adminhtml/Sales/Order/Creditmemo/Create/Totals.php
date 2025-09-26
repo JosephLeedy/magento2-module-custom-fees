@@ -11,7 +11,6 @@ use Magento\Framework\DataObjectFactory;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Sales\Block\Order\Creditmemo\Totals as CreditmemoTotals;
-use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Creditmemo;
 
 use function __;
@@ -85,8 +84,7 @@ class Totals extends Template
 
     public function formatValue(float $value): string
     {
-        /** @var Order $order */
-        $order = $this->getSource()->getOrder();
+        $order = $this->getParentBlock()->getSource()->getOrder();
 
         return $order
             ->getOrderCurrency()
