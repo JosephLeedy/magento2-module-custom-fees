@@ -124,6 +124,10 @@ class CustomFeesRetriever
         /** @var int|string|null $orderId */
         $orderId = $order->getEntityId();
 
+        if ($orderId === null) {
+            return [];
+        }
+
         try {
             $customFeesRefunded = $this->customOrderFeesRepository
                 ->getByOrderId($orderId)
