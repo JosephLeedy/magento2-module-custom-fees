@@ -9,19 +9,15 @@ use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Sales\Api\CreditmemoRepositoryInterface;
 use Magento\Sales\Api\Data\CreditmemoInterface;
 use Magento\Sales\Model\Order\Creditmemo;
 use Psr\Log\LoggerInterface;
 
-use function array_find;
-
 class CreditmemoRepositoryInterfacePlugin
 {
     public function __construct(
         private readonly CustomOrderFeesRepositoryInterface $customOrderFeesRepository,
-        private readonly PriceCurrencyInterface $priceCurrency,
         private readonly LoggerInterface $logger,
     ) {}
 
@@ -30,6 +26,17 @@ class CreditmemoRepositoryInterfacePlugin
      */
     public function afterSave(CreditmemoRepositoryInterface $subject, CreditmemoInterface $result): CreditmemoInterface
     {
+        /**
+         * @var array<string, array{
+         *     code: string,
+         *     title: string,
+         *     type: value-of<FeeType>,
+         *     percent: float|null,
+         *     show_percentage: bool,
+         *     base_value: float,
+         *     value: float,
+         * }> $refundedCustomFees
+         */
         $refundedCustomFees = $result->getExtensionAttributes()?->getRefundedCustomFees() ?? [];
 
         if ($refundedCustomFees === []) {
@@ -42,43 +49,13 @@ class CreditmemoRepositoryInterfacePlugin
             return $result;
         }
 
-        $customFeesOrdered = $customOrderFees->getCustomFeesOrdered();
         $customFeesRefunded = $customOrderFees->getCustomFeesRefunded();
         $creditMemoId = (int) $result->getId();
 
-        /**
-         * @var string $code
-         * @var string|float $baseValue
-         */
-        foreach ($refundedCustomFees as $code => $baseValue) {
-            /**
-             * @var array{
-             *     code?: string,
-             *     title?: string,
-             *     type?: value-of<FeeType>,
-             *     percent?: float|null,
-             *     show_percentage?: bool,
-             *     base_value?: float,
-             * } $orderedCustomFee
-             */
-            $orderedCustomFee = array_find(
-                $customFeesOrdered,
-                static fn(array $customFeeOrdered): bool => $customFeeOrdered['code'] === $code,
-            ) ?? [];
-            $customFeesRefunded[$creditMemoId][$code] = [
-                'credit_memo_id' => $creditMemoId,
-                'code' => $code,
-                'title' => $orderedCustomFee['title'] ?? '',
-                'type' => $orderedCustomFee['type'] ?? FeeType::Fixed->value,
-                'percent' => $orderedCustomFee['percent'] ?? null,
-                'show_percentage' => $orderedCustomFee['show_percentage'] ?? false,
-                'base_value' => (float) $baseValue,
-                'value' => $this->priceCurrency->convert(
-                    (float) $baseValue,
-                    $result->getStore(),
-                    $result->getOrderCurrencyCode(),
-                ),
-            ];
+        foreach ($refundedCustomFees as $refundedCustomFee) {
+            $code = $refundedCustomFee['code'];
+            $refundedCustomFee['credit_memo_id'] = $creditMemoId;
+            $customFeesRefunded[$creditMemoId][$code] = $refundedCustomFee;
         }
 
         $customOrderFees->setCustomFeesRefunded($customFeesRefunded);

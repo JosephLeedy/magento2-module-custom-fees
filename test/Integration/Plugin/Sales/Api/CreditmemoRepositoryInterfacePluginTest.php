@@ -183,6 +183,10 @@ final class CreditmemoRepositoryInterfacePluginTest extends TestCase
         /** @var CreditmemoInterface $creditMemo */
         $creditMemo = $creditMemoLoader->load();
 
+        if ($orderHasCustomFees) {
+            $creditMemo->getExtensionAttributes()->setRefundedCustomFees([]);
+        }
+
         $creditMemoManagement->refund($creditMemo, true);
 
         /* The Custom Order Fees Repository can be used to load the order's custom fees because it throws an exception
