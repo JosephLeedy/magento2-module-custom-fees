@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Plugin\Sales\Model\Convert;
 
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\App\RequestInterface;
 use Magento\Sales\Api\Data\CreditmemoExtensionInterface;
 use Magento\Sales\Model\Convert\Order;
@@ -29,7 +30,19 @@ class OrderPlugin
 
     private function initCustomFeeData(Creditmemo $creditmemo): void
     {
-        /** @var array{custom_fees?: array<string, float>} $data */
+        /**
+         * @var array{
+         *     custom_fees?: array<string, float|array<string, array{
+         *         code: string,
+         *         title: string,
+         *         type: value-of<FeeType>,
+         *         percent: float|null,
+         *         show_percentage: bool,
+         *         base_value: float,
+         *         value: float,
+         *     }>>
+         * } $data
+         */
         $data = $this->request->getParam('creditmemo', []);
         /** @var CreditmemoExtensionInterface $extensionAttributes */
         $extensionAttributes = $creditmemo->getExtensionAttributes();
