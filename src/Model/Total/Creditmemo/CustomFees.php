@@ -46,14 +46,13 @@ class CustomFees extends AbstractTotal
         $totalRefundedCustomFeeAmount = $totalCustomFees;
 
         if ($refundedCustomFeeCount === 0) {
-            $baseRefundedCustomFeeAmount = (
-                (float) $creditmemo->getBaseSubtotal() / (float) $creditmemo->getOrder()->getBaseSubtotal()
-            ) * $baseTotalCustomFees;
-            $totalRefundedCustomFeeAmount = (
-                (float) $creditmemo->getSubtotal() / (float) $creditmemo->getOrder()->getSubtotal()
-            ) * $totalCustomFees;
+            [
+                'baseRefundedCustomFeeAmount' => $baseRefundedCustomFeeAmount,
+                'totalRefundedCustomFeeAmount' => $totalRefundedCustomFeeAmount,
+            ] = $this->calculateRefundedCustomFees($creditmemo, $customFees);
         }
 
+        $creditmemo->getExtensionAttributes()?->setRefundedCustomFees($customFees);
         $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $baseRefundedCustomFeeAmount);
         $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $totalRefundedCustomFeeAmount);
 
@@ -78,7 +77,7 @@ class CustomFees extends AbstractTotal
         /** @var array<string, float>|array{} $refundedCustomFees */
         $refundedCustomFees = $creditmemoExtensionAttributes?->getRefundedCustomFees() ?? [];
         $store = $creditmemo->getStore();
-        $existingRefundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($creditmemo);
+        $existingRefundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($creditmemo->getOrder());
         $refundedCustomFeeValues = [
             'base_value' => [],
             'value' => [],
@@ -141,5 +140,48 @@ class CustomFees extends AbstractTotal
         );
 
         return $refundedCustomFeeCount;
+    }
+
+    /**
+     * @param array<string, array{
+     *     code: string,
+     *     title: string,
+     *     type: value-of<FeeType>,
+     *     percent: float|null,
+     *     show_percentage: bool,
+     *     base_value: float,
+     *     value: float,
+     * }> $customFees
+     * @return array{
+     *     baseRefundedCustomFeeAmount: float,
+     *     totalRefundedCustomFeeAmount: float,
+     * }
+     */
+    private function calculateRefundedCustomFees(Creditmemo $creditmemo, array &$customFees): array
+    {
+        $baseDelta = (float) $creditmemo->getBaseSubtotal() / (float) $creditmemo->getOrder()->getBaseSubtotal();
+        $delta = (float) $creditmemo->getSubtotal() / (float) $creditmemo->getOrder()->getSubtotal();
+        $baseRefundedCustomFeeAmount = 0;
+        $totalRefundedCustomFeeAmount = 0;
+
+        array_walk(
+            $customFees,
+            static function (array &$customFee) use (
+                $baseDelta,
+                $delta,
+                &$baseRefundedCustomFeeAmount,
+                &$totalRefundedCustomFeeAmount,
+            ): void {
+                $customFee['base_value'] = round($customFee['base_value'] * $baseDelta, 2);
+                $customFee['value'] = round($customFee['value'] * $delta, 2);
+                $baseRefundedCustomFeeAmount += $customFee['base_value'];
+                $totalRefundedCustomFeeAmount += $customFee['value'];
+            },
+        );
+
+        return [
+            'baseRefundedCustomFeeAmount' => $baseRefundedCustomFeeAmount,
+            'totalRefundedCustomFeeAmount' => $totalRefundedCustomFeeAmount,
+        ];
     }
 }

@@ -7,7 +7,7 @@
         <attribute code="custom_fee_segments" type="Magento\Quote\Api\Data\TotalSegmentInterface[]"/>
     </extension_attributes>
     <extension_attributes for="Magento\Sales\Api\Data\CreditmemoInterface">
-        <attribute code="refunded_custom_fees" type="float[]"/>
+        <attribute code="refunded_custom_fees" type="mixed[]"/>
     </extension_attributes>
     <extension_attributes for="Magento\Sales\Api\Data\InvoiceInterface">
         <attribute code="invoiced_custom_fees" type="mixed[]"/>

@@ -9,7 +9,6 @@ use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
 use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\Order;
-use Magento\Sales\Model\Order\Creditmemo;
 use Magento\Sales\Model\Order\Invoice;
 
 /**
@@ -120,11 +119,18 @@ class CustomFeesRetriever
      *     value: float
      * }>[]
      */
-    public function retrieveRefundedCustomFees(Creditmemo $creditmemo): array
+    public function retrieveRefundedCustomFees(Order $order): array
     {
+        /** @var int|string|null $orderId */
+        $orderId = $order->getEntityId();
+
+        if ($orderId === null) {
+            return [];
+        }
+
         try {
             $customFeesRefunded = $this->customOrderFeesRepository
-                ->getByOrderId($creditmemo->getOrderId())
+                ->getByOrderId($orderId)
                 ->getCustomFeesRefunded();
         } catch (NoSuchEntityException) {
             $customFeesRefunded = [];

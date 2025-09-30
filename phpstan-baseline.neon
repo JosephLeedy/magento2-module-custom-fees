@@ -151,6 +151,11 @@ parameters:
 			path: src/Plugin/Sales/Api/CreditmemoRepositoryInterfacePlugin.php
 
 		-
+			message: "#^Parameter \\#1 \\$refundedCustomFees of method Magento\\\\Sales\\\\Api\\\\Data\\\\CreditmemoExtensionInterface\\:\\:setRefundedCustomFees\\(\\) expects array\\<mixed\\>, array\\<string, array\\<string, array\\<string, bool\\|float\\|string\\|null\\>\\>\\|float\\> given\\.$#"
+			count: 1
+			path: src/Plugin/Sales/Model/Convert/OrderPlugin.php
+
+		-
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
 			path: src/Plugin/Sales/Model/Order/InvoicePlugin.php

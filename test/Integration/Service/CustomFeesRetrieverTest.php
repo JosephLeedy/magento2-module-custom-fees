@@ -233,7 +233,7 @@ final class CustomFeesRetrieverTest extends TestCase
                 ],
             ],
         ];
-        $actualCustomFees = $customFeesRetriever->retrieveRefundedCustomFees($creditMemo);
+        $actualCustomFees = $customFeesRetriever->retrieveRefundedCustomFees($order);
 
         self::assertEquals($expectedCustomFees, $actualCustomFees);
     }
@@ -252,10 +252,7 @@ final class CustomFeesRetrieverTest extends TestCase
 
         $order->loadByIncrementId('100000001');
 
-        /** @var Creditmemo $creditMemo */
-        $creditMemo = $order->getCreditmemosCollection()->getFirstItem();
-
-        self::assertEmpty($customFeesRetriever->retrieveRefundedCustomFees($creditMemo));
+        self::assertEmpty($customFeesRetriever->retrieveRefundedCustomFees($order));
     }
 
     /**

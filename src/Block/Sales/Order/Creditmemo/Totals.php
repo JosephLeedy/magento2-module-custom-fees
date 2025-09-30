@@ -47,7 +47,7 @@ class Totals extends Template
 
     public function initTotals(): self
     {
-        $customFees = $this->customFeesRetriever->retrieveRefundedCustomFees($this->getSource());
+        $customFees = $this->customFeesRetriever->retrieveRefundedCustomFees($this->getSource()->getOrder());
         /** @var int|string $creditMemoId */
         $creditMemoId = $this->getSource()->getId();
 
@@ -56,31 +56,25 @@ class Totals extends Template
         }
 
         $customFees = $customFees[$creditMemoId];
-        $baseDelta = 1;
-        $delta = 1;
         $firstFeeKey = array_key_first($customFees);
         $previousFeeCode = '';
 
         array_walk(
             $customFees,
-            function (
-                array $customFee,
-                string|int $key,
-            ) use (
-                $baseDelta,
-                $delta,
-                $firstFeeKey,
-                &$previousFeeCode,
-            ): void {
+            function (array $customFee, string|int $key) use ($firstFeeKey, &$previousFeeCode): void {
                 $customFee['label'] = FeeType::Percent->equals($customFee['type'])
                     && $customFee['percent'] !== null
                     && $customFee['show_percentage']
                     ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
                     : __($customFee['title']);
-                $customFee['base_value'] *= $baseDelta;
-                $customFee['value'] *= $delta;
 
-                unset($customFee['title']);
+                unset(
+                    $customFee['credit_memo_id'],
+                    $customFee['title'],
+                    $customFee['type'],
+                    $customFee['percent'],
+                    $customFee['show_percentage'],
+                );
 
                 /** @var DataObject $total */
                 $total = $this->dataObjectFactory->create(

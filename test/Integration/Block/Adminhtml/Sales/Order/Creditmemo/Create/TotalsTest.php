@@ -7,7 +7,6 @@ namespace JosephLeedy\CustomFees\Test\Integration\Block\Adminhtml\Sales\Order\Cr
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use JosephLeedy\CustomFees\Block\Adminhtml\Sales\Order\Creditmemo\Create\Totals as CreateCreditMemoTotalsBlock;
 use JosephLeedy\CustomFees\Model\FeeType;
-use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\App\Area;
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
@@ -30,7 +29,7 @@ final class TotalsTest extends TestCase
     use ArraySubsetAsserts;
 
     #[DataFixture('JosephLeedy_CustomFees::../test/Integration/_files/invoice_with_custom_fees.php')]
-    public function testInitializesAndReplacesRefundedCustomFeeTotals(): void
+    public function testInitializesRefundedCustomFeeTotals(): void
     {
         $objectManager = Bootstrap::getObjectManager();
         /** @var Order $order */
@@ -43,7 +42,6 @@ final class TotalsTest extends TestCase
             ->setConstructorArgs(
                 [
                     'context' => $objectManager->get(Context::class),
-                    'customFeesRetriever' => $objectManager->create(CustomFeesRetriever::class),
                     'dataObjectFactory' => $objectManager->get(DataObjectFactory::class),
                     'data' => [],
                 ],
@@ -58,8 +56,24 @@ final class TotalsTest extends TestCase
         $creditMemo->setOrder($order);
         $creditMemo->getExtensionAttributes()->setRefundedCustomFees(
             [
-                'test_fee_0' => '0.00',
-                'test_fee_1' => '1.50',
+                '_1727299833817_817' => [
+                    'code' => 'test_fee_0',
+                    'title' => 'Test Fee',
+                    'type' => 'fixed',
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 0.00,
+                    'value' => 0.00,
+                ],
+                '_1727299843197_197' => [
+                    'code' => 'test_fee_1',
+                    'title' => 'Another Test Fee',
+                    'type' => 'fixed',
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 1.50,
+                    'value' => 1.50,
+                ],
             ],
         );
 
@@ -86,18 +100,12 @@ final class TotalsTest extends TestCase
             'test_fee_0' => [
                 'code' => 'test_fee_0',
                 'label' => 'Refund Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
                 'base_value' => 0.00,
                 'value' => 0.00,
             ],
             'test_fee_1' => [
                 'code' => 'test_fee_1',
                 'label' => 'Refund Another Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
                 'base_value' => 1.50,
                 'value' => 1.50,
             ],
@@ -109,7 +117,7 @@ final class TotalsTest extends TestCase
     }
 
     #[DataFixture('JosephLeedy_CustomFees::../test/Integration/_files/invoice.php')]
-    public function testDoesNotReplaceCustomFeeTotalsIfCreditMemoDoesNotHaveRefundedCustomFees(): void
+    public function testDoesNotInitializeCustomFeeTotalsIfCreditMemoDoesNotHaveRefundedCustomFees(): void
     {
         $objectManager = Bootstrap::getObjectManager();
         /** @var Order $order */
@@ -122,7 +130,6 @@ final class TotalsTest extends TestCase
             ->setConstructorArgs(
                 [
                     'context' => $objectManager->get(Context::class),
-                    'customFeesRetriever' => $objectManager->create(CustomFeesRetriever::class),
                     'dataObjectFactory' => $objectManager->get(DataObjectFactory::class),
                     'data' => [],
                 ],

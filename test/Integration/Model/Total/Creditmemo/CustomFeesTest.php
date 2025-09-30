@@ -93,7 +93,7 @@ final class CustomFeesTest extends TestCase
     /**
      * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/creditmemo.php
      */
-    public function testDoesNotCollectsCustomFeesTotals(): void
+    public function testDoesNotCollectCustomFeesTotals(): void
     {
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = Bootstrap::getObjectManager();

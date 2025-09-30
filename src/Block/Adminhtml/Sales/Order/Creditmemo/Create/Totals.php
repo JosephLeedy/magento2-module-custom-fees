@@ -4,23 +4,50 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Block\Adminhtml\Sales\Order\Creditmemo\Create;
 
-use JosephLeedy\CustomFees\Block\Sales\Order\Totals as OrderTotals;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\DataObject;
-use Magento\Sales\Api\Data\CreditmemoExtensionInterface;
-use Magento\Sales\Model\Order;
+use Magento\Framework\DataObjectFactory;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Sales\Block\Order\Creditmemo\Totals as CreditmemoTotals;
 use Magento\Sales\Model\Order\Creditmemo;
 
 use function __;
-use function array_key_exists;
 use function array_walk;
 
-class Totals extends OrderTotals
+/**
+ * Initializes and renders Custom Fees new credit memo total columns
+ *
+ * @api
+ * @method CreditmemoTotals getParentBlock()
+ * @method string|null getBeforeCondition()
+ * @method string|null getAfterCondition()
+ */
+class Totals extends Template
 {
+    /**
+     * @var array<string, DataObject>
+     */
+    private array $customFeeTotals = [];
+
+    /**
+     * @param mixed[] $data
+     */
+    public function __construct(
+        Context $context,
+        private readonly DataObjectFactory $dataObjectFactory,
+        array $data = [],
+    ) {
+        parent::__construct($context, $data);
+    }
+
     public function initTotals(): self
     {
-        parent::initTotals();
+        $creditmemo = $this->getParentBlock()->getSource();
 
-        $this->replaceRefundedCustomFeeTotals();
+        if ($creditmemo === null) {
+            return $this;
+        }
 
         $customFeeTotal = $this->dataObjectFactory->create(
             [
@@ -33,13 +60,22 @@ class Totals extends OrderTotals
 
         $this->getParentBlock()->addTotal($customFeeTotal);
 
+        $this->buildCustomFeeTotals();
+
         return $this;
+    }
+
+    /**
+     * @return array<string, DataObject>
+     */
+    public function getCustomFeeTotals(): array
+    {
+        return $this->customFeeTotals;
     }
 
     public function formatValue(float $value): string
     {
-        /** @var Order $order */
-        $order = $this->getSource()->getOrder();
+        $order = $this->getParentBlock()->getSource()->getOrder();
 
         return $order
             ->getOrderCurrency()
@@ -53,30 +89,45 @@ class Totals extends OrderTotals
             );
     }
 
-    private function replaceRefundedCustomFeeTotals(): void
+    private function buildCustomFeeTotals(): void
     {
         /** @var Creditmemo $creditmemo */
-        $creditmemo = $this->getSource();
-        /** @var CreditmemoExtensionInterface $creditmemoExtensionAttributes */
-        $creditmemoExtensionAttributes = $creditmemo->getExtensionAttributes();
-        $refundedCustomFees = $creditmemoExtensionAttributes->getRefundedCustomFees() ?? [];
+        $creditmemo = $this->getParentBlock()->getSource();
+        /**
+         * @var array<string, array{
+         *     code: string,
+         *     title: string,
+         *     type: value-of<FeeType>,
+         *     percent: float|null,
+         *     show_percentage: bool,
+         *     base_value: float,
+         *     value: float,
+         * }> $refundedCustomFees
+         */
+        $refundedCustomFees = $creditmemo->getExtensionAttributes()?->getRefundedCustomFees() ?? [];
 
         array_walk(
-            $this->customFeeTotals,
-            function (DataObject $customFeeTotal) use ($refundedCustomFees) {
-                $this->getParentBlock()->removeTotal($customFeeTotal->getCode());
+            $refundedCustomFees,
+            function (array $customFee): void {
+                $customFeeCode = $customFee['code'];
+                $baseValue = (float) $customFee['base_value'];
+                $value = (float) $customFee['value'];
+                $label = FeeType::Percent->equals($customFee['type'])
+                    && $customFee['percent'] !== null
+                    && $customFee['show_percentage']
+                    ? __('Refund %1 (%2%)', $customFee['title'], $customFee['percent'])
+                    : __('Refund %1', $customFee['title']);
 
-                $customFeeTotal->setLabel(__('Refund %1', $customFeeTotal->getLabel()));
-
-                if (
-                    array_key_exists($customFeeTotal->getCode(), $refundedCustomFees)
-                    && $refundedCustomFees[$customFeeTotal->getCode()] !== $customFeeTotal->getBaseValue()
-                ) {
-                    $customFeeTotal->setBaseValue($refundedCustomFees[$customFeeTotal->getCode()]);
-                    $customFeeTotal->setValue(
-                        $this->formatValue((float) $refundedCustomFees[$customFeeTotal->getCode()]),
-                    );
-                }
+                $this->customFeeTotals[$customFeeCode] = $this->dataObjectFactory->create(
+                    [
+                        'data' => [
+                            'code' => $customFeeCode,
+                            'label' => $label,
+                            'base_value' => $baseValue,
+                            'value' => $value,
+                        ],
+                    ],
+                );
             },
         );
     }

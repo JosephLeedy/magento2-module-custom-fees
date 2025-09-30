@@ -38,42 +38,50 @@ $orderSearchResults = $searchCriteriaBuilder
 /** @var OrderRepositoryInterface $orderRepository */
 $orderRepository = $objectManager->create(OrderRepositoryInterface::class);
 $orderCollection = $orderRepository->getList($orderSearchResults);
+/** @var Transaction $transaction */
 $transaction = $objectManager->create(Transaction::class);
 
 $orderCollection->walk(
     static function (Order $order) use ($transaction): void {
-        $customOrderFees = $order->getExtensionAttributes()->getCustomOrderFees();
+        $customOrderFees = $order->getExtensionAttributes()?->getCustomOrderFees();
+        $refundedCustomFees = [];
+
+        if ($customOrderFees === null) {
+            return;
+        }
 
         $order
             ->getCreditmemosCollection()
             ->walk(
-                static function (Creditmemo $creditmemo) use ($customOrderFees): void {
-                    $customOrderFees->setCustomFeesRefunded(
-                        [
-                            'test_fee_0' => [
-                                'credit_memo_id' => (int) $creditmemo->getId(),
-                                'code' => 'test_fee_0',
-                                'title' => 'Test Fee',
-                                'type' => FeeType::Fixed->value,
-                                'percent' => null,
-                                'show_percentage' => false,
-                                'base_value' => 5.00,
-                                'value' => 5.00,
-                            ],
-                            'test_fee_1' => [
-                                'credit_memo_id' => (int) $creditmemo->getId(),
-                                'code' => 'test_fee_1',
-                                'title' => 'Another Test Fee',
-                                'type' => FeeType::Fixed->value,
-                                'percent' => null,
-                                'show_percentage' => false,
-                                'base_value' => 1.50,
-                                'value' => 1.50,
-                            ],
+                static function (Creditmemo $creditmemo) use (&$refundedCustomFees): void {
+                    $creditmemoId = (int) $creditmemo->getEntityId();
+
+                    $refundedCustomFees[$creditmemoId] = [
+                        'test_fee_0' => [
+                            'credit_memo_id' => $creditmemoId,
+                            'code' => 'test_fee_0',
+                            'title' => 'Test Fee',
+                            'type' => FeeType::Fixed->value,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 5.00,
+                            'value' => 5.00,
                         ],
-                    );
+                        'test_fee_1' => [
+                            'credit_memo_id' => $creditmemoId,
+                            'code' => 'test_fee_1',
+                            'title' => 'Another Test Fee',
+                            'type' => FeeType::Fixed->value,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 1.50,
+                            'value' => 1.50,
+                        ],
+                    ];
                 },
             );
+
+        $customOrderFees->setCustomFeesRefunded($refundedCustomFees);
 
         $transaction->addObject($customOrderFees);
         $transaction->save();
