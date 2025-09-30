@@ -14,6 +14,7 @@ use Magento\Sales\Block\Order\Invoice\Totals as InvoiceTotals;
 use Magento\Sales\Model\Order\Invoice;
 
 use function __;
+use function array_key_exists;
 use function array_key_first;
 use function array_walk;
 
@@ -50,6 +51,7 @@ class Totals extends Template
     public function initTotals(): self
     {
         $invoice = $this->getSource();
+        $order = $invoice->getOrder();
         /**
          * @var array{}|array<string, array{
          *     code: string,
@@ -62,9 +64,17 @@ class Totals extends Template
          * }> $customFees
          */
         $customFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees() ?? [];
+        /** @var int|string|null $invoiceId */
+        $invoiceId = $invoice->getId();
 
-        if ($customFees === []) {
-            return $this;
+        if ($customFees === [] && $invoiceId !== null) {
+            $invoicedCustomFees = $this->customFeesRetriever->retrieveInvoicedCustomFees($order);
+
+            if (array_key_exists($invoiceId, $invoicedCustomFees)) {
+                $customFees = $invoicedCustomFees[$invoiceId];
+            } else {
+                return $this;
+            }
         }
 
         $firstFeeKey = array_key_first($customFees);
