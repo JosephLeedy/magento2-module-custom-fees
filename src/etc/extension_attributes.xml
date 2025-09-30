@@ -18,6 +18,7 @@
                 <field>id</field>
                 <field column="order_entity_id">order_id</field>
                 <field>custom_fees_ordered</field>
+                <field>custom_fees_invoiced</field>
                 <field>custom_fees_refunded</field>
             </join>
         </attribute>
