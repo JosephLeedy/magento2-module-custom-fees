@@ -50,7 +50,7 @@ class Totals extends Template
 
     public function initTotals(): self
     {
-        $customFees = $this->customFeesRetriever->retrieveInvoicedCustomFees($this->getSource());
+        $customFees = $this->customFeesRetriever->retrieveInvoicedCustomFees($this->getSource()->getOrder());
         /** @var int|string $invoiceId */
         $invoiceId = $this->getSource()->getId();
 
