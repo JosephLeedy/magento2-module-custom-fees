@@ -50,15 +50,33 @@ class Totals extends Template
 
     public function initTotals(): self
     {
-        $customFees = $this->customFeesRetriever->retrieveInvoicedCustomFees($this->getSource());
-        /** @var int|string $invoiceId */
-        $invoiceId = $this->getSource()->getId();
+        $invoice = $this->getSource();
+        $order = $invoice->getOrder();
+        /**
+         * @var array{}|array<string, array{
+         *     code: string,
+         *     title: string,
+         *     type: value-of<FeeType>,
+         *     percent: float|null,
+         *     show_percentage: bool,
+         *     base_value: float,
+         *     value: float,
+         * }> $customFees
+         */
+        $customFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees() ?? [];
+        /** @var int|string|null $invoiceId */
+        $invoiceId = $invoice->getId();
 
-        if (!array_key_exists($invoiceId, $customFees)) {
-            return $this;
+        if ($customFees === [] && $invoiceId !== null) {
+            $invoicedCustomFees = $this->customFeesRetriever->retrieveInvoicedCustomFees($order);
+
+            if (array_key_exists($invoiceId, $invoicedCustomFees)) {
+                $customFees = $invoicedCustomFees[$invoiceId];
+            } else {
+                return $this;
+            }
         }
 
-        $customFees = $customFees[$invoiceId];
         $firstFeeKey = array_key_first($customFees);
         $previousFeeCode = '';
 

@@ -9,7 +9,6 @@ use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
 use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\Order;
-use Magento\Sales\Model\Order\Invoice;
 
 /**
  * @api
@@ -94,11 +93,18 @@ class CustomFeesRetriever
      *     value: float
      * }>[]
      */
-    public function retrieveInvoicedCustomFees(Invoice $invoice): array
+    public function retrieveInvoicedCustomFees(Order $order): array
     {
+        /** @var int|string|null $orderId */
+        $orderId = $order->getEntityId();
+
+        if ($orderId === null) {
+            return [];
+        }
+
         try {
             $customFeesInvoiced = $this->customOrderFeesRepository
-                ->getByOrderId($invoice->getOrderId())
+                ->getByOrderId($orderId)
                 ->getCustomFeesInvoiced();
         } catch (NoSuchEntityException) {
             $customFeesInvoiced = [];
