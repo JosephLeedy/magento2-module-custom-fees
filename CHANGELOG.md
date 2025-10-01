@@ -10,6 +10,8 @@ document.
 
 ## [Unreleased]
 
+## [1.3.0]
+
 ### Added
 
 - Custom fees can be enabled or disabled
@@ -127,7 +129,8 @@ document.
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [README]: ./README.md
-[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.2.3...HEAD
+[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.3.0...HEAD
+[1.3.0]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.3.0
 [1.2.3]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.2.3
 [1.2.2]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.2.2
 [1.2.1]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.2.1
