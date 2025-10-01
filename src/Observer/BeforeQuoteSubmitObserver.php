@@ -56,7 +56,7 @@ class BeforeQuoteSubmitObserver implements ObserverInterface
         /** @var CustomOrderFeesInterface $customOrderFees */
         $customOrderFees = $this->customOrderFeesFactory->create();
 
-        $customOrderFees->setCustomFees($customFees);
+        $customOrderFees->setCustomFeesOrdered($customFees);
 
         $orderExtension->setCustomOrderFees($customOrderFees);
     }

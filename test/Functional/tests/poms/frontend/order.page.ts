@@ -42,12 +42,14 @@ class OrderPage
     public async assertCreditMemoHasCustomFees(
         creditMemoIncrementId: string = '',
         inEuro: boolean = false,
-        exclude: string[] = []
+        exclude: string[] = [],
+        useRefundAmount: boolean = false,
     ): Promise<void> {
         await this.assertHasCustomFees(
             (await this.getCreditMemoItemsContainer(creditMemoIncrementId)),
             inEuro,
-            exclude
+            exclude,
+            useRefundAmount,
         );
     }
 
@@ -75,21 +77,24 @@ class OrderPage
     public async assertCreditMemoDoesNotHaveCustomFees(
         creditMemoIncrementId: string = '',
         inEuro: boolean = false,
-        exclude: string[] = []
+        exclude: string[] = [],
+        useRefundAmount: boolean = false,
     ): Promise<void> {
         await this.assertDoesNotHaveCustomFees(
             (await this.getCreditMemoItemsContainer(creditMemoIncrementId)),
             inEuro,
-            exclude
+            exclude,
+            useRefundAmount,
         );
     }
 
     private async assertHasCustomFees(
         containerLocator: Locator,
         inEuro: boolean = false,
-        exclude: string[] = []
+        exclude: string[] = [],
+        useRefundAmount: boolean = false,
     ): Promise<void> {
-        const customFees = await new CustomFees().getAll(containerLocator, inEuro, exclude);
+        const customFees = await new CustomFees().getAll(containerLocator, inEuro, exclude, useRefundAmount);
         let customFee;
 
         for (customFee of customFees) {
@@ -100,9 +105,10 @@ class OrderPage
     private async assertDoesNotHaveCustomFees(
         containerLocator: Locator,
         inEuro: boolean = false,
-        exclude: string[] = []
+        exclude: string[] = [],
+        useRefundAmount: boolean = false,
     ): Promise<void> {
-        const customFees = await new CustomFees().getAll(containerLocator, inEuro, exclude);
+        const customFees = await new CustomFees().getAll(containerLocator, inEuro, exclude, useRefundAmount);
         let customFee;
 
         for (customFee of customFees) {

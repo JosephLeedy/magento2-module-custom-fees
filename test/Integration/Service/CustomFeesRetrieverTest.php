@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Service;
 
+use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\DB\Transaction;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Creditmemo;
 use Magento\Sales\Model\ResourceModel\Order as OrderResource;
+use Magento\Sales\Model\Service\InvoiceService;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +23,7 @@ use function current;
 final class CustomFeesRetrieverTest extends TestCase
 {
     /**
-     * @dataProvider retrievesCustomFeesDataProvider
+     * @dataProvider retrievesCustomOrderFeesDataProvider
      * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees.php
      */
     public function testRetrievesCustomFeesForOrder(string $source): void
@@ -70,13 +74,13 @@ final class CustomFeesRetrieverTest extends TestCase
                 'value' => 1.50,
             ],
         ];
-        $actualCustomFees = $customFeesRetriever->retrieve($order);
+        $actualCustomFees = $customFeesRetriever->retrieveOrderedCustomFees($order);
 
         self::assertEquals($expectedCustomFees, $actualCustomFees);
     }
 
     /**
-     * @dataProvider doesNotRetrieveCustomFeesDataProvider
+     * @dataProvider doesNotRetrieveCustomOrderFeesDataProvider
      * @magentoDataFixture Magento/Sales/_files/order.php
      */
     public function testDoesNotRetrieveCustomFeesForOrder(string $condition): void
@@ -100,15 +104,157 @@ final class CustomFeesRetrieverTest extends TestCase
             $orderResource->load($order, '100000001', 'increment_id');
         }
 
-        $customFees = $customFeesRetriever->retrieve($order);
+        $customFees = $customFeesRetriever->retrieveOrderedCustomFees($order);
 
         self::assertEmpty($customFees);
     }
 
     /**
+     * @magentoAppArea adminhtml
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees.php
+     */
+    public function testRetrievesCustomFeesForInvoice(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var InvoiceService $invoiceService */
+        $invoiceService = $objectManager->create(InvoiceService::class);
+        /** @var Transaction $transaction */
+        $transaction = $objectManager->create(Transaction::class);
+        /** @var CustomFeesRetriever $customFeesRetriever */
+        $customFeesRetriever = $objectManager->create(CustomFeesRetriever::class);
+
+        $order->loadByIncrementId('100000001');
+
+        /* We need to create the invoice here rather than using the `invoice_with_custom_fees` fixture because the
+           fixture ignores the area set by the `magentoAppArea` annotation, causing the plug-in that saves the invoiced
+           custom fees to not execute. */
+        $invoice = $invoiceService->prepareInvoice($order);
+
+        $invoice->register();
+
+        $transaction
+            ->addObject($invoice)
+            ->addObject($order)
+            ->save();
+
+        $invoiceId = (int) $invoice->getEntityId();
+
+        $expectedCustomFees = [
+            $invoiceId => [
+                'test_fee_0' => [
+                    'invoice_id' => $invoiceId,
+                    'code' => 'test_fee_0',
+                    'title' => 'Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 5.00,
+                    'value' => 5.00,
+                ],
+                'test_fee_1' => [
+                    'invoice_id' => $invoiceId,
+                    'code' => 'test_fee_1',
+                    'title' => 'Another Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 1.50,
+                    'value' => 1.50,
+                ],
+            ],
+        ];
+        $actualCustomFees = $customFeesRetriever->retrieveInvoicedCustomFees($order);
+
+        self::assertEquals($expectedCustomFees, $actualCustomFees);
+    }
+
+    /**
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/invoice.php
+     */
+    public function testDoesNotRetrieveCustomFeesForInvoiceIfNoneExist(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var CustomFeesRetriever $customFeesRetriever */
+        $customFeesRetriever = $objectManager->create(CustomFeesRetriever::class);
+
+        $order->loadByIncrementId('100000001');
+
+        self::assertEmpty($customFeesRetriever->retrieveInvoicedCustomFees($order));
+    }
+
+    /**
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/creditmemo_with_partially_refunded_custom_fees.php
+     */
+    public function testRetrievesCustomFeesForCreditMemo(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var CustomFeesRetriever $customFeesRetriever */
+        $customFeesRetriever = $objectManager->create(CustomFeesRetriever::class);
+
+        $order->loadByIncrementId('100000001');
+
+        /** @var Creditmemo $creditMemo */
+        $creditMemo = $order->getCreditmemosCollection()->getFirstItem();
+
+        $expectedCustomFees = [
+            $creditMemo->getId() => [
+                'test_fee_0' => [
+                    'credit_memo_id' => $creditMemo->getId(),
+                    'code' => 'test_fee_0',
+                    'title' => 'Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 5.00,
+                    'value' => 5.00,
+                ],
+                'test_fee_1' => [
+                    'credit_memo_id' => $creditMemo->getId(),
+                    'code' => 'test_fee_1',
+                    'title' => 'Another Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 0.00,
+                    'value' => 0.00,
+                ],
+            ],
+        ];
+        $actualCustomFees = $customFeesRetriever->retrieveRefundedCustomFees($order);
+
+        self::assertEquals($expectedCustomFees, $actualCustomFees);
+    }
+
+    /**
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/creditmemo.php
+     */
+    public function testDoesNotRetrieveCustomFeesForCreditMemoIfNoneExist(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var CustomFeesRetriever $customFeesRetriever */
+        $customFeesRetriever = $objectManager->create(CustomFeesRetriever::class);
+
+        $order->loadByIncrementId('100000001');
+
+        self::assertEmpty($customFeesRetriever->retrieveRefundedCustomFees($order));
+    }
+
+    /**
      * @return array<string, array<string, string>>
      */
-    public function retrievesCustomFeesDataProvider(): array
+    public function retrievesCustomOrderFeesDataProvider(): array
     {
         return [
             'from extension attribute' => [
@@ -123,7 +269,7 @@ final class CustomFeesRetrieverTest extends TestCase
     /**
      * @return array<string, array<string, string>>
      */
-    public function doesNotRetrieveCustomFeesDataProvider(): array
+    public function doesNotRetrieveCustomOrderFeesDataProvider(): array
     {
         return [
             'extension attribute not instantiated' => [

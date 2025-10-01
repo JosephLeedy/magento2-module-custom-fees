@@ -88,7 +88,7 @@ foreach ($orders as $key => $order) {
     $customOrderFees = $customOrderFeesFactory->create();
 
     $customOrderFees->setOrderId($order->getEntityId() ?? 0);
-    $customOrderFees->setCustomFees($customFeesForOrder);
+    $customOrderFees->setCustomFeesOrdered($customFeesForOrder);
 
     $customOrderFeesRepository->save($customOrderFees);
 

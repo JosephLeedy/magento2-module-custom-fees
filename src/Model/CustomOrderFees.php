@@ -58,12 +58,12 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
         return $orderId;
     }
 
-    public function setCustomFees(string|array $customFees): CustomOrderFeesInterface
+    public function setCustomFeesOrdered(string|array $customFeesOrdered): CustomOrderFeesInterface
     {
-        if (is_string($customFees)) {
+        if (is_string($customFeesOrdered)) {
             try {
-                $customFees = (array) (
-                    $this->serializer->unserialize($customFees)
+                $customFeesOrdered = (array) (
+                    $this->serializer->unserialize($customFeesOrdered)
                         ?: throw new InvalidArgumentException((string) __('Invalid custom fees'))
                 );
             } catch (InvalidArgumentException) {
@@ -71,12 +71,12 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
             }
         }
 
-        $this->setData(self::CUSTOM_FEES, $customFees);
+        $this->setData(self::CUSTOM_FEES_ORDERED, $customFeesOrdered);
 
         return $this;
     }
 
-    public function getCustomFees(): array
+    public function getCustomFeesOrdered(): array
     {
         /**
          * @var array<string, array{
@@ -87,15 +87,91 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
          *     show_percentage: bool,
          *     base_value: float,
          *     value: float
-         * }>|string|null $customFees
+         * }>|string|null $customFeesOrdered
          */
-        $customFees = $this->getData(self::CUSTOM_FEES);
+        $customFeesOrdered = $this->getData(self::CUSTOM_FEES_ORDERED);
 
-        if (is_string($customFees)) {
-            $customFees = (array) $this->serializer->unserialize($customFees);
+        if (is_string($customFeesOrdered)) {
+            $customFeesOrdered = (array) $this->serializer->unserialize($customFeesOrdered);
         }
 
-        return $customFees ?? [];
+        return $customFeesOrdered ?? [];
+    }
+
+    public function setCustomFeesInvoiced(string|array $customFeesInvoiced): CustomOrderFeesInterface
+    {
+        if (is_string($customFeesInvoiced)) {
+            try {
+                $customFeesInvoiced = (array) $this->serializer->unserialize($customFeesInvoiced);
+            } catch (InvalidArgumentException) {
+                throw new InvalidArgumentException((string) __('Invalid custom fees'));
+            }
+        }
+
+        $this->setData(self::CUSTOM_FEES_INVOICED, $customFeesInvoiced);
+
+        return $this;
+    }
+
+    public function getCustomFeesInvoiced(): array
+    {
+        /**
+         * @var array<string, array{
+         *     invoice_id: int,
+         *     code: string,
+         *     title: string,
+         *     type: value-of<FeeType>,
+         *     percent: float|null,
+         *     show_percentage: bool,
+         *     base_value: float,
+         *     value: float,
+         * }>|string|null $customFeesInvoiced
+         */
+        $customFeesInvoiced = $this->getData(self::CUSTOM_FEES_INVOICED);
+
+        if (is_string($customFeesInvoiced)) {
+            $customFeesInvoiced = (array) $this->serializer->unserialize($customFeesInvoiced);
+        }
+
+        return $customFeesInvoiced ?? [];
+    }
+
+    public function setCustomFeesRefunded(string|array $customFeesRefunded): CustomOrderFeesInterface
+    {
+        if (is_string($customFeesRefunded)) {
+            try {
+                $customFeesRefunded = (array) $this->serializer->unserialize($customFeesRefunded);
+            } catch (InvalidArgumentException) {
+                throw new InvalidArgumentException((string) __('Invalid custom fees'));
+            }
+        }
+
+        $this->setData(self::CUSTOM_FEES_REFUNDED, $customFeesRefunded);
+
+        return $this;
+    }
+
+    public function getCustomFeesRefunded(): array
+    {
+        /**
+         * @var array<string, array{
+         *     credit_memo_id: int,
+         *     code: string,
+         *     title: string,
+         *     type: value-of<FeeType>,
+         *     percent: float|null,
+         *     show_percentage: bool,
+         *     base_value: float,
+         *     value: float
+         * }>|string|null $customFeesRefunded
+         */
+        $customFeesRefunded = $this->getData(self::CUSTOM_FEES_REFUNDED);
+
+        if (is_string($customFeesRefunded)) {
+            $customFeesRefunded = (array) $this->serializer->unserialize($customFeesRefunded);
+        }
+
+        return $customFeesRefunded ?? [];
     }
 
     public function getOrder(): ?OrderInterface

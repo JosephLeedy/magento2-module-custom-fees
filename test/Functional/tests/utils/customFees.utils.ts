@@ -3,8 +3,12 @@ import { inputValuesCustomFees, UIReferenceCustomFees } from '@config';
 
 class CustomFees
 {
-    public async getAll(containerLocator: Locator, inEuro: boolean = false, exclude: string[] = []): Promise<Locator[]>
-    {
+    public async getAll(
+        containerLocator: Locator,
+        inEuro: boolean = false,
+        exclude: string[] = [],
+        useRefundAmount: boolean = false,
+    ): Promise<Locator[]> {
         const customFees = [];
         const currencySymbol = inEuro ? '€' : '$';
         const subtotal = parseFloat(
@@ -16,9 +20,17 @@ class CustomFees
 
         for (feeName in inputValuesCustomFees.customFees) {
             let label = inputValuesCustomFees.customFees[feeName].title;
-            let amount = !inEuro
-                ? inputValuesCustomFees.customFees[feeName].base_amount
-                : inputValuesCustomFees.customFees[feeName].amount;
+            let amount;
+
+            if (!inEuro) {
+                amount = !useRefundAmount
+                    ? inputValuesCustomFees.customFees[feeName].base_amount
+                    : inputValuesCustomFees.customFees[feeName].base_refund_amount;
+            } else {
+                amount = !useRefundAmount
+                    ? inputValuesCustomFees.customFees[feeName].amount
+                    : inputValuesCustomFees.customFees[feeName].refund_amount;
+            }
 
             if (exclude.includes(feeName)) {
                 continue;

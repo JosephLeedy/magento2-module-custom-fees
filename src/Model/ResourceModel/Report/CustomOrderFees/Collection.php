@@ -69,7 +69,10 @@ class Collection extends AbstractCollection
                 'base_fee_amount' => 'base_fee_amount',
                 'paid_fee_amount' => 'paid_fee_amount',
                 'paid_order_currency' => 'paid_order_currency',
+                'base_invoiced_fee_amount' => 'base_invoiced_fee_amount',
                 'invoiced_fee_amount' => 'invoiced_fee_amount',
+                'base_refunded_fee_amount' => 'base_refunded_fee_amount',
+                'refunded_fee_amount' => 'refunded_fee_amount',
             ];
         }
 

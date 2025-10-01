@@ -3,7 +3,8 @@
     "itemQuantityInputLocator": ".qty-input",
     "pageTitle": "New Memo",
     "submitCreditMemoButtonLabel": "Refund Offline",
-    "updateItemQuanitiesButtonLabel": "Update Qty's"
+    "updateItemQuanitiesButtonLabel": "Update Qty's",
+    "updateTotalsButtonLabel": "Update Totals"
   },
   "adminSalesOrderGridPage": {
     "navigation": {
@@ -61,6 +62,7 @@
     "customOrderFeesField": "#sales_custom_order_fees_custom_fees",
     "customOrderFeesFields": {
       "addCustomFeeButtonLabel": "Add Custom Fee",
+      "feeStatusField": "#sales_custom_order_fees_custom_fees tbody > tr:last-child input[id$=status_toggle]",
       "feeCodeField": "#sales_custom_order_fees_custom_fees tbody > tr:last-child input[id$=code]",
       "feeTitleField": "#sales_custom_order_fees_custom_fees tbody > tr:last-child input[id$=title]",
       "feeTypeField": "#sales_custom_order_fees_custom_fees tbody > tr:last-child select[name$='[type]']",

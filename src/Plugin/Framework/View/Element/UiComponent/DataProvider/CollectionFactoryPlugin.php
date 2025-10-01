@@ -29,7 +29,7 @@ class CollectionFactoryPlugin
             ->joinLeft(
                 $customOrderFeesTable,
                 "$customOrderFeesTable.order_entity_id = main_table.$idFieldName",
-                new Zend_Db_Expr("JSON_UNQUOTE($customOrderFeesTable.custom_fees) AS custom_fees"),
+                new Zend_Db_Expr("JSON_UNQUOTE($customOrderFeesTable.custom_fees_ordered) AS custom_fees_ordered"),
             );
 
         return $result;

@@ -6,6 +6,8 @@ namespace JosephLeedy\CustomFees\Block\Adminhtml\CustomOrderFees\Report\Filter\F
 
 use Magento\Reports\Block\Adminhtml\Filter\Form;
 
+use function __;
+
 class CustomOrderFees extends Form
 {
     protected function _prepareForm(): self
@@ -32,6 +34,30 @@ class CustomOrderFees extends Form
                     '1' => __('Yes'),
                 ],
                 'label' => __('Show Base Amount'),
+            ],
+        );
+        $fieldset->addField(
+            'show_base_invoiced_amount',
+            'select',
+            [
+                'name' => 'show_base_invoiced_amount',
+                'options' => [
+                    '0' => __('No'),
+                    '1' => __('Yes'),
+                ],
+                'label' => __('Show Base Invoiced Amount'),
+            ],
+        );
+        $fieldset->addField(
+            'show_base_refunded_amount',
+            'select',
+            [
+                'name' => 'show_base_refunded_amount',
+                'options' => [
+                    '0' => __('No'),
+                    '1' => __('Yes'),
+                ],
+                'label' => __('Show Base Refunded Amount'),
             ],
         );
 

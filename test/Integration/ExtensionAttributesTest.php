@@ -57,7 +57,7 @@ final class ExtensionAttributesTest extends TestCase
         foreach ($searchResults->getItems() as $order) {
             $actualCustomOrderFees = $order->getExtensionAttributes()
                 ?->getCustomOrderFees()
-                ?->getCustomFees();
+                ?->getCustomFeesOrdered();
 
             self::assertNotNull($actualCustomOrderFees);
             self::assertEquals($expectedCustomOrderFees, $actualCustomOrderFees);

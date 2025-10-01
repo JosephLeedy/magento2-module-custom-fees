@@ -37,10 +37,10 @@ class AbstractComponentPlugin
          * @var Order $order
          */
         foreach ($gridCollection->getItems() as $order) {
-            /** @var string|null $customFeesJson */
-            $customFeesJson = $order->getData('custom_fees');
+            /** @var string|null $customFeesOrderedJson */
+            $customFeesOrderedJson = $order->getData('custom_fees_ordered');
 
-            if ($customFeesJson === null) {
+            if ($customFeesOrderedJson === null) {
                 continue;
             }
 
@@ -56,7 +56,7 @@ class AbstractComponentPlugin
                  *     value: float
                  * }> $customFees
                  */
-                $customFees = $this->serializer->unserialize($customFeesJson);
+                $customFees = $this->serializer->unserialize($customFeesOrderedJson);
             } catch (InvalidArgumentException) {
                 continue;
             }

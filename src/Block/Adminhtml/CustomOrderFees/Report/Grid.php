@@ -34,19 +34,28 @@ class Grid extends AbstractGrid
         $baseFeeAmount = [];
         $paidFeeAmount = [];
         $paidOrderCurrency = [];
+        $baseInvoicedFeeAmount = [];
         $invoicedFeeAmount = [];
+        $baseRefundedFeeAmount = [];
+        $refundedFeeAmount = [];
 
         foreach ($totalsCollection->getItems() as $item) {
             $baseFeeAmount[] = $item->getData('base_fee_amount');
             $paidFeeAmount[] = $item->getData('paid_fee_amount');
             $paidOrderCurrency[] = $item->getData('paid_order_currency');
+            $baseInvoicedFeeAmount[] = $item->getData('base_invoiced_fee_amount');
             $invoicedFeeAmount[] = $item->getData('invoiced_fee_amount');
+            $baseRefundedFeeAmount[] = $item->getData('base_refunded_fee_amount');
+            $refundedFeeAmount[] = $item->getData('refunded_fee_amount');
         }
 
         $totals->setData('base_fee_amount', (string) array_sum($baseFeeAmount));
         $totals->setData('paid_fee_amount', implode(', ', $paidFeeAmount));
         $totals->setData('paid_order_currency', implode(', ', $paidOrderCurrency));
+        $totals->setData('base_invoiced_fee_amount', implode(', ', $baseInvoicedFeeAmount));
         $totals->setData('invoiced_fee_amount', implode(', ', $invoicedFeeAmount));
+        $totals->setData('base_refunded_fee_amount', implode(', ', $baseRefundedFeeAmount));
+        $totals->setData('refunded_fee_amount', implode(', ', $refundedFeeAmount));
 
         parent::setTotals($totals);
     }
@@ -122,6 +131,23 @@ class Grid extends AbstractGrid
             ],
         );
         $this->addColumn(
+            'base_invoiced_fee_amount',
+            [
+                'header' => __('Invoiced'),
+                'type' => 'currency',
+                'index' => 'base_invoiced_fee_amount',
+                'total' => 'sum',
+                'sortable' => false,
+                'renderer' => Currency::class,
+                'rate' => $rate,
+                'header_css_class' => 'col-base-invoiced-fee-amount',
+                'column_css_class' => 'col-base-invoiced-fee-amount',
+                'visibility_filter' => [
+                    'show_base_invoiced_amount',
+                ],
+            ],
+        );
+        $this->addColumn(
             'invoiced_fee_amount',
             [
                 'header' => __('Amount Invoiced'),
@@ -133,6 +159,37 @@ class Grid extends AbstractGrid
                 'rate' => $rate,
                 'header_css_class' => 'col-invoiced-fee-amount',
                 'column_css_class' => 'col-invoiced-fee-amount',
+            ],
+        );
+        $this->addColumn(
+            'base_refunded_fee_amount',
+            [
+                'header' => __('Refunded'),
+                'type' => 'currency',
+                'index' => 'base_refunded_fee_amount',
+                'total' => 'sum',
+                'sortable' => false,
+                'renderer' => Currency::class,
+                'rate' => $rate,
+                'header_css_class' => 'col-base-refunded-fee-amount',
+                'column_css_class' => 'col-base-refunded-fee-amount',
+                'visibility_filter' => [
+                    'show_base_refunded_amount',
+                ],
+            ],
+        );
+        $this->addColumn(
+            'refunded_fee_amount',
+            [
+                'header' => __('Amount Refunded'),
+                'type' => 'currency',
+                'index' => 'refunded_fee_amount',
+                'total' => 'sum',
+                'sortable' => false,
+                'renderer' => LocalizedFeeAmount::class,
+                'rate' => $rate,
+                'header_css_class' => 'col-refunded-fee-amount',
+                'column_css_class' => 'col-refunded-fee-amount',
             ],
         );
 

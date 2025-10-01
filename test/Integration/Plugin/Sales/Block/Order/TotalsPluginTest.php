@@ -60,7 +60,7 @@ final class TotalsPluginTest extends TestCase
             CustomOrderFeesInterface::class,
             [
                 'data' => [
-                    'custom_fees' => [
+                    'custom_fees_ordered' => [
                         'test_fee_0' => [
                             'code' => 'test_fee_0',
                             'title' => 'Test Fee',
@@ -152,7 +152,7 @@ final class TotalsPluginTest extends TestCase
             CustomOrderFeesInterface::class,
             [
                 'data' => [
-                    'custom_fees' => [
+                    'custom_fees_ordered' => [
                         'test_fee_0' => [
                             'code' => 'test_fee_0',
                             'title' => 'Test Fee',
@@ -232,7 +232,7 @@ final class TotalsPluginTest extends TestCase
             CustomOrderFeesInterface::class,
             [
                 'data' => [
-                    'custom_fees' => [
+                    'custom_fees_ordered' => [
                         'test_fee_0' => [
                             'code' => 'test_fee_0',
                             'title' => 'Test Fee',
@@ -329,7 +329,7 @@ final class TotalsPluginTest extends TestCase
             CustomOrderFeesInterface::class,
             [
                 'data' => [
-                    'custom_fees' => [
+                    'custom_fees_ordered' => [
                         'test_fee_0' => [
                             'code' => 'test_fee_0',
                             'title' => 'Test Fee',
@@ -450,7 +450,7 @@ final class TotalsPluginTest extends TestCase
                 CustomOrderFeesInterface::class,
                 [
                     'data' => [
-                        'custom_fees' => $customFees,
+                        'custom_fees_ordered' => $customFees,
                     ],
                 ],
             );

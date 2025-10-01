@@ -16,11 +16,16 @@ class CreateCreditMemoStep
      * to work, an order number must be provided. If the order number is not provided, the step will fail.**
      *
      * @param {string} [orderNumber] - The number of the order to create the credit memo for. (optional)
+     * @param {boolean} [partial] - Indicates whether the credit memo should refund only some of the fees. (optional)
+     * @param {string[]} [excludedFees] - Fees to exclude from refunding in the credit memo. (optional)
      * @returns {Promise<string>} - A promise that resolves to the created credit memo number.
      * @throws {Error} - Throws an error if the credit memo cannot be created.
      */
-    public async createCreditMemo(orderNumber?: string): Promise<string>
-    {
+    public async createCreditMemo(
+        orderNumber?: string,
+        partial: boolean = false,
+        excludedFees: string[] = [],
+    ): Promise<string> {
         const adminSalesOrderViewPage = new SalesOrderViewPage(this.page);
         let adminSalesOrderGridPage: SalesOrderGridPage;
         let creditMemoNumber: string|null = '';
@@ -32,7 +37,7 @@ class CreateCreditMemoStep
             await adminSalesOrderGridPage.navigateToSalesOrderViewPage(orderNumber);
         }
 
-        creditMemoNumber = await adminSalesOrderViewPage.createCreditMemo();
+        creditMemoNumber = await adminSalesOrderViewPage.createCreditMemo([], partial, excludedFees);
 
         if (creditMemoNumber === null) {
             throw new Error(

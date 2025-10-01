@@ -6,6 +6,7 @@ namespace JosephLeedy\CustomFees\Block\System\Config\Form\Field;
 
 use DomainException;
 use JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\Advanced;
+use JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\FeeStatus;
 use JosephLeedy\CustomFees\Block\System\Config\Form\Field\CustomFees\FeeType;
 use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
 use Magento\Framework\DataObject;
@@ -16,6 +17,7 @@ use function __;
 
 class CustomFees extends AbstractFieldArray
 {
+    private FeeStatus $feeStatusFieldRenderer;
     private FeeType $feeTypeFieldRenderer;
 
     protected function _prepareToRender(): void
@@ -28,6 +30,14 @@ class CustomFees extends AbstractFieldArray
             $valueColumnLabel .= ' (' . $baseCurrency . ')';
         }
 
+        $this->addColumn(
+            'status',
+            [
+                'label' => '&nbsp;',
+                'class' => 'fee-status',
+                'renderer' => $this->getFeeStatusFieldRenderer(),
+            ],
+        );
         $this->addColumn(
             'code',
             [
@@ -71,6 +81,10 @@ class CustomFees extends AbstractFieldArray
 
     protected function _prepareArrayRow(DataObject $row): void
     {
+        if (!$row->hasData('status')) {
+            $row->setData('status', \JosephLeedy\CustomFees\Model\FeeStatus::Enabled->value);
+        }
+
         if (!$row->hasData('advanced')) {
             $row->setData('advanced', '{}');
         }
@@ -111,6 +125,21 @@ class CustomFees extends AbstractFieldArray
         }
 
         return $store;
+    }
+
+    private function getFeeStatusFieldRenderer(): FeeStatus
+    {
+        if (isset($this->feeStatusFieldRenderer)) {
+            return $this->feeStatusFieldRenderer;
+        }
+
+        /** @var FeeStatus $feeStatusFieldRenderer */
+        $feeStatusFieldRenderer = $this
+            ->getLayout()
+            ->createBlock(FeeStatus::class);
+        $this->feeStatusFieldRenderer = $feeStatusFieldRenderer;
+
+        return $this->feeStatusFieldRenderer;
     }
 
     private function getFeeTypeFieldRenderer(): FeeType

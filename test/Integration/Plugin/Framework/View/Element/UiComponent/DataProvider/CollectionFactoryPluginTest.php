@@ -48,7 +48,7 @@ final class CollectionFactoryPluginTest extends TestCase
         $report = $collectionFactory->getReport('sales_order_grid_data_source');
         $firstItem = $report->getFirstItem();
 
-        self::assertArrayHasKey('custom_fees', (array) $firstItem->getData());
+        self::assertArrayHasKey('custom_fees_ordered', (array) $firstItem->getData());
     }
 
     public function testDoesNotAddCustomFeesToOrderGridCollection(): void

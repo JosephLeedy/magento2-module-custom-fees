@@ -10,12 +10,8 @@ use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Magento\Sales\Block\Order\Creditmemo\Totals as CreditmemoTotals;
-use Magento\Sales\Block\Order\Invoice\Totals as InvoiceTotals;
 use Magento\Sales\Block\Order\Totals as OrderTotals;
 use Magento\Sales\Model\Order;
-use Magento\Sales\Model\Order\Creditmemo;
-use Magento\Sales\Model\Order\Invoice;
 
 use function __;
 use function array_key_first;
@@ -26,7 +22,7 @@ use function count;
  * Initializes and renders Custom Fees order total columns
  *
  * @api
- * @method OrderTotals|InvoiceTotals|CreditmemoTotals getParentBlock()
+ * @method OrderTotals getParentBlock()
  * @method string|null getBeforeCondition()
  * @method string|null getAfterCondition()
  */
@@ -44,43 +40,30 @@ class Totals extends Template
         parent::__construct($context, $data);
     }
 
-    public function getSource(): Order|Invoice|Creditmemo
+    public function getSource(): Order
     {
         return $this->getParentBlock()->getSource();
     }
 
     public function initTotals(): self
     {
-        $source = $this->getSource();
-        /** @var Order $order */
-        $order = $source;
-        $baseDelta = 1;
-        $delta = 1;
+        $orderedCustomFees = $this->customFeesRetriever->retrieveOrderedCustomFees($this->getSource());
 
-        if ($source instanceof Invoice || $source instanceof Creditmemo) {
-            $order = $source->getOrder();
-            $baseDelta = (float) $source->getBaseSubtotal() / (float) $order->getBaseSubtotal();
-            $delta = (float) $source->getSubtotal() / (float) $order->getSubtotal();
-        }
-
-        $customFees = $this->customFeesRetriever->retrieve($order);
-
-        if (count($customFees) === 0) {
+        if (count($orderedCustomFees) === 0) {
             return $this;
         }
 
-        $firstFeeKey = array_key_first($customFees);
+        $firstOrderedFeeKey = array_key_first($orderedCustomFees);
         $previousFeeCode = '';
 
         array_walk(
-            $customFees,
-            function (array $customFee, string|int $key) use ($baseDelta, $delta, $firstFeeKey, &$previousFeeCode) {
+            $orderedCustomFees,
+            function (array $customFee, string|int $key) use ($firstOrderedFeeKey, &$previousFeeCode): void {
                 $customFee['label'] = FeeType::Percent->equals($customFee['type']) && $customFee['percent'] !== null
                     && $customFee['show_percentage']
                     ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
                     : __($customFee['title']);
-                $customFee['base_value'] *= $baseDelta;
-                $customFee['value'] *= $delta;
+                $customFeeCode = $customFee['code'];
 
                 unset($customFee['title']);
 
@@ -91,7 +74,7 @@ class Totals extends Template
                     ],
                 );
 
-                if ($key === $firstFeeKey) {
+                if ($key === $firstOrderedFeeKey) {
                     if ($this->getBeforeCondition() !== null) {
                         $this->getParentBlock()->addTotalBefore($total, $this->getBeforeCondition());
                     } else {
@@ -101,7 +84,7 @@ class Totals extends Template
                     $this->getParentBlock()->addTotal($total, $previousFeeCode);
                 }
 
-                $previousFeeCode = $customFee['code'];
+                $previousFeeCode = $customFeeCode;
             },
         );
 
