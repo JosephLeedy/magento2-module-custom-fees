@@ -56,7 +56,7 @@ final class TotalsTest extends TestCase
         $creditMemo->setOrder($order);
         $creditMemo->getExtensionAttributes()->setRefundedCustomFees(
             [
-                '_1727299833817_817' => [
+                'test_fee_0' => [
                     'code' => 'test_fee_0',
                     'title' => 'Test Fee',
                     'type' => 'fixed',
@@ -65,7 +65,7 @@ final class TotalsTest extends TestCase
                     'base_value' => 0.00,
                     'value' => 0.00,
                 ],
-                '_1727299843197_197' => [
+                'test_fee_1' => [
                     'code' => 'test_fee_1',
                     'title' => 'Another Test Fee',
                     'type' => 'fixed',
