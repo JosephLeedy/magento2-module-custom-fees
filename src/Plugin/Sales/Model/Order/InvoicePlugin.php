@@ -65,6 +65,19 @@ class InvoicePlugin
             },
         );
 
+        /**
+         * @var array<string, array{
+         *     code: string,
+         *     title: string,
+         *     type: value-of<FeeType>,
+         *     percent: float|null,
+         *     show_percentage: bool,
+         *     base_value: float,
+         *     value: float,
+         *     invoice_id: int,
+         * }>[] $customFeesInvoiced
+         */
+
         $customOrderFees->setCustomFeesInvoiced($customFeesInvoiced);
 
         try {
