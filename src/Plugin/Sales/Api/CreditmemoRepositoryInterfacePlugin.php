@@ -51,12 +51,27 @@ class CreditmemoRepositoryInterfacePlugin
 
         $customFeesRefunded = $customOrderFees->getCustomFeesRefunded();
         $creditMemoId = (int) $result->getId();
+        $customFeesRefunded[$creditMemoId] = $refundedCustomFees;
 
-        foreach ($refundedCustomFees as $refundedCustomFee) {
-            $code = $refundedCustomFee['code'];
-            $refundedCustomFee['credit_memo_id'] = $creditMemoId;
-            $customFeesRefunded[$creditMemoId][$code] = $refundedCustomFee;
-        }
+        array_walk(
+            $customFeesRefunded[$creditMemoId],
+            static function (array &$customFee) use ($creditMemoId): void {
+                $customFee['credit_memo_id'] = $creditMemoId;
+            },
+        );
+
+        /**
+         * @var array<string, array{
+         *     code: string,
+         *     title: string,
+         *     type: value-of<FeeType>,
+         *     percent: float|null,
+         *     show_percentage: bool,
+         *     base_value: float,
+         *     value: float,
+         *     credit_memo_id: int,
+         * }>[] $customFeesRefunded
+         */
 
         $customOrderFees->setCustomFeesRefunded($customFeesRefunded);
 

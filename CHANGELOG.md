@@ -10,6 +10,10 @@ document.
 
 ## [Unreleased]
 
+### Changed
+
+- Ordered custom fees are now indexed by their corresponding fee code
+
 ## [1.3.0]
 
 ### Added

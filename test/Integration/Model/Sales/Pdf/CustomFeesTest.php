@@ -31,12 +31,12 @@ final class CustomFeesTest extends TestCase
         $customFeesOrderPdfModel->setOrder($order);
 
         $expectedCustomFeesTotals = [
-            '_1727299833817_817' => [
+            'test_fee_0' => [
                 'amount' => '$5.00',
                 'label' => 'Test Fee:',
                 'font_size' => 7,
             ],
-            '_1727299843197_197' => [
+            'test_fee_1' => [
                 'amount' => '$1.50',
                 'label' => 'Another Test Fee:',
                 'font_size' => 7,

@@ -27,7 +27,7 @@ $orders = $orderCollection->addFieldToFilter(
     ],
 )->getItems();
 $testCustomFees = [
-    '_1727299122629_629' => [
+    'test_fee_0' => [
         'code' => 'test_fee_0',
         'title' => 'Test Fee',
         'type' => 'fixed',
@@ -36,7 +36,7 @@ $testCustomFees = [
         'base_value' => 5.00,
         'value' => 5.00,
     ],
-    '_1727299257083_083' => [
+    'test_fee_1' => [
         'code' => 'test_fee_1',
         'title' => 'Another Test Fee',
         'type' => 'fixed',

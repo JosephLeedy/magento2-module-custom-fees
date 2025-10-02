@@ -15,6 +15,7 @@ use Psr\Log\LoggerInterface;
 
 use function __;
 use function array_key_exists;
+use function array_walk;
 
 class InvoicePlugin
 {
@@ -55,12 +56,27 @@ class InvoicePlugin
             return $result;
         }
 
-        $customFeesInvoiced[$invoiceId] = [];
+        $customFeesInvoiced[$invoiceId] = $invoicedCustomFees;
 
-        foreach ($invoicedCustomFees as $invoicedCustomFee) {
-            $invoicedCustomFee['invoice_id'] = $invoiceId;
-            $customFeesInvoiced[$invoiceId][$invoicedCustomFee['code']] = $invoicedCustomFee;
-        }
+        array_walk(
+            $customFeesInvoiced[$invoiceId],
+            static function (array &$customFee) use ($invoiceId): void {
+                $customFee['invoice_id'] = $invoiceId;
+            },
+        );
+
+        /**
+         * @var array<string, array{
+         *     code: string,
+         *     title: string,
+         *     type: value-of<FeeType>,
+         *     percent: float|null,
+         *     show_percentage: bool,
+         *     base_value: float,
+         *     value: float,
+         *     invoice_id: int,
+         * }>[] $customFeesInvoiced
+         */
 
         $customOrderFees->setCustomFeesInvoiced($customFeesInvoiced);
 
