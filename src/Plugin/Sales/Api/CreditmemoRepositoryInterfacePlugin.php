@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Plugin\Sales\Api;
 
 use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
-use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface as RefundedCustomFeeInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -26,17 +26,7 @@ class CreditmemoRepositoryInterfacePlugin
      */
     public function afterSave(CreditmemoRepositoryInterface $subject, CreditmemoInterface $result): CreditmemoInterface
     {
-        /**
-         * @var array<string, array{
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float,
-         * }> $refundedCustomFees
-         */
+        /** @var RefundedCustomFeeInterface[] $refundedCustomFees */
         $refundedCustomFees = $result->getExtensionAttributes()?->getRefundedCustomFees() ?? [];
 
         if ($refundedCustomFees === []) {
@@ -55,23 +45,12 @@ class CreditmemoRepositoryInterfacePlugin
 
         array_walk(
             $customFeesRefunded[$creditMemoId],
-            static function (array &$customFee) use ($creditMemoId): void {
-                $customFee['credit_memo_id'] = $creditMemoId;
+            static function (RefundedCustomFeeInterface $refundedCustomFee) use ($creditMemoId): void {
+                $refundedCustomFee->setCreditMemoId($creditMemoId);
             },
         );
 
-        /**
-         * @var array<string, array{
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float,
-         *     credit_memo_id: int,
-         * }>[] $customFeesRefunded
-         */
+        /** @var RefundedCustomFeeInterface[] $customFeesRefunded */
 
         $customOrderFees->setCustomFeesRefunded($customFeesRefunded);
 

@@ -7,9 +7,12 @@ namespace JosephLeedy\CustomFees\Test\Integration\Plugin\Sales\Model\Order;
 use ColinODell\PsrTestLogger\TestLogger;
 use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface;
+use JosephLeedy\CustomFees\Model\CustomOrderFee;
+use JosephLeedy\CustomFees\Model\CustomOrderFee\Invoiced as InvoicedCustomFee;
 use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Plugin\Sales\Model\Order\InvoicePlugin;
 use Magento\Framework\App\Area;
+use Magento\Framework\App\State;
 use Magento\Framework\DB\Transaction;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -26,6 +29,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
 use function __;
+use function array_map;
 
 #[AppArea(Area::AREA_ADMINHTML)]
 final class InvoicePluginTest extends TestCase
@@ -56,6 +60,8 @@ final class InvoicePluginTest extends TestCase
         $transaction = $objectManager->create(Transaction::class);
         /** @var CustomOrderFeesRepositoryInterface $customOrderFeesRepository */
         $customOrderFeesRepository = $objectManager->create(CustomOrderFeesRepositoryInterface::class);
+        /** @var State $state */
+        $state = $objectManager->get(State::class);
 
         $order->loadByIncrementId('100000001');
 
@@ -81,26 +87,32 @@ final class InvoicePluginTest extends TestCase
 
         $expectedInvoicedCustomFees = [
             $invoiceId => [
-                'test_fee_0' => [
-                    'invoice_id' => $invoiceId,
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 5.00,
-                    'value' => 5.00,
-                ],
-                'test_fee_1' => [
-                    'invoice_id' => $invoiceId,
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 1.50,
-                    'value' => 1.50,
-                ],
+                'test_fee_0' => new InvoicedCustomFee(
+                    $state,
+                    [
+                        'invoice_id' => $invoiceId,
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed->value,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 5.00,
+                        'value' => 5.00,
+                    ],
+                ),
+                'test_fee_1' => new InvoicedCustomFee(
+                    $state,
+                    [
+                        'invoice_id' => $invoiceId,
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Test Fee',
+                        'type' => FeeType::Fixed->value,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 1.50,
+                        'value' => 1.50,
+                    ],
+                ),
             ],
         ];
         $actualInvoicedCustomFees = $customOrderFees->getCustomFeesInvoiced();
@@ -120,25 +132,33 @@ final class InvoicePluginTest extends TestCase
         $objectManager = Bootstrap::getObjectManager();
         /** @var Order $order */
         $order = $objectManager->create(Order::class);
-        $customFees = [
-            'test_fee_0' => [
-                'code' => 'test_fee_0',
-                'title' => 'Test Fee',
-                'type' => FeeType::Fixed->value,
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 5.00,
-                'value' => 5.00,
-            ],
-            'test_fee_1' => [
-                'code' => 'test_fee_1',
-                'title' => 'Another Test Fee',
-                'type' => FeeType::Fixed->value,
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 1.50,
-                'value' => 1.50,
-            ],
+        /** @var State $state */
+        $state = $objectManager->get(State::class);
+        $orderedCustomFees = [
+            'test_fee_0' => new CustomOrderFee(
+                $state,
+                [
+                    'code' => 'test_fee_0',
+                    'title' => 'Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 5.00,
+                    'value' => 5.00,
+                ],
+            ),
+            'test_fee_1' => new CustomOrderFee(
+                $state,
+                [
+                    'code' => 'test_fee_1',
+                    'title' => 'Another Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 1.50,
+                    'value' => 1.50,
+                ],
+            ),
         ];
         /** @var OrderRepositoryInterface $orderRepository */
         $orderRepository = $objectManager->create(OrderRepositoryInterface::class);
@@ -157,7 +177,7 @@ final class InvoicePluginTest extends TestCase
             $customOrderFees = $objectManager->create(CustomOrderFeesInterface::class);
 
             $customOrderFees->setOrderId((int) $order->getEntityId());
-            $customOrderFees->setCustomFeesOrdered($customFees);
+            $customOrderFees->setCustomFeesOrdered($orderedCustomFees);
 
             $order
                 ->getExtensionAttributes()
@@ -173,9 +193,26 @@ final class InvoicePluginTest extends TestCase
         $invoice->register();
 
         if ($invoiceHasCustomFees && ($invoice->getExtensionAttributes()?->getInvoicedCustomFees() ?? []) === []) {
+            $invoicedCustomFees = array_map(
+                static function (CustomOrderFee $customOrderFee) use ($state, $invoice): InvoicedCustomFee {
+                    return new InvoicedCustomFee(
+                        $state,
+                        [
+                            'invoice_id' => $invoice->getEntityId(),
+                            'code' => $customOrderFee->getCode(),
+                            'title' => $customOrderFee->getTitle(),
+                            'type' => $customOrderFee->getType(),
+                            'percent' => $customOrderFee->getPercent(),
+                            'show_percentage' => $customOrderFee->getShowPercentage(),
+                        ],
+                    );
+                },
+                $orderedCustomFees,
+            );
+
             $invoice
                 ->getExtensionAttributes()
-                ?->setInvoicedCustomFees($customFees);
+                ?->setInvoicedCustomFees($invoicedCustomFees);
         }
 
         if (!$invoiceHasCustomFees) {

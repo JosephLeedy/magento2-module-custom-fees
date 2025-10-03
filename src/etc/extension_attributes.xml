@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Api/etc/extension_attributes.xsd">
     <extension_attributes for="Magento\Quote\Api\Data\CartInterface">
-        <attribute code="custom_fees" type="mixed[]"/>
+        <attribute code="custom_fees" type="JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface[]"/>
     </extension_attributes>
     <extension_attributes for="Magento\Quote\Api\Data\TotalSegmentInterface">
         <attribute code="custom_fee_segments" type="Magento\Quote\Api\Data\TotalSegmentInterface[]"/>
     </extension_attributes>
     <extension_attributes for="Magento\Sales\Api\Data\CreditmemoInterface">
-        <attribute code="refunded_custom_fees" type="mixed[]"/>
+        <attribute code="refunded_custom_fees" type="JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface[]"/>
     </extension_attributes>
     <extension_attributes for="Magento\Sales\Api\Data\InvoiceInterface">
-        <attribute code="invoiced_custom_fees" type="mixed[]"/>
+        <attribute code="invoiced_custom_fees" type="JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface[]"/>
     </extension_attributes>
     <extension_attributes for="Magento\Sales\Api\Data\OrderInterface">
         <attribute code="custom_order_fees" type="JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface">

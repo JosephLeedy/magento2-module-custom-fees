@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration;
 
+use JosephLeedy\CustomFees\Model\CustomOrderFee;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\App\State;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
@@ -17,6 +20,8 @@ final class ExtensionAttributesTest extends TestCase
     public function testOrderExtensionAttributeAddsCustomOrderFeesToMultipleOrders(): void
     {
         $objectManager = Bootstrap::getObjectManager();
+        /** @var State $state */
+        $state = $objectManager->get(State::class);
         /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
         $searchCriteriaBuilder = $objectManager->create(SearchCriteriaBuilder::class);
         $searchCriteria = $searchCriteriaBuilder->addFilter(
@@ -33,24 +38,30 @@ final class ExtensionAttributesTest extends TestCase
         $orderRepository = $objectManager->create(OrderRepositoryInterface::class);
 
         $expectedCustomOrderFees = [
-            'test_fee_0' => [
-                'code' => 'test_fee_0',
-                'title' => 'Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 5.00,
-                'value' => 5.00,
-            ],
-            'test_fee_1' => [
-                'code' => 'test_fee_1',
-                'title' => 'Another Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 1.50,
-                'value' => 1.50,
-            ],
+            'test_fee_0' => new CustomOrderFee(
+                $state,
+                [
+                    'code' => 'test_fee_0',
+                    'title' => 'Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 5.00,
+                    'value' => 5.00,
+                ],
+            ),
+            'test_fee_1' => new CustomOrderFee(
+                $state,
+                [
+                    'code' => 'test_fee_1',
+                    'title' => 'Another Test Fee',
+                    'type' => FeeType::Fixed->value,
+                    'percent' => null,
+                    'show_percentage' => false,
+                    'base_value' => 1.50,
+                    'value' => 1.50,
+                ],
+            ),
         ];
         $searchResults = $orderRepository->getList($searchCriteria);
 

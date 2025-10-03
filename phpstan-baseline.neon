@@ -76,6 +76,26 @@ parameters:
 			path: src/Model/Config/Backend/File/ImportCustomFees.php
 
 		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 2
+			path: src/Model/CustomOrderFee.php
+
+		-
+			message: "#^Cannot cast mixed to float\\.$#"
+			count: 2
+			path: src/Model/CustomOrderFee.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: src/Model/CustomOrderFee/Invoiced.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: src/Model/CustomOrderFee/Refunded.php
+
+		-
 			message: "#^Parameter \\#1 \\$items of method Magento\\\\Framework\\\\Api\\\\SearchResultsInterface\\:\\:setItems\\(\\) expects array\\<Magento\\\\Framework\\\\Api\\\\ExtensibleDataInterface\\>, array\\<Magento\\\\Framework\\\\DataObject\\> given\\.$#"
 			count: 1
 			path: src/Model/CustomOrderFeesRepository.php

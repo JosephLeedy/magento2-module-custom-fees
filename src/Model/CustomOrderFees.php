@@ -7,6 +7,12 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model;
 
 use InvalidArgumentException;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface as InvoicedCustomOrderFee;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterfaceFactory as InvoicedCustomOrderFeeFactory;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface as RefundedCustomOrderFee;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterfaceFactory as RefundedCustomOrderFeeFactory;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterfaceFactory;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface;
 use JosephLeedy\CustomFees\Model\ResourceModel\CustomOrderFees as ResourceModel;
 use Magento\Framework\Data\Collection\AbstractDb;
@@ -32,6 +38,9 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
         Context $context,
         Registry $registry,
         private readonly SerializerInterface $serializer,
+        private readonly CustomOrderFeeInterfaceFactory $customOrderFeeFactory,
+        private readonly InvoicedCustomOrderFeeFactory $invoicedCustomOrderFeeFactory,
+        private readonly RefundedCustomOrderFeeFactory $refundedCustomOrderFeeFactory,
         ?AbstractResource $resource = null,
         ?AbstractDb $resourceCollection = null,
         array $data = [],
@@ -62,13 +71,19 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
     {
         if (is_string($customFeesOrdered)) {
             try {
-                $customFeesOrdered = (array) (
+                $orderedCustomFees = (array) (
                     $this->serializer->unserialize($customFeesOrdered)
                         ?: throw new InvalidArgumentException((string) __('Invalid custom fees'))
                 );
             } catch (InvalidArgumentException) {
                 throw new InvalidArgumentException((string) __('Invalid custom fees'));
             }
+
+            $customFeesOrdered = array_map(
+                fn(array $orderedCustomFee): CustomOrderFeeInterface
+                    => $this->customOrderFeeFactory->create($orderedCustomFee),
+                $orderedCustomFees,
+            );
         }
 
         $this->setData(self::CUSTOM_FEES_ORDERED, $customFeesOrdered);
@@ -78,34 +93,48 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
 
     public function getCustomFeesOrdered(): array
     {
-        /**
-         * @var array<string, array{
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float
-         * }>|string|null $customFeesOrdered
-         */
+        /** @var CustomOrderFeeInterface[]|string $customFeesOrdered */
         $customFeesOrdered = $this->getData(self::CUSTOM_FEES_ORDERED);
 
         if (is_string($customFeesOrdered)) {
-            $customFeesOrdered = (array) $this->serializer->unserialize($customFeesOrdered);
+            $this->setCustomFeesOrdered($customFeesOrdered);
+
+            /** @var CustomOrderFeeInterface[] $customFeesOrdered */
+            $customFeesOrdered = $this->getData(self::CUSTOM_FEES_ORDERED);
         }
 
-        return $customFeesOrdered ?? [];
+        return $customFeesOrdered;
     }
 
     public function setCustomFeesInvoiced(string|array $customFeesInvoiced): CustomOrderFeesInterface
     {
         if (is_string($customFeesInvoiced)) {
             try {
-                $customFeesInvoiced = (array) $this->serializer->unserialize($customFeesInvoiced);
+                /**
+                 * @var array<string, array{
+                 *     invoice_id: int,
+                 *     code: string,
+                 *     title: string,
+                 *     type: value-of<FeeType>,
+                 *     percent: float|null,
+                 *     show_percentage: bool,
+                 *     base_value: float,
+                 *     value: float,
+                 * }>[] $invoicedCustomFees
+                 */
+                $invoicedCustomFees = (array) $this->serializer->unserialize($customFeesInvoiced);
             } catch (InvalidArgumentException) {
                 throw new InvalidArgumentException((string) __('Invalid custom fees'));
             }
+
+            $customFeesInvoiced = array_map(
+                fn(array $invoicedCustomFee): array => array_map(
+                    fn(array $invoicedCustomFeeData): InvoicedCustomOrderFee
+                        => $this->invoicedCustomOrderFeeFactory->create($invoicedCustomFeeData),
+                    $invoicedCustomFee,
+                ),
+                $invoicedCustomFees,
+            );
         }
 
         $this->setData(self::CUSTOM_FEES_INVOICED, $customFeesInvoiced);
@@ -116,21 +145,15 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
     public function getCustomFeesInvoiced(): array
     {
         /**
-         * @var array<string, array{
-         *     invoice_id: int,
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float,
-         * }>|string|null $customFeesInvoiced
+         * @var array<int, array<string, InvoicedCustomOrderFee>>|string|null $customFeesInvoiced
          */
         $customFeesInvoiced = $this->getData(self::CUSTOM_FEES_INVOICED);
 
         if (is_string($customFeesInvoiced)) {
-            $customFeesInvoiced = (array) $this->serializer->unserialize($customFeesInvoiced);
+            $this->setCustomFeesInvoiced($customFeesInvoiced);
+
+            /** @var array<int, array<string, InvoicedCustomOrderFee>> $customFeesInvoiced */
+            $customFeesInvoiced = $this->getData(self::CUSTOM_FEES_INVOICED);
         }
 
         return $customFeesInvoiced ?? [];
@@ -140,10 +163,31 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
     {
         if (is_string($customFeesRefunded)) {
             try {
-                $customFeesRefunded = (array) $this->serializer->unserialize($customFeesRefunded);
+                /**
+                 * @var array<string, array{
+                 *     credit_memo_id: int,
+                 *     code: string,
+                 *     title: string,
+                 *     type: value-of<FeeType>,
+                 *     percent: float|null,
+                 *     show_percentage: bool,
+                 *     base_value: float,
+                 *     value: float,
+                 * }>[] $refundedCustomFees
+                 */
+                $refundedCustomFees = (array) $this->serializer->unserialize($customFeesRefunded);
             } catch (InvalidArgumentException) {
                 throw new InvalidArgumentException((string) __('Invalid custom fees'));
             }
+
+            $customFeesRefunded = array_map(
+                fn(array $refundedCustomFee): array => array_map(
+                    fn(array $refundedCustomFeeData): RefundedCustomOrderFee
+                        => $this->refundedCustomOrderFeeFactory->create($refundedCustomFeeData),
+                    $refundedCustomFee,
+                ),
+                $refundedCustomFees,
+            );
         }
 
         $this->setData(self::CUSTOM_FEES_REFUNDED, $customFeesRefunded);
@@ -154,21 +198,15 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
     public function getCustomFeesRefunded(): array
     {
         /**
-         * @var array<string, array{
-         *     credit_memo_id: int,
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float
-         * }>|string|null $customFeesRefunded
+         * @var array<int, array<string, RefundedCustomOrderFee>>|string|null $customFeesRefunded
          */
         $customFeesRefunded = $this->getData(self::CUSTOM_FEES_REFUNDED);
 
         if (is_string($customFeesRefunded)) {
-            $customFeesRefunded = (array) $this->serializer->unserialize($customFeesRefunded);
+            $this->setCustomFeesRefunded($customFeesRefunded);
+
+            /** @var array<int, array<string, RefundedCustomOrderFee>> $customFeesRefunded */
+            $customFeesRefunded = $this->getData(self::CUSTOM_FEES_REFUNDED);
         }
 
         return $customFeesRefunded ?? [];

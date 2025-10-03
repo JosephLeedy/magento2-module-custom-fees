@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Block\Sales\Order\Invoice;
 
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface as InvoicedCustomFeeInterface;
 use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\DataObject;
@@ -52,17 +53,7 @@ class Totals extends Template
     {
         $invoice = $this->getSource();
         $order = $invoice->getOrder();
-        /**
-         * @var array{}|array<string, array{
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float,
-         * }> $customFees
-         */
+        /** @var InvoicedCustomFeeInterface[] $customFees */
         $customFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees() ?? [];
         /** @var int|string|null $invoiceId */
         $invoiceId = $invoice->getId();
