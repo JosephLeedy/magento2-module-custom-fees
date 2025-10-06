@@ -25,13 +25,13 @@ $customOrderFees = $customOrderFeesFactory->create();
 /** @var CustomOrderFeesRepository $customOrderFeesRepository */
 $customOrderFeesRepository = $objectManager->create(CustomOrderFeesRepositoryInterface::class);
 $testCustomFees = [
-    '_1750885400610_610' => [
+    'test_fee_0' => [
         'code' => 'test_fee_0',
         'title' => 'Test Fee',
         'base_value' => 5.00,
         'value' => 5.00,
     ],
-    '_1750886019048_048' => [
+    'test_fee_1' => [
         'code' => 'test_fee_1',
         'title' => 'Another Test Fee',
         'base_value' => 1.50,

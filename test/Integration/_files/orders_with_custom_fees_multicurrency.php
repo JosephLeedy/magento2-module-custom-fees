@@ -30,7 +30,7 @@ $orders = $orderCollection
         ],
     )->getItems();
 $testCustomFees = [
-    '_1727299122629_629' => [
+    'test_fee_0' => [
         'code' => 'test_fee_0',
         'title' => 'Test Fee',
         'type' => 'fixed',
@@ -39,7 +39,7 @@ $testCustomFees = [
         'base_value' => 5.00,
         'value' => 5.00,
     ],
-    '_1727299257083_083' => [
+    'test_fee_1' => [
         'code' => 'test_fee_1',
         'title' => 'Another Test Fee',
         'type' => 'fixed',
@@ -67,13 +67,13 @@ foreach ($orders as $key => $order) {
         $order->setBaseToOrderRate($rate);
         $order->save();
 
-        $customFeesForOrder['_1727299122629_629']['value'] = $priceCurrency->convert(
-            $customFeesForOrder['_1727299122629_629']['value'],
+        $customFeesForOrder['test_fee_0']['value'] = $priceCurrency->convert(
+            $customFeesForOrder['test_fee_0']['value'],
             $order->getStoreId(),
             $order->getOrderCurrencyCode(),
         );
-        $customFeesForOrder['_1727299257083_083']['value'] = $priceCurrency->convert(
-            $customFeesForOrder['_1727299257083_083']['value'],
+        $customFeesForOrder['test_fee_1']['value'] = $priceCurrency->convert(
+            $customFeesForOrder['test_fee_1']['value'],
             $order->getStoreId(),
             $order->getOrderCurrencyCode(),
         );

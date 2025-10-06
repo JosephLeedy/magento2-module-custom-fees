@@ -121,7 +121,7 @@ final class InvoicePluginTest extends TestCase
         /** @var Order $order */
         $order = $objectManager->create(Order::class);
         $customFees = [
-            '_1727299833817_817' => [
+            'test_fee_0' => [
                 'code' => 'test_fee_0',
                 'title' => 'Test Fee',
                 'type' => FeeType::Fixed->value,
@@ -130,7 +130,7 @@ final class InvoicePluginTest extends TestCase
                 'base_value' => 5.00,
                 'value' => 5.00,
             ],
-            '_1727299843197_197' => [
+            'test_fee_1' => [
                 'code' => 'test_fee_1',
                 'title' => 'Another Test Fee',
                 'type' => FeeType::Fixed->value,

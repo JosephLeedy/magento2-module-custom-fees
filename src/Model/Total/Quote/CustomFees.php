@@ -48,7 +48,7 @@ class CustomFees extends AbstractTotal
         }
 
         [$baseCustomFees, $localCustomFees] = $this->getCustomFees($quote, $total);
-        $customFees = $baseCustomFees;
+        $customFees = [];
 
         array_walk(
             $baseCustomFees,
@@ -62,9 +62,11 @@ class CustomFees extends AbstractTotal
              *     value: float
              * } $baseCustomFee
              */
-            static function (array $baseCustomFee, string|int $key) use ($total, &$customFees): void {
+            static function (array $baseCustomFee) use ($total, &$customFees): void {
                 $total->setBaseTotalAmount($baseCustomFee['code'], $baseCustomFee['value']);
 
+                $key = $baseCustomFee['code'];
+                $customFees[$key] = $baseCustomFee;
                 $customFees[$key]['base_value'] = $baseCustomFee['value'];
             },
         );
@@ -80,9 +82,10 @@ class CustomFees extends AbstractTotal
              *     value: float
              * } $localCustomFee
              */
-            static function (array $localCustomFee, string|int $key) use ($total, &$customFees): void {
+            static function (array $localCustomFee) use ($total, &$customFees): void {
                 $total->setTotalAmount($localCustomFee['code'], $localCustomFee['value']);
 
+                $key = $localCustomFee['code'];
                 $customFees[$key]['value'] = $localCustomFee['value'];
             },
         );

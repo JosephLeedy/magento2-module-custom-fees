@@ -66,7 +66,7 @@ final class CustomFeesTest extends TestCase
         self::assertNotNull($quote->getExtensionAttributes()?->getCustomFees());
         self::assertEquals(
             [
-                [
+                'test_fee_0' => [
                     'code' => 'test_fee_0',
                     'title' => __('Test Fee'),
                     'type' => 'fixed',
@@ -75,7 +75,7 @@ final class CustomFeesTest extends TestCase
                     'base_value' => 4.00,
                     'value' => 4.00,
                 ],
-                [
+                'test_fee_1' => [
                     'code' => 'test_fee_1',
                     'title' => __('Another Fee'),
                     'type' => 'percent',
