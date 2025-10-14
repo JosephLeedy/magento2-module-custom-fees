@@ -2,8 +2,16 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="JosephLeedy\CustomFees\Api\ConfigInterface" type="JosephLeedy\CustomFees\Model\Config"/>
     <preference for="JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface" type="JosephLeedy\CustomFees\Model\CustomOrderFeesRepository"/>
+    <preference for="JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface" type="JosephLeedy\CustomFees\Model\CustomOrderFee"/>
+    <preference for="JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface" type="JosephLeedy\CustomFees\Model\CustomOrderFee\Invoiced"/>
+    <preference for="JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface" type="JosephLeedy\CustomFees\Model\CustomOrderFee\Refunded"/>
     <preference for="JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface" type="JosephLeedy\CustomFees\Model\CustomOrderFees"/>
 
+    <type name="JosephLeedy\CustomFees\Model\CustomOrderFee">
+        <arguments>
+            <argument name="state" xsi:type="object">Magento\Framework\App\State\Proxy</argument>
+        </arguments>
+    </type>
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="add_custom_fees_to_order" type="JosephLeedy\CustomFees\Plugin\Sales\Api\OrderRepositoryInterfacePlugin"/>
         <plugin name="save_custom_order_fees" type="JosephLeedy\CustomFees\Plugin\Sales\Api\OrderRepositoryInterfacePlugin"/>
