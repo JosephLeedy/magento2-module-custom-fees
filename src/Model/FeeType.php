@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Model;
 
+use JosephLeedy\CustomFees\Api\Data\FeeTypeInterface;
 use Magento\Framework\Phrase;
 
 use function __;
 
-enum FeeType: string
+enum FeeType: string implements FeeTypeInterface
 {
     case Fixed = 'fixed';
     case Percent = 'percent';
@@ -29,9 +30,9 @@ enum FeeType: string
         };
     }
 
-    public function equals(string|self $feeType): bool
+    public function equals(string|FeeTypeInterface $feeType): bool
     {
-        if (!($feeType instanceof self)) {
+        if (!($feeType instanceof FeeTypeInterface)) {
             $feeType = self::tryFrom($feeType);
         }
 
