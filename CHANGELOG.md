@@ -13,6 +13,17 @@ document.
 ### Changed
 
 - Ordered custom fees are now indexed by their corresponding fee code
+- Data for ordered, invoiced and refunded custom fees is now represented by 
+  models with corresponding interfaces instead of arrays
+- Usages of the `mixed[]` type for extension attributes have been replaced with 
+  the new interfaces for ordered, invoiced and refunded custom fees
+- All total models, blocks and other logic now use the new interfaces and models
+
+### Removed
+- The data patch used to add missing fields to the existing custom order fees 
+  data has been removed
+- The plug-in used to temporarily store the refunded custom fee amounts entered 
+  in the Admin panel during credit memo creation has been removed
 
 ## [1.3.0]
 
