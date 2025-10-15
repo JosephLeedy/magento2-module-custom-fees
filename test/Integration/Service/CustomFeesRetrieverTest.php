@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Service;
 
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -55,24 +56,34 @@ final class CustomFeesRetrieverTest extends TestCase
         }
 
         $expectedCustomFees = [
-            'test_fee_0' => [
-                'code' => 'test_fee_0',
-                'title' => 'Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 5.00,
-                'value' => 5.00,
-            ],
-            'test_fee_1' => [
-                'code' => 'test_fee_1',
-                'title' => 'Another Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 1.50,
-                'value' => 1.50,
-            ],
+            'test_fee_0' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 5.00,
+                        'value' => 5.00,
+                    ],
+                ],
+            ),
+            'test_fee_1' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 1.50,
+                        'value' => 1.50,
+                    ],
+                ],
+            ),
         ];
         $actualCustomFees = $customFeesRetriever->retrieveOrderedCustomFees($order);
 

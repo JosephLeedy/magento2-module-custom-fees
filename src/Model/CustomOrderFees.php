@@ -7,6 +7,8 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model;
 
 use InvalidArgumentException;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface as CustomOrderFee;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterfaceFactory as CustomOrderFeeFactory;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface;
 use JosephLeedy\CustomFees\Model\ResourceModel\CustomOrderFees as ResourceModel;
 use Magento\Framework\Data\Collection\AbstractDb;
@@ -18,6 +20,8 @@ use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 
 use function __;
+use function array_map;
+use function is_array;
 use function is_string;
 
 class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
@@ -32,6 +36,7 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
         Context $context,
         Registry $registry,
         private readonly SerializerInterface $serializer,
+        private readonly CustomOrderFeeFactory $customOrderFeeFactory,
         ?AbstractResource $resource = null,
         ?AbstractDb $resourceCollection = null,
         array $data = [],
@@ -62,13 +67,23 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
     {
         if (is_string($customFeesOrdered)) {
             try {
-                $customFeesOrdered = (array) (
+                /** @var array<string, CustomOrderFeeData> $orderedCustomFees */
+                $orderedCustomFees = (array) (
                     $this->serializer->unserialize($customFeesOrdered)
                         ?: throw new InvalidArgumentException((string) __('Invalid custom fees'))
                 );
             } catch (InvalidArgumentException) {
                 throw new InvalidArgumentException((string) __('Invalid custom fees'));
             }
+
+            $customFeesOrdered = array_map(
+                fn(array $orderedCustomFee): CustomOrderFee => $this->customOrderFeeFactory->create(
+                    [
+                        'data' => $orderedCustomFee,
+                    ],
+                ),
+                $orderedCustomFees,
+            );
         }
 
         $this->setData(self::CUSTOM_FEES_ORDERED, $customFeesOrdered);
@@ -78,24 +93,27 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
 
     public function getCustomFeesOrdered(): array
     {
-        /**
-         * @var array<string, array{
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float
-         * }>|string|null $customFeesOrdered
-         */
+        /** @var array<string, CustomOrderFee|CustomOrderFeeData>|string $customFeesOrdered */
         $customFeesOrdered = $this->getData(self::CUSTOM_FEES_ORDERED);
 
         if (is_string($customFeesOrdered)) {
-            $customFeesOrdered = (array) $this->serializer->unserialize($customFeesOrdered);
+            $this->setCustomFeesOrdered($customFeesOrdered);
+
+            /** @var array<string, CustomOrderFee> $customFeesOrdered */
+            $customFeesOrdered = $this->getData(self::CUSTOM_FEES_ORDERED);
         }
 
-        return $customFeesOrdered ?? [];
+        foreach ($customFeesOrdered as $feeCode => $customFeeData) {
+            if (!is_array($customFeeData)) {
+                continue;
+            }
+
+            $customFeesOrdered[$feeCode] = $this->customOrderFeeFactory->create(['data' => $customFeeData]);
+        }
+
+        /** @var array<string, CustomOrderFee> $customFeesOrdered */
+
+        return $customFeesOrdered;
     }
 
     public function setCustomFeesInvoiced(string|array $customFeesInvoiced): CustomOrderFeesInterface

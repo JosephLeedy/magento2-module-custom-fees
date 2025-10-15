@@ -7,6 +7,7 @@ namespace JosephLeedy\CustomFees\Service;
 use Deprecated;
 use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
 use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\Order;
 
@@ -18,15 +19,7 @@ class CustomFeesRetriever
     public function __construct(private readonly CustomOrderFeesRepositoryInterface $customOrderFeesRepository) {}
 
     /**
-     * @return array{}|array<string, array{
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }>
+     * @return array<string, CustomOrderFeeInterface>
      */
     #[Deprecated('Use `retrieveOrderedCustomFees()` instead', '1.3.0')]
     public function retrieve(Order $order): array
@@ -35,15 +28,7 @@ class CustomFeesRetriever
     }
 
     /**
-     * @return array{}|array<string, array{
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }>
+     * @return array<string, CustomOrderFeeInterface>
      */
     public function retrieveOrderedCustomFees(Order $order): array
     {
@@ -54,15 +39,7 @@ class CustomFeesRetriever
         }
 
         /**
-         * @var array<string, array{
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float
-         * }> $customFees
+         * @var array<string, CustomOrderFeeInterface>|null $customFees
          */
         $customFees = $orderExtension->getCustomOrderFees()
             ?->getCustomFeesOrdered();

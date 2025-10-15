@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Plugin\Sales\Api;
 
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface;
+use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Plugin\Sales\Api\OrderRepositoryInterfacePlugin;
 use Magento\Framework\Interception\PluginList\PluginList;
 use Magento\Sales\Api\Data\OrderInterface;
@@ -54,24 +56,34 @@ final class OrderRepositoryInterfacePluginTest extends TestCase
         /** @var OrderRepositoryInterface $orderRepository */
         $orderRepository = $objectManager->create(OrderRepositoryInterface::class);
         $expectedCustomOrderFees = [
-            'test_fee_0' => [
-                'code' => 'test_fee_0',
-                'title' => 'Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 5.00,
-                'value' => 5.00,
-            ],
-            'test_fee_1' => [
-                'code' => 'test_fee_1',
-                'title' => 'Another Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 1.50,
-                'value' => 1.50,
-            ],
+            'test_fee_0' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 5.00,
+                        'value' => 5.00,
+                    ],
+                ],
+            ),
+            'test_fee_1' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 1.50,
+                        'value' => 1.50,
+                    ],
+                ],
+            ),
         ];
 
         // Load the order by its increment ID to avoid hard-coding the entity ID, which can change.
@@ -84,7 +96,8 @@ final class OrderRepositoryInterfacePluginTest extends TestCase
 
         unset($order);
 
-        $actualCustomOrderFees = $fullOrder->getExtensionAttributes()
+        $actualCustomOrderFees = $fullOrder
+            ->getExtensionAttributes()
             ?->getCustomOrderFees()
             ?->getCustomFeesOrdered();
 
@@ -115,28 +128,39 @@ final class OrderRepositoryInterfacePluginTest extends TestCase
         $customOrderFees->setOrderId($orderId);
         $customOrderFees->setCustomFeesOrdered(
             [
-                'test_fee_0' => [
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => 'fixed',
-                    'percent' => null,
-                    'base_value' => 5.00,
-                    'show_percentage' => false,
-                    'value' => 4.50,
-                ],
-                'test_fee_1' => [
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => 'fixed',
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 1.50,
-                    'value' => 1.35,
-                ],
+                'test_fee_0' => $objectManager->create(
+                    CustomOrderFeeInterface::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_0',
+                            'title' => 'Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 5.00,
+                            'value' => 4.50,
+                        ],
+                    ],
+                ),
+                'test_fee_1' => $objectManager->create(
+                    CustomOrderFeeInterface::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_1',
+                            'title' => 'Another Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 1.50,
+                            'value' => 1.35,
+                        ],
+                    ],
+                ),
             ],
         );
 
-        $order->getExtensionAttributes()
+        $order
+            ->getExtensionAttributes()
             ?->setCustomOrderFees($customOrderFees);
 
         $orderRepository->save($order);

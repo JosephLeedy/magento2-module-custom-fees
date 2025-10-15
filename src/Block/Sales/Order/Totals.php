@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Block\Sales\Order;
 
-use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
@@ -13,7 +13,6 @@ use Magento\Framework\View\Element\Template\Context;
 use Magento\Sales\Block\Order\Totals as OrderTotals;
 use Magento\Sales\Model\Order;
 
-use function __;
 use function array_key_first;
 use function array_walk;
 use function count;
@@ -58,19 +57,23 @@ class Totals extends Template
 
         array_walk(
             $orderedCustomFees,
-            function (array $customFee, string|int $key) use ($firstOrderedFeeKey, &$previousFeeCode): void {
-                $customFee['label'] = FeeType::Percent->equals($customFee['type']) && $customFee['percent'] !== null
-                    && $customFee['show_percentage']
-                    ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
-                    : __($customFee['title']);
-                $customFeeCode = $customFee['code'];
-
-                unset($customFee['title']);
-
+            function (
+                CustomOrderFeeInterface $customOrderFee,
+                string $key,
+            ) use (
+                $firstOrderedFeeKey,
+                &$previousFeeCode,
+            ): void {
+                $customFeeCode = $customOrderFee->getCode();
                 /** @var DataObject $total */
                 $total = $this->dataObjectFactory->create(
                     [
-                        'data' => $customFee,
+                        'data' => [
+                            'code' => $customFeeCode,
+                            'label' => $customOrderFee->formatLabel(),
+                            'base_value' => $customOrderFee->getBaseValue(),
+                            'value' => $customOrderFee->getValue(),
+                        ],
                     ],
                 );
 

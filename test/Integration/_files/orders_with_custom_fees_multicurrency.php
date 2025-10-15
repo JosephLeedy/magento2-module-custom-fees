@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterfaceFactory;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Directory\Model\Currency;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Sales\Api\Data\OrderInterface;
@@ -30,24 +32,34 @@ $orders = $orderCollection
         ],
     )->getItems();
 $testCustomFees = [
-    'test_fee_0' => [
-        'code' => 'test_fee_0',
-        'title' => 'Test Fee',
-        'type' => 'fixed',
-        'percent' => null,
-        'show_percentage' => false,
-        'base_value' => 5.00,
-        'value' => 5.00,
-    ],
-    'test_fee_1' => [
-        'code' => 'test_fee_1',
-        'title' => 'Another Test Fee',
-        'type' => 'fixed',
-        'percent' => null,
-        'show_percentage' => false,
-        'base_value' => 1.50,
-        'value' => 1.50,
-    ],
+    'test_fee_0' => $objectManager->create(
+        CustomOrderFeeInterface::class,
+        [
+            'data' => [
+                'code' => 'test_fee_0',
+                'title' => 'Test Fee',
+                'type' => FeeType::Fixed,
+                'percent' => null,
+                'show_percentage' => false,
+                'base_value' => 5.00,
+                'value' => 5.00,
+            ],
+        ],
+    ),
+    'test_fee_1' => $objectManager->create(
+        CustomOrderFeeInterface::class,
+        [
+            'data' => [
+                'code' => 'test_fee_1',
+                'title' => 'Another Test Fee',
+                'type' => FeeType::Fixed,
+                'percent' => null,
+                'show_percentage' => false,
+                'base_value' => 1.50,
+                'value' => 1.50,
+            ],
+        ],
+    ),
 ];
 /** @var CustomOrderFeesInterfaceFactory $customOrderFeesFactory */
 $customOrderFeesFactory = $objectManager->create(CustomOrderFeesInterfaceFactory::class);
@@ -67,15 +79,19 @@ foreach ($orders as $key => $order) {
         $order->setBaseToOrderRate($rate);
         $order->save();
 
-        $customFeesForOrder['test_fee_0']['value'] = $priceCurrency->convert(
-            $customFeesForOrder['test_fee_0']['value'],
-            $order->getStoreId(),
-            $order->getOrderCurrencyCode(),
+        $customFeesForOrder['test_fee_0']->setValue(
+            $priceCurrency->convert(
+                $customFeesForOrder['test_fee_0']->getValue(),
+                $order->getStoreId(),
+                $order->getOrderCurrencyCode(),
+            ),
         );
-        $customFeesForOrder['test_fee_1']['value'] = $priceCurrency->convert(
-            $customFeesForOrder['test_fee_1']['value'],
-            $order->getStoreId(),
-            $order->getOrderCurrencyCode(),
+        $customFeesForOrder['test_fee_1']->setValue(
+            $priceCurrency->convert(
+                $customFeesForOrder['test_fee_1']->getValue(),
+                $order->getStoreId(),
+                $order->getOrderCurrencyCode(),
+            ),
         );
     }
 

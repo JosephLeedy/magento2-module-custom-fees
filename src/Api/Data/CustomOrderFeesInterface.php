@@ -32,31 +32,15 @@ interface CustomOrderFeesInterface
     public function getOrderId(): ?int;
 
     /**
-     * @param string|string[]|float[] $customFeesOrdered
-     * @phpstan-param string|array<string, array{
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }> $customFeesOrdered
+     * @param string|\JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface[] $customFeesOrdered
+     * @phpstan-param string|array<string, CustomOrderFeeInterface> $customFeesOrdered
      * @throws InvalidArgumentException
      */
     public function setCustomFeesOrdered(string|array $customFeesOrdered): CustomOrderFeesInterface;
 
     /**
-     * @return string[]|float[]
-     * @phpstan-return array{}|array<string, array{
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }>
+     * @return \JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface[]
+     * @phpstan-return array<string, CustomOrderFeeInterface>
      */
     public function getCustomFeesOrdered(): array;
 

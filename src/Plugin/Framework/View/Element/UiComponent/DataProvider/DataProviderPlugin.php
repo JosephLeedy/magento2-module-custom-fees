@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Plugin\Framework\View\Element\UiComponent\DataProvider;
 
 use InvalidArgumentException;
-use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider;
@@ -55,17 +54,7 @@ class DataProviderPlugin
                 }
 
                 try {
-                    /**
-                     * @var array<string, array{
-                     *     code: string,
-                     *     title: string,
-                     *     type: value-of<FeeType>,
-                     *     percent: float|null,
-                     *     show_percentage: bool,
-                     *     base_value: float,
-                     *     value: float
-                     * }> $customFees
-                     */
+                    /** @var array<string, CustomOrderFeeData> $customFees */
                     $customFees = $this->serializer->unserialize($customFeesOrderedJson);
                 } catch (InvalidArgumentException) {
                     return;
@@ -74,15 +63,7 @@ class DataProviderPlugin
                 array_walk(
                     $customFees,
                     /**
-                     * @param array{
-                     *     code: string,
-                     *     title: string,
-                     *     type: value-of<FeeType>,
-                     *     percent: float|null,
-                     *     show_percentage: bool,
-                     *     base_value: float,
-                     *     value: float
-                     * } $customFee
+                     * @param CustomOrderFeeData $customFee
                      */
                     function (array $customFee) use (&$orderData): void {
                         $orderData[$customFee['code'] . '_base'] = $this->priceCurrency->format(
