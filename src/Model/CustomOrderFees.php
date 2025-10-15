@@ -9,6 +9,8 @@ namespace JosephLeedy\CustomFees\Model;
 use InvalidArgumentException;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface as InvoicedCustomOrderFee;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterfaceFactory as InvoicedCustomOrderFeeFactory;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface as RefundedCustomOrderFee;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterfaceFactory as RefundedCustomOrderFeeFactory;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface as CustomOrderFee;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterfaceFactory as CustomOrderFeeFactory;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface;
@@ -40,6 +42,7 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
         private readonly SerializerInterface $serializer,
         private readonly CustomOrderFeeFactory $customOrderFeeFactory,
         private readonly InvoicedCustomOrderFeeFactory $invoicedCustomOrderFeeFactory,
+        private readonly RefundedCustomOrderFeeFactory $refundedCustomOrderFeeFactory,
         ?AbstractResource $resource = null,
         ?AbstractDb $resourceCollection = null,
         array $data = [],
@@ -180,10 +183,20 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
     {
         if (is_string($customFeesRefunded)) {
             try {
-                $customFeesRefunded = (array) $this->serializer->unserialize($customFeesRefunded);
+                /** @var array<int, array<string, CustomCreditMemoFeeData>> $refundedCustomFees */
+                $refundedCustomFees = (array) $this->serializer->unserialize($customFeesRefunded);
             } catch (InvalidArgumentException) {
                 throw new InvalidArgumentException((string) __('Invalid custom fees'));
             }
+
+            $customFeesRefunded = array_map(
+                fn(array $refundedCustomFee): array => array_map(
+                    fn(array $refundedCustomFeeData): RefundedCustomOrderFee
+                        => $this->refundedCustomOrderFeeFactory->create(['data' => $refundedCustomFeeData]),
+                    $refundedCustomFee,
+                ),
+                $refundedCustomFees,
+            );
         }
 
         $this->setData(self::CUSTOM_FEES_REFUNDED, $customFeesRefunded);
@@ -193,25 +206,34 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
 
     public function getCustomFeesRefunded(): array
     {
-        /**
-         * @var array<string, array{
-         *     credit_memo_id: int,
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float
-         * }>|string|null $customFeesRefunded
-         */
-        $customFeesRefunded = $this->getData(self::CUSTOM_FEES_REFUNDED);
+        /** @var array<int, array<string, RefundedCustomOrderFee|CustomCreditMemoFeeData>>|string $customFeesRefunded */
+        $customFeesRefunded = $this->getData(self::CUSTOM_FEES_REFUNDED) ?? [];
 
         if (is_string($customFeesRefunded)) {
-            $customFeesRefunded = (array) $this->serializer->unserialize($customFeesRefunded);
+            $this->setCustomFeesRefunded($customFeesRefunded);
+
+            /** @var array<int, array<string, RefundedCustomOrderFee>> $customFeesRefunded */
+            $customFeesRefunded = $this->getData(self::CUSTOM_FEES_REFUNDED);
         }
 
-        return $customFeesRefunded ?? [];
+        foreach ($customFeesRefunded as $creditMemoId => $customFeeRefunded) {
+            foreach ($customFeeRefunded as $feeCode => $customFeeRefundedData) {
+                if (!is_array($customFeeRefundedData)) {
+                    continue;
+                }
+
+                /** @noinspection UnsupportedStringOffsetOperationsInspection */
+                $customFeesRefunded[$creditMemoId][$feeCode] = $this->refundedCustomOrderFeeFactory->create(
+                    [
+                        'data' => $customFeeRefundedData,
+                    ],
+                );
+            }
+        }
+
+        /** @var array<int, array<string, RefundedCustomOrderFee>> $customFeesRefunded */
+
+        return $customFeesRefunded;
     }
 
     public function getOrder(): ?OrderInterface

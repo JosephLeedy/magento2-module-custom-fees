@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Service;
 
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface as RefundedCustomFee;
 use JosephLeedy\CustomFees\Model\CustomOrderFees;
 use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Model\ResourceModel\CustomOrderFees\Collection as CustomOrderFeesCollection;
@@ -46,26 +47,36 @@ final class RefundedCustomFeesRecorderTest extends TestCase
         foreach ($creditMemos as $creditMemo) {
             $creditMemoId = $creditMemo->getEntityId();
             $expectedRefundedCustomOrderFees[$creditMemoId] = [
-                'test_fee_0' => [
-                    'credit_memo_id' => $creditMemoId,
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 5.00,
-                    'value' => 5.00,
-                ],
-                'test_fee_1' => [
-                    'credit_memo_id' => $creditMemoId,
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 1.50,
-                    'value' => 1.50,
-                ],
+                'test_fee_0' => $objectManager->create(
+                    RefundedCustomFee::class,
+                    [
+                        'data' => [
+                            'credit_memo_id' => $creditMemoId,
+                            'code' => 'test_fee_0',
+                            'title' => 'Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 5.00,
+                            'value' => 5.00,
+                        ],
+                    ],
+                ),
+                'test_fee_1' => $objectManager->create(
+                    RefundedCustomFee::class,
+                    [
+                        'data' => [
+                            'credit_memo_id' => $creditMemoId,
+                            'code' => 'test_fee_1',
+                            'title' => 'Another Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 1.50,
+                            'value' => 1.50,
+                        ],
+                    ],
+                ),
             ];
         }
 

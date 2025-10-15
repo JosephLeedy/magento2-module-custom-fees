@@ -6,7 +6,7 @@ namespace JosephLeedy\CustomFees\Api\Data;
 
 use InvalidArgumentException;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface;
-use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 
 /**
@@ -59,33 +59,15 @@ interface CustomOrderFeesInterface
     public function getCustomFeesInvoiced(): array;
 
     /**
-     * @param string|string[]|float[] $customFeesRefunded
-     * @phpstan-param string|array<string, array{
-     *     credit_memo_id: int,
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }>[] $customFeesRefunded
+     * @param string|\JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface[][] $customFeesRefunded
+     * @phpstan-param string|array<int, array<string, RefundedInterface>> $customFeesRefunded
      * @throws InvalidArgumentException
      */
     public function setCustomFeesRefunded(string|array $customFeesRefunded): CustomOrderFeesInterface;
 
     /**
-     * @return string[]|float[]
-     * @phpstan-return array{}|array<string, array{
-     *     credit_memo_id: int,
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }>[]
+     * @return \JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface[][]
+     * @phpstan-return array<int, array<string, RefundedInterface>>
      */
     public function getCustomFeesRefunded(): array;
 

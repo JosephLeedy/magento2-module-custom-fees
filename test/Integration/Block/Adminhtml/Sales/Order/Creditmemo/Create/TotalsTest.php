@@ -6,6 +6,7 @@ namespace JosephLeedy\CustomFees\Test\Integration\Block\Adminhtml\Sales\Order\Cr
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use JosephLeedy\CustomFees\Block\Adminhtml\Sales\Order\Creditmemo\Create\Totals as CreateCreditMemoTotalsBlock;
+use JosephLeedy\CustomFees\Model\CustomOrderFee\Refunded as RefundedCustomFee;
 use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\App\Area;
 use Magento\Framework\DataObject;
@@ -54,28 +55,40 @@ final class TotalsTest extends TestCase
         $order->loadByIncrementId('100000001');
 
         $creditMemo->setOrder($order);
-        $creditMemo->getExtensionAttributes()->setRefundedCustomFees(
-            [
-                'test_fee_0' => [
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => 'fixed',
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 0.00,
-                    'value' => 0.00,
+        $creditMemo
+            ->getExtensionAttributes()
+            ->setRefundedCustomFees(
+                [
+                    'test_fee_0' => $objectManager->create(
+                        RefundedCustomFee::class,
+                        [
+                            'data' => [
+                                'code' => 'test_fee_0',
+                                'title' => 'Test Fee',
+                                'type' => FeeType::Fixed,
+                                'percent' => null,
+                                'show_percentage' => false,
+                                'base_value' => 0.00,
+                                'value' => 0.00,
+                            ],
+                        ],
+                    ),
+                    'test_fee_1' => $objectManager->create(
+                        RefundedCustomFee::class,
+                        [
+                            'data' => [
+                                'code' => 'test_fee_1',
+                                'title' => 'Another Test Fee',
+                                'type' => FeeType::Fixed,
+                                'percent' => null,
+                                'show_percentage' => false,
+                                'base_value' => 1.50,
+                                'value' => 1.50,
+                            ],
+                        ],
+                    ),
                 ],
-                'test_fee_1' => [
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => 'fixed',
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 1.50,
-                    'value' => 1.50,
-                ],
-            ],
-        );
+            );
 
         $creditMemoTotalsBlock->setOrder($order);
         $creditMemoTotalsBlock->setCreditmemo($creditMemo);
@@ -161,9 +174,6 @@ final class TotalsTest extends TestCase
      * @return array<string, array{
      *     code: string,
      *     label: string,
-     *     type: value-of<FeeType>,
-     *     percent: null,
-     *     show_percentage: bool,
      *     base_value: float,
      *     value: float,
      * }>
@@ -171,14 +181,11 @@ final class TotalsTest extends TestCase
     private function getCustomFeeTotalData(array $customFeeTotals): array
     {
         return array_map(
-            static function (DataObject $customFeeTotal) {
+            static function (DataObject $customFeeTotal): array {
                 /**
                  * @var array{
                  *     code: string,
                  *     label: Phrase,
-                 *     type: value-of<FeeType>,
-                 *     percent: null,
-                 *     show_percentage: bool,
                  *     base_value: float,
                  *     value: float,
                  * } $customFeeTotalData
