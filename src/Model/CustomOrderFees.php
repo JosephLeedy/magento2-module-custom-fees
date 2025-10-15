@@ -7,6 +7,8 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model;
 
 use InvalidArgumentException;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface as InvoicedCustomOrderFee;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterfaceFactory as InvoicedCustomOrderFeeFactory;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface as CustomOrderFee;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterfaceFactory as CustomOrderFeeFactory;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface;
@@ -37,6 +39,7 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
         Registry $registry,
         private readonly SerializerInterface $serializer,
         private readonly CustomOrderFeeFactory $customOrderFeeFactory,
+        private readonly InvoicedCustomOrderFeeFactory $invoicedCustomOrderFeeFactory,
         ?AbstractResource $resource = null,
         ?AbstractDb $resourceCollection = null,
         array $data = [],
@@ -120,10 +123,20 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
     {
         if (is_string($customFeesInvoiced)) {
             try {
-                $customFeesInvoiced = (array) $this->serializer->unserialize($customFeesInvoiced);
+                /** @var array<int, array<string, CustomInvoiceFeeData>> $invoicedCustomFees */
+                $invoicedCustomFees = (array) $this->serializer->unserialize($customFeesInvoiced);
             } catch (InvalidArgumentException) {
                 throw new InvalidArgumentException((string) __('Invalid custom fees'));
             }
+
+            $customFeesInvoiced = array_map(
+                fn(array $invoicedCustomFee): array => array_map(
+                    fn(array $invoicedCustomFeeData): InvoicedCustomOrderFee
+                        => $this->invoicedCustomOrderFeeFactory->create(['data' => $invoicedCustomFeeData]),
+                    $invoicedCustomFee,
+                ),
+                $invoicedCustomFees,
+            );
         }
 
         $this->setData(self::CUSTOM_FEES_INVOICED, $customFeesInvoiced);
@@ -133,25 +146,34 @@ class CustomOrderFees extends AbstractModel implements CustomOrderFeesInterface
 
     public function getCustomFeesInvoiced(): array
     {
-        /**
-         * @var array<string, array{
-         *     invoice_id: int,
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float,
-         * }>|string|null $customFeesInvoiced
-         */
-        $customFeesInvoiced = $this->getData(self::CUSTOM_FEES_INVOICED);
+        /** @var array<int, array<string, InvoicedCustomOrderFee|CustomInvoiceFeeData>>|string $customFeesInvoiced */
+        $customFeesInvoiced = $this->getData(self::CUSTOM_FEES_INVOICED) ?? [];
 
         if (is_string($customFeesInvoiced)) {
-            $customFeesInvoiced = (array) $this->serializer->unserialize($customFeesInvoiced);
+            $this->setCustomFeesInvoiced($customFeesInvoiced);
+
+            /** @var array<int, array<string, InvoicedCustomOrderFee>> $customFeesInvoiced */
+            $customFeesInvoiced = $this->getData(self::CUSTOM_FEES_INVOICED);
         }
 
-        return $customFeesInvoiced ?? [];
+        foreach ($customFeesInvoiced as $invoiceId => $customFeeInvoiced) {
+            foreach ($customFeeInvoiced as $feeCode => $customFeeInvoicedData) {
+                if (!is_array($customFeeInvoicedData)) {
+                    continue;
+                }
+
+                /** @noinspection UnsupportedStringOffsetOperationsInspection */
+                $customFeesInvoiced[$invoiceId][$feeCode] = $this->invoicedCustomOrderFeeFactory->create(
+                    [
+                        'data' => $customFeeInvoicedData,
+                    ],
+                );
+            }
+        }
+
+        /** @var array<int, array<string, InvoicedCustomOrderFee>> $customFeesInvoiced */
+
+        return $customFeesInvoiced;
     }
 
     public function setCustomFeesRefunded(string|array $customFeesRefunded): CustomOrderFeesInterface

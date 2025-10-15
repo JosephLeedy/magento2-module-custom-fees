@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Api\Data;
 
 use InvalidArgumentException;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface;
 use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Sales\Api\Data\OrderInterface;
 
@@ -45,33 +46,15 @@ interface CustomOrderFeesInterface
     public function getCustomFeesOrdered(): array;
 
     /**
-     * @param string|string[]|float[] $customFeesInvoiced
-     * @phpstan-param string|array<string, array{
-     *     invoice_id: int,
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }>[] $customFeesInvoiced
+     * @param string|\JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface[][] $customFeesInvoiced
+     * @phpstan-param string|array<int, array<string, InvoicedInterface>> $customFeesInvoiced
      * @throws InvalidArgumentException
      */
     public function setCustomFeesInvoiced(string|array $customFeesInvoiced): CustomOrderFeesInterface;
 
     /**
-     * @return string[]|float[]
-     * @phpstan-return array{}|array<string, array{
-     *     invoice_id: int,
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }>[]
+     * @return \JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface[][]
+     * @phpstan-return array<int, array<string, InvoicedInterface>>
      */
     public function getCustomFeesInvoiced(): array;
 

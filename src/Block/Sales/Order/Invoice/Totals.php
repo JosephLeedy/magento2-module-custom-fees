@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Block\Sales\Order\Invoice;
 
-use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface as InvoicedCustomFee;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
@@ -13,7 +13,6 @@ use Magento\Framework\View\Element\Template\Context;
 use Magento\Sales\Block\Order\Invoice\Totals as InvoiceTotals;
 use Magento\Sales\Model\Order\Invoice;
 
-use function __;
 use function array_key_exists;
 use function array_key_first;
 use function array_walk;
@@ -52,55 +51,37 @@ class Totals extends Template
     {
         $invoice = $this->getSource();
         $order = $invoice->getOrder();
-        /**
-         * @var array{}|array<string, array{
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float,
-         * }> $customFees
-         */
-        $customFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees() ?? [];
+        /** @var array<string, InvoicedCustomFee> $invoicedCustomFees */
+        $invoicedCustomFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees() ?? [];
         /** @var int|string|null $invoiceId */
         $invoiceId = $invoice->getId();
 
-        if ($customFees === [] && $invoiceId !== null) {
-            $invoicedCustomFees = $this->customFeesRetriever->retrieveInvoicedCustomFees($order);
+        if ($invoicedCustomFees === [] && $invoiceId !== null) {
+            $existingInvoicedCustomFees = $this->customFeesRetriever->retrieveInvoicedCustomFees($order);
 
-            if (array_key_exists($invoiceId, $invoicedCustomFees)) {
-                $customFees = $invoicedCustomFees[$invoiceId];
+            if (array_key_exists($invoiceId, $existingInvoicedCustomFees)) {
+                $invoicedCustomFees = $existingInvoicedCustomFees[$invoiceId];
             } else {
                 return $this;
             }
         }
 
-        $firstFeeKey = array_key_first($customFees);
+        $firstFeeKey = array_key_first($invoicedCustomFees);
         $previousFeeCode = '';
 
         array_walk(
-            $customFees,
-            function (array $customFee, string|int $key) use ($firstFeeKey, &$previousFeeCode): void {
-                $customFee['label'] = FeeType::Percent->equals($customFee['type'])
-                    && $customFee['percent'] !== null
-                    && $customFee['show_percentage']
-                    ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
-                    : __($customFee['title']);
-
-                unset(
-                    $customFee['invoice_id'],
-                    $customFee['title'],
-                    $customFee['type'],
-                    $customFee['percent'],
-                    $customFee['show_percentage'],
-                );
-
+            $invoicedCustomFees,
+            function (InvoicedCustomFee $invoicedCustomFee, string $key) use ($firstFeeKey, &$previousFeeCode): void {
+                $customFeeCode = $invoicedCustomFee->getCode();
                 /** @var DataObject $total */
                 $total = $this->dataObjectFactory->create(
                     [
-                        'data' => $customFee,
+                        'data' => [
+                            'code' => $customFeeCode,
+                            'label' => $invoicedCustomFee->formatLabel(),
+                            'base_value' => $invoicedCustomFee->getBaseValue(),
+                            'value' => $invoicedCustomFee->getValue(),
+                        ],
                     ],
                 );
 
@@ -114,7 +95,7 @@ class Totals extends Template
                     $this->getParentBlock()->addTotal($total, $previousFeeCode);
                 }
 
-                $previousFeeCode = $customFee['code'];
+                $previousFeeCode = $customFeeCode;
             },
         );
 

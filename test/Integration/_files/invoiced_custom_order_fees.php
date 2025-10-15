@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface as InvoicedCustomFee;
 use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\DB\Transaction;
@@ -42,7 +43,7 @@ $orderCollection = $orderRepository->getList($orderSearchResults);
 $transaction = $objectManager->create(Transaction::class);
 
 $orderCollection->walk(
-    static function (Order $order) use ($transaction): void {
+    static function (Order $order) use ($objectManager, $transaction): void {
         $customOrderFees = $order->getExtensionAttributes()?->getCustomOrderFees();
         $invoicedCustomFees = [];
 
@@ -53,29 +54,39 @@ $orderCollection->walk(
         $order
             ->getInvoiceCollection()
             ->walk(
-                static function (Invoice $invoice) use (&$invoicedCustomFees): void {
+                static function (Invoice $invoice) use (&$invoicedCustomFees, $objectManager): void {
                     $invoiceId = (int) $invoice->getEntityId();
                     $invoicedCustomFees[$invoiceId] = [
-                        'test_fee_0' => [
-                            'invoice_id' => $invoiceId,
-                            'code' => 'test_fee_0',
-                            'title' => 'Test Fee',
-                            'type' => FeeType::Fixed->value,
-                            'percent' => null,
-                            'show_percentage' => false,
-                            'base_value' => 5.00,
-                            'value' => 5.00,
-                        ],
-                        'test_fee_1' => [
-                            'invoice_id' => $invoiceId,
-                            'code' => 'test_fee_1',
-                            'title' => 'Another Test Fee',
-                            'type' => FeeType::Fixed->value,
-                            'percent' => null,
-                            'show_percentage' => false,
-                            'base_value' => 1.50,
-                            'value' => 1.50,
-                        ],
+                        'test_fee_0' => $objectManager->create(
+                            InvoicedCustomFee::class,
+                            [
+                                'data' => [
+                                    'invoice_id' => $invoiceId,
+                                    'code' => 'test_fee_0',
+                                    'title' => 'Test Fee',
+                                    'type' => FeeType::Fixed,
+                                    'percent' => null,
+                                    'show_percentage' => false,
+                                    'base_value' => 5.00,
+                                    'value' => 5.00,
+                                ],
+                            ],
+                        ),
+                        'test_fee_1' => $objectManager->create(
+                            InvoicedCustomFee::class,
+                            [
+                                'data' => [
+                                    'invoice_id' => $invoiceId,
+                                    'code' => 'test_fee_1',
+                                    'title' => 'Another Test Fee',
+                                    'type' => FeeType::Fixed,
+                                    'percent' => null,
+                                    'show_percentage' => false,
+                                    'base_value' => 1.50,
+                                    'value' => 1.50,
+                                ],
+                            ],
+                        ),
                     ];
                 },
             );

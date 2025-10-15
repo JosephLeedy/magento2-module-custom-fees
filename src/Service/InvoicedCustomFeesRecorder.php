@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Service;
 
 use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterfaceFactory as InvoicedCustomFeeFactory;
 use JosephLeedy\CustomFees\Model\CustomOrderFees;
 use JosephLeedy\CustomFees\Model\ResourceModel\CustomOrderFees\CollectionFactory;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -32,6 +33,7 @@ class InvoicedCustomFeesRecorder
         private readonly CollectionFactory $customOrderFeesCollectionFactory,
         private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly InvoiceRepositoryInterface $invoiceRepository,
+        private readonly InvoicedCustomFeeFactory $invoicedCustomFeeFactory,
         private readonly CustomOrderFeesRepositoryInterface $customOrderFeesRepository,
     ) {}
 
@@ -96,17 +98,21 @@ class InvoicedCustomFeesRecorder
             $delta = (float) $invoice->getSubtotal() / (float) $invoice->getOrder()->getSubtotal();
             $invoiceId = (int) $invoice->getId();
 
-            foreach ($customFeesOrdered as $customFeeOrdered) {
-                $customFeesInvoiced[$invoiceId][$customFeeOrdered['code']] = [
-                    'invoice_id' => $invoiceId,
-                    'code' => $customFeeOrdered['code'],
-                    'title' => $customFeeOrdered['title'],
-                    'type' => $customFeeOrdered['type'],
-                    'percent' => $customFeeOrdered['percent'],
-                    'show_percentage' => $customFeeOrdered['show_percentage'],
-                    'base_value' => round((float) $customFeeOrdered['base_value'] * $baseDelta, 2),
-                    'value' => round((float) $customFeeOrdered['value'] * $delta, 2),
-                ];
+            foreach ($customFeesOrdered as $feeCode => $customFeeOrdered) {
+                $customFeesInvoiced[$invoiceId][$feeCode] = $this->invoicedCustomFeeFactory->create(
+                    [
+                        'data' => [
+                            'invoice_id' => $invoiceId,
+                            'code' => $customFeeOrdered->getCode(),
+                            'title' => $customFeeOrdered->getTitle(),
+                            'type' => $customFeeOrdered->getType(),
+                            'percent' => $customFeeOrdered->getPercent(),
+                            'show_percentage' => $customFeeOrdered->getShowPercentage(),
+                            'base_value' => round($customFeeOrdered->getBaseValue() * $baseDelta, 2),
+                            'value' => round($customFeeOrdered->getValue() * $delta, 2),
+                        ],
+                    ],
+                );
             }
         }
 

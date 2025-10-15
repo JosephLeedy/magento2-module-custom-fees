@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Model\Total\Invoice;
 
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface as InvoicedCustomFee;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\DB\Transaction;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order;
@@ -33,24 +35,34 @@ final class CustomFeesTest extends TestCase
         $invoice = $this->createInvoice($order);
 
         $expectedInvoicedCustomFees = [
-            'test_fee_0' => [
-                'code' => 'test_fee_0',
-                'title' => 'Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 5.00,
-                'value' => 5.00,
-            ],
-            'test_fee_1' => [
-                'code' => 'test_fee_1',
-                'title' => 'Another Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 1.50,
-                'value' => 1.50,
-            ],
+            'test_fee_0' => $objectManager->create(
+                InvoicedCustomFee::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 5.00,
+                        'value' => 5.00,
+                    ],
+                ],
+            ),
+            'test_fee_1' => $objectManager->create(
+                InvoicedCustomFee::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 1.50,
+                        'value' => 1.50,
+                    ],
+                ],
+            ),
         ];
         $actualInvoicedCustomFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees();
 
@@ -74,28 +86,38 @@ final class CustomFeesTest extends TestCase
 
         $invoices = $this->createInvoices($order);
 
-        $expectedInvoicedCustomFees = [
-            'test_fee_0' => [
-                'code' => 'test_fee_0',
-                'title' => 'Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 2.50,
-                'value' => 2.50,
-            ],
-            'test_fee_1' => [
-                'code' => 'test_fee_1',
-                'title' => 'Another Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 0.75,
-                'value' => 0.75,
-            ],
-        ];
-
         foreach ($invoices as $invoice) {
+            $expectedInvoicedCustomFees = [
+                'test_fee_0' => $objectManager->create(
+                    InvoicedCustomFee::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_0',
+                            'title' => 'Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 2.50,
+                            'value' => 2.50,
+                        ],
+                    ],
+                ),
+                'test_fee_1' => $objectManager->create(
+                    InvoicedCustomFee::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_1',
+                            'title' => 'Another Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 0.75,
+                            'value' => 0.75,
+                        ],
+                    ],
+                ),
+            ];
+
             self::assertEquals(13.25, $invoice->getBaseGrandTotal());
             self::assertEquals(13.25, $invoice->getGrandTotal());
             self::assertEquals(

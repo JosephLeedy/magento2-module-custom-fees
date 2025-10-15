@@ -6,8 +6,9 @@ namespace JosephLeedy\CustomFees\Service;
 
 use Deprecated;
 use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
-use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface as InvoicedCustomFee;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\Order;
 
@@ -59,16 +60,7 @@ class CustomFeesRetriever
     }
 
     /**
-     * @return array{}|array<string, array{
-     *     invoice_id: int,
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }>[]
+     * @return array<int, array<string, InvoicedCustomFee>>
      */
     public function retrieveInvoicedCustomFees(Order $order): array
     {
