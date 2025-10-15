@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model\CustomOrderFee;
 
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface;
+use JosephLeedy\CustomFees\Metadata\PropertyType;
 use JosephLeedy\CustomFees\Model\CustomOrderFee;
 
 /**
@@ -14,6 +15,7 @@ use JosephLeedy\CustomFees\Model\CustomOrderFee;
  */
 class Refunded extends CustomOrderFee implements RefundedInterface
 {
+    #[PropertyType('int')]
     public function setCreditMemoId(?int $creditMemoId): static
     {
         $this->setData(self::CREDIT_MEMO_ID, $creditMemoId);

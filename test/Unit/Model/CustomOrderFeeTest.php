@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use JosephLeedy\CustomFees\Api\Data\FeeTypeInterface;
 use JosephLeedy\CustomFees\Model\CustomOrderFee;
 use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Service\DataObjectPropertyTypeConverter;
 use Magento\Framework\App\State;
 use PHPUnit\Framework\TestCase;
 
@@ -17,6 +18,7 @@ final class CustomOrderFeeTest extends TestCase
 {
     public function testConstructorSetsDefaultValuesForMissingProperties(): void
     {
+        $dataObjectDataValidator = $this->createStub(DataObjectPropertyTypeConverter::class);
         $state = $this->createStub(State::class);
         $expectedData = [
             'code' => 'test_fee_0',
@@ -31,7 +33,7 @@ final class CustomOrderFeeTest extends TestCase
 
         unset($data['type'], $data['percent'], $data['show_percentage']);
 
-        $customOrderFee = new CustomOrderFee($state, $data);
+        $customOrderFee = new CustomOrderFee($dataObjectDataValidator, $state, $data);
         $actualData = $customOrderFee->__toArray();
 
         self::assertEquals($expectedData, $actualData);
@@ -39,6 +41,7 @@ final class CustomOrderFeeTest extends TestCase
 
     public function testConstructorSetsTypePropertyFromString(): void
     {
+        $dataObjectDataValidator = $this->createStub(DataObjectPropertyTypeConverter::class);
         $state = $this->createStub(State::class);
         $data = [
             'code' => 'test_fee_0',
@@ -50,7 +53,7 @@ final class CustomOrderFeeTest extends TestCase
             'value' => 5.00,
         ];
 
-        $customOrderFee = new CustomOrderFee($state, $data);
+        $customOrderFee = new CustomOrderFee($dataObjectDataValidator, $state, $data);
         $expectedData = $data;
         $expectedData['type'] = FeeType::Fixed;
         $actualData = $customOrderFee->__toArray();
@@ -64,6 +67,7 @@ final class CustomOrderFeeTest extends TestCase
             new InvalidArgumentException((string) __('Invalid custom fee type "%1".', 'invalid')),
         );
 
+        $dataObjectDataValidator = $this->createStub(DataObjectPropertyTypeConverter::class);
         $state = $this->createStub(State::class);
         $data = [
             'code' => 'test_fee_0',
@@ -75,7 +79,7 @@ final class CustomOrderFeeTest extends TestCase
             'value' => 5.00,
         ];
 
-        new CustomOrderFee($state, $data);
+        new CustomOrderFee($dataObjectDataValidator, $state, $data);
     }
 
     /**
@@ -83,11 +87,12 @@ final class CustomOrderFeeTest extends TestCase
      */
     public function testGetTypeReturnsCorrectTypeByArea(string $area, FeeTypeInterface|string $expectedType): void
     {
+        $dataObjectDataValidator = $this->createStub(DataObjectPropertyTypeConverter::class);
         $state = $this->createStub(State::class);
 
         $state->method('getAreaCode')->willReturn($area);
 
-        $customOrderFee = new CustomOrderFee($state);
+        $customOrderFee = new CustomOrderFee($dataObjectDataValidator, $state);
 
         $customOrderFee->setType(FeeType::Fixed);
 
@@ -99,9 +104,10 @@ final class CustomOrderFeeTest extends TestCase
      */
     public function testGetLabelReturnsLabel(string $prefix, FeeType $feeType): void
     {
+        $dataObjectDataValidator = $this->createStub(DataObjectPropertyTypeConverter::class);
         $state = $this->createStub(State::class);
 
-        $customOrderFee = new CustomOrderFee($state);
+        $customOrderFee = new CustomOrderFee($dataObjectDataValidator, $state);
 
         $customOrderFee->setType($feeType);
         $customOrderFee->setTitle('Test Fee');

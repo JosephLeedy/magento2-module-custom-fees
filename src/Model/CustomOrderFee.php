@@ -7,6 +7,8 @@ namespace JosephLeedy\CustomFees\Model;
 use InvalidArgumentException;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Api\Data\FeeTypeInterface;
+use JosephLeedy\CustomFees\Metadata\PropertyType;
+use JosephLeedy\CustomFees\Service\DataObjectPropertyTypeConverter;
 use JsonSerializable;
 use Magento\Framework\Api\AbstractSimpleObject;
 use Magento\Framework\App\Area;
@@ -27,8 +29,11 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
      * @phpstan-param CustomOrderFeeData|array{} $data
      * @throws InvalidArgumentException
      */
-    public function __construct(private readonly State $state, array $data = [])
-    {
+    public function __construct(
+        DataObjectPropertyTypeConverter $dataObjectPropertyTypeValidator,
+        private readonly State $state,
+        array $data = [],
+    ) {
         if ($data !== []) {
             $data['type'] ??= FeeType::Fixed;
             $data['percent'] ??= null;
@@ -40,9 +45,12 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
             }
         }
 
+        $dataObjectPropertyTypeValidator->convert($data, $this);
+
         parent::__construct($data);
     }
 
+    #[PropertyType('string')]
     public function setCode(string $code): static
     {
         $this->setData(static::CODE, $code);
@@ -55,6 +63,7 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         return $this->_get(static::CODE);
     }
 
+    #[PropertyType('string')]
     public function setTitle(string $title): static
     {
         $this->setData(static::TITLE, $title);
@@ -67,6 +76,7 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         return $this->_get(static::TITLE);
     }
 
+    #[PropertyType(FeeType::class)]
     public function setType(FeeTypeInterface|string $type): static
     {
         if (!($type instanceof FeeTypeInterface)) {
@@ -105,6 +115,7 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         return $feeType;
     }
 
+    #[PropertyType('float')]
     public function setPercent(?float $percent): static
     {
         $this->setData(static::PERCENT, $percent);
@@ -117,6 +128,7 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         return $this->_get(static::PERCENT);
     }
 
+    #[PropertyType('bool')]
     public function setShowPercentage(bool|int $showPercentage): static
     {
         $this->setData(static::SHOW_PERCENTAGE, (bool) $showPercentage);
@@ -129,6 +141,7 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         return $this->_get(static::SHOW_PERCENTAGE) ?? true;
     }
 
+    #[PropertyType('float')]
     public function setBaseValue(float $baseValue): static
     {
         $this->setData(static::BASE_VALUE, $baseValue);
@@ -141,6 +154,7 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         return $this->_get(static::BASE_VALUE);
     }
 
+    #[PropertyType('float')]
     public function setValue(float $value): static
     {
         $this->setData(static::VALUE, $value);
