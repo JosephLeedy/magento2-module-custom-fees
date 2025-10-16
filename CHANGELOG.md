@@ -10,6 +10,10 @@ document.
 
 ## [Unreleased]
 
+### Changed
+
+- Totals in the Custom Order Fees Report are now sorted by order currency
+
 ## [1.3.0]
 
 ### Added
