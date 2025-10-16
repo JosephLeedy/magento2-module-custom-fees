@@ -31,6 +31,7 @@ $orders = $orderCollection
             ],
         ],
     )->getItems();
+/** @var array<string, CustomOrderFeeInterface> $testCustomFees */
 $testCustomFees = [
     'test_fee_0' => $objectManager->create(
         CustomOrderFeeInterface::class,
@@ -72,7 +73,10 @@ $rate = $currency->load('USD')->getRate('EUR');
 $priceCurrency = $objectManager->get(PriceCurrencyInterface::class);
 
 foreach ($orders as $key => $order) {
-    $customFeesForOrder = $testCustomFees;
+    $customFeesForOrder = array_map(
+        static fn(CustomOrderFeeInterface $customOrderFee): CustomOrderFeeInterface => clone $customOrderFee,
+        $testCustomFees,
+    );
 
     if ($key % 2 === 0) {
         $order->setOrderCurrencyCode('EUR');
