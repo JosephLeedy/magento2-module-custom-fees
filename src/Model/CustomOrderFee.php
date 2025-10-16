@@ -13,6 +13,7 @@ use JsonSerializable;
 use Magento\Framework\Api\AbstractSimpleObject;
 use Magento\Framework\App\Area;
 use Magento\Framework\App\State;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 
 use function __;
@@ -98,18 +99,22 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
             $feeType = FeeType::tryFrom($feeType) ?? FeeType::Fixed;
         }
 
-        if (
-            in_array(
-                $this->state->getAreaCode(),
-                [
-                    Area::AREA_WEBAPI_REST,
-                    Area::AREA_WEBAPI_SOAP,
-                    Area::AREA_GRAPHQL,
-                ],
-                true,
-            )
-        ) {
-            return $feeType->value;
+        try {
+            if (
+                in_array(
+                    $this->state->getAreaCode(),
+                    [
+                        Area::AREA_WEBAPI_REST,
+                        Area::AREA_WEBAPI_SOAP,
+                        Area::AREA_GRAPHQL,
+                    ],
+                    true,
+                )
+            ) {
+                return $feeType->value;
+            }
+        } catch (LocalizedException) { // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
+            // no-op
         }
 
         return $feeType;
