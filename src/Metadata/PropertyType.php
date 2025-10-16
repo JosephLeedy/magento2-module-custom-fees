@@ -18,7 +18,6 @@ use function str_contains;
  */
 final class PropertyType // phpcs:ignore Magento2.PHP.FinalImplementation.FoundFinal
 {
-    public readonly string $type;
     private const VALID_TYPES = [
         'array',
         'bool',
@@ -26,6 +25,8 @@ final class PropertyType // phpcs:ignore Magento2.PHP.FinalImplementation.FoundF
         'int',
         'string',
     ];
+
+    public readonly string $type;
 
     /**
      * @phpstan-param value-of<PropertyType::VALID_TYPES>|class-string $type
