@@ -204,14 +204,14 @@ class Grid extends AbstractGrid
         /** @var DataObject $filterData */
         $filterData = $this->getFilterData();
         /** @var AbstractCollection $totalsCollection */
-        $totalsCollection = $this
-            ->_resourceFactory
+        $totalsCollection = $this->_resourceFactory
             ->create($this->getResourceCollectionName())
             ->setPeriod($filterData->getData('period_type'))
             ->setDateRange($filterData->getData('from', null), $filterData->getData('to', null))
             ->addStoreFilter($this->_getStoreIds())
             ->setAggregatedColumns($this->_getAggregatedColumns())
-            ->isTotals(true);
+            ->isTotals(true)
+            ->setOrder('paid_order_currency', 'asc');
 
         return $totalsCollection;
     }
