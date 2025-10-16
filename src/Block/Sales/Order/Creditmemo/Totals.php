@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Block\Sales\Order\Creditmemo;
 
-use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface as RefundedCustomFee;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
@@ -13,7 +13,6 @@ use Magento\Framework\View\Element\Template\Context;
 use Magento\Sales\Block\Order\Creditmemo\Totals as CreditmemoTotals;
 use Magento\Sales\Model\Order\Creditmemo;
 
-use function __;
 use function array_key_exists;
 use function array_key_first;
 use function array_walk;
@@ -47,39 +46,32 @@ class Totals extends Template
 
     public function initTotals(): self
     {
-        $customFees = $this->customFeesRetriever->retrieveRefundedCustomFees($this->getSource()->getOrder());
+        $refundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($this->getSource()->getOrder());
         /** @var int|string $creditMemoId */
         $creditMemoId = $this->getSource()->getId();
 
-        if (!array_key_exists($creditMemoId, $customFees)) {
+        if (!array_key_exists($creditMemoId, $refundedCustomFees)) {
             return $this;
         }
 
-        $customFees = $customFees[$creditMemoId];
-        $firstFeeKey = array_key_first($customFees);
+        /** @var array<string, RefundedCustomFee> $refundedCustomFees */
+        $refundedCustomFees = $refundedCustomFees[$creditMemoId];
+        $firstFeeKey = array_key_first($refundedCustomFees);
         $previousFeeCode = '';
 
         array_walk(
-            $customFees,
-            function (array $customFee, string|int $key) use ($firstFeeKey, &$previousFeeCode): void {
-                $customFee['label'] = FeeType::Percent->equals($customFee['type'])
-                    && $customFee['percent'] !== null
-                    && $customFee['show_percentage']
-                    ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
-                    : __($customFee['title']);
-
-                unset(
-                    $customFee['credit_memo_id'],
-                    $customFee['title'],
-                    $customFee['type'],
-                    $customFee['percent'],
-                    $customFee['show_percentage'],
-                );
-
+            $refundedCustomFees,
+            function (RefundedCustomFee $refundedCustomFee, string $key) use ($firstFeeKey, &$previousFeeCode): void {
+                $customFeeCode = $refundedCustomFee->getCode();
                 /** @var DataObject $total */
                 $total = $this->dataObjectFactory->create(
                     [
-                        'data' => $customFee,
+                        'data' => [
+                            'code' => $customFeeCode,
+                            'label' => $refundedCustomFee->formatLabel(),
+                            'base_value' => $refundedCustomFee->getBaseValue(),
+                            'value' => $refundedCustomFee->getValue(),
+                        ],
                     ],
                 );
 
@@ -93,7 +85,7 @@ class Totals extends Template
                     $this->getParentBlock()->addTotal($total, $previousFeeCode);
                 }
 
-                $previousFeeCode = $customFee['code'];
+                $previousFeeCode = $customFeeCode;
             },
         );
 

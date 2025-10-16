@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Model\Total\Invoice;
 
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface as InvoicedCustomFee;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterfaceFactory as InvoicedCustomFeeFactory;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Sales\Api\Data\InvoiceExtensionInterface;
 use Magento\Sales\Model\Order\Invoice;
@@ -18,6 +21,7 @@ class CustomFees extends AbstractTotal
      */
     public function __construct(
         private readonly CustomFeesRetriever $customFeesRetriever,
+        private readonly InvoicedCustomFeeFactory $invoicedCustomFeeFactory,
         array $data = [],
     ) {
         parent::__construct($data);
@@ -27,29 +31,35 @@ class CustomFees extends AbstractTotal
     {
         parent::collect($invoice);
 
-        $customFees = $this->customFeesRetriever->retrieveOrderedCustomFees($invoice->getOrder());
+        $orderedCustomFees = $this->customFeesRetriever->retrieveOrderedCustomFees($invoice->getOrder());
 
-        if (count($customFees) === 0) {
+        if ($orderedCustomFees === []) {
             return $this;
         }
 
+        $invoicedCustomFees = array_map(
+            fn(CustomOrderFeeInterface $customOrderFee): InvoicedCustomFee
+                => $this->invoicedCustomFeeFactory->create(['data' => $customOrderFee->__toArray()]),
+            $orderedCustomFees,
+        );
         $baseSubtotalDelta = (float) $invoice->getBaseSubtotal() / (float) $invoice->getOrder()->getBaseSubtotal();
         $subtotalDelta = (float) $invoice->getSubtotal() / (float) $invoice->getOrder()->getSubtotal();
         $baseTotalCustomFees = 0;
         $totalCustomFees = 0;
 
         array_walk(
-            $customFees,
-            static function (&$customFee) use (
+            $invoicedCustomFees,
+            static function (InvoicedCustomFee $invoicedCustomFee) use (
                 $baseSubtotalDelta,
                 $subtotalDelta,
                 &$baseTotalCustomFees,
                 &$totalCustomFees,
             ): void {
-                $customFee['base_value'] *= $baseSubtotalDelta;
-                $customFee['value'] *= $subtotalDelta;
-                $baseTotalCustomFees += $customFee['base_value'];
-                $totalCustomFees += $customFee['value'];
+                $invoicedCustomFee->setBaseValue($invoicedCustomFee->getBaseValue() * $baseSubtotalDelta);
+                $invoicedCustomFee->setValue($invoicedCustomFee->getValue() * $subtotalDelta);
+
+                $baseTotalCustomFees += $invoicedCustomFee->getBaseValue();
+                $totalCustomFees += $invoicedCustomFee->getValue();
             },
         );
 
@@ -59,7 +69,7 @@ class CustomFees extends AbstractTotal
         /** @var InvoiceExtensionInterface $invoiceExtensionAttributes */
         $invoiceExtensionAttributes = $invoice->getExtensionAttributes();
 
-        $invoiceExtensionAttributes->setInvoicedCustomFees($customFees);
+        $invoiceExtensionAttributes->setInvoicedCustomFees($invoicedCustomFees);
 
         return $this;
     }

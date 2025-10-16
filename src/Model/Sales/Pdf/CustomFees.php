@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Model\Sales\Pdf;
 
-use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\Phrase;
 use Magento\Sales\Model\Order\Pdf\Total\DefaultTotal;
@@ -12,10 +12,8 @@ use Magento\Tax\Helper\Data;
 use Magento\Tax\Model\Calculation;
 use Magento\Tax\Model\ResourceModel\Sales\Order\Tax\CollectionFactory;
 
-use function __;
-use function array_column;
 use function array_map;
-use function array_sum;
+use function array_reduce;
 use function count;
 use function filter_var;
 
@@ -29,15 +27,7 @@ use const FILTER_VALIDATE_BOOLEAN;
 class CustomFees extends DefaultTotal
 {
     /**
-     * @var array{}|array<string, array{
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float,
-     * }>|null
+     * @var array{}|array<string, CustomOrderFeeInterface>|null
      */
     private array|null $customFees = null;
 
@@ -60,13 +50,13 @@ class CustomFees extends DefaultTotal
     public function getTotalsForDisplay(): array
     {
         $allCustomFees = $this->getCustomFees();
-        $totalCustomFeesAmount = array_sum(array_column($allCustomFees, 'value'));
+        $totalCustomFeesAmount = $this->calculateTotalCustomFeeValue();
 
         if (
             count($allCustomFees) === 0
             || (
                 !filter_var($this->getDisplayZero(), FILTER_VALIDATE_BOOLEAN)
-                && $totalCustomFeesAmount === 0
+                && $totalCustomFeesAmount === 0.0
             )
         ) {
             return [];
@@ -74,14 +64,9 @@ class CustomFees extends DefaultTotal
 
         $fontSize = $this->getFontSize() ?? 7;
         $totals = array_map(
-            fn(array $customFees): array => [
-                'amount' => $this->getOrder()->formatPriceTxt($customFees['value']),
-                'label' => (
-                    FeeType::Percent->equals($customFees['type']) && $customFees['percent'] !== null
-                        && $customFees['show_percentage']
-                        ? __($customFees['title'] . ' (%1%)', $customFees['percent'])
-                        : __($customFees['title'])
-                ) . ':',
+            fn(CustomOrderFeeInterface $customOrderFee): array => [
+                'amount' => $this->getOrder()->formatPriceTxt($customOrderFee->getValue()),
+                'label' => ((string) $customOrderFee->formatLabel()) . ':',
                 'font_size' => $fontSize,
             ],
             $allCustomFees,
@@ -92,22 +77,12 @@ class CustomFees extends DefaultTotal
 
     public function canDisplay(): bool
     {
-        $allCustomFees = $this->getCustomFees();
-        $totalCustomFeesAmount = array_sum(array_column($allCustomFees, 'value'));
-
-        return filter_var($this->getDisplayZero(), FILTER_VALIDATE_BOOLEAN) || $totalCustomFeesAmount !== 0;
+        return filter_var($this->getDisplayZero(), FILTER_VALIDATE_BOOLEAN)
+            || $this->calculateTotalCustomFeeValue() !== 0.0;
     }
 
     /**
-     * @return array{}|array<string, array{
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float,
-     * }>
+     * @return array{}|array<string, CustomOrderFeeInterface>
      */
     private function getCustomFees(): array
     {
@@ -118,5 +93,18 @@ class CustomFees extends DefaultTotal
         $this->customFees = $this->customFeesRetriever->retrieveOrderedCustomFees($this->getOrder());
 
         return $this->customFees;
+    }
+
+    private function calculateTotalCustomFeeValue(): float
+    {
+        $allCustomFees = $this->getCustomFees();
+        $totalCustomFeesAmount = array_reduce(
+            $allCustomFees,
+            static fn(float $total, CustomOrderFeeInterface $customOrderFee): float
+                => $total + $customOrderFee->getValue(),
+            0.0,
+        );
+
+        return $totalCustomFeesAmount;
     }
 }

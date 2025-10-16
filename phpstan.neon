@@ -11,3 +11,39 @@ parameters:
 	treatPhpDocTypesAsCertain: false
 	reportUnmatchedIgnoredErrors: false
 	tmpDir: .tmp/phpstan
+	typeAliases:
+		CustomOrderFeeData: '''
+			array{
+					code: string,
+					title: string,
+					type: \JosephLeedy\CustomFees\Model\FeeType|value-of<\JosephLeedy\CustomFees\Model\FeeType>,
+					percent: float|null,
+					show_percentage: bool,
+					base_value: float,
+					value: float,
+			}
+		'''
+		CustomInvoiceFeeData: '''
+			array{
+					invoice_id?: int,
+					code: string,
+					title: string,
+					type: \JosephLeedy\CustomFees\Model\FeeType|value-of<\JosephLeedy\CustomFees\Model\FeeType>,
+					percent: float|null,
+					show_percentage: bool,
+					base_value: float,
+					value: float,
+			}
+		'''
+		CustomCreditMemoFeeData: '''
+			array{
+					credit_memo_id?: int,
+					code: string,
+					title: string,
+					type: \JosephLeedy\CustomFees\Model\FeeType|value-of<\JosephLeedy\CustomFees\Model\FeeType>,
+					percent: float|null,
+					show_percentage: bool,
+					base_value: float,
+					value: float,
+			}
+		'''

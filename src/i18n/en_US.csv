@@ -16,8 +16,6 @@ Refunded,Refunded
 "Amount Refunded","Amount Refunded"
 CSV,CSV
 "Excel XML","Excel XML"
-"Refund %1 (%2%)","Refund %1 (%2%)"
-"Refund %1","Refund %1"
 Code,Code
 Name,Name
 Type,Type
@@ -76,6 +74,9 @@ Subtotal,Subtotal
 "%1 (Purchased)","%1 (Purchased)"
 "Could not get identifier for scope ""%1"".","Could not get identifier for scope ""%1""."
 "Could not serialize custom fees.","Could not serialize custom fees."
+"Please provide a value for property ""%1"".","Please provide a value for property ""%1""."
+"Could not set type ""%1"" for property ""%2"".","Could not set type ""%1"" for property ""%2""."
+"Invalid value ""%1"" for property ""%2"".","Invalid value ""%1"" for property ""%2""."
 "Please enter a positive number in this field.","Please enter a positive number in this field."
 "Advanced Settings","Advanced Settings"
 Advanced,Advanced

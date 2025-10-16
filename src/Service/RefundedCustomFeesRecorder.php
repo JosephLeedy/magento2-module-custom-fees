@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Service;
 
 use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterfaceFactory as RefundedCustomFeeFactory;
 use JosephLeedy\CustomFees\Model\CustomOrderFees;
 use JosephLeedy\CustomFees\Model\ResourceModel\CustomOrderFees\CollectionFactory;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -32,6 +33,7 @@ class RefundedCustomFeesRecorder
         private readonly CollectionFactory $customOrderFeesCollectionFactory,
         private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly CreditmemoRepositoryInterface $creditMemoRepository,
+        private readonly RefundedCustomFeeFactory $refundedCustomFeeFactory,
         private readonly CustomOrderFeesRepositoryInterface $customOrderFeesRepository,
     ) {}
 
@@ -96,17 +98,21 @@ class RefundedCustomFeesRecorder
             $delta = (float) $creditMemo->getSubtotal() / (float) $creditMemo->getOrder()->getSubtotal();
             $creditMemoId = (int) $creditMemo->getId();
 
-            foreach ($customFeesOrdered as $customFeeOrdered) {
-                $customFeesRefunded[$creditMemoId][$customFeeOrdered['code']] = [
-                    'credit_memo_id' => $creditMemoId,
-                    'code' => $customFeeOrdered['code'],
-                    'title' => $customFeeOrdered['title'],
-                    'type' => $customFeeOrdered['type'],
-                    'percent' => $customFeeOrdered['percent'],
-                    'show_percentage' => $customFeeOrdered['show_percentage'],
-                    'base_value' => round((float) $customFeeOrdered['base_value'] * $baseDelta, 2),
-                    'value' => round((float) $customFeeOrdered['value'] * $delta, 2),
-                ];
+            foreach ($customFeesOrdered as $feeCode => $customFeeOrdered) {
+                $customFeesRefunded[$creditMemoId][$feeCode] = $this->refundedCustomFeeFactory->create(
+                    [
+                        'data' => [
+                            'credit_memo_id' => $creditMemoId,
+                            'code' => $customFeeOrdered->getCode(),
+                            'title' => $customFeeOrdered->getTitle(),
+                            'type' => $customFeeOrdered->getType(),
+                            'percent' => $customFeeOrdered->getPercent(),
+                            'show_percentage' => $customFeeOrdered->getShowPercentage(),
+                            'base_value' => round($customFeeOrdered->getBaseValue() * $baseDelta, 2),
+                            'value' => round($customFeeOrdered->getValue() * $delta, 2),
+                        ],
+                    ],
+                );
             }
         }
 

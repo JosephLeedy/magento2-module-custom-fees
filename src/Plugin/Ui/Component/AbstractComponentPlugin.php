@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Plugin\Ui\Component;
 
 use InvalidArgumentException;
-use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Sales\Model\Order;
@@ -45,17 +44,7 @@ class AbstractComponentPlugin
             }
 
             try {
-                /**
-                 * @var array<string, array{
-                 *     code: string,
-                 *     title: string,
-                 *     type: value-of<FeeType>,
-                 *     percent: float|null,
-                 *     show_percentage: bool,
-                 *     base_value: float,
-                 *     value: float
-                 * }> $customFees
-                 */
+                /** @var array<string, CustomOrderFeeData> $customFees */
                 $customFees = $this->serializer->unserialize($customFeesOrderedJson);
             } catch (InvalidArgumentException) {
                 continue;

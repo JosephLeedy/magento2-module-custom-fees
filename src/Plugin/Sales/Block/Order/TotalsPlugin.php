@@ -9,7 +9,6 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\TotalInterface;
 use Magento\Sales\Block\Order\Totals;
 
-use function array_column;
 use function array_filter;
 use function array_intersect;
 use function array_keys;
@@ -73,7 +72,7 @@ class TotalsPlugin
             return $result;
         }
 
-        $customFeeCodes = array_column($customOrderFees, 'code');
+        $customFeeCodes = array_keys($customOrderFees);
         $customFees = array_filter(
             $result,
             static fn(string $totalCode): bool => in_array($totalCode, $customFeeCodes, true),

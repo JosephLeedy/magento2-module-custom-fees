@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Api\Data;
 
 use InvalidArgumentException;
-use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 
 /**
@@ -32,93 +33,41 @@ interface CustomOrderFeesInterface
     public function getOrderId(): ?int;
 
     /**
-     * @param string|string[]|float[] $customFeesOrdered
-     * @phpstan-param string|array<string, array{
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }> $customFeesOrdered
+     * @param string|\JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface[] $customFeesOrdered
+     * @phpstan-param string|array<string, CustomOrderFeeInterface> $customFeesOrdered
      * @throws InvalidArgumentException
      */
     public function setCustomFeesOrdered(string|array $customFeesOrdered): CustomOrderFeesInterface;
 
     /**
-     * @return string[]|float[]
-     * @phpstan-return array{}|array<string, array{
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }>
+     * @return \JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface[]
+     * @phpstan-return array<string, CustomOrderFeeInterface>
      */
     public function getCustomFeesOrdered(): array;
 
     /**
-     * @param string|string[]|float[] $customFeesInvoiced
-     * @phpstan-param string|array<string, array{
-     *     invoice_id: int,
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }>[] $customFeesInvoiced
+     * @param string|\JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface[][] $customFeesInvoiced
+     * @phpstan-param string|array<int, array<string, InvoicedInterface>> $customFeesInvoiced
      * @throws InvalidArgumentException
      */
     public function setCustomFeesInvoiced(string|array $customFeesInvoiced): CustomOrderFeesInterface;
 
     /**
-     * @return string[]|float[]
-     * @phpstan-return array{}|array<string, array{
-     *     invoice_id: int,
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }>[]
+     * @return \JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface[][]
+     * @phpstan-return array<int, array<string, InvoicedInterface>>
      */
     public function getCustomFeesInvoiced(): array;
 
     /**
-     * @param string|string[]|float[] $customFeesRefunded
-     * @phpstan-param string|array<string, array{
-     *     credit_memo_id: int,
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }>[] $customFeesRefunded
+     * @param string|\JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface[][] $customFeesRefunded
+     * @phpstan-param string|array<int, array<string, RefundedInterface>> $customFeesRefunded
      * @throws InvalidArgumentException
      */
     public function setCustomFeesRefunded(string|array $customFeesRefunded): CustomOrderFeesInterface;
 
     /**
-     * @return string[]|float[]
-     * @phpstan-return array{}|array<string, array{
-     *     credit_memo_id: int,
-     *     code: string,
-     *     title: string,
-     *     type: value-of<FeeType>,
-     *     percent: float|null,
-     *     show_percentage: bool,
-     *     base_value: float,
-     *     value: float
-     * }>[]
+     * @return \JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface[][]
+     * @phpstan-return array<int, array<string, RefundedInterface>>
      */
     public function getCustomFeesRefunded(): array;
 
