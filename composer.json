@@ -13,6 +13,7 @@
     "magento/module-catalog": "~104.0.4",
     "magento/module-checkout": "~100.4.4",
     "magento/module-config": "~101.2.4",
+    "magento/module-cron": "~100.4.4",
     "magento/module-directory": "~100.4.4",
     "magento/module-eav": "~102.1.4",
     "magento/module-quote": "~101.2.4",
