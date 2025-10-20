@@ -10,6 +10,11 @@ document.
 
 ## [Unreleased]
 
+### Added
+- A product attribute that can be used to determine whether or not a custom fee 
+  should be applied to an order is now created automatically when the extension 
+  is installed
+
 ### Changed
 
 - Ordered custom fees are now indexed by their corresponding fee code
