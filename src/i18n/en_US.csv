@@ -33,6 +33,8 @@ Sales,Sales
 "Custom Order Fees Report","Custom Order Fees Report"
 "This report requires MySQL 8.0.4 or greater, MariaDB 10.6.0 or greater OR a MySQL 8.0-compatible database server to generate properly. Your database server version ""%1"" is not compatible.","This report requires MySQL 8.0.4 or greater, MariaDB 10.6.0 or greater OR a MySQL 8.0-compatible database server to generate properly. Your database server version ""%1"" is not compatible."
 "Row ID is required.","Row ID is required."
+"Invalid custom order fees report aggregation frequency ""%1"".","Invalid custom order fees report aggregation frequency ""%1""."
+"Could not aggregate custom order fees report. Error: ""%1""","Could not aggregate custom order fees report. Error: ""%1"""
 "Could not get custom fees from configuration. Error: ""%1""","Could not get custom fees from configuration. Error: ""%1"""
 "Could not process advanced configuration for custom fee ""%1"". Error: ""%2""","Could not process advanced configuration for custom fee ""%1"". Error: ""%2"""
 "Could not save Cron expression for custom order fees report aggregation.","Could not save Cron expression for custom order fees report aggregation."
