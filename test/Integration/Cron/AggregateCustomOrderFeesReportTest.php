@@ -282,7 +282,7 @@ final class AggregateCustomOrderFeesReportTest extends TestCase
         self::assertEquals($expectedAggregatedCustomOrderFees, $actualAggregatedCustomOrderFees);
     }
 
-    #[Config(ConfigInterface::CONFIG_PATH_CUSTOM_ORDER_FEES_REPORT_AGGREGATION_ENABLED, 0)]
+    #[Config(ConfigInterface::CONFIG_PATH_CUSTOM_ORDER_FEES_REPORT_AGGREGATION_ENABLE, 0)]
     public function testDoesNotAggregateCustomOrderFeesReportDataIfNotEnabled(): void
     {
         $objectManager = Bootstrap::getObjectManager();
@@ -301,7 +301,7 @@ final class AggregateCustomOrderFeesReportTest extends TestCase
         self::assertEmpty($actualAggregatedCustomOrderFees);
     }
 
-    #[Config(ConfigInterface::CONFIG_PATH_CUSTOM_ORDER_FEES_REPORT_AGGREGATION_ENABLED, 1)]
+    #[Config(ConfigInterface::CONFIG_PATH_CUSTOM_ORDER_FEES_REPORT_AGGREGATION_ENABLE, 1)]
     #[Config(ConfigInterface::CONFIG_PATH_CUSTOM_ORDER_FEES_REPORT_AGGREGATION_FREQUENCY, 'I')]
     public function testThrowsExceptionIfAggregationFrequencyIsInvalid(): void
     {
@@ -317,7 +317,7 @@ final class AggregateCustomOrderFeesReportTest extends TestCase
         $aggregateCustomOrderFeesReport->execute();
     }
 
-    #[Config(ConfigInterface::CONFIG_PATH_CUSTOM_ORDER_FEES_REPORT_AGGREGATION_ENABLED, 1)]
+    #[Config(ConfigInterface::CONFIG_PATH_CUSTOM_ORDER_FEES_REPORT_AGGREGATION_ENABLE, 1)]
     #[Config(ConfigInterface::CONFIG_PATH_CUSTOM_ORDER_FEES_REPORT_AGGREGATION_FREQUENCY, 'D')]
     public function testThrowsExceptionIfReportCannotBeAggregated(): void
     {
