@@ -38,8 +38,8 @@ class AggregationCron extends Value
         ScopeConfigInterface $config,
         TypeListInterface $cacheTypeList,
         private readonly ValueFactory $configValueFactory,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = [],
     ) {
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
