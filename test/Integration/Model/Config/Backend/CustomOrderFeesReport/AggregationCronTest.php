@@ -31,24 +31,20 @@ final class AggregationCronTest extends TestCase
             Config::class,
             [
                 'data' => [
-                    'section' => 'sales',
+                    'section' => 'reports',
                     'website' => null,
                     'store' => null,
                     'groups' => [
                         'custom_order_fees' => [
-                            'groups' => [
-                                'report' => [
-                                    'fields' => [
-                                        'enable_aggregation' => [
-                                            'value' => '1',
-                                        ],
-                                        'aggregation_time' => [
-                                            'value' => ['01', '00', '00'],
-                                        ],
-                                        'aggregation_frequency' => [
-                                            'value' => 'D',
-                                        ],
-                                    ],
+                            'fields' => [
+                                'enable_aggregation' => [
+                                    'value' => '1',
+                                ],
+                                'aggregation_time' => [
+                                    'value' => ['01', '00', '00'],
+                                ],
+                                'aggregation_frequency' => [
+                                    'value' => 'D',
                                 ],
                             ],
                         ],
@@ -74,24 +70,20 @@ final class AggregationCronTest extends TestCase
             Config::class,
             [
                 'data' => [
-                    'section' => 'sales',
+                    'section' => 'reports',
                     'website' => null,
                     'store' => null,
                     'groups' => [
                         'custom_order_fees' => [
-                            'groups' => [
-                                'report' => [
-                                    'fields' => [
-                                        'enable_aggregation' => [
-                                            'value' => '0',
-                                        ],
-                                        'aggregation_time' => [
-                                            'value' => ['01', '00', '00'],
-                                        ],
-                                        'aggregation_frequency' => [
-                                            'value' => 'D',
-                                        ],
-                                    ],
+                            'fields' => [
+                                'enable_aggregation' => [
+                                    'value' => '0',
+                                ],
+                                'aggregation_time' => [
+                                    'value' => ['01', '00', '00'],
+                                ],
+                                'aggregation_frequency' => [
+                                    'value' => 'D',
                                 ],
                             ],
                         ],
@@ -128,24 +120,20 @@ final class AggregationCronTest extends TestCase
             Config::class,
             [
                 'data' => [
-                    'section' => 'sales',
+                    'section' => 'reports',
                     'website' => null,
                     'store' => null,
                     'groups' => [
                         'custom_order_fees' => [
-                            'groups' => [
-                                'report' => [
-                                    'fields' => [
-                                        'enable_aggregation' => [
-                                            'value' => '1',
-                                        ],
-                                        'aggregation_time' => [
-                                            'value' => ['01', '00', '00'],
-                                        ],
-                                        'aggregation_frequency' => [
-                                            'value' => 'D',
-                                        ],
-                                    ],
+                            'fields' => [
+                                'enable_aggregation' => [
+                                    'value' => '1',
+                                ],
+                                'aggregation_time' => [
+                                    'value' => ['01', '00', '00'],
+                                ],
+                                'aggregation_frequency' => [
+                                    'value' => 'D',
                                 ],
                             ],
                         ],

@@ -23,11 +23,9 @@ class AggregationCron extends Value
 {
     public const CRON_EXPRESSION_PATH
         = 'crontab/default/jobs/aggregate_custom_order_fees_report/schedule/cron_expr';
-    private const CONFIG_PATH_ENABLE_AGGREGATION
-        = 'groups/custom_order_fees/groups/report/fields/enable_aggregation/value';
-    private const CONFIG_PATH_AGGREGATION_TIME = 'groups/custom_order_fees/groups/report/fields/aggregation_time/value';
-    private const CONFIG_PATH_AGGREGATION_FREQUENCY
-        = 'groups/custom_order_fees/groups/report/fields/aggregation_frequency/value';
+    private const CONFIG_PATH_ENABLE_AGGREGATION = 'groups/custom_order_fees/fields/enable_aggregation/value';
+    private const CONFIG_PATH_AGGREGATION_TIME = 'groups/custom_order_fees/fields/aggregation_time/value';
+    private const CONFIG_PATH_AGGREGATION_FREQUENCY = 'groups/custom_order_fees/fields/aggregation_frequency/value';
 
     /**
      * @param mixed[] $data

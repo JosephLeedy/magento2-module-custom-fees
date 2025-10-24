@@ -11,11 +11,11 @@ use Magento\Framework\Exception\LocalizedException;
 interface ConfigInterface
 {
     public const CONFIG_PATH_CUSTOM_FEES = 'sales/custom_order_fees/custom_fees';
-    public const CONFIG_PATH_CUSTOM_ORDER_FEES_REPORT_AGGREGATION_ENABLE
-        = 'custom_order_fees_report/aggregation/enable';
-    public const CONFIG_PATH_CUSTOM_ORDER_FEES_REPORT_AGGREGATION_TIME = 'custom_order_fees_report/aggregation/time';
-    public const CONFIG_PATH_CUSTOM_ORDER_FEES_REPORT_AGGREGATION_FREQUENCY
-        = 'custom_order_fees_report/aggregation/frequency';
+    public const CONFIG_PATH_REPORTS_CUSTOM_ORDER_FEES_ENABLE_AGGREGATION
+        = 'reports/custom_order_fees/enable_aggregation';
+    public const CONFIG_PATH_REPORTS_CUSTOM_ORDER_FEES_AGGREGATION_TIME = 'reports/custom_order_fees/aggregation_time';
+    public const CONFIG_PATH_REPORTS_CUSTOM_ORDER_FEES_AGGREGATION_FREQUENCY
+        = 'reports/custom_order_fees/aggregation_frequency';
 
     /**
      * @return array{
