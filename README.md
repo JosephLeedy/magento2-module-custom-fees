@@ -78,6 +78,9 @@ cart and checkout can be configured at `Stores > Settings > Configuration >
 Sales > Sales > Checkout Totals Sort Order`. All settings for this extension 
 can be configured in the Global (Default), Website or Store scope.
 
+Report aggregation can be configured at `Stores > Settings > Configuration > 
+General > Reports > Custom Order Fees Report`.
+
 #### Importing Custom Fees
 
 The Custom Fees configuration page allows fees to imported from a CSV 
