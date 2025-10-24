@@ -8,6 +8,23 @@
                 <aggregation_frequency>D</aggregation_frequency>
             </custom_order_fees>
         </reports>
+        <tax>
+            <classes>
+                <custom_fee_tax_class>0</custom_fee_tax_class>
+            </classes>
+            <calculation>
+                <custom_fees_include_tax>0</custom_fees_include_tax>
+            </calculation>
+            <display>
+                <custom_fees>1</custom_fees>
+            </display>
+            <cart_display>
+                <custom_fees>1</custom_fees>
+            </cart_display>
+            <sales_display>
+                <custom_fees>1</custom_fees>
+            </sales_display>
+        </tax>
         <sales>
             <totals_sort>
                 <custom_fees>50</custom_fees>

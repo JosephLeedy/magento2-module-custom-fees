@@ -66,6 +66,11 @@ parameters:
 			path: src/Controller/Adminhtml/System/Config/CustomFees/Advanced/NewConditionHtml.php
 
 		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 4
+			path: src/Model/Config.php
+
+		-
 			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: src/Model/Config.php

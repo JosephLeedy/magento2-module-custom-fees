@@ -147,4 +147,63 @@ class Config implements ConfigInterface
             $this->scopeConfig->getValue(self::CONFIG_PATH_REPORTS_CUSTOM_ORDER_FEES_AGGREGATION_FREQUENCY) ?? 'D'
         );
     }
+
+    public function getTaxClass(int|string|null $storeId = null): int
+    {
+        return (int) (
+            $this->scopeConfig->getValue(
+                self::CONFIG_PATH_TAX_CLASS_CUSTOM_FEE_TAX_CLASS,
+                ScopeInterface::SCOPE_STORES,
+                $storeId,
+            ) ?? 0
+        );
+    }
+
+    public function isTaxIncluded(int|string|null $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::CONFIG_PATH_TAX_CALCULATION_CUSTOM_FEES_INCLUDE_TAX,
+            ScopeInterface::SCOPE_STORES,
+            $storeId,
+        ) ?? false;
+    }
+
+    public function getDisplayType(int|string|null $storeId = null): DisplayType
+    {
+        $taxDisplayType = (int) (
+            $this->scopeConfig->getValue(
+                self::CONFIG_PATH_TAX_DISPLAY_CUSTOM_FEES,
+                ScopeInterface::SCOPE_STORE,
+                $storeId,
+            ) ?? 1
+        );
+
+        return DisplayType::tryFrom($taxDisplayType) ?? DisplayType::ExcludingTax;
+    }
+
+    public function getCartDisplayType(int|string|null $storeId = null): DisplayType
+    {
+        $cartDisplayType = (int) (
+            $this->scopeConfig->getValue(
+                self::CONFIG_PATH_TAX_CART_DISPLAY_CUSTOM_FEES,
+                ScopeInterface::SCOPE_STORE,
+                $storeId,
+            ) ?? 1
+        );
+
+        return DisplayType::tryFrom($cartDisplayType) ?? DisplayType::ExcludingTax;
+    }
+
+    public function getSalesDisplayType(int|string|null $storeId = null): DisplayType
+    {
+        $salesDisplayType = (int) (
+            $this->scopeConfig->getValue(
+                self::CONFIG_PATH_TAX_SALES_DISPLAY_CUSTOM_FEES,
+                ScopeInterface::SCOPE_STORE,
+                $storeId,
+            ) ?? 1
+        );
+
+        return DisplayType::tryFrom($salesDisplayType) ?? DisplayType::ExcludingTax;
+    }
 }

@@ -48,6 +48,9 @@ Sales,Sales
 "Custom fees have already been saved for order with ID ""%1"".","Custom fees have already been saved for order with ID ""%1""."
 "Could not save custom fees for order with ID ""%1"". Error: ""%2""","Could not save custom fees for order with ID ""%1"". Error: ""%2"""
 "Could not delete custom fees for order with ID ""%1"". Error: ""%2""","Could not delete custom fees for order with ID ""%1"". Error: ""%2"""
+"Excluding Tax","Excluding Tax"
+"Including Tax","Including Tax"
+Both,Both
 Disabled,Disabled
 Enabled,Enabled
 Fixed,Fixed
@@ -92,4 +95,7 @@ Done,Done
 "Automatically Aggregate Data","Automatically Aggregate Data"
 "Aggregation Start Time","Aggregation Start Time"
 "Aggregation Frequency","Aggregation Frequency"
+"Tax Class for Custom Fees","Tax Class for Custom Fees"
+"This sets whether custom fee amounts entered from Magento Admin include tax.","This sets whether custom fee amounts entered from Magento Admin include tax."
+"Display Custom Fee Amount","Display Custom Fee Amount"
 "All Websites","All Websites"

@@ -25,6 +25,43 @@
                 </field>
             </group>
         </section>
+        <section id="tax">
+            <group id="classes">
+                <field id="custom_fee_tax_class" translate="label" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Tax Class for Custom Fees</label>
+                    <source_model>Magento\Tax\Model\TaxClass\Source\Product</source_model>
+                </field>
+            </group>
+            <group id="calculation">
+                <field id="custom_fees_include_tax" translate="label comment" type="select" sortOrder="35" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Custom Fees</label>
+                    <comment>This sets whether custom fee amounts entered from Magento Admin include tax.</comment>
+                    <source_model>Magento\Tax\Model\System\Config\Source\PriceType</source_model>
+                    <backend_model>Magento\Tax\Model\Config\Price\IncludePrice</backend_model>
+                </field>
+            </group>
+            <group id="display">
+                <field id="custom_fees" translate="label" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Display Custom Fee Amount</label>
+                    <source_model>Magento\Tax\Model\System\Config\Source\Tax\Display\Type</source_model>
+                    <backend_model>Magento\Tax\Model\Config\Notification</backend_model>
+                </field>
+            </group>
+            <group id="cart_display">
+                <field id="custom_fees" translate="label" type="select" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Display Custom Fee Amount</label>
+                    <source_model>Magento\Tax\Model\System\Config\Source\Tax\Display\Type</source_model>
+                    <backend_model>Magento\Tax\Model\Config\Notification</backend_model>
+                </field>
+            </group>
+            <group id="sales_display">
+                <field id="custom_fees" translate="label" type="select" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Display Custom Fee Amount</label>
+                    <source_model>Magento\Tax\Model\System\Config\Source\Tax\Display\Type</source_model>
+                    <backend_model>Magento\Tax\Model\Config\Notification</backend_model>
+                </field>
+            </group>
+        </section>
         <section id="sales">
             <group id="totals_sort">
                 <field id="custom_fees" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" canRestore="1">
