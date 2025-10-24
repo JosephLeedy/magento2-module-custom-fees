@@ -100,6 +100,69 @@ final class CustomFeesTest extends TestCase
     }
 
     /**
+     * phpcs:ignore Generic.Files.LineLength.TooLong
+     * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","status":"1","advanced":"{\"show_percentage\":\"0\"}"},{"code":"test_fee_1","title":"Another Fee","type":"percent","value":"5","status":"1","advanced": "{\"show_percentage\":\"1\"}"}]
+     * @magentoConfigFixture current_store tax/classes/custom_fee_tax_class 2
+     * @magentoConfigFixture current_store tax/calculation/price_includes_tax 1
+     * @magentoConfigFixture current_store tax/calculation/custom_fees_include_tax 1
+     * @magentoDataFixture Magento/Tax/_files/tax_rule_region_1_al.php
+     * @magentoDataFixture Magento/Checkout/_files/quote_with_taxable_product_and_customer.php
+     */
+    public function testCollectsCustomFeesTotalsWithTax(): void
+    {
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Quote $quote */
+        $quote = $objectManager->create(Quote::class);
+        /** @var QuoteResource $quoteResource */
+        $quoteResource = $objectManager->create(QuoteResource::class);
+
+        $quoteResource->load($quote, 'test_order_with_taxable_product', 'reserved_order_id');
+
+        $quote->collectTotals();
+
+        $collectedTotals = $quote->getTotals();
+
+        self::assertEquals(
+            [
+                'test_fee_0' => $objectManager->create(
+                    CustomOrderFeeInterface::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_0',
+                            'title' => 'Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 4.00,
+                            'value' => 4.00,
+                            'base_tax_amount' => 0.30,
+                            'tax_amount' => 0.30,
+                        ],
+                    ],
+                ),
+                'test_fee_1' => $objectManager->create(
+                    CustomOrderFeeInterface::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_1',
+                            'title' => 'Another Fee',
+                            'type' => FeeType::Percent,
+                            'percent' => 5,
+                            'show_percentage' => true,
+                            'base_value' => 0.50,
+                            'value' => 0.50,
+                            'base_tax_amount' => 0.04,
+                            'tax_amount' => 0.04,
+                        ],
+                    ],
+                ),
+            ],
+            $quote->getExtensionAttributes()->getCustomFees(),
+        );
+        self::assertSame(1.09, $collectedTotals['tax']->getValue());
+    }
+
+    /**
      * @phpcs:ignore Generic.Files.LineLength.TooLong
      * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","status":"1","advanced":"{\"show_percentage\":\"0\"}"},{"code":"test_fee_1","title":"Another Fee","type":"percent","value":"5","status":"1","advanced":"{\"show_percentage\":\"1\"}"}]
      * @magentoDataFixture Magento/Checkout/_files/quote_with_address.php
