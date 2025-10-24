@@ -110,6 +110,8 @@ class RefundedCustomFeesRecorder
                             'show_percentage' => $customFeeOrdered->getShowPercentage(),
                             'base_value' => round($customFeeOrdered->getBaseValue() * $baseDelta, 2),
                             'value' => round($customFeeOrdered->getValue() * $delta, 2),
+                            'base_tax_amount' => $customFeeOrdered->getBaseTaxAmount(),
+                            'tax_amount' => $customFeeOrdered->getTaxAmount(),
                         ],
                     ],
                 );

@@ -132,7 +132,9 @@ class CustomFees extends AbstractTotal
                 ->setTitle($customFee['title'])
                 ->setType($customFee['type'])
                 ->setPercent(null)
-                ->setShowPercentage((bool) ($customFee['advanced']['show_percentage'] ?? true));
+                ->setShowPercentage((bool) ($customFee['advanced']['show_percentage'] ?? true))
+                ->setBaseTaxAmount(0.00)
+                ->setTaxAmount(0.00);
 
             if (FeeType::Percent->equals($customFee['type'])) {
                 $customOrderFee->setPercent((float) $customFee['value']);

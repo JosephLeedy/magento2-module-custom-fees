@@ -16,6 +16,8 @@ interface CustomOrderFeeInterface
     public const SHOW_PERCENTAGE = 'show_percentage';
     public const BASE_VALUE = 'base_value';
     public const VALUE = 'value';
+    public const BASE_TAX_AMOUNT = 'base_tax_amount';
+    public const TAX_AMOUNT = 'tax_amount';
 
     /**
      * @param string $code
@@ -97,6 +99,28 @@ interface CustomOrderFeeInterface
      * @return float
      */
     public function getValue(): float;
+
+    /**
+     * @param float $baseTaxAmount
+     * @return CustomOrderFeeInterface
+     */
+    public function setBaseTaxAmount(float $baseTaxAmount): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getBaseTaxAmount(): float;
+
+    /**
+     * @param float $taxAmount
+     * @return CustomOrderFeeInterface
+     */
+    public function setTaxAmount(float $taxAmount): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getTaxAmount(): float;
 
     /**
      * @return Phrase
