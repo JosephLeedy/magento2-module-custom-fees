@@ -127,4 +127,24 @@ class Config implements ConfigInterface
          */
         return $customFees;
     }
+
+    public function isCustomOrderFeesReportAggregationEnabled(): bool
+    {
+        return $this->scopeConfig->isSetFlag(self::CONFIG_PATH_REPORTS_CUSTOM_ORDER_FEES_ENABLE_AGGREGATION);
+    }
+
+    public function getCustomOrderFeesReportAggregationTime(): string
+    {
+        /** @var string|null $aggregationTime */
+        $aggregationTime = $this->scopeConfig->getValue(self::CONFIG_PATH_REPORTS_CUSTOM_ORDER_FEES_AGGREGATION_TIME);
+
+        return (string) ($aggregationTime ?? '00,00,00');
+    }
+
+    public function getCustomOrderFeesReportAggregationFrequency(): string
+    {
+        return (string) (
+            $this->scopeConfig->getValue(self::CONFIG_PATH_REPORTS_CUSTOM_ORDER_FEES_AGGREGATION_FREQUENCY) ?? 'D'
+        );
+    }
 }

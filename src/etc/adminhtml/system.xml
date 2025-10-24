@@ -1,6 +1,30 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
+        <section id="reports">
+            <group id="custom_order_fees" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="0" >
+                <label>Custom Order Fees Report</label>
+                <attribute type="expanded">1</attribute>
+                <field id="enable_aggregation" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Automatically Aggregate Data</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <backend_model>JosephLeedy\CustomFees\Model\Config\Backend\CustomOrderFeesReport\AggregationCron</backend_model>
+                </field>
+                <field id="aggregation_time" translate="label" type="time" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Aggregation Start Time</label>
+                    <depends>
+                        <field id="enable_aggregation">1</field>
+                    </depends>
+                </field>
+                <field id="aggregation_frequency" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Aggregation Frequency</label>
+                    <depends>
+                        <field id="enable_aggregation">1</field>
+                    </depends>
+                    <source_model>Magento\Cron\Model\Config\Source\Frequency</source_model>
+                </field>
+            </group>
+        </section>
         <section id="sales">
             <group id="totals_sort">
                 <field id="custom_fees" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" canRestore="1">

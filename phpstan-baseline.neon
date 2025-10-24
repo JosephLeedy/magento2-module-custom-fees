@@ -68,6 +68,31 @@ parameters:
 		-
 			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
+			path: src/Model/Config.php
+
+		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\Config\\:\\:getCustomOrderFeesReportAggregationFrequency\\(\\) should return 'D'\\|'M'\\|'W' but returns string\\.$#"
+			count: 1
+			path: src/Model/Config.php
+
+		-
+			message: "#^Use service contracts to persist entities in favour of Magento\\\\Framework\\\\App\\\\Config\\\\Value\\:\\:load\\(\\) method$#"
+			count: 1
+			path: src/Model/Config/Backend/CustomOrderFeesReport/AggregationCron.php
+
+		-
+			message: "#^Use service contracts to persist entities in favour of Magento\\\\Framework\\\\App\\\\Config\\\\Value\\:\\:save\\(\\) method$#"
+			count: 1
+			path: src/Model/Config/Backend/CustomOrderFeesReport/AggregationCron.php
+
+		-
+			message: "#^Parameter \\#1 \\$modelId of method Magento\\\\Framework\\\\Model\\\\AbstractModel\\:\\:load\\(\\) expects int, string given\\.$#"
+			count: 1
+			path: src/Model/Config/Backend/CustomOrderFeesReport/AggregationCron.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
 			path: src/Model/Config/Backend/File/ImportCustomFees.php
 
 		-

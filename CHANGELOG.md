@@ -14,6 +14,8 @@ document.
 - A product attribute that can be used to determine whether or not a custom fee 
   should be applied to an order is now created automatically when the extension 
   is installed
+- Data for the Custom Order Fees Report can now be aggregated automatically on 
+  a chosen schedule
 
 ### Changed
 
