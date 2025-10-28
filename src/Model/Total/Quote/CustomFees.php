@@ -291,6 +291,7 @@ class CustomFees extends AbstractTotal
                 $customFeeCode = $taxDetailsItem->getCode();
                 $customFee = $customFees[$customFeeCode];
 
+                $customFee->setBaseValue($taxDetailsItem->getRowTotal());
                 $customFee->setBaseTaxAmount($taxDetailsItem->getRowTax());
 
                 $baseTaxAmount += $taxDetailsItem->getRowTax();
@@ -303,6 +304,7 @@ class CustomFees extends AbstractTotal
                 $customFeeCode = $taxDetailsItem->getCode();
                 $customFee = $customFees[$customFeeCode];
 
+                $customFee->setValue($taxDetailsItem->getRowTotal());
                 $customFee->setTaxAmount($taxDetailsItem->getRowTax());
 
                 $taxAmount += $taxDetailsItem->getRowTax();
