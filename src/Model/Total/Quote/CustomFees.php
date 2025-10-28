@@ -78,9 +78,7 @@ class CustomFees extends AbstractTotal
             },
         );
 
-        if ($this->config->isTaxIncluded($quote->getStoreId())) {
-            $this->applyTaxToCustomFees($customFees, $quote->getStoreId(), $shippingAssignment, $total);
-        }
+        $this->applyTaxToCustomFees($customFees, $quote->getStoreId(), $shippingAssignment, $total);
 
         $quote->getExtensionAttributes()?->setCustomFees($customFees);
 
