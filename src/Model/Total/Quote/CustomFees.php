@@ -76,8 +76,6 @@ class CustomFees extends AbstractTotal
             },
         );
 
-        $this->applyTaxToCustomFees($customFees, $quote, $total);
-
         $quote->getExtensionAttributes()?->setCustomFees($customFees);
 
         return $this;
@@ -164,6 +162,8 @@ class CustomFees extends AbstractTotal
 
             $customFees[$customFeeCode] = $customOrderFee;
         }
+
+        $this->applyTaxToCustomFees($customFees, $quote, $total);
 
         return $customFees;
     }
