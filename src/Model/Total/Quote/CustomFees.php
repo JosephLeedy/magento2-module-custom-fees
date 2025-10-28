@@ -13,10 +13,8 @@ use JosephLeedy\CustomFees\Service\ConditionsApplier;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
-use Magento\Quote\Api\Data\AddressInterface;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote;
-use Magento\Quote\Model\Quote\Address;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
 use Magento\Quote\Model\Quote\Address\Total\CollectorInterface;
@@ -78,7 +76,7 @@ class CustomFees extends AbstractTotal
             },
         );
 
-        $this->applyTaxToCustomFees($customFees, $quote->getStoreId(), $shippingAssignment, $total);
+        $this->applyTaxToCustomFees($customFees, $quote, $total);
 
         $quote->getExtensionAttributes()?->setCustomFees($customFees);
 
@@ -173,12 +171,9 @@ class CustomFees extends AbstractTotal
     /**
      * @param array<string, CustomOrderFeeInterface> $customFees
      */
-    private function applyTaxToCustomFees(
-        array $customFees,
-        int|string $storeId,
-        ShippingAssignmentInterface $shippingAssignment,
-        Total $total,
-    ): void {
+    private function applyTaxToCustomFees(array $customFees, Quote $quote, Total $total): void
+    {
+        $storeId = $quote->getStoreId();
         $baseCustomFeeTaxDataObjects = array_map(
             fn(CustomOrderFeeInterface $customFee): QuoteDetailsItemInterface => $this->buildCustomFeeTaxDataObject(
                 $customFee,
@@ -195,14 +190,8 @@ class CustomFees extends AbstractTotal
             ),
             $customFees,
         );
-        $baseQuoteTaxDetails = $this->prepareQuoteTaxDetails(
-            $baseCustomFeeTaxDataObjects,
-            $shippingAssignment->getShipping()->getAddress(),
-        );
-        $quoteTaxDetails = $this->prepareQuoteTaxDetails(
-            $customFeeTaxDataObjects,
-            $shippingAssignment->getShipping()->getAddress(),
-        );
+        $baseQuoteTaxDetails = $this->prepareQuoteTaxDetails($baseCustomFeeTaxDataObjects, $quote);
+        $quoteTaxDetails = $this->prepareQuoteTaxDetails($customFeeTaxDataObjects, $quote);
         $baseTaxDetails = $this->taxCalculation->calculateTax($baseQuoteTaxDetails, (int) $storeId);
         $taxDetails = $this->taxCalculation->calculateTax($quoteTaxDetails, (int) $storeId);
 
@@ -246,12 +235,9 @@ class CustomFees extends AbstractTotal
     /**
      * @param QuoteDetailsItemInterface[] $customFeeQuoteDataObjects
      */
-    private function prepareQuoteTaxDetails(
-        array $customFeeQuoteDataObjects,
-        AddressInterface $shippingAddress,
-    ): QuoteDetailsInterface {
-        /** @var AddressInterface&Address $shippingAddress */
-
+    private function prepareQuoteTaxDetails(array $customFeeQuoteDataObjects, Quote $quote): QuoteDetailsInterface
+    {
+        $shippingAddress = $quote->getShippingAddress();
         /** @var TaxClassKeyInterface $taxClassKey */
         $taxClassKey = $this->taxClassKeyFactory->create();
         /** @var QuoteDetailsInterface $quoteTaxDetails */
@@ -261,12 +247,12 @@ class CustomFees extends AbstractTotal
 
         $taxClassKey
             ->setType(TaxClassKeyInterface::TYPE_ID)
-            ->setValue((string) $shippingAddress->getQuote()->getCustomerTaxClassId());
+            ->setValue((string) $quote->getCustomerTaxClassId());
 
         $quoteTaxDetails
             ->setItems($customFeeQuoteDataObjects)
             ->setCustomerTaxClassKey($taxClassKey)
-            ->setCustomerId((int) $shippingAddress->getQuote()->getCustomerId());
+            ->setCustomerId((int) $quote->getCustomerId());
 
         return $quoteTaxDetails;
     }
