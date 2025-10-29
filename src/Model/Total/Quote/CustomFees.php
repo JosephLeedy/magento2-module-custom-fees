@@ -286,8 +286,8 @@ class CustomFees extends AbstractTotal
                     return;
                 }
 
-                $customFee->setBaseValue($taxDetailsItem->getRowTotal());
-                $customFee->setBaseValueWithTax($taxDetailsItem->getRowTotalInclTax());
+                $customFee->setBaseValue(round($taxDetailsItem->getRowTotal(), 2));
+                $customFee->setBaseValueWithTax(round($taxDetailsItem->getRowTotalInclTax(), 2));
                 $customFee->setBaseTaxAmount($rowTax);
 
                 $baseTaxAmount += $rowTax;
@@ -305,8 +305,8 @@ class CustomFees extends AbstractTotal
                     return;
                 }
 
-                $customFee->setValue($taxDetailsItem->getRowTotal());
-                $customFee->setValueWithTax($taxDetailsItem->getRowTotalInclTax());
+                $customFee->setValue(round($taxDetailsItem->getRowTotal(), 2));
+                $customFee->setValueWithTax(round($taxDetailsItem->getRowTotalInclTax(), 2));
                 $customFee->setTaxAmount($rowTax);
 
                 $taxAmount += $rowTax;
