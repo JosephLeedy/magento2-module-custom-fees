@@ -156,9 +156,13 @@ class CustomFees extends AbstractTotal
                 $customFee['value'] = round(((float) $customFee['value'] * (float) $total->getBaseSubtotal()) / 100, 2);
             }
 
+            $convertedValue = $this->priceCurrency->convert($customFee['value'], $store);
+
             $customOrderFee
                 ->setBaseValue((float) $customFee['value'])
-                ->setValue($this->priceCurrency->convert($customFee['value'], $store));
+                ->setValue($convertedValue)
+                ->setBaseValueWithTax((float) $customFee['value'])
+                ->setValueWithTax($convertedValue);
 
             $customFees[$customFeeCode] = $customOrderFee;
         }
@@ -278,6 +282,7 @@ class CustomFees extends AbstractTotal
                 $customFee = $customFees[$customFeeCode];
 
                 $customFee->setBaseValue($taxDetailsItem->getRowTotal());
+                $customFee->setBaseValueWithTax($taxDetailsItem->getRowTotalInclTax());
                 $customFee->setBaseTaxAmount($taxDetailsItem->getRowTax());
 
                 $baseTaxAmount += $taxDetailsItem->getRowTax();
@@ -291,6 +296,7 @@ class CustomFees extends AbstractTotal
                 $customFee = $customFees[$customFeeCode];
 
                 $customFee->setValue($taxDetailsItem->getRowTotal());
+                $customFee->setValueWithTax($taxDetailsItem->getRowTotalInclTax());
                 $customFee->setTaxAmount($taxDetailsItem->getRowTax());
 
                 $taxAmount += $taxDetailsItem->getRowTax();
