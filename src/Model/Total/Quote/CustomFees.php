@@ -280,12 +280,17 @@ class CustomFees extends AbstractTotal
             static function (TaxDetailsItemInterface $taxDetailsItem) use ($customFees, &$baseTaxAmount): void {
                 $customFeeCode = $taxDetailsItem->getCode();
                 $customFee = $customFees[$customFeeCode];
+                $rowTax = $taxDetailsItem->getRowTax();
+
+                if ($rowTax === 0.0) {
+                    return;
+                }
 
                 $customFee->setBaseValue($taxDetailsItem->getRowTotal());
                 $customFee->setBaseValueWithTax($taxDetailsItem->getRowTotalInclTax());
-                $customFee->setBaseTaxAmount($taxDetailsItem->getRowTax());
+                $customFee->setBaseTaxAmount($rowTax);
 
-                $baseTaxAmount += $taxDetailsItem->getRowTax();
+                $baseTaxAmount += $rowTax;
             },
         );
 
@@ -294,12 +299,17 @@ class CustomFees extends AbstractTotal
             static function (TaxDetailsItemInterface $taxDetailsItem) use ($customFees, &$taxAmount): void {
                 $customFeeCode = $taxDetailsItem->getCode();
                 $customFee = $customFees[$customFeeCode];
+                $rowTax = $taxDetailsItem->getRowTax();
+
+                if ($rowTax === 0.0) {
+                    return;
+                }
 
                 $customFee->setValue($taxDetailsItem->getRowTotal());
                 $customFee->setValueWithTax($taxDetailsItem->getRowTotalInclTax());
-                $customFee->setTaxAmount($taxDetailsItem->getRowTax());
+                $customFee->setTaxAmount($rowTax);
 
-                $taxAmount += $taxDetailsItem->getRowTax();
+                $taxAmount += $rowTax;
             },
         );
 
