@@ -107,8 +107,10 @@ final class CustomFeesTest extends TestCase
      * phpcs:ignore Generic.Files.LineLength.TooLong
      * @magentoConfigFixture current_store sales/custom_order_fees/custom_fees [{"code":"test_fee_0","title":"Test Fee","type":"fixed","value":"4.00","status":"1","advanced":"{\"show_percentage\":\"0\"}"},{"code":"test_fee_1","title":"Another Fee","type":"percent","value":"5","status":"1","advanced": "{\"show_percentage\":\"1\"}"}]
      * @magentoConfigFixture current_store tax/classes/custom_fee_tax_class 2
-     * @magentoConfigFixture current_store tax/calculation/price_includes_tax 1
      * @magentoConfigFixture current_store tax/calculation/custom_fees_include_tax 1
+     * @magentoConfigFixture current_store shipping/origin/country_id US
+     * @magentoConfigFixture current_store shipping/origin/region_id 1
+     * @magentoConfigFixture current_store shipping/origin/postcode 75477
      * @magentoDataFixture Magento/Tax/_files/tax_rule_region_1_al.php
      * @magentoDataFixture Magento/Checkout/_files/quote_with_taxable_product_and_customer.php
      */
@@ -137,12 +139,12 @@ final class CustomFeesTest extends TestCase
                             'type' => FeeType::Fixed,
                             'percent' => null,
                             'show_percentage' => false,
-                            'base_value' => 4.00,
-                            'value' => 4.00,
-                            'base_value_with_tax' => 4.30,
-                            'value_with_tax' => 4.30,
-                            'base_tax_amount' => 0.30,
-                            'tax_amount' => 0.30,
+                            'base_value' => 3.72,
+                            'value' => 3.72,
+                            'base_value_with_tax' => 4.00,
+                            'value_with_tax' => 4.00,
+                            'base_tax_amount' => 0.28,
+                            'tax_amount' => 0.28,
                         ],
                     ],
                 ),
@@ -155,19 +157,19 @@ final class CustomFeesTest extends TestCase
                             'type' => FeeType::Percent,
                             'percent' => 5,
                             'show_percentage' => true,
-                            'base_value' => 0.50,
-                            'value' => 0.50,
-                            'base_value_with_tax' => 0.54,
-                            'value_with_tax' => 0.54,
-                            'base_tax_amount' => 0.04,
-                            'tax_amount' => 0.04,
+                            'base_value' => 0.47,
+                            'value' => 0.47,
+                            'base_value_with_tax' => 0.50,
+                            'value_with_tax' => 0.50,
+                            'base_tax_amount' => 0.03,
+                            'tax_amount' => 0.03,
                         ],
                     ],
                 ),
             ],
             $quote->getExtensionAttributes()->getCustomFees(),
         );
-        self::assertSame(1.09, $collectedTotals['tax']->getValue());
+        self::assertSame(1.06, $collectedTotals['tax']->getValue());
     }
 
     /**
