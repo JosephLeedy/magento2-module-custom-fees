@@ -14,6 +14,15 @@ enum DisplayType: int
     case IncludingTax = 2;
     case Both = 3;
 
+    public function name(): string
+    {
+        return match ($this) {
+            self::ExcludingTax => 'excluding_tax',
+            self::IncludingTax => 'including_tax',
+            self::Both => 'both',
+        };
+    }
+
     public function label(): Phrase
     {
         return match ($this) {
