@@ -48,6 +48,10 @@ final class CustomFeesTest extends TestCase
                 'code' => 'test_fee_0',
                 'title' => __('Test Fee'),
                 'value' => 4.00,
+                'tax_details' => [
+                    'value_with_tax' => 4.00,
+                    'tax_amount' => 0.00,
+                ],
             ],
             $collectedTotals['test_fee_0']->getData(),
         );
@@ -56,6 +60,10 @@ final class CustomFeesTest extends TestCase
                 'code' => 'test_fee_1',
                 'title' => __('Another Fee (5%)'),
                 'value' => 1.00,
+                'tax_details' => [
+                    'value_with_tax' => 1.00,
+                    'tax_amount' => 0.00,
+                ],
             ],
             $collectedTotals['test_fee_1']->getData(),
         );
@@ -198,11 +206,19 @@ final class CustomFeesTest extends TestCase
                 'code' => 'test_fee_0',
                 'title' => __('Test Fee'),
                 'value' => 4.00,
+                'tax_details' => [
+                    'value_with_tax' => 4.00,
+                    'tax_amount' => 0.00,
+                ],
             ],
             [
                 'code' => 'test_fee_1',
                 'title' => __('Another Fee (5%)'),
                 'value' => 1.00,
+                'tax_details' => [
+                    'value_with_tax' => 1.00,
+                    'tax_amount' => 0.00,
+                ],
             ],
         ];
         $actualCustomFees = $customFeesTotalCollector->fetch($quote, $total);

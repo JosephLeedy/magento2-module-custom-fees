@@ -86,6 +86,10 @@ class CustomFees extends AbstractTotal
      *     code: string,
      *     title: Phrase,
      *     value: float,
+     *     tax_details: array{
+     *         value_with_tax: float,
+     *         tax_amount: float,
+     *     },
      * }[]
      */
     public function fetch(Quote $quote, Total $total): array
@@ -96,6 +100,10 @@ class CustomFees extends AbstractTotal
                 'code' => $customOrderFee->getCode(),
                 'title' => $customOrderFee->formatLabel(),
                 'value' => $customOrderFee->getValue(),
+                'tax_details' => [
+                    'value_with_tax' => $customOrderFee->getValueWithTax(),
+                    'tax_amount' => $customOrderFee->getTaxAmount(),
+                ],
             ],
             $customFees,
         );
