@@ -171,6 +171,11 @@ parameters:
 			path: src/Model/CustomOrderFeesRepository.php
 
 		-
+			message: "#^Cannot cast mixed to float\\.$#"
+			count: 2
+			path: src/Model/Quote/Tax/CustomFeeTaxDetails.php
+
+		-
 			message: "#^PHPDoc tag @var with type string is not subtype of native type mixed\\.$#"
 			count: 1
 			path: src/Model/ResourceModel/Report/CustomOrderFees.php
