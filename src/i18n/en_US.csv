@@ -99,3 +99,5 @@ Done,Done
 "This sets whether custom fee amounts entered from Magento Admin include tax.","This sets whether custom fee amounts entered from Magento Admin include tax."
 "Display Custom Fee Amount","Display Custom Fee Amount"
 "All Websites","All Websites"
+"Excl. Tax","Excl. Tax"
+"Incl. Tax","Incl. Tax"
