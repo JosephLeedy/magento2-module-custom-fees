@@ -252,7 +252,7 @@ parameters:
 
 		-
 			message: "#^Call to method require\\(\\) on an unknown class Hyva\\\\Theme\\\\Model\\\\ViewModelRegistry\\.$#"
-			count: 1
+			count: 2
 			path: src/view/frontend/templates/hyva/checkout/price-summary/total-segments/custom_fees.phtml
 
 		-
@@ -267,7 +267,12 @@ parameters:
 
 		-
 			message: "#^Call to method currency\\(\\) on an unknown class Hyva\\\\Checkout\\\\ViewModel\\\\Checkout\\\\Formatter\\.$#"
-			count: 1
+			count: 4
+			path: src/view/frontend/templates/hyva/checkout/price-summary/total-segments/custom_fees.phtml
+
+		-
+			message: "#^Parameter \\#1 \\$data of method Magento\\\\Framework\\\\Escaper\\:\\:escapeHtml\\(\\) expects array\\|string, Magento\\\\Framework\\\\Phrase given\\.$#"
+			count: 2
 			path: src/view/frontend/templates/hyva/checkout/price-summary/total-segments/custom_fees.phtml
 
 		-
