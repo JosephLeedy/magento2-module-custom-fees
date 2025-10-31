@@ -16,6 +16,8 @@ Refunded,Refunded
 "Amount Refunded","Amount Refunded"
 CSV,CSV
 "Excel XML","Excel XML"
+"%1 Excl. Tax","%1 Excl. Tax"
+"%1 Incl. Tax","%1 Incl. Tax"
 Code,Code
 Name,Name
 Type,Type
@@ -86,8 +88,6 @@ Subtotal,Subtotal
 "Please enter a positive number in this field.","Please enter a positive number in this field."
 "Advanced Settings","Advanced Settings"
 Advanced,Advanced
-"%1 Excl. Tax","%1 Excl. Tax"
-"%1 Incl. Tax","%1 Incl. Tax"
 "Are you sure you want to close Advanced Settings?","Are you sure you want to close Advanced Settings?"
 "Changes made to the advanced settings will not be saved.","Changes made to the advanced settings will not be saved."
 Done,Done

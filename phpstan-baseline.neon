@@ -16,6 +16,11 @@ parameters:
 			path: src/Block/Sales/Cart/Totals/CustomFees.php
 
 		-
+			message: "#^Cannot call method (g|s)et(Code|Label)\\(\\) on Magento\\\\Framework\\\\DataObject\\|null\\.$#"
+			count: 6
+			path: src/Block/Sales/Order/Totals.php
+
+		-
 			message: "#^Call to an undefined method Magento\\\\Store\\\\Api\\\\Data\\\\StoreInterface\\:\\:getBaseCurrency\\(\\)\\.$#"
 			count: 1
 			path: src/Block/System/Config/Form/Field/CustomFees.php
