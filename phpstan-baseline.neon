@@ -18,6 +18,11 @@ parameters:
 		-
 			message: "#^Cannot call method (g|s)et(Code|Label)\\(\\) on Magento\\\\Framework\\\\DataObject\\|null\\.$#"
 			count: 6
+			path: src/Block/Sales/Order/Invoice/Totals.php
+
+		-
+			message: "#^Cannot call method (g|s)et(Code|Label)\\(\\) on Magento\\\\Framework\\\\DataObject\\|null\\.$#"
+			count: 6
 			path: src/Block/Sales/Order/Totals.php
 
 		-
