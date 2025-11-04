@@ -51,6 +51,7 @@ final class CustomFeesTest extends TestCase
                 'tax_details' => [
                     'value_with_tax' => 4.00,
                     'tax_amount' => 0.00,
+                    'tax_rate' => 0.00,
                 ],
             ],
             $collectedTotals['test_fee_0']->getData(),
@@ -63,6 +64,7 @@ final class CustomFeesTest extends TestCase
                 'tax_details' => [
                     'value_with_tax' => 1.00,
                     'tax_amount' => 0.00,
+                    'tax_rate' => 0.00,
                 ],
             ],
             $collectedTotals['test_fee_1']->getData(),
@@ -85,6 +87,7 @@ final class CustomFeesTest extends TestCase
                             'value_with_tax' => 4.00,
                             'base_tax_amount' => 0.00,
                             'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
                         ],
                     ],
                 ),
@@ -103,6 +106,7 @@ final class CustomFeesTest extends TestCase
                             'value_with_tax' => 1.00,
                             'base_tax_amount' => 0.00,
                             'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
                         ],
                     ],
                 ),
@@ -153,6 +157,7 @@ final class CustomFeesTest extends TestCase
                             'value_with_tax' => 4.00,
                             'base_tax_amount' => 0.28,
                             'tax_amount' => 0.28,
+                            'tax_rate' => 7.5,
                         ],
                     ],
                 ),
@@ -171,6 +176,7 @@ final class CustomFeesTest extends TestCase
                             'value_with_tax' => 0.50,
                             'base_tax_amount' => 0.03,
                             'tax_amount' => 0.03,
+                            'tax_rate' => 7.5,
                         ],
                     ],
                 ),
@@ -209,6 +215,7 @@ final class CustomFeesTest extends TestCase
                 'tax_details' => [
                     'value_with_tax' => 4.00,
                     'tax_amount' => 0.00,
+                    'tax_rate' => 0.00,
                 ],
             ],
             [
@@ -218,6 +225,7 @@ final class CustomFeesTest extends TestCase
                 'tax_details' => [
                     'value_with_tax' => 1.00,
                     'tax_amount' => 0.00,
+                    'tax_rate' => 0.00,
                 ],
             ],
         ];

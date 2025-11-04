@@ -89,6 +89,7 @@ class CustomFees extends AbstractTotal
      *     tax_details: array{
      *         value_with_tax: float,
      *         tax_amount: float,
+     *         tax_rate: float,
      *     },
      * }[]
      */
@@ -103,6 +104,7 @@ class CustomFees extends AbstractTotal
                 'tax_details' => [
                     'value_with_tax' => $customOrderFee->getValueWithTax(),
                     'tax_amount' => $customOrderFee->getTaxAmount(),
+                    'tax_rate' => $customOrderFee->getTaxRate(),
                 ],
             ],
             $customFees,
@@ -156,7 +158,8 @@ class CustomFees extends AbstractTotal
                 ->setPercent(null)
                 ->setShowPercentage((bool) ($customFee['advanced']['show_percentage'] ?? true))
                 ->setBaseTaxAmount(0.00)
-                ->setTaxAmount(0.00);
+                ->setTaxAmount(0.00)
+                ->setTaxRate(0.00);
 
             if (FeeType::Percent->equals($customFee['type'])) {
                 $customOrderFee->setPercent((float) $customFee['value']);
@@ -316,6 +319,7 @@ class CustomFees extends AbstractTotal
                 $customFee->setValue(round($taxDetailsItem->getRowTotal(), 2));
                 $customFee->setValueWithTax(round($taxDetailsItem->getRowTotalInclTax(), 2));
                 $customFee->setTaxAmount($rowTax);
+                $customFee->setTaxRate($taxDetailsItem->getTaxPercent());
 
                 $taxAmount += $rowTax;
             },

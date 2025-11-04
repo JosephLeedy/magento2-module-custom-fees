@@ -73,6 +73,7 @@ final class TotalsPluginTest extends TestCase
                             'value_with_tax' => 4.00,
                             'base_tax_amount' => 0.00,
                             'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
                         ],
                         'test_fee_1' => [
                             'code' => 'test_fee_1',
@@ -86,6 +87,7 @@ final class TotalsPluginTest extends TestCase
                             'value_with_tax' => 1.00,
                             'base_tax_amount' => 0.00,
                             'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
                         ],
                     ],
                 ],
@@ -173,6 +175,7 @@ final class TotalsPluginTest extends TestCase
                             'value_with_tax' => 4.00,
                             'base_tax_amount' => 0.00,
                             'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
                         ],
                         'test_fee_1' => [
                             'code' => 'test_fee_1',
@@ -186,6 +189,7 @@ final class TotalsPluginTest extends TestCase
                             'value_with_tax' => 1.00,
                             'base_tax_amount' => 0.00,
                             'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
                         ],
                     ],
                 ],
@@ -261,6 +265,7 @@ final class TotalsPluginTest extends TestCase
                             'value_with_tax' => 4.00,
                             'base_tax_amount' => 0.00,
                             'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
                         ],
                         'test_fee_1' => [
                             'code' => 'test_fee_1',
@@ -274,6 +279,7 @@ final class TotalsPluginTest extends TestCase
                             'value_with_tax' => 1.00,
                             'base_tax_amount' => 0.00,
                             'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
                         ],
                     ],
                 ],
@@ -366,6 +372,7 @@ final class TotalsPluginTest extends TestCase
                             'value_with_tax' => 4.00,
                             'base_tax_amount' => 0.00,
                             'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
                         ],
                         'test_fee_1' => [
                             'code' => 'test_fee_1',
@@ -379,6 +386,7 @@ final class TotalsPluginTest extends TestCase
                             'value_with_tax' => 1.00,
                             'base_tax_amount' => 0.00,
                             'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
                         ],
                     ],
                 ],
@@ -469,6 +477,7 @@ final class TotalsPluginTest extends TestCase
                     'value_with_tax' => 4.00,
                     'base_tax_amount' => 0.00,
                     'tax_amount' => 0.00,
+                    'tax_rate' => 0.00,
                 ],
                 'test_fee_1' => [
                     'code' => 'test_fee_1',
@@ -482,6 +491,7 @@ final class TotalsPluginTest extends TestCase
                     'value_with_tax' => 1.00,
                     'base_tax_amount' => 0.00,
                     'tax_amount' => 0.00,
+                    'tax_rate' => 0.00,
                 ],
             ];
 

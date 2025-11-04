@@ -20,6 +20,7 @@ interface CustomOrderFeeInterface
     public const VALUE_WITH_TAX = 'value_with_tax';
     public const BASE_TAX_AMOUNT = 'base_tax_amount';
     public const TAX_AMOUNT = 'tax_amount';
+    public const TAX_RATE = 'tax_rate';
 
     /**
      * @param string $code
@@ -145,6 +146,17 @@ interface CustomOrderFeeInterface
      * @return float
      */
     public function getTaxAmount(): float;
+
+    /**
+     * @param float $taxRate
+     * @return CustomOrderFeeInterface
+     */
+    public function setTaxRate(float $taxRate): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getTaxRate(): float;
 
     /**
      * @return Phrase

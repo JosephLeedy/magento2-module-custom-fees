@@ -54,6 +54,7 @@ final class TotalsConverterPluginTest extends TestCase
                         'tax_details' => [
                             'value_with_tax' => '5.25',
                             'tax_amount' => '0.25',
+                            'tax_rate' => 5.00,
                         ],
                     ],
                 ],
@@ -67,6 +68,7 @@ final class TotalsConverterPluginTest extends TestCase
                         'tax_details' => [
                             'value_with_tax' => '1.58',
                             'tax_amount' => '0.08',
+                            'tax_rate' => 5.00,
                         ],
                     ],
                 ],
@@ -97,6 +99,7 @@ final class TotalsConverterPluginTest extends TestCase
                                     'data' => [
                                         'value_with_tax' => '5.25',
                                         'tax_amount' => '0.25',
+                                        'tax_rate' => 5.00,
                                     ],
                                 ],
                             ),
@@ -121,6 +124,7 @@ final class TotalsConverterPluginTest extends TestCase
                                     'data' => [
                                         'value_with_tax' => '1.58',
                                         'tax_amount' => '0.08',
+                                        'tax_rate' => 5.00,
                                     ],
                                 ],
                             ),
@@ -157,6 +161,7 @@ final class TotalsConverterPluginTest extends TestCase
                         'tax_details' => [
                             'value_with_tax' => '5.25',
                             'tax_amount' => '0.25',
+                            'tax_rate' => 5.00,
                         ],
                     ],
                 ],
@@ -170,6 +175,7 @@ final class TotalsConverterPluginTest extends TestCase
                         'tax_details' => [
                             'value_with_tax' => '1.58',
                             'tax_amount' => '0.08',
+                            'tax_rate' => 5.00,
                         ],
                     ],
                 ],

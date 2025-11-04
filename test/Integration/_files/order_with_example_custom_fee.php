@@ -42,6 +42,7 @@ $customFees = [
                 'value_with_tax' => 0.00,
                 'base_tax_amount' => 0.00,
                 'tax_amount' => 0.00,
+                'tax_rate' => 0.00,
             ],
         ],
     ),

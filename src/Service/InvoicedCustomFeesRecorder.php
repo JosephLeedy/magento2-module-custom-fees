@@ -114,6 +114,7 @@ class InvoicedCustomFeesRecorder
                             'value_with_tax' => round($customFeeOrdered->getValueWithTax() * $delta, 2),
                             'base_tax_amount' => $customFeeOrdered->getBaseTaxAmount(),
                             'tax_amount' => $customFeeOrdered->getTaxAmount(),
+                            'tax_rate' => $customFeeOrdered->getTaxRate(),
                         ],
                     ],
                 );
