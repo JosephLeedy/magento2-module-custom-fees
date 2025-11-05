@@ -13,7 +13,7 @@ use Magento\Sales\Model\ResourceModel\Order as OrderResource;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\TestFramework\Workaround\Override\Fixture\Resolver;
 
-Resolver::getInstance()->requireDataFixture('Magento/Sales/_files/order_with_tax.php');
+Resolver::getInstance()->requireDataFixture('JosephLeedy_CustomFees::../test/Integration/_files/order_with_tax.php');
 
 $objectManager = Bootstrap::getObjectManager();
 /** @var Order $order */
@@ -38,11 +38,11 @@ $testCustomFees = [
                 'show_percentage' => false,
                 'base_value' => 5.00,
                 'value' => 5.00,
-                'base_value_with_tax' => 5.42,
-                'value_with_tax' => 5.42,
-                'base_tax_amount' => 0.42,
-                'tax_amount' => 0.42,
-                'tax_rate' => 8.37,
+                'base_value_with_tax' => 5.30,
+                'value_with_tax' => 5.30,
+                'base_tax_amount' => 0.30,
+                'tax_amount' => 0.30,
+                'tax_rate' => 6.00,
             ],
         ],
     ),
@@ -57,11 +57,11 @@ $testCustomFees = [
                 'show_percentage' => false,
                 'base_value' => 1.50,
                 'value' => 1.50,
-                'base_value_with_tax' => 1.63,
-                'value_with_tax' => 1.63,
-                'base_tax_amount' => 0.13,
-                'tax_amount' => 0.13,
-                'tax_rate' => 8.37,
+                'base_value_with_tax' => 1.59,
+                'value_with_tax' => 1.59,
+                'base_tax_amount' => 0.09,
+                'tax_amount' => 0.09,
+                'tax_rate' => 6.00,
             ],
         ],
     ),
@@ -78,5 +78,11 @@ $customOrderFees->setCustomFeesOrdered($testCustomFees);
 $customOrderFeesRepository->save($customOrderFees);
 
 $order
+    ->setBaseTaxAmount($order->getBaseTaxAmount() + 0.39)
+    ->setTaxAmount($order->getTaxAmount() + 0.39)
+    ->setBaseGrandTotal($order->getBaseGrandTotal() + 6.89)
+    ->setGrandTotal($order->getGrandTotal() + 6.89)
     ->getExtensionAttributes()
     ?->setCustomOrderFees($customOrderFees);
+
+$orderResource->save($order);

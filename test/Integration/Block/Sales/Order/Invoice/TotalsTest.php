@@ -151,8 +151,8 @@ final class TotalsTest extends TestCase
                     'data' => [
                         'code' => 'test_fee_0',
                         'label' => __('Test Fee'),
-                        'base_value' => 5.42,
-                        'value' => 5.42,
+                        'base_value' => 5.30,
+                        'value' => 5.30,
                     ],
                 ],
             ),
@@ -162,8 +162,8 @@ final class TotalsTest extends TestCase
                     'data' => [
                         'code' => 'test_fee_1',
                         'label' => __('Another Test Fee'),
-                        'base_value' => 1.63,
-                        'value' => 1.63,
+                        'base_value' => 1.59,
+                        'value' => 1.59,
                     ],
                 ],
             ),
@@ -186,8 +186,8 @@ final class TotalsTest extends TestCase
                             'data' => [
                                 'code' => 'test_fee_0_with_tax',
                                 'label' => __('%1 Incl. Tax', __('Test Fee')),
-                                'base_value' => 5.42,
-                                'value' => 5.42,
+                                'base_value' => 5.30,
+                                'value' => 5.30,
                             ],
                         ],
                     ),
@@ -199,8 +199,8 @@ final class TotalsTest extends TestCase
                         'data' => [
                             'code' => 'test_fee_1_with_tax',
                             'label' => __('%1 Incl. Tax', __('Another Test Fee')),
-                            'base_value' => 1.63,
-                            'value' => 1.63,
+                            'base_value' => 1.59,
+                            'value' => 1.59,
                         ],
                     ],
                 ),
