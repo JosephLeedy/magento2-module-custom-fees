@@ -161,7 +161,7 @@ interface CustomOrderFeeInterface
     /**
      * @return Phrase
      */
-    public function formatLabel(string $prefix = ''): Phrase;
+    public function formatLabel(string $prefix = '', string $suffix = ''): Phrase;
 
     /**
      * @return array

@@ -237,7 +237,7 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         return (float) $this->_get(static::TAX_RATE);
     }
 
-    public function formatLabel(string $prefix = ''): Phrase
+    public function formatLabel(string $prefix = '', string $suffix = ''): Phrase
     {
         $showPercentage = FeeType::Percent->equals($this->getType())
             && $this->getPercent() !== null
@@ -246,6 +246,10 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
 
         if (trim($prefix) !== '') {
             $label = $prefix . ' ' . $label;
+        }
+
+        if (trim($suffix) !== '') {
+            $label = $label . ' ' . $suffix;
         }
 
         return __($label);
