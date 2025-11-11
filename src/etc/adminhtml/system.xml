@@ -40,13 +40,6 @@
                     <backend_model>Magento\Tax\Model\Config\Price\IncludePrice</backend_model>
                 </field>
             </group>
-            <group id="display">
-                <field id="custom_fees" translate="label" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Display Custom Fee Amount</label>
-                    <source_model>Magento\Tax\Model\System\Config\Source\Tax\Display\Type</source_model>
-                    <backend_model>Magento\Tax\Model\Config\Notification</backend_model>
-                </field>
-            </group>
             <group id="cart_display">
                 <field id="custom_fees" translate="label" type="select" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Display Custom Fee Amount</label>

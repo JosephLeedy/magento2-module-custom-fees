@@ -15,9 +15,6 @@
             <calculation>
                 <custom_fees_include_tax>0</custom_fees_include_tax>
             </calculation>
-            <display>
-                <custom_fees>1</custom_fees>
-            </display>
             <cart_display>
                 <custom_fees>1</custom_fees>
             </cart_display>

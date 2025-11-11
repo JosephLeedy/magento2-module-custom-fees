@@ -168,19 +168,6 @@ class Config implements ConfigInterface
         ) ?? false;
     }
 
-    public function getDisplayType(int|string|null $storeId = null): DisplayType
-    {
-        $taxDisplayType = (int) (
-            $this->scopeConfig->getValue(
-                self::CONFIG_PATH_TAX_DISPLAY_CUSTOM_FEES,
-                ScopeInterface::SCOPE_STORE,
-                $storeId,
-            ) ?? 1
-        );
-
-        return DisplayType::tryFrom($taxDisplayType) ?? DisplayType::ExcludingTax;
-    }
-
     public function getCartDisplayType(int|string|null $storeId = null): DisplayType
     {
         $cartDisplayType = (int) (
