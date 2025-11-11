@@ -80,11 +80,17 @@ class CustomOrderFees extends AbstractReport
                     fee.title AS fee_title,
                     SUM(fee.base_value) AS base_fee_amount,
                     SUM(fee.`value`) AS paid_fee_amount,
+                    CAST(IFNULL(SUM(fee.base_tax_amount), 0.00) AS DECIMAL (20,4)) AS base_tax_amount,
+                    CAST(IFNULL(SUM(fee.tax_amount), 0.00) AS DECIMAL (20,4)) AS paid_tax_amount,
                     so.order_currency_code AS paid_order_currency,
                     CAST(IFNULL(SUM(invoiced_fee.base_value), 0.00) AS DECIMAL (20,4)) AS base_invoiced_fee_amount,
                     CAST(IFNULL(SUM(invoiced_fee.`value`), 0.00) AS DECIMAL (20,4)) AS invoiced_fee_amount,
+                    CAST(IFNULL(SUM(invoiced_fee.base_tax_amount), 0.00) AS DECIMAL (20,4)) AS base_invoiced_tax_amount,
+                    CAST(IFNULL(SUM(invoiced_fee.tax_amount), 0.00) AS DECIMAL (20,4)) AS invoiced_tax_amount,
                     CAST(IFNULL(SUM(refunded_fee.base_value), 0.00) AS DECIMAL (20,4)) AS base_refunded_fee_amount,
-                    CAST(IFNULL(SUM(refunded_fee.`value`), 0.00) AS DECIMAL (20,4)) AS refunded_fee_amount
+                    CAST(IFNULL(SUM(refunded_fee.`value`), 0.00) AS DECIMAL (20,4)) AS refunded_fee_amount,
+                    CAST(IFNULL(SUM(refunded_fee.base_tax_amount), 0.00) AS DECIMAL (20,4)) AS base_refunded_tax_amount,
+                    CAST(IFNULL(SUM(refunded_fee.tax_amount), 0.00) AS DECIMAL (20,4)) AS refunded_tax_amount
                 FROM $customOrderFeesTable AS cof
                 CROSS JOIN JSON_TABLE(
                     JSON_UNQUOTE(cof.custom_fees_ordered),
@@ -92,7 +98,9 @@ class CustomOrderFees extends AbstractReport
                         NESTED PATH '$.*' COLUMNS (
                             title VARCHAR(255) PATH '$.title',
                             `value` DECIMAL(20, 4) PATH '$.value',
-                            base_value DECIMAL(20, 4) PATH '$.base_value'
+                            base_value DECIMAL(20, 4) PATH '$.base_value',
+                            base_tax_amount DECIMAL(20, 4) PATH '$.base_tax_amount',
+                            tax_amount DECIMAL(20, 4) PATH '$.tax_amount'
                         )
                     )
                 ) AS fee
@@ -102,7 +110,9 @@ class CustomOrderFees extends AbstractReport
                         NESTED PATH '$.*' COLUMNS (
                             title VARCHAR(255) PATH '$.title',
                             `value` DECIMAL(20, 4) PATH '$.value',
-                            base_value DECIMAL(20, 4) PATH '$.base_value'
+                            base_value DECIMAL(20, 4) PATH '$.base_value',
+                            base_tax_amount DECIMAL(20, 4) PATH '$.base_tax_amount',
+                            tax_amount DECIMAL(20, 4) PATH '$.tax_amount'
                         )
                     )
                 ) AS invoiced_fee ON invoiced_fee.title = fee.title
@@ -112,7 +122,9 @@ class CustomOrderFees extends AbstractReport
                         NESTED PATH '$.*' COLUMNS (
                             title VARCHAR(255) PATH '$.title',
                             `value` DECIMAL(20, 4) PATH '$.value',
-                            base_value DECIMAL(20, 4) PATH '$.base_value'
+                            base_value DECIMAL(20, 4) PATH '$.base_value',
+                            base_tax_amount DECIMAL(20, 4) PATH '$.base_tax_amount',
+                            tax_amount DECIMAL(20, 4) PATH '$.tax_amount'
                         )
                     )
                 ) AS refunded_fee ON refunded_fee.title = fee.title
