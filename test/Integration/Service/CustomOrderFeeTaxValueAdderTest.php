@@ -37,16 +37,18 @@ final class CustomOrderFeeTaxValueAdderTest extends TestCase
         /** @var CustomOrderFeesRepositoryInterface $customOrderFeesRepository */
         $customOrderFeesRepository = $objectManager->create(CustomOrderFeesRepositoryInterface::class);
 
-        $customOrderFeeTaxValueAdder->addTaxValues();
-
         $order->loadByIncrementId('100000001');
+
+        $customOrderFees = $customOrderFeesRepository->getByOrderId($order->getEntityId());
+
+        $customOrderFeeTaxValueAdder->addTaxValues();
 
         /** @var CustomOrderFeesInterface $expectedCustomOrderFees */
         $expectedCustomOrderFees = $objectManager->create(
             CustomOrderFeesInterface::class,
             [
                 'data' => [
-                    'id' => '1',
+                    'id' => $customOrderFees->getId(),
                     'order_entity_id' => $order->getEntityId(),
                     'custom_fees_ordered' => [
                         'test_fee_0' => [
