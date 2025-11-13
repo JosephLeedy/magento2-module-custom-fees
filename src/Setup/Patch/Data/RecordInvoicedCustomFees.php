@@ -13,7 +13,9 @@ class RecordInvoicedCustomFees implements DataPatchInterface
 
     public static function getDependencies(): array
     {
-        return [];
+        return [
+            AddTaxesToCustomOrderFees::class,
+        ];
     }
 
     public function getAliases(): array

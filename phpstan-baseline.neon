@@ -246,6 +246,11 @@ parameters:
 			path: src/Service/ConfigUpdater.php
 
 		-
+			message: "#^Parameter \\#1 \\$string of method Magento\\\\Framework\\\\Serialize\\\\SerializerInterface\\:\\:unserialize\\(\\) expects string, mixed given\\.$#"
+			count: 3
+			path: src/Service/CustomOrderFeeTaxValueAdder.php
+
+		-
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
 			path: src/Service/InvoicedCustomFeesRecorder.php
