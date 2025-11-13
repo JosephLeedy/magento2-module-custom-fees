@@ -16,6 +16,8 @@ document.
   is installed
 - Data for the Custom Order Fees Report can now be aggregated automatically on 
   a chosen schedule
+- Custom fees can now be charged with tax and displayed inclusive or exclusive 
+  of tax
 
 ### Changed
 

@@ -33,6 +33,8 @@ class Grid extends AbstractGrid
 
         $baseFeeAmount = [];
         $paidFeeAmount = [];
+        $baseTaxAmount = [];
+        $paidTaxAmount = [];
         $paidOrderCurrency = [];
         $baseInvoicedFeeAmount = [];
         $invoicedFeeAmount = [];
@@ -42,6 +44,8 @@ class Grid extends AbstractGrid
         foreach ($totalsCollection->getItems() as $item) {
             $baseFeeAmount[] = $item->getData('base_fee_amount');
             $paidFeeAmount[] = $item->getData('paid_fee_amount');
+            $baseTaxAmount[] = $item->getData('base_tax_amount');
+            $paidTaxAmount[] = $item->getData('paid_tax_amount');
             $paidOrderCurrency[] = $item->getData('paid_order_currency');
             $baseInvoicedFeeAmount[] = $item->getData('base_invoiced_fee_amount');
             $invoicedFeeAmount[] = $item->getData('invoiced_fee_amount');
@@ -51,6 +55,8 @@ class Grid extends AbstractGrid
 
         $totals->setData('base_fee_amount', (string) array_sum($baseFeeAmount));
         $totals->setData('paid_fee_amount', implode(', ', $paidFeeAmount));
+        $totals->setData('base_tax_amount', (string) array_sum($baseTaxAmount));
+        $totals->setData('paid_tax_amount', implode(', ', $paidTaxAmount));
         $totals->setData('paid_order_currency', implode(', ', $paidOrderCurrency));
         $totals->setData('base_invoiced_fee_amount', implode(', ', $baseInvoicedFeeAmount));
         $totals->setData('invoiced_fee_amount', implode(', ', $invoicedFeeAmount));
@@ -128,6 +134,37 @@ class Grid extends AbstractGrid
                 'rate' => $rate,
                 'header_css_class' => 'col-paid-fee-amount',
                 'column_css_class' => 'col-paid-fee-amount',
+            ],
+        );
+        $this->addColumn(
+            'base_tax_amount',
+            [
+                'header' => __('Tax'),
+                'type' => 'currency',
+                'index' => 'base_tax_amount',
+                'total' => 'sum',
+                'sortable' => false,
+                'renderer' => Currency::class,
+                'rate' => $rate,
+                'header_css_class' => 'col-base-tax-amount',
+                'column_css_class' => 'col-base-tax-amount',
+                'visibility_filter' => [
+                    'show_base_amount',
+                ],
+            ],
+        );
+        $this->addColumn(
+            'paid_tax_amount',
+            [
+                'header' => __('Tax Paid'),
+                'type' => 'currency',
+                'index' => 'paid_tax_amount',
+                'total' => 'sum',
+                'sortable' => false,
+                'renderer' => LocalizedFeeAmount::class,
+                'rate' => $rate,
+                'header_css_class' => 'col-paid-tax-amount',
+                'column_css_class' => 'col-paid-tax-amount',
             ],
         );
         $this->addColumn(

@@ -21,6 +21,11 @@ parameters:
 					show_percentage: bool,
 					base_value: float,
 					value: float,
+					base_value_with_tax: float,
+					value_with_tax: float,
+					base_tax_amount: float,
+					tax_amount: float,
+					tax_rate: float,
 			}
 		'''
 		CustomInvoiceFeeData: '''
@@ -33,6 +38,11 @@ parameters:
 					show_percentage: bool,
 					base_value: float,
 					value: float,
+					base_value_with_tax: float,
+					value_with_tax: float,
+					base_tax_amount: float,
+					tax_amount: float,
+					tax_rate: float,
 			}
 		'''
 		CustomCreditMemoFeeData: '''
@@ -45,5 +55,10 @@ parameters:
 					show_percentage: bool,
 					base_value: float,
 					value: float,
+					base_value_with_tax: float,
+					value_with_tax: float,
+					base_tax_amount: float,
+					tax_amount: float,
+					tax_rate: float,
 			}
 		'''

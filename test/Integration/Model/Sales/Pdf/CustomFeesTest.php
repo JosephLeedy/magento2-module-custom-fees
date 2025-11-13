@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Model\Sales\Pdf;
 
+use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Model\DisplayType;
 use JosephLeedy\CustomFees\Model\Sales\Pdf\CustomFees;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order;
@@ -31,17 +33,85 @@ final class CustomFeesTest extends TestCase
         $customFeesOrderPdfModel->setOrder($order);
 
         $expectedCustomFeesTotals = [
-            'test_fee_0' => [
+            [
                 'amount' => '$5.00',
                 'label' => 'Test Fee:',
                 'font_size' => 7,
             ],
-            'test_fee_1' => [
+            [
                 'amount' => '$1.50',
                 'label' => 'Another Test Fee:',
                 'font_size' => 7,
             ],
         ];
+        $actualCustomFeesTotals = $customFeesOrderPdfModel->getTotalsForDisplay();
+
+        self::assertEquals($expectedCustomFeesTotals, $actualCustomFeesTotals);
+    }
+
+    /**
+     * @dataProvider displayTypeDataProvider
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees_taxed.php
+     */
+    public function testGetTotalsForDisplayGetsTotalsByDisplayType(DisplayType $displayType): void
+    {
+        $configStub = $this->createStub(ConfigInterface::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var CustomFees $customFeesOrderPdfModel */
+        $customFeesOrderPdfModel = $objectManager->create(
+            CustomFees::class,
+            [
+                'config' => $configStub,
+            ],
+        );
+
+        $configStub
+            ->method('getSalesDisplayType')
+            ->willReturn($displayType);
+
+        $order->loadByIncrementId('100000001');
+
+        $customFeesOrderPdfModel->setOrder($order);
+
+        $expectedCustomFeesTotals = match ($displayType) {
+            DisplayType::IncludingTax => [
+                [
+                    'amount' => '$5.30',
+                    'label' => 'Test Fee:',
+                    'font_size' => 7,
+                ],
+                [
+                    'amount' => '$1.59',
+                    'label' => 'Another Test Fee:',
+                    'font_size' => 7,
+                ],
+            ],
+            DisplayType::Both => [
+                [
+                    'amount' => '$5.00',
+                    'label' => 'Test Fee (Excl. Tax):',
+                    'font_size' => 7,
+                ],
+                [
+                    'amount' => '$5.30',
+                    'label' => 'Test Fee (Incl. Tax):',
+                    'font_size' => 7,
+                ],
+                [
+                    'amount' => '$1.50',
+                    'label' => 'Another Test Fee (Excl. Tax):',
+                    'font_size' => 7,
+                ],
+                [
+                    'amount' => '$1.59',
+                    'label' => 'Another Test Fee (Incl. Tax):',
+                    'font_size' => 7,
+                ],
+            ],
+        };
         $actualCustomFeesTotals = $customFeesOrderPdfModel->getTotalsForDisplay();
 
         self::assertEquals($expectedCustomFeesTotals, $actualCustomFeesTotals);
@@ -121,6 +191,21 @@ final class CustomFeesTest extends TestCase
         } else {
             self::assertFalse($actualCanDisplay);
         }
+    }
+
+    /**
+     * @return array<string, array{'displayType': DisplayType}>
+     */
+    public static function displayTypeDataProvider(): array
+    {
+        return [
+            'including tax' => [
+                'displayType' => DisplayType::IncludingTax,
+            ],
+            'including and excluding tax' => [
+                'displayType' => DisplayType::Both,
+            ],
+        ];
     }
 
     /**

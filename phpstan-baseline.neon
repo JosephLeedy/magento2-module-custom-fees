@@ -16,6 +16,21 @@ parameters:
 			path: src/Block/Sales/Cart/Totals/CustomFees.php
 
 		-
+			message: "#^Cannot call method (g|s)et(Code|Label)\\(\\) on Magento\\\\Framework\\\\DataObject\\|null\\.$#"
+			count: 6
+			path: src/Block/Sales/Order/Creditmemo/Totals.php
+
+		-
+			message: "#^Cannot call method (g|s)et(Code|Label)\\(\\) on Magento\\\\Framework\\\\DataObject\\|null\\.$#"
+			count: 6
+			path: src/Block/Sales/Order/Invoice/Totals.php
+
+		-
+			message: "#^Cannot call method (g|s)et(Code|Label)\\(\\) on Magento\\\\Framework\\\\DataObject\\|null\\.$#"
+			count: 6
+			path: src/Block/Sales/Order/Totals.php
+
+		-
 			message: "#^Call to an undefined method Magento\\\\Store\\\\Api\\\\Data\\\\StoreInterface\\:\\:getBaseCurrency\\(\\)\\.$#"
 			count: 1
 			path: src/Block/System/Config/Form/Field/CustomFees.php
@@ -66,6 +81,11 @@ parameters:
 			path: src/Controller/Adminhtml/System/Config/CustomFees/Advanced/NewConditionHtml.php
 
 		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 4
+			path: src/Model/Config.php
+
+		-
 			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: src/Model/Config.php
@@ -99,6 +119,11 @@ parameters:
 			message: "#^Call to an undefined method Magento\\\\Store\\\\Api\\\\Data\\\\WebsiteInterface\\:\\:getDefaultStore\\(\\)\\.$#"
 			count: 1
 			path: src/Model/Config/Backend/File/ImportCustomFees.php
+
+		-
+			message: "#^Cannot cast mixed to float\\.$#"
+			count: 5
+			path: src/Model/CustomOrderFee.php
 
 		-
 			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFee\\:\\:getCode\\(\\) should return string but returns mixed\\.$#"
@@ -161,6 +186,11 @@ parameters:
 			path: src/Model/CustomOrderFeesRepository.php
 
 		-
+			message: "#^Cannot cast mixed to float\\.$#"
+			count: 2
+			path: src/Model/Quote/Tax/CustomFeeTaxDetails.php
+
+		-
 			message: "#^PHPDoc tag @var with type string is not subtype of native type mixed\\.$#"
 			count: 1
 			path: src/Model/ResourceModel/Report/CustomOrderFees.php
@@ -216,6 +246,11 @@ parameters:
 			path: src/Service/ConfigUpdater.php
 
 		-
+			message: "#^Parameter \\#1 \\$string of method Magento\\\\Framework\\\\Serialize\\\\SerializerInterface\\:\\:unserialize\\(\\) expects string, mixed given\\.$#"
+			count: 3
+			path: src/Service/CustomOrderFeeTaxValueAdder.php
+
+		-
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
 			path: src/Service/InvoicedCustomFeesRecorder.php
@@ -237,7 +272,7 @@ parameters:
 
 		-
 			message: "#^Call to method require\\(\\) on an unknown class Hyva\\\\Theme\\\\Model\\\\ViewModelRegistry\\.$#"
-			count: 1
+			count: 2
 			path: src/view/frontend/templates/hyva/checkout/price-summary/total-segments/custom_fees.phtml
 
 		-
@@ -252,7 +287,12 @@ parameters:
 
 		-
 			message: "#^Call to method currency\\(\\) on an unknown class Hyva\\\\Checkout\\\\ViewModel\\\\Checkout\\\\Formatter\\.$#"
-			count: 1
+			count: 4
+			path: src/view/frontend/templates/hyva/checkout/price-summary/total-segments/custom_fees.phtml
+
+		-
+			message: "#^Parameter \\#1 \\$data of method Magento\\\\Framework\\\\Escaper\\:\\:escapeHtml\\(\\) expects array\\|string, Magento\\\\Framework\\\\Phrase given\\.$#"
+			count: 2
 			path: src/view/frontend/templates/hyva/checkout/price-summary/total-segments/custom_fees.phtml
 
 		-

@@ -2,6 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="JosephLeedy\CustomFees\Api\ConfigInterface" type="JosephLeedy\CustomFees\Model\Config"/>
     <preference for="JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface" type="JosephLeedy\CustomFees\Model\CustomOrderFeesRepository"/>
+    <preference for="JosephLeedy\CustomFees\Api\Data\CustomFeeTaxDetailsInterface" type="JosephLeedy\CustomFees\Model\Quote\Tax\CustomFeeTaxDetails"/>
     <preference for="JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface" type="JosephLeedy\CustomFees\Model\CustomOrderFee"/>
     <preference for="JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface" type="JosephLeedy\CustomFees\Model\CustomOrderFee\Invoiced"/>
     <preference for="JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface" type="JosephLeedy\CustomFees\Model\CustomOrderFee\Refunded"/>
@@ -11,6 +12,9 @@
         <arguments>
             <argument name="state" xsi:type="object">Magento\Framework\App\State\Proxy</argument>
         </arguments>
+    </type>
+    <type name="Magento\Quote\Model\Cart\TotalsConverter">
+        <plugin name="add_custom_fee_taxes" type="JosephLeedy\CustomFees\Plugin\Quote\Model\Cart\TotalsConverterPlugin"/>
     </type>
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="add_custom_fees_to_order" type="JosephLeedy\CustomFees\Plugin\Sales\Api\OrderRepositoryInterfacePlugin"/>

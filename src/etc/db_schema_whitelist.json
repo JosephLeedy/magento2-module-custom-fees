@@ -28,13 +28,20 @@
       "base_invoiced_fee_amount": true,
       "invoiced_fee_amount": true,
       "base_refunded_fee_amount": true,
-      "refunded_fee_amount": true
+      "refunded_fee_amount": true,
+      "base_tax_amount": true,
+      "paid_tax_amount": true,
+      "base_invoiced_tax_amount": true,
+      "invoiced_tax_amount": true,
+      "base_refunded_tax_amount": true,
+      "refunded_tax_amount": true
     },
     "index": {
       "REPORT_CUSTOM_ORDER_FEES_AGGREGATED_PERIOD_STORE_ID_PAID_FEE_AMOUNT": true,
       "REPORT_CUSTOM_ORDER_FEES_AGGRED_PERIOD_STORE_ID_PAID_FEE_AMOUNT": true,
       "IDX_913FBD51E62C7A7A2399BBDE04A6D7DB": true,
-      "IDX_C237AEC5995F4659414FC774CBE2361E": true
+      "IDX_C237AEC5995F4659414FC774CBE2361E": true,
+      "IDX_ABDC4FE32DED6A43C6F67A041C480A0E": true
     },
     "constraint": {
       "PRIMARY": true,

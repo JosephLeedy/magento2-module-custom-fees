@@ -1,10 +1,34 @@
 <!-- ko if: isDisplayed() -->
     <!-- ko foreach: getCustomFees() -->
-        <tr class="totals">
-            <th data-bind="text: title" class="mark" scope="row"></th>
-            <td class="amount" data-bind="attr: {'data-th': title}">
-                <span class="price" data-bind="text: formattedPrice"></span>
-            </td>
-        </tr>
+        <!-- ko if: $parent.isDisplayedWithoutTax() -->
+            <tr class="totals custom-fee excl">
+                <th data-bind="text: title" class="mark" scope="row"></th>
+                <td class="amount" data-bind="attr: {'data-th': title}">
+                    <span class="price" data-bind="text: formattedPrice"></span>
+                </td>
+            </tr>
+        <!-- /ko -->
+        <!-- ko if: $parent.isDisplayedWithTax() -->
+            <tr class="totals custom-fee incl">
+                <th data-bind="text: title" class="mark" scope="row"></th>
+                <td class="amount" data-bind="attr: {'data-th': title}">
+                    <span class="price" data-bind="text: formattedPriceWithTax"></span>
+                </td>
+            </tr>
+        <!-- /ko -->
+        <!-- ko if: $parent.isDisplayedBoth() -->
+            <tr class="totals custom-fee excl">
+                <th data-bind="text: title + ' ' + $parent.excludingTaxMessage" class="mark" scope="row"></th>
+                <td class="amount" data-bind="attr: {'data-th': $parent.excludingTaxMessage}">
+                    <span class="price" data-bind="text: formattedPrice"></span>
+                </td>
+            </tr>
+            <tr class="totals custom-fee incl">
+                <th data-bind="text: title + ' ' + $parent.includingTaxMessage" class="mark" scope="row"></th>
+                <td class="amount" data-bind="attr: {'data-th': $parent.includingTaxMessage}">
+                    <span class="price" data-bind="text: formattedPriceWithTax"></span>
+                </td>
+            </tr>
+        <!-- /ko -->
     <!-- /ko -->
 <!-- /ko -->

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Block\Sales\Order;
 
+use JosephLeedy\CustomFees\Api\ConfigInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
+use JosephLeedy\CustomFees\Model\DisplayType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
@@ -15,7 +17,6 @@ use Magento\Sales\Model\Order;
 
 use function array_key_first;
 use function array_walk;
-use function count;
 
 /**
  * Initializes and renders Custom Fees order total columns
@@ -34,6 +35,7 @@ class Totals extends Template
         Context $context,
         private readonly CustomFeesRetriever $customFeesRetriever,
         private readonly DataObjectFactory $dataObjectFactory,
+        private readonly ConfigInterface $config,
         array $data = [],
     ) {
         parent::__construct($context, $data);
@@ -48,49 +50,74 @@ class Totals extends Template
     {
         $orderedCustomFees = $this->customFeesRetriever->retrieveOrderedCustomFees($this->getSource());
 
-        if (count($orderedCustomFees) === 0) {
+        if ($orderedCustomFees === []) {
             return $this;
         }
 
         $firstOrderedFeeKey = array_key_first($orderedCustomFees);
-        $previousFeeCode = '';
 
         array_walk(
             $orderedCustomFees,
-            function (
-                CustomOrderFeeInterface $customOrderFee,
-                string $key,
-            ) use (
-                $firstOrderedFeeKey,
-                &$previousFeeCode,
-            ): void {
-                $customFeeCode = $customOrderFee->getCode();
-                /** @var DataObject $total */
-                $total = $this->dataObjectFactory->create(
-                    [
-                        'data' => [
-                            'code' => $customFeeCode,
-                            'label' => $customOrderFee->formatLabel(),
-                            'base_value' => $customOrderFee->getBaseValue(),
-                            'value' => $customOrderFee->getValue(),
-                        ],
-                    ],
-                );
+            function (CustomOrderFeeInterface $customOrderFee) use ($firstOrderedFeeKey): void {
+                $displayType = $this->config->getSalesDisplayType($this->getParentBlock()->getOrder()->getStoreId());
+                $totalExcludingTax = null;
+                $totalIncludingTax = null;
 
-                if ($key === $firstOrderedFeeKey) {
-                    if ($this->getBeforeCondition() !== null) {
-                        $this->getParentBlock()->addTotalBefore($total, $this->getBeforeCondition());
-                    } else {
-                        $this->getParentBlock()->addTotal($total, $this->getAfterCondition());
-                    }
-                } else {
-                    $this->getParentBlock()->addTotal($total, $previousFeeCode);
+                if ($displayType === DisplayType::ExcludingTax || $displayType === DisplayType::Both) {
+                    $totalExcludingTax = $this->buildTotal($customOrderFee, false);
                 }
 
-                $previousFeeCode = $customFeeCode;
+                if ($displayType === DisplayType::IncludingTax || $displayType === DisplayType::Both) {
+                    $totalIncludingTax = $this->buildTotal($customOrderFee, true);
+                }
+
+                if ($displayType === DisplayType::Both) {
+                    $totalExcludingTax->setLabel(__('%1 Excl. Tax', $totalExcludingTax->getLabel()));
+
+                    $totalIncludingTax->setLabel(__('%1 Incl. Tax', $totalIncludingTax->getLabel()));
+                    $totalIncludingTax->setCode($totalIncludingTax->getCode() . '_with_tax');
+                }
+
+                if ($totalExcludingTax !== null) {
+                    $this->addTotal($totalExcludingTax, $firstOrderedFeeKey);
+                }
+
+                if ($totalIncludingTax !== null) {
+                    $this->addTotal($totalIncludingTax, $firstOrderedFeeKey);
+                }
             },
         );
 
         return $this;
+    }
+
+    private function buildTotal(CustomOrderFeeInterface $customOrderFee, bool $includeTax): DataObject
+    {
+        $totalData = [
+            'code' => $customOrderFee->getCode(),
+            'label' => $customOrderFee->formatLabel(),
+            'base_value' => $customOrderFee->getBaseValue(),
+            'value' => $customOrderFee->getValue(),
+        ];
+
+        if ($includeTax) {
+            $totalData['base_value'] = $customOrderFee->getBaseValueWithTax();
+            $totalData['value'] = $customOrderFee->getValueWithTax();
+        }
+
+        return $this->dataObjectFactory->create(['data' => $totalData]);
+    }
+
+    private function addTotal(DataObject $total, string $firstTotalKey): void
+    {
+        if ($total->getCode() === $firstTotalKey) {
+            if ($this->getBeforeCondition() !== null) {
+                $this->getParentBlock()->addTotalBefore($total, $this->getBeforeCondition());
+            } else {
+                $this->getParentBlock()->addTotal($total, $this->getAfterCondition());
+            }
+        } else {
+            $this->getParentBlock()->addTotal($total);
+        }
     }
 }

@@ -9,14 +9,10 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\TotalInterface;
 use Magento\Sales\Block\Order\Totals;
 
-use function array_filter;
 use function array_intersect;
+use function array_key_first;
 use function array_keys;
 use function array_slice;
-use function count;
-use function in_array;
-
-use const ARRAY_FILTER_USE_KEY;
 
 class TotalsPlugin
 {
@@ -62,33 +58,32 @@ class TotalsPlugin
             return $result;
         }
 
-        if (count(array_intersect($this->hyvaLayoutHandles, $layoutHandles)) === 0) {
+        if (array_intersect($this->hyvaLayoutHandles, $layoutHandles) === []) {
             return $result;
         }
 
         $customOrderFees = $this->customFeesRetriever->retrieveOrderedCustomFees($subject->getOrder());
 
-        if (count($customOrderFees) === 0) {
+        if ($customOrderFees === []) {
             return $result;
         }
 
-        $customFeeCodes = array_keys($customOrderFees);
-        $customFees = array_filter(
-            $result,
-            static fn(string $totalCode): bool => in_array($totalCode, $customFeeCodes, true),
-            ARRAY_FILTER_USE_KEY,
-        );
+        $firstCustomFeeCode = array_key_first($customOrderFees);
 
-        if (count($customFees) === 0) {
+        if ($firstCustomFeeCode === null) {
             return $result;
         }
 
-        $resultWithoutCustomFees = array_diff_key($result, $customFees);
-        $offset = array_search('tax', array_keys($resultWithoutCustomFees), true) + 1;
+        $firstCustomFeeOffset = array_search($firstCustomFeeCode, array_keys($result), true);
 
-        return
-            array_slice($resultWithoutCustomFees, 0, $offset, true)
-            + $customFees
-            + array_slice(array: $resultWithoutCustomFees, offset: $offset, preserve_keys: true);
+        if ($firstCustomFeeOffset === false) {
+            return $result;
+        }
+
+        $result = array_slice($result, 0, $firstCustomFeeOffset, true)
+            + ['tax' => $result['tax']]
+            + array_slice(array: $result, offset: $firstCustomFeeOffset, preserve_keys: true);
+
+        return $result;
     }
 }
