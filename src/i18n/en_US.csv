@@ -10,6 +10,8 @@ Total,Total
 Title,Title
 Amount,Amount
 "Amount Paid","Amount Paid"
+Tax,Tax
+"Tax Paid","Tax Paid"
 Invoiced,Invoiced
 "Amount Invoiced","Amount Invoiced"
 Refunded,Refunded
