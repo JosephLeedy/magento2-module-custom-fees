@@ -14,6 +14,11 @@ document.
 
 - Totals in the Custom Order Fees Report are now sorted by order currency
 
+### Fixed
+
+- Custom fee totals were rendered for the related order instead of the 
+  invoice or credit memo on sales PDF files printed from the Magento Admin panel 
+
 ## [1.3.0]
 
 ### Added
