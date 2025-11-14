@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Magento\Framework\App\Area;
+use Magento\Framework\App\State;
 use Magento\Framework\DB\Transaction;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order;
@@ -16,8 +18,11 @@ $resolver->requireDataFixture('JosephLeedy_CustomFees::../test/Integration/_file
 
 /** @var ObjectManagerInterface $objectManager */
 $objectManager = Bootstrap::getObjectManager();
+$appState = $objectManager->get(State::class);
 /** @var Order $order */
 $order = $objectManager->create(Order::class);
+
+$appState->setAreaCode(Area::AREA_ADMINHTML);
 
 $order->loadByIncrementId('100000001');
 
