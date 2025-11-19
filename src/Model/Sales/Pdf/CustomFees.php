@@ -7,7 +7,11 @@ namespace JosephLeedy\CustomFees\Model\Sales\Pdf;
 use JosephLeedy\CustomFees\Api\ConfigInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Model\DisplayType;
+use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Creditmemo;
+use Magento\Sales\Model\Order\Invoice;
 use Magento\Sales\Model\Order\Pdf\Total\DefaultTotal;
 use Magento\Tax\Helper\Data;
 use Magento\Tax\Model\Calculation;
@@ -120,7 +124,35 @@ class CustomFees extends DefaultTotal
             return $this->customFees;
         }
 
-        $this->customFees = $this->customFeesRetriever->retrieveOrderedCustomFees($this->getOrder());
+        /** @var Order $order */
+        $order = $this->getOrder();
+        $customFees = match (true) {
+            $this->getSource() instanceof Invoice => $this->customFeesRetriever->retrieveInvoicedCustomFees($order),
+            $this->getSource() instanceof Creditmemo => $this->customFeesRetriever->retrieveRefundedCustomFees($order),
+            default => $this->customFeesRetriever->retrieveOrderedCustomFees($order),
+        };
+
+        if ($this->getSource() instanceof Invoice || $this->getSource() instanceof Creditmemo) {
+            /** @var int|string $entityId */
+            $entityId = $this->getSource()->getEntityId();
+            $customFees = $customFees[$entityId] ?? [];
+        }
+
+        /**
+         * @var array{}|array<string, array{
+         *     code: string,
+         *     title: string,
+         *     type: value-of<FeeType>,
+         *     percent: float|null,
+         *     show_percentage: bool,
+         *     base_value: float,
+         *     value: float,
+         *     invoice_id?: int,
+         *     credit_memo_id?: int,
+         * }> $customFees
+         */
+
+        $this->customFees = $customFees;
 
         return $this->customFees;
     }
