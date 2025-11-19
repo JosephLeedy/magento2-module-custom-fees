@@ -16,6 +16,11 @@ interface CustomOrderFeeInterface
     public const SHOW_PERCENTAGE = 'show_percentage';
     public const BASE_VALUE = 'base_value';
     public const VALUE = 'value';
+    public const BASE_VALUE_WITH_TAX = 'base_value_with_tax';
+    public const VALUE_WITH_TAX = 'value_with_tax';
+    public const BASE_TAX_AMOUNT = 'base_tax_amount';
+    public const TAX_AMOUNT = 'tax_amount';
+    public const TAX_RATE = 'tax_rate';
 
     /**
      * @param string $code
@@ -99,9 +104,64 @@ interface CustomOrderFeeInterface
     public function getValue(): float;
 
     /**
+     * @param float $baseValueWithTax
+     * @return CustomOrderFeeInterface
+     */
+    public function setBaseValueWithTax(float $baseValueWithTax): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getBaseValueWithTax(): float;
+
+    /**
+     * @param float $valueWithTax
+     * @return CustomOrderFeeInterface
+     */
+    public function setValueWithTax(float $valueWithTax): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getValueWithTax(): float;
+
+    /**
+     * @param float $baseTaxAmount
+     * @return CustomOrderFeeInterface
+     */
+    public function setBaseTaxAmount(float $baseTaxAmount): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getBaseTaxAmount(): float;
+
+    /**
+     * @param float $taxAmount
+     * @return CustomOrderFeeInterface
+     */
+    public function setTaxAmount(float $taxAmount): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getTaxAmount(): float;
+
+    /**
+     * @param float $taxRate
+     * @return CustomOrderFeeInterface
+     */
+    public function setTaxRate(float $taxRate): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getTaxRate(): float;
+
+    /**
      * @return Phrase
      */
-    public function formatLabel(string $prefix = ''): Phrase;
+    public function formatLabel(string $prefix = '', string $suffix = ''): Phrase;
 
     /**
      * @return array

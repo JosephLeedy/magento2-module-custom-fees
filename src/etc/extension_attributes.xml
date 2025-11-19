@@ -5,6 +5,7 @@
     </extension_attributes>
     <extension_attributes for="Magento\Quote\Api\Data\TotalSegmentInterface">
         <attribute code="custom_fee_segments" type="Magento\Quote\Api\Data\TotalSegmentInterface[]"/>
+        <attribute code="custom_fee_tax_details" type="JosephLeedy\CustomFees\Api\Data\CustomFeeTaxDetailsInterface"/>
     </extension_attributes>
     <extension_attributes for="Magento\Sales\Api\Data\CreditmemoInterface">
         <attribute code="refunded_custom_fees" type="JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface[]"/>

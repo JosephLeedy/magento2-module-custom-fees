@@ -10,12 +10,16 @@ Total,Total
 Title,Title
 Amount,Amount
 "Amount Paid","Amount Paid"
+Tax,Tax
+"Tax Paid","Tax Paid"
 Invoiced,Invoiced
 "Amount Invoiced","Amount Invoiced"
 Refunded,Refunded
 "Amount Refunded","Amount Refunded"
 CSV,CSV
 "Excel XML","Excel XML"
+"%1 Excl. Tax","%1 Excl. Tax"
+"%1 Incl. Tax","%1 Incl. Tax"
 Code,Code
 Name,Name
 Type,Type
@@ -48,6 +52,9 @@ Sales,Sales
 "Custom fees have already been saved for order with ID ""%1"".","Custom fees have already been saved for order with ID ""%1""."
 "Could not save custom fees for order with ID ""%1"". Error: ""%2""","Could not save custom fees for order with ID ""%1"". Error: ""%2"""
 "Could not delete custom fees for order with ID ""%1"". Error: ""%2""","Could not delete custom fees for order with ID ""%1"". Error: ""%2"""
+"Excluding Tax","Excluding Tax"
+"Including Tax","Including Tax"
+Both,Both
 Disabled,Disabled
 Enabled,Enabled
 Fixed,Fixed
@@ -77,6 +84,7 @@ Subtotal,Subtotal
 "%1 (Purchased)","%1 (Purchased)"
 "Could not get identifier for scope ""%1"".","Could not get identifier for scope ""%1""."
 "Could not serialize custom fees.","Could not serialize custom fees."
+"Could not add taxes to custom order fees with ID ""%1"".","Could not add taxes to custom order fees with ID ""%1""."
 "Please provide a value for property ""%1"".","Please provide a value for property ""%1""."
 "Could not set type ""%1"" for property ""%2"".","Could not set type ""%1"" for property ""%2""."
 "Invalid value ""%1"" for property ""%2"".","Invalid value ""%1"" for property ""%2""."
@@ -92,4 +100,9 @@ Done,Done
 "Automatically Aggregate Data","Automatically Aggregate Data"
 "Aggregation Start Time","Aggregation Start Time"
 "Aggregation Frequency","Aggregation Frequency"
+"Tax Class for Custom Fees","Tax Class for Custom Fees"
+"This sets whether custom fee amounts entered from Magento Admin include tax.","This sets whether custom fee amounts entered from Magento Admin include tax."
+"Display Custom Fee Amount","Display Custom Fee Amount"
 "All Websites","All Websites"
+"Excl. Tax","Excl. Tax"
+"Incl. Tax","Incl. Tax"

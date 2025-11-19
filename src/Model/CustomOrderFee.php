@@ -172,7 +172,72 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         return $this->_get(static::VALUE);
     }
 
-    public function formatLabel(string $prefix = ''): Phrase
+    #[PropertyType('float')]
+    public function setBaseValueWithTax(float $baseValueWithTax): static
+    {
+        $this->setData(static::BASE_VALUE_WITH_TAX, $baseValueWithTax);
+
+        return $this;
+    }
+
+    public function getBaseValueWithTax(): float
+    {
+        return (float) $this->_get(static::BASE_VALUE_WITH_TAX);
+    }
+
+    #[PropertyType('float')]
+    public function setValueWithTax(float $valueWithTax): static
+    {
+        $this->setData(static::VALUE_WITH_TAX, $valueWithTax);
+
+        return $this;
+    }
+
+    public function getValueWithTax(): float
+    {
+        return (float) $this->_get(static::VALUE_WITH_TAX);
+    }
+
+    #[PropertyType('float')]
+    public function setBaseTaxAmount(float $baseTaxAmount): static
+    {
+        $this->setData(static::BASE_TAX_AMOUNT, $baseTaxAmount);
+
+        return $this;
+    }
+
+    public function getBaseTaxAmount(): float
+    {
+        return (float) $this->_get(static::BASE_TAX_AMOUNT);
+    }
+
+    #[PropertyType('float')]
+    public function setTaxAmount(float $taxAmount): static
+    {
+        $this->setData(static::TAX_AMOUNT, $taxAmount);
+
+        return $this;
+    }
+
+    public function getTaxAmount(): float
+    {
+        return (float) $this->_get(static::TAX_AMOUNT);
+    }
+
+    #[PropertyType('float')]
+    public function setTaxRate(float $taxRate): static
+    {
+        $this->setData(static::TAX_RATE, $taxRate);
+
+        return $this;
+    }
+
+    public function getTaxRate(): float
+    {
+        return (float) $this->_get(static::TAX_RATE);
+    }
+
+    public function formatLabel(string $prefix = '', string $suffix = ''): Phrase
     {
         $showPercentage = FeeType::Percent->equals($this->getType())
             && $this->getPercent() !== null
@@ -181,6 +246,10 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
 
         if (trim($prefix) !== '') {
             $label = $prefix . ' ' . $label;
+        }
+
+        if (trim($suffix) !== '') {
+            $label = $label . ' ' . $suffix;
         }
 
         return __($label);

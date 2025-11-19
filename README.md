@@ -26,6 +26,7 @@ customers when orders are placed.
     subtotal 
 - Custom fees are displayed for orders, invoices and credit memos in both the 
 frontend and backend
+- Custom fees can be charged and displayed including or excluding tax
 - Custom fees can be refunded via Magento's credit memo functionality
 - Includes a report detailing all charged custom fees for a given time period
 - Fully compatible with the [Hyvä] theme (Hyvä Default, Hyvä CSP, Hyvä Checkout 
@@ -71,6 +72,8 @@ location:
 
 ### Configuration
 
+#### Custom Fees
+
 Custom Fees can be added from the Magento Admin panel by going to `Stores > 
 Settings > Configuration > Sales > Sales > Custom Order Fees`. The overall 
 display order of the Custom Fees block in relation to other totals shown in the 
@@ -78,8 +81,24 @@ cart and checkout can be configured at `Stores > Settings > Configuration >
 Sales > Sales > Checkout Totals Sort Order`. All settings for this extension 
 can be configured in the Global (Default), Website or Store scope.
 
+#### Report Aggregation
+
 Report aggregation can be configured at `Stores > Settings > Configuration > 
 General > Reports > Custom Order Fees Report`.
+
+#### Taxes
+
+Taxes can be configured at `Stores > Settings > Configuration > Sales > Tax`.
+
+##### Available Settings
+
+| Setting                   | Section                                         | Description                                                 | Default       |
+|---------------------------|-------------------------------------------------|-------------------------------------------------------------|---------------| 
+| Tax Class for Custom Fees | Tax Classes                                     | Sets the class used to determine fee tax amount             | None          |
+| Custom Fees               | Calculation Settings                            | Sets whether the custom fees entered include or exclude tax | Excluding Tax |
+| Display Custom Fee Amount | Shopping Cart Display Settings                  | Controls how custom fees are shown in the Cart and Checkout | Excluding Tax |
+| Display Custom Fee Amount | Orders, Invoices, Credit Memos Display Settings | Controls how custom fees are shown on the Sales pages       | Excluding Tax |
+
 
 #### Importing Custom Fees
 

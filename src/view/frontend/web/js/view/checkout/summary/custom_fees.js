@@ -32,6 +32,9 @@ define(
                             }
 
                             customFee.formattedPrice = self.getFormattedPrice(customFee.value);
+                            customFee.formattedPriceWithTax = self.getFormattedPrice(
+                                customFee.extension_attributes.custom_fee_tax_details?.value_with_tax || customFee.value
+                            );
 
                             customFees.push(customFee);
                         }
@@ -45,6 +48,27 @@ define(
                  */
                 isDisplayed: function () {
                     return this.isFullMode() && this.getCustomFees().length > 0;
+                },
+
+                /**
+                 * @returns {Boolean}
+                 */
+                isDisplayedWithoutTax: function () {
+                    return window.checkoutConfig.customFees.cartDisplayType === 'excluding_tax';
+                },
+
+                /**
+                 * @returns {Boolean}
+                 */
+                isDisplayedWithTax: function () {
+                    return window.checkoutConfig.customFees.cartDisplayType === 'including_tax';
+                },
+
+                /**
+                 * @returns {Boolean}
+                 */
+                isDisplayedBoth: function () {
+                    return window.checkoutConfig.customFees.cartDisplayType === 'both';
                 }
             }
         );

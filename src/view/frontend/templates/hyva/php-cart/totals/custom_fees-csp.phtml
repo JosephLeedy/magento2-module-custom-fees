@@ -1,8 +1,29 @@
 <div x-data="initCustomFeesTotalSegment">
-    <template x-if="isCustomFeesTotalSegment">
+    <!-- display custom fee without tax -->
+    <template x-if="isCustomFeesTotalSegmentAndDisplayExcludingTax">
         <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
             <div class="w-7/12 text-left md:w-auto" x-html="getCustomFeeTitle"></div>
             <div class="w-5/12 text-right md:w-auto" x-text="getFormattedCustomFeeValue"></div>
+        </div>
+    </template>
+    <!-- display custom fee with tax -->
+    <template x-if="isCustomFeesTotalSegmentAndDisplayIncludingTax">
+        <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+            <div class="w-7/12 text-left md:w-auto" x-html="getCustomFeeTitle"></div>
+            <div class="w-5/12 text-right md:w-auto" x-text="getFormattedCustomFeeValueWithTax"></div>
+        </div>
+    </template>
+    <!-- display custom fee without and with tax -->
+    <template x-if="isCustomFeesTotalSegmentAndDisplayBoth">
+        <div>
+            <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+                <div class="w-7/12 text-left md:w-auto" x-html="getCustomFeeTitleWithoutTax"></div>
+                <div class="w-5/12 text-right md:w-auto" x-text="getFormattedCustomFeeValue"></div>
+            </div>
+            <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+                <div class="w-7/12 text-left md:w-auto" x-html="getCustomFeeTitleWithTax"></div>
+                <div class="w-5/12 text-right md:w-auto" x-text="getFormattedCustomFeeValueWithTax"></div>
+            </div>
         </div>
     </template>
 </div>

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Model\Total\Invoice;
 
+use JosephLeedy\CustomFees\Api\ConfigInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface as InvoicedCustomFee;
+use JosephLeedy\CustomFees\Model\Config;
 use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\DB\Transaction;
 use Magento\Framework\ObjectManagerInterface;
@@ -15,6 +17,8 @@ use Magento\Sales\Model\ResourceModel\Order as OrderResource;
 use Magento\Sales\Model\Service\InvoiceService;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
+
+use function round;
 
 final class CustomFeesTest extends TestCase
 {
@@ -46,6 +50,11 @@ final class CustomFeesTest extends TestCase
                         'show_percentage' => false,
                         'base_value' => 5.00,
                         'value' => 5.00,
+                        'base_value_with_tax' => 5.00,
+                        'value_with_tax' => 5.00,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.00,
                     ],
                 ],
             ),
@@ -60,6 +69,11 @@ final class CustomFeesTest extends TestCase
                         'show_percentage' => false,
                         'base_value' => 1.50,
                         'value' => 1.50,
+                        'base_value_with_tax' => 1.50,
+                        'value_with_tax' => 1.50,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.00,
                     ],
                 ],
             ),
@@ -67,6 +81,84 @@ final class CustomFeesTest extends TestCase
         $actualInvoicedCustomFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees();
 
         self::assertEquals(26.50, $invoice->getGrandTotal());
+        self::assertEquals($expectedInvoicedCustomFees, $actualInvoicedCustomFees);
+    }
+
+    /**
+     * @dataProvider customFeeAmountIncludesTaxDataProvider
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees_taxed.php
+     */
+    public function testCollectsCustomFeesTotalsWithTax(bool $customFeeAmountIncludesTax): void
+    {
+        $configStub = $this->createStub(ConfigInterface::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var OrderResource $orderResource */
+        $orderResource = $objectManager->create(OrderResource::class);
+
+        $configStub->method('isTaxIncluded')->willReturn($customFeeAmountIncludesTax);
+
+        $objectManager->configure(
+            [
+                Config::class => [
+                    'shared' => true,
+                ],
+            ],
+        );
+        $objectManager->addSharedInstance($configStub, Config::class);
+
+        $orderResource->load($order, '100000001', 'increment_id');
+
+        $invoice = $this->createInvoice($order);
+
+        $expectedInvoicedCustomFees = [
+            'test_fee_0' => $objectManager->create(
+                InvoicedCustomFee::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 5.00,
+                        'value' => 5.00,
+                        'base_value_with_tax' => 5.30,
+                        'value_with_tax' => 5.30,
+                        'base_tax_amount' => 0.30,
+                        'tax_amount' => 0.30,
+                        'tax_rate' => 6.00,
+                    ],
+                ],
+            ),
+            'test_fee_1' => $objectManager->create(
+                InvoicedCustomFee::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 1.50,
+                        'value' => 1.50,
+                        'base_value_with_tax' => 1.59,
+                        'value_with_tax' => 1.59,
+                        'base_tax_amount' => 0.09,
+                        'tax_amount' => 0.09,
+                        'tax_rate' => 6.00,
+                    ],
+                ],
+            ),
+        ];
+        $actualInvoicedCustomFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees();
+
+        self::assertEquals(28.09, $invoice->getBaseGrandTotal());
+        self::assertEquals(28.09, $invoice->getGrandTotal());
+        self::assertEquals(1.59, $invoice->getBaseTaxAmount());
+        self::assertEquals(1.59, $invoice->getTaxAmount());
         self::assertEquals($expectedInvoicedCustomFees, $actualInvoicedCustomFees);
     }
 
@@ -99,6 +191,11 @@ final class CustomFeesTest extends TestCase
                             'show_percentage' => false,
                             'base_value' => 2.50,
                             'value' => 2.50,
+                            'base_value_with_tax' => 2.50,
+                            'value_with_tax' => 2.50,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
                         ],
                     ],
                 ),
@@ -113,6 +210,11 @@ final class CustomFeesTest extends TestCase
                             'show_percentage' => false,
                             'base_value' => 0.75,
                             'value' => 0.75,
+                            'base_value_with_tax' => 0.75,
+                            'value_with_tax' => 0.75,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
                         ],
                     ],
                 ),
@@ -127,6 +229,88 @@ final class CustomFeesTest extends TestCase
         }
 
         self::assertEquals(26.50, $order->getTotalPaid());
+    }
+
+    /**
+     * @dataProvider customFeeAmountIncludesTaxDataProvider
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees_taxed.php
+     */
+    public function testCollectsCustomFeesTotalsWithTaxForMultipleInvoices(bool $customFeeAmountIncludesTax): void
+    {
+        $configStub = $this->createStub(ConfigInterface::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var OrderResource $orderResource */
+        $orderResource = $objectManager->create(OrderResource::class);
+
+        $configStub->method('isTaxIncluded')->willReturn($customFeeAmountIncludesTax);
+
+        $objectManager->configure(
+            [
+                Config::class => [
+                    'shared' => true,
+                ],
+            ],
+        );
+        $objectManager->addSharedInstance($configStub, Config::class);
+
+        $orderResource->load($order, '100000001', 'increment_id');
+
+        $invoices = $this->createInvoices($order);
+
+        foreach ($invoices as $index => $invoice) {
+            $expectedInvoicedCustomFees = [
+                'test_fee_0' => $objectManager->create(
+                    InvoicedCustomFee::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_0',
+                            'title' => 'Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 2.50,
+                            'value' => 2.50,
+                            'base_value_with_tax' => 2.65,
+                            'value_with_tax' => 2.65,
+                            'base_tax_amount' => 0.15,
+                            'tax_amount' => 0.15,
+                            'tax_rate' => 6.00,
+                        ],
+                    ],
+                ),
+                'test_fee_1' => $objectManager->create(
+                    InvoicedCustomFee::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_1',
+                            'title' => 'Another Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 0.75,
+                            'value' => 0.75,
+                            'base_value_with_tax' => 0.80,
+                            'value_with_tax' => 0.80,
+                            'base_tax_amount' => 0.05,
+                            'tax_amount' => 0.05,
+                            'tax_rate' => 6.00,
+                        ],
+                    ],
+                ),
+            ];
+            $actualInvoicedCustomFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees();
+
+            self::assertEquals(round(14.05 - ($index / 100), 2), $invoice->getBaseGrandTotal());
+            self::assertEquals(round(14.05 - ($index / 100), 2), $invoice->getGrandTotal());
+            self::assertEquals(round(0.80 - ($index / 100), 2), $invoice->getBaseTaxAmount());
+            self::assertEquals(round(0.80 - ($index / 100), 2), $invoice->getTaxAmount());
+            self::assertEquals($expectedInvoicedCustomFees, $actualInvoicedCustomFees);
+        }
+
+        self::assertEquals(28.09, $order->getTotalPaid());
     }
 
     /**
@@ -148,6 +332,21 @@ final class CustomFeesTest extends TestCase
         self::assertEquals(20.00, $invoice->getBaseGrandTotal());
         self::assertEquals(20.00, $invoice->getGrandTotal());
         self::assertEmpty($invoice->getExtensionAttributes()?->getInvoicedCustomFees());
+    }
+
+    /**
+     * @return array<string, array<string, bool>>
+     */
+    public static function customFeeAmountIncludesTaxDataProvider(): array
+    {
+        return [
+            'custom fee amount excludes tax' => [
+                'customFeeAmountIncludesTax' => false,
+            ],
+            'custom fee amount includes tax' => [
+                'customFeeAmountIncludesTax' => true,
+            ],
+        ];
     }
 
     /**

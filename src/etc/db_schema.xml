@@ -27,6 +27,12 @@
         <column xsi:type="decimal" name="invoiced_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Invoiced Order Fee Amount"/>
         <column xsi:type="decimal" name="base_refunded_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Refunded Order Fee Amount"/>
         <column xsi:type="decimal" name="refunded_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Refunded Order Fee Amount"/>
+        <column xsi:type="decimal" name="base_tax_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Order Fee Tax Amount"/>
+        <column xsi:type="decimal" name="paid_tax_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Paid Order Fee Tax Amount"/>
+        <column xsi:type="decimal" name="base_invoiced_tax_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Invoiced Order Fee Tax Amount"/>
+        <column xsi:type="decimal" name="invoiced_tax_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Invoiced Order Fee Tax Amount"/>
+        <column xsi:type="decimal" name="base_refunded_tax_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Refunded Order Fee Tax Amount"/>
+        <column xsi:type="decimal" name="refunded_tax_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Refunded Order Fee Tax Amount"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="id"/>
         </constraint>
@@ -37,6 +43,7 @@
             <column name="paid_fee_amount"/>
             <column name="invoiced_fee_amount"/>
             <column name="refunded_fee_amount"/>
+            <column name="paid_tax_amount"/>
         </index>
     </table>
 
