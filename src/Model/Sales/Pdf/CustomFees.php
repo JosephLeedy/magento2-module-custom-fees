@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model\Sales\Pdf;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Model\DisplayType;
-use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Creditmemo;
@@ -34,7 +35,7 @@ use const FILTER_VALIDATE_BOOLEAN;
 class CustomFees extends DefaultTotal
 {
     /**
-     * @var array{}|array<string, CustomOrderFeeInterface>|null
+     * @var array{}|array<string, CustomOrderFeeInterface|InvoicedInterface|RefundedInterface>|null
      */
     private array|null $customFees = null;
 
@@ -116,7 +117,7 @@ class CustomFees extends DefaultTotal
     }
 
     /**
-     * @return array{}|array<string, CustomOrderFeeInterface>
+     * @return array{}|array<string, CustomOrderFeeInterface|InvoicedInterface|RefundedInterface>
      */
     private function getCustomFees(): array
     {
@@ -139,17 +140,7 @@ class CustomFees extends DefaultTotal
         }
 
         /**
-         * @var array{}|array<string, array{
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float,
-         *     invoice_id?: int,
-         *     credit_memo_id?: int,
-         * }> $customFees
+         * @var array{}|array<string, CustomOrderFeeInterface|InvoicedInterface|RefundedInterface> $customFees
          */
 
         $this->customFees = $customFees;
