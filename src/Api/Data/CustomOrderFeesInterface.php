@@ -42,6 +42,7 @@ interface CustomOrderFeesInterface
      *     base_value: float,
      *     value: float
      * }> $customFeesOrdered
+     * @return \JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface
      * @throws InvalidArgumentException
      */
     public function setCustomFeesOrdered(string|array $customFeesOrdered): CustomOrderFeesInterface;
@@ -72,6 +73,7 @@ interface CustomOrderFeesInterface
      *     base_value: float,
      *     value: float
      * }>[] $customFeesInvoiced
+     * @return \JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface
      * @throws InvalidArgumentException
      */
     public function setCustomFeesInvoiced(string|array $customFeesInvoiced): CustomOrderFeesInterface;
@@ -103,6 +105,7 @@ interface CustomOrderFeesInterface
      *     base_value: float,
      *     value: float
      * }>[] $customFeesRefunded
+     * @return \JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface
      * @throws InvalidArgumentException
      */
     public function setCustomFeesRefunded(string|array $customFeesRefunded): CustomOrderFeesInterface;
