@@ -10,6 +10,12 @@ document.
 
 ## [Unreleased]
 
+### Fixed
+
+- Incorrect sales orders were included in packing slips printed from the 
+  Magento Admin panel (caused by the plug-in used to join custom order fees 
+  with sales orders in the Admin Sales Order Grid)
+
 ## [1.3.1]
 
 ### Changed
