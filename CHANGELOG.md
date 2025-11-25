@@ -10,6 +10,11 @@ document.
 
 ## [Unreleased]
 
+### Fixed
+
+- Missing return type annotations have been added to the Custom Order Fees 
+  Interface
+
 ## [1.3.1]
 
 ### Changed
