@@ -6,6 +6,7 @@ namespace JosephLeedy\CustomFees\Plugin\Ui\Component;
 
 use InvalidArgumentException;
 use JosephLeedy\CustomFees\Model\FeeType;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Sales\Model\Order;
@@ -18,13 +19,14 @@ use function array_walk;
 class AbstractComponentPlugin
 {
     public function __construct(
+        private readonly RequestInterface $request,
         private readonly SerializerInterface $serializer,
         private readonly UiComponentFactory $uiComponentFactory,
     ) {}
 
     public function afterPrepare(AbstractComponent $subject): void
     {
-        if ($subject->getData('name') !== 'sales_order_columns') {
+        if ($subject->getData('name') !== 'sales_order_columns' || $this->request->getParam('selected') !== null) {
             return;
         }
 
