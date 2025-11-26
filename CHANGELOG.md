@@ -34,6 +34,16 @@ document.
 - The plug-in used to temporarily store the refunded custom fee amounts entered 
   in the Admin panel during credit memo creation has been removed
 
+## [1.3.2]
+
+### Fixed
+
+- Missing return type annotations have been added to the Custom Order Fees 
+  Interface
+- Incorrect sales orders were included in packing slips printed from the 
+  Magento Admin panel (caused by the plug-in used to join custom order fees 
+  with sales orders in the Admin Sales Order Grid)
+
 ## [1.3.1]
 
 ### Changed
@@ -164,7 +174,8 @@ document.
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [README]: ./README.md
-[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.3.1...HEAD
+[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.3.2...HEAD
+[1.3.2]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.3.2
 [1.3.1]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.3.1
 [1.3.0]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.3.0
 [1.2.3]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.2.3

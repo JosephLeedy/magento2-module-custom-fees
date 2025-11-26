@@ -35,6 +35,7 @@ interface CustomOrderFeesInterface
     /**
      * @param string|\JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface[] $customFeesOrdered
      * @phpstan-param string|array<string, CustomOrderFeeInterface> $customFeesOrdered
+     * @return \JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface
      * @throws InvalidArgumentException
      */
     public function setCustomFeesOrdered(string|array $customFeesOrdered): CustomOrderFeesInterface;
@@ -48,6 +49,7 @@ interface CustomOrderFeesInterface
     /**
      * @param string|\JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface[][] $customFeesInvoiced
      * @phpstan-param string|array<int, array<string, InvoicedInterface>> $customFeesInvoiced
+     * @return \JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface
      * @throws InvalidArgumentException
      */
     public function setCustomFeesInvoiced(string|array $customFeesInvoiced): CustomOrderFeesInterface;
@@ -61,6 +63,7 @@ interface CustomOrderFeesInterface
     /**
      * @param string|\JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface[][] $customFeesRefunded
      * @phpstan-param string|array<int, array<string, RefundedInterface>> $customFeesRefunded
+     * @return \JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface
      * @throws InvalidArgumentException
      */
     public function setCustomFeesRefunded(string|array $customFeesRefunded): CustomOrderFeesInterface;
