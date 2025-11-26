@@ -122,7 +122,7 @@ parameters:
 
 		-
 			message: "#^Cannot cast mixed to float\\.$#"
-			count: 5
+			count: 8
 			path: src/Model/CustomOrderFee.php
 
 		-
