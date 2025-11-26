@@ -52,5 +52,10 @@
     "column": {
       "is_used_for_custom_fee_conditions": true
     }
+  },
+  "salesrule": {
+    "column": {
+      "apply_to_custom_fees": true
+    }
   }
 }

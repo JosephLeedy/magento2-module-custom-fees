@@ -50,4 +50,8 @@
     <table name="catalog_eav_attribute">
         <column xsi:type="smallint" name="is_used_for_custom_fee_conditions" unsigned="true" nullable="false" identity="false" default="0" comment="Is Used For Custom Fee Conditions"/>
     </table>
+
+    <table name="salesrule">
+        <column xsi:type="smallint" name="apply_to_custom_fees" unsigned="true" nullable="false" identity="false" default="0" comment="Apply To Custom Fees"/>
+    </table>
 </schema>
