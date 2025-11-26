@@ -7,10 +7,8 @@ namespace JosephLeedy\CustomFees\Model\Total\Quote;
 use JosephLeedy\CustomFees\Api\ConfigInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterfaceFactory;
-use JosephLeedy\CustomFees\Model\FeeStatus;
 use JosephLeedy\CustomFees\Model\FeeType;
-use JosephLeedy\CustomFees\Service\ConditionsApplier;
-use Magento\Framework\Exception\LocalizedException;
+use JosephLeedy\CustomFees\Service\CustomQuoteFeesRetriever;
 use Magento\Framework\Phrase;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
@@ -27,9 +25,7 @@ use Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory;
 use Magento\Tax\Api\Data\TaxDetailsItemInterface;
 use Magento\Tax\Api\TaxCalculationInterface;
 use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
-use Psr\Log\LoggerInterface;
 
-use function array_key_exists;
 use function array_map;
 use function array_values;
 use function array_walk;
@@ -41,10 +37,9 @@ class CustomFees extends AbstractTotal
     public const CODE = 'custom_fees';
 
     public function __construct(
+        private readonly CustomQuoteFeesRetriever $customQuoteFeesRetriever,
         private readonly ConfigInterface $config,
-        private readonly LoggerInterface $logger,
         private readonly CustomOrderFeeInterfaceFactory $customOrderFeeFactory,
-        private readonly ConditionsApplier $conditionsApplier,
         private readonly PriceCurrencyInterface $priceCurrency,
         private readonly QuoteDetailsItemInterfaceFactory $quoteDetailsItemFactory,
         private readonly TaxClassKeyInterfaceFactory $taxClassKeyFactory,
@@ -120,34 +115,14 @@ class CustomFees extends AbstractTotal
     {
         $store = $quote->getStore();
         $customFees = [];
+        $customQuoteFees = $this->customQuoteFeesRetriever->retrieveApplicableFees($quote);
 
-        try {
-            $configuredCustomFees = $this->config->getCustomFees($store->getId());
-        } catch (LocalizedException $localizedException) {
-            $this->logger->critical($localizedException->getLogMessage(), ['exception' => $localizedException]);
-
+        if ($customQuoteFees === []) {
             return $customFees;
         }
 
-        foreach ($configuredCustomFees as $customFee) {
+        foreach ($customQuoteFees as $customFee) {
             $customFeeCode = $customFee['code'];
-
-            if ($customFeeCode === 'example_fee' || !FeeStatus::Enabled->equals($customFee['status'])) {
-                continue;
-            }
-
-            if (array_key_exists('conditions', $customFee['advanced']) && $customFee['advanced']['conditions'] !== []) {
-                $isApplicable = $this->conditionsApplier->isApplicable(
-                    $quote,
-                    $customFeeCode,
-                    $customFee['advanced']['conditions'],
-                );
-
-                if (!$isApplicable) {
-                    continue;
-                }
-            }
-
             /** @var CustomOrderFeeInterface $customOrderFee */
             $customOrderFee = $this->customOrderFeeFactory->create();
 

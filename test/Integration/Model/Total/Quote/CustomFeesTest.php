@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Model\Total\Quote;
 
-use JosephLeedy\CustomFees\Api\ConfigInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Model\Total\Quote\CustomFees;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\ResourceModel\Quote as QuoteResource;
@@ -17,8 +14,6 @@ use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
 use function __;
-use function array_column;
-use function in_array;
 
 final class CustomFeesTest extends TestCase
 {
@@ -232,39 +227,5 @@ final class CustomFeesTest extends TestCase
         $actualCustomFees = $customFeesTotalCollector->fetch($quote, $total);
 
         self::assertEquals($expectedCustomFees, $actualCustomFees);
-    }
-
-    /**
-     * @magentoDataFixture Magento/Checkout/_files/quote_with_address.php
-     */
-    public function testDoesNotCollectExampleCustomFeesTotals(): void
-    {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = Bootstrap::getObjectManager();
-        /** @var ConfigInterface $config */
-        $config = $objectManager->get(ConfigInterface::class);
-        /** @var Quote $quote */
-        $quote = $objectManager->create(Quote::class);
-        /** @var QuoteResource $quoteResource */
-        $quoteResource = $objectManager->create(QuoteResource::class);
-
-        try {
-            $customFees = $config->getCustomFees();
-        } catch (LocalizedException) {
-            $customFees = [];
-        }
-
-        if (count($customFees) === 0 || !in_array('example_fee', array_column($customFees, 'code'), true)) {
-            self::fail('Example custom fee is not configured');
-        }
-
-        $quoteResource->load($quote, 'test_order_1', 'reserved_order_id');
-
-        $quote->collectTotals();
-
-        $collectedTotals = $quote->getTotals();
-
-        self::assertArrayNotHasKey('example_fee', $collectedTotals);
-        self::assertEmpty($quote->getExtensionAttributes()?->getCustomFees());
     }
 }

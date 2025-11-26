@@ -253,6 +253,11 @@ parameters:
 		-
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
+			path: src/Service/CustomQuoteFeesRetriever.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
 			path: src/Service/InvoicedCustomFeesRecorder.php
 
 		-
