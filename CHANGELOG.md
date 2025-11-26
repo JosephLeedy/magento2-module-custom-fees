@@ -12,6 +12,8 @@ document.
 
 ### Fixed
 
+- Missing return type annotations have been added to the Custom Order Fees 
+  Interface
 - Incorrect sales orders were included in packing slips printed from the 
   Magento Admin panel (caused by the plug-in used to join custom order fees 
   with sales orders in the Admin Sales Order Grid)
