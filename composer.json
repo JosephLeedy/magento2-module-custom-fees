@@ -28,7 +28,8 @@
     "magento/module-ui": "~101.2.4",
     "psr/log": ">= 1.0",
     "symfony/polyfill-php83": "^1.27",
-    "symfony/polyfill-php84": "^1.30"
+    "symfony/polyfill-php84": "^1.30",
+    "symfony/polyfill-php85": "^1.33"
   },
   "require-dev": {
     "colinodell/psr-testlogger": "^v1.3",

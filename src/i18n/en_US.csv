@@ -78,6 +78,8 @@ Subtotal,Subtotal
 "Shipping Region","Shipping Region"
 "Shipping State/Province","Shipping State/Province"
 "Shipping Country","Shipping Country"
+"Discount (%1)","Discount (%1)"
+Discount,Discount
 "Use for Custom Fee Conditions","Use for Custom Fee Conditions"
 "Custom Fees","Custom Fees"
 "Custom Order Fees","Custom Order Fees"

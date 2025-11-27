@@ -256,6 +256,21 @@ parameters:
 			path: src/Service/ConfigUpdater.php
 
 		-
+			message: "#^Property JosephLeedy\\\\CustomFees\\\\Service\\\\CustomFeeDiscountRulesApplier\\:\\:\\$discountInterfaceFactory \\(Magento\\\\SalesRule\\\\Api\\\\Data\\\\RuleDiscountInterfaceFactory\\) does not accept Magento\\\\SalesRule\\\\Api\\\\Data\\\\RuleDiscountInterfaceFactory\\|null\\.$#"
+			count: 1
+			path: src/Service/CustomFeeDiscountRulesApplier.php
+
+		-
+			message: "#^Property JosephLeedy\\\\CustomFees\\\\Service\\\\CustomFeeDiscountRulesApplier\\:\\:\\$discountDataInterfaceFactory \\(Magento\\\\SalesRule\\\\Api\\\\Data\\\\DiscountDataInterfaceFactory\\) does not accept Magento\\\\SalesRule\\\\Api\\\\Data\\\\DiscountDataInterfaceFactory\\|null\\.$#"
+			count: 1
+			path: src/Service/CustomFeeDiscountRulesApplier.php
+
+		-
+			message: "#^Property JosephLeedy\\\\CustomFees\\\\Service\\\\CustomFeeDiscountRulesApplier\\:\\:\\$selectRuleCoupon \\(Magento\\\\SalesRule\\\\Model\\\\SelectRuleCoupon\\) does not accept Magento\\\\SalesRule\\\\Model\\\\SelectRuleCoupon\\|null\\.$#"
+			count: 1
+			path: src/Service/CustomFeeDiscountRulesApplier.php
+
+		-
 			message: "#^Parameter \\#1 \\$string of method Magento\\\\Framework\\\\Serialize\\\\SerializerInterface\\:\\:unserialize\\(\\) expects string, mixed given\\.$#"
 			count: 3
 			path: src/Service/CustomOrderFeeTaxValueAdder.php
