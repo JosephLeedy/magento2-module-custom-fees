@@ -10,6 +10,7 @@ use JosephLeedy\CustomFees\Service\CustomQuoteFeesRetriever;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Phrase;
+use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Rule\Model\Condition\AbstractCondition;
 use Magento\Rule\Model\Condition\Context;
@@ -121,9 +122,13 @@ class CustomFee extends AbstractCondition
 
     public function validate(AbstractModel $model): bool
     {
-        /** @var Item $model */
+        if ($model instanceof Item) {
+            return false; // This rule is not valid for cart items
+        }
 
-        $customFees = $this->customQuoteFeesRetriever->retrieveApplicableFees($model->getQuote());
+        /** @var Quote $model */
+
+        $customFees = $this->customQuoteFeesRetriever->retrieveApplicableFees($model);
 
         if ($customFees === []) {
             return false;
