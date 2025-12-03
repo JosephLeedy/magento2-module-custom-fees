@@ -69,6 +69,17 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
         $quote->setItems($quote->getAllVisibleItems()); // Fix empty items array
         $quote->collectTotals();
 
+        $customFees = $quote->getExtensionAttributes()?->getCustomFees() ?? [];
+
+        array_walk(
+            $customFees,
+            static function (CustomOrderFeeInterface $customFee): void {
+                $customFee->setBaseDiscountAmount(0.00);
+                $customFee->setDiscountAmount(0.00);
+                $customFee->setDiscountRate(0.00);
+            },
+        );
+
         if ($rule->getSimpleAction() !== $simpleAction) {
             $rule->setSimpleAction($simpleAction);
 
@@ -329,10 +340,12 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
                     'test_fee_0' => [
                         'base_discount_amount' => 1.00,
                         'discount_amount' => 1.00,
+                        'discount_rate' => 0.00,
                     ],
                     'test_fee_1' => [
                         'base_discount_amount' => 0.20,
                         'discount_amount' => 0.20,
+                        'discount_rate' => 0.00,
                     ],
                 ],
             ],
@@ -342,10 +355,12 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
                     'test_fee_0' => [
                         'base_discount_amount' => 1.67,
                         'discount_amount' => 1.67,
+                        'discount_rate' => 0.00,
                     ],
                     'test_fee_1' => [
                         'base_discount_amount' => 0.10,
                         'discount_amount' => 0.10,
+                        'discount_rate' => 0.00,
                     ],
                 ],
             ],
@@ -355,10 +370,12 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
                     'test_fee_0' => [
                         'base_discount_amount' => 2.00,
                         'discount_amount' => 2.00,
+                        'discount_rate' => 0.00,
                     ],
                     'test_fee_1' => [
                         'base_discount_amount' => 0.10,
                         'discount_amount' => 0.10,
+                        'discount_rate' => 0.00,
                     ],
                 ],
             ],
