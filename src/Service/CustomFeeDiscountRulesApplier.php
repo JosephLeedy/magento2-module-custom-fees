@@ -6,6 +6,9 @@ namespace JosephLeedy\CustomFees\Service;
 
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use Magento\Directory\Model\PriceCurrency;
+use Magento\Framework\Model\AbstractModel;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Registry;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address;
 use Magento\SalesRule\Api\Data\DiscountAppliedToInterface as DiscountAppliedTo;
@@ -27,6 +30,8 @@ use function min;
 class CustomFeeDiscountRulesApplier
 {
     public function __construct(
+        private readonly Context $context,
+        private readonly Registry $registry,
         private readonly Validator $validator,
         private readonly Utility $validatorUtility,
         private readonly PriceCurrency $priceCurrency,
@@ -49,28 +54,24 @@ class CustomFeeDiscountRulesApplier
 
         $appliedRuleIds = [];
 
-        foreach ($rules as $rule) {
-            if (
-                !$rule->getApplyToCustomFees()
-                || !$this->validatorUtility->canProcessRule($rule, $address)
-                || !$rule->getActions()->validate($quote)
-            ) {
-                continue;
-            }
+        foreach ($customFees as $customFee) {
+            /* Work-around for the fact that the Custom Order Fee object extends from Abstract Simple Object, but the
+               validator expects an instance of Abstract Model */
+            $validationModel = $this->instantiateValidationModel();
 
-            $isRuleApplied = false;
+            $validationModel->setCustomFee($customFee);
 
-            foreach ($customFees as $customFee) {
-                if ($rule->getCustomFee() !== null && $rule->getCustomFee() !== $customFee->getCode()) {
+            foreach ($rules as $rule) {
+                if (
+                    !$rule->getApplyToCustomFees()
+                    || !$this->validatorUtility->canProcessRule($rule, $address)
+                    || !$rule->getActions()->validate($validationModel)
+                ) {
                     continue;
                 }
 
                 $this->applyRule($customFee, $rule, $address);
 
-                $isRuleApplied = true;
-            }
-
-            if ($isRuleApplied) {
                 $ruleId = $rule->getRuleId();
                 $appliedRuleIds[$ruleId] = $ruleId;
 
@@ -85,10 +86,10 @@ class CustomFeeDiscountRulesApplier
                 if ((int) $rule->getCouponType() !== Rule::COUPON_TYPE_NO_COUPON) {
                     $address->setCouponCode($address->getQuote()->getCouponCode());
                 }
-            }
 
-            if ($rule->getStopRulesProcessing()) {
-                break;
+                if ($rule->getStopRulesProcessing()) {
+                    break;
+                }
             }
         }
 
@@ -99,6 +100,26 @@ class CustomFeeDiscountRulesApplier
         $address->setAppliedRuleIds($this->validatorUtility->mergeIds($address->getAppliedRuleIds(), $appliedRuleIds));
 
         $quote->setAppliedRuleIds($this->validatorUtility->mergeIds($quote->getAppliedRuleIds(), $appliedRuleIds));
+    }
+
+    private function instantiateValidationModel(): AbstractModel
+    {
+        return new class ($this->context, $this->registry) extends AbstractModel {
+            public function setCustomFee(CustomOrderFeeInterface $customFee): self
+            {
+                $this->setData('custom_fee', $customFee);
+
+                return $this;
+            }
+
+            public function getCustomFee(): CustomOrderFeeInterface
+            {
+                /** @var CustomOrderFeeInterface $customFee */
+                $customFee = $this->getData('custom_fee');
+
+                return $customFee;
+            }
+        };
     }
 
     private function applyRule(CustomOrderFeeInterface $customFee, Rule $rule, Address $address): void

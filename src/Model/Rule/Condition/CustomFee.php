@@ -5,27 +5,25 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model\Rule\Condition;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Model\FeeStatus;
-use JosephLeedy\CustomFees\Service\CustomQuoteFeesRetriever;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Phrase;
-use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Rule\Model\Condition\AbstractCondition;
 use Magento\Rule\Model\Condition\Context;
-use Magento\SalesRule\Api\Data\RuleInterface;
+use Magento\SalesRule\Model\Rule;
 
 use function __;
 use function array_filter;
-use function array_key_exists;
 use function array_map;
 use function array_values;
 use function usort;
 
 /**
  * @method setAttributeOption(array<string, Phrase> $attributes)
- * @method RuleInterface getRule()
+ * @method Rule getRule()
  * @method string getAttribute()
  * @method string getValue()
  */
@@ -34,12 +32,8 @@ class CustomFee extends AbstractCondition
     /**
      * @param mixed[] $data
      */
-    public function __construct(
-        Context $context,
-        private readonly ConfigInterface $config,
-        private readonly CustomQuoteFeesRetriever $customQuoteFeesRetriever,
-        array $data = [],
-    ) {
+    public function __construct(Context $context, private readonly ConfigInterface $config, array $data = [])
+    {
         parent::__construct($context, $data);
     }
 
@@ -126,17 +120,9 @@ class CustomFee extends AbstractCondition
             return false; // This rule is not valid for cart items
         }
 
-        /** @var Quote $model */
-
-        $customFees = $this->customQuoteFeesRetriever->retrieveApplicableFees($model);
-
-        if ($customFees === []) {
-            return false;
-        }
-
-        $this->getRule()->setData($this->getAttribute(), $this->getValue());
-
-        $isFeeApplicable = array_key_exists($this->getValue(), $customFees);
+        /** @var CustomOrderFeeInterface $customFee */
+        $customFee = $model->getCustomFee();
+        $isFeeApplicable = $this->getValue() === $customFee->getCode();
 
         return $this->getOperator() === '==' ? $isFeeApplicable : !$isFeeApplicable;
     }

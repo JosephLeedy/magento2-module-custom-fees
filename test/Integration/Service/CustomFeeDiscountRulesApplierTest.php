@@ -267,14 +267,9 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
                 $rule->setIsValidForAddress($quote->getShippingAddress(), false);
 
                 break;
-            case 'applies to specific custom fee':
+            case 'is not valid for custom fee':
                 $customFeeCode = 'test_fee_2';
-                $operator = '!=';
-
-                // no break
-            case 'is not valid for quote':
-                $customFeeCode ??= null;
-                $operator ??= '==';
+                $operator = '==';
                 /** @var CustomFee $customFeeCondition */
                 $customFeeCondition = $objectManager->create(CustomFee::class);
 
@@ -382,11 +377,8 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
             'if rule is not valid for address' => [
                 'condition' => 'is not valid for address',
             ],
-            'if rule is not valid for quote' => [
-                'condition' => 'is not valid for quote',
-            ],
-            'if rule applies to specific custom fee' => [
-                'condition' => 'applies to specific custom fee',
+            'if rule is not valid for custom fee' => [
+                'condition' => 'is not valid for custom fee',
             ],
         ];
     }
