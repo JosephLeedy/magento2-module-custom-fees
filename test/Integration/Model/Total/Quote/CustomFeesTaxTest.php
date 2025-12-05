@@ -9,10 +9,15 @@ use JosephLeedy\CustomFees\Model\Config;
 use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Model\Total\Quote\CustomFeesTax;
 use JosephLeedy\CustomFees\Service\CustomQuoteFeesRetriever;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Serialize\SerializerInterface;
+use Magento\Quote\Api\Data\ShippingAssignmentInterface;
+use Magento\Quote\Api\Data\ShippingInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\ResourceModel\Quote as QuoteResource;
 use Magento\Store\Model\ScopeInterface as StoreScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\TestFramework\Fixture\Config as ConfigFixture;
 use Magento\TestFramework\Fixture\DataFixture;
 use Magento\TestFramework\Helper\Bootstrap;
@@ -23,6 +28,9 @@ use function round;
 
 final class CustomFeesTaxTest extends TestCase
 {
+    /**
+     * @dataProvider collectsCustomFeeTaxTotalsDataProvider
+     */
     #[ConfigFixture(
         Config::CONFIG_PATH_CUSTOM_FEES,
         '{"_1727299833817_817":{"code":"test_fee_0","title":"Test Fee","type":"fixed","status":"1","value":"4.00","adva'
@@ -32,25 +40,53 @@ final class CustomFeesTaxTest extends TestCase
         'default',
     )]
     #[ConfigFixture('tax/classes/custom_fee_tax_class', '2', StoreScopeInterface::SCOPE_STORE, 'default')]
-    #[ConfigFixture('tax/calculation/custom_fees_include_tax', '1', StoreScopeInterface::SCOPE_STORE, 'default')]
     #[ConfigFixture('shipping/origin/country_id', 'US', StoreScopeInterface::SCOPE_STORE, 'default')]
     #[ConfigFixture('shipping/origin/region_id', '1', StoreScopeInterface::SCOPE_STORE, 'default')]
     #[ConfigFixture('shipping/origin/postcode', '75477', StoreScopeInterface::SCOPE_STORE, 'default')]
     #[DataFixture('Magento/Tax/_files/tax_rule_region_1_al.php')]
     #[DataFixture('Magento/Checkout/_files/quote_with_taxable_product_and_customer.php')]
-    public function testCollectsCustomFeeTaxTotals(): void
+    public function testCollectsCustomFeeTaxTotals(bool $isTaxIncluded): void
     {
         $objectManager = Bootstrap::getObjectManager();
+        $configStub = $this
+            ->getMockBuilder(Config::class)
+            ->setConstructorArgs(
+                [
+                    'storeManager' => $objectManager->get(StoreManagerInterface::class),
+                    'scopeConfig' => $objectManager->get(ScopeConfigInterface::class),
+                    'serializer' => $objectManager->get(SerializerInterface::class),
+                ],
+            )->onlyMethods(['isTaxIncluded'])
+            ->getMock();
         /** @var Quote $quote */
         $quote = $objectManager->create(Quote::class);
         /** @var QuoteResource $quoteResource */
         $quoteResource = $objectManager->create(QuoteResource::class);
+        /** @var ShippingInterface $shipping */
+        $shipping = $objectManager->create(ShippingInterface::class);
+        /** @var ShippingAssignmentInterface $shippingAssignment */
+        $shippingAssignment = $objectManager->create(ShippingAssignmentInterface::class);
+        /** @var Total $total */
+        $total = $objectManager->create(Total::class);
+        /** @var CustomFeesTax $customFeesTaxTotalCollector */
+        $customFeesTaxTotalCollector = $objectManager->create(
+            CustomFeesTax::class,
+            [
+                'config' => $configStub,
+            ],
+        );
+
+        $configStub->method('isTaxIncluded')->willReturn($isTaxIncluded);
 
         $quoteResource->load($quote, 'test_order_with_taxable_product', 'reserved_order_id');
 
-        $quote->collectTotals();
+        $this->setCustomFeesForQuote($quote);
 
-        $collectedTotals = $quote->getTotals();
+        $shipping->setAddress($quote->getShippingAddress());
+
+        $shippingAssignment->setShipping($shipping);
+
+        $customFeesTaxTotalCollector->collect($quote, $shippingAssignment, $total);
 
         $expectedCustomFees = [
             'test_fee_0' => $objectManager->create(
@@ -62,16 +98,13 @@ final class CustomFeesTaxTest extends TestCase
                         'type' => FeeType::Fixed,
                         'percent' => null,
                         'show_percentage' => false,
-                        'base_value' => 3.72,
-                        'value' => 3.72,
-                        'base_value_with_tax' => 4.00,
-                        'value_with_tax' => 4.00,
-                        'base_tax_amount' => 0.28,
-                        'tax_amount' => 0.28,
+                        'base_value' => $isTaxIncluded ? 3.72 : 4.00,
+                        'value' => $isTaxIncluded ? 3.72 : 4.00,
+                        'base_value_with_tax' => $isTaxIncluded ? 4.00 : 4.30,
+                        'value_with_tax' => $isTaxIncluded ? 4.00 : 4.30,
+                        'base_tax_amount' => $isTaxIncluded ? 0.28 : 0.30,
+                        'tax_amount' => $isTaxIncluded ? 0.28 : 0.30,
                         'tax_rate' => 7.5,
-                        'base_discount_amount' => 0.00,
-                        'discount_amount' => 0.00,
-                        'discount_rate' => 0.00,
                     ],
                 ],
             ),
@@ -84,23 +117,20 @@ final class CustomFeesTaxTest extends TestCase
                         'type' => FeeType::Percent,
                         'percent' => 5.0,
                         'show_percentage' => true,
-                        'base_value' => 0.47,
-                        'value' => 0.47,
-                        'base_value_with_tax' => 0.50,
-                        'value_with_tax' => 0.50,
-                        'base_tax_amount' => 0.03,
-                        'tax_amount' => 0.03,
+                        'base_value' => $isTaxIncluded ? 0.47 : 0.50,
+                        'value' => $isTaxIncluded ? 0.47 : 0.50,
+                        'base_value_with_tax' => $isTaxIncluded ? 0.50 : 0.54,
+                        'value_with_tax' => $isTaxIncluded ? 0.50 : 0.54,
+                        'base_tax_amount' => $isTaxIncluded ? 0.03 : 0.04,
+                        'tax_amount' => $isTaxIncluded ? 0.03 : 0.04,
                         'tax_rate' => 7.5,
-                        'base_discount_amount' => 0.00,
-                        'discount_amount' => 0.00,
-                        'discount_rate' => 0.00,
                     ],
                 ],
             ),
         ];
         $actualCustomFees = $quote->getExtensionAttributes()->getCustomFees();
-        $expectedTaxAmount = 1.06;
-        $actualTaxAmount = (float) $collectedTotals['tax']->getValue();
+        $expectedTaxAmount = $isTaxIncluded ? 0.31 : 0.34;
+        $actualTaxAmount = (float) $total->getTotalAmount('tax');
 
         self::assertEquals($expectedCustomFees, $actualCustomFees);
         self::assertSame($expectedTaxAmount, $actualTaxAmount);
@@ -122,8 +152,6 @@ final class CustomFeesTaxTest extends TestCase
         $quote = $objectManager->create(Quote::class);
         /** @var QuoteResource $quoteResource */
         $quoteResource = $objectManager->create(QuoteResource::class);
-        /** @var CustomQuoteFeesRetriever $customQuoteFeesRetriever */
-        $customQuoteFeesRetriever = $objectManager->create(CustomQuoteFeesRetriever::class);
         /** @var Total $total */
         $total = $objectManager->create(Total::class);
         /** @var CustomFeesTax $customFeesTaxTotalCollector */
@@ -131,12 +159,56 @@ final class CustomFeesTaxTest extends TestCase
 
         $quoteResource->load($quote, 'test_order_1', 'reserved_order_id');
 
+        $this->setCustomFeesForQuote($quote);
+
+        $expectedTotals = [
+            [
+                'code' => 'test_fee_0',
+                'value' => 4.00,
+                'tax_details' => [
+                    'value_with_tax' => 4.30,
+                    'tax_amount' => 0.30,
+                    'tax_rate' => 7.5,
+                ],
+            ],
+            [
+                'code' => 'test_fee_1',
+                'value' => 1.00,
+                'tax_details' => [
+                    'value_with_tax' => 1.08,
+                    'tax_amount' => 0.08,
+                    'tax_rate' => 7.5,
+                ],
+            ],
+        ];
+        $actualTotals = $customFeesTaxTotalCollector->fetch($quote, $total);
+
+        self::assertEquals($expectedTotals, $actualTotals);
+    }
+
+    public static function collectsCustomFeeTaxTotalsDataProvider(): array
+    {
+        return [
+            'custom fee value excludes tax' => [
+                'isTaxIncluded' => false,
+            ],
+            'custom fee value includes tax' => [
+                'isTaxIncluded' => true,
+            ],
+        ];
+    }
+
+    private function setCustomFeesForQuote(Quote $quote): void
+    {
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var CustomQuoteFeesRetriever $customQuoteFeesRetriever */
+        $customQuoteFeesRetriever = $objectManager->create(CustomQuoteFeesRetriever::class);
         /** @var array<string, CustomOrderFeeInterface> $customFees */
         $customFees = array_map(
-            static function (array $customFeeData) use ($objectManager): CustomOrderFeeInterface {
+            static function (array $customFeeData) use ($quote, $objectManager): CustomOrderFeeInterface {
                 $isPercent = FeeType::Percent->equals($customFeeData['type']);
                 $value = $isPercent
-                    ? round(20.00 * ((float) $customFeeData['value'] / 100), 2)
+                    ? round(((float) ($quote->getSubtotal() ?? 20.00)) * ((float) $customFeeData['value'] / 100), 2)
                     : (float) $customFeeData['value'];
                 $valueWithTax = round($value * 1.075, 2);
                 $taxAmount = round($valueWithTax - $value, 2);
@@ -165,29 +237,5 @@ final class CustomFeesTaxTest extends TestCase
         );
 
         $quote->getExtensionAttributes()?->setCustomFees($customFees);
-
-        $expectedTotals = [
-            [
-                'code' => 'test_fee_0',
-                'value' => 4.00,
-                'tax_details' => [
-                    'value_with_tax' => 4.30,
-                    'tax_amount' => 0.30,
-                    'tax_rate' => 7.5,
-                ],
-            ],
-            [
-                'code' => 'test_fee_1',
-                'value' => 1.00,
-                'tax_details' => [
-                    'value_with_tax' => 1.08,
-                    'tax_amount' => 0.08,
-                    'tax_rate' => 7.5,
-                ],
-            ],
-        ];
-        $actualTotals = $customFeesTaxTotalCollector->fetch($quote, $total);
-
-        self::assertEquals($expectedTotals, $actualTotals);
     }
 }
