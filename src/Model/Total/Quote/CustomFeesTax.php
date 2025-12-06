@@ -169,11 +169,13 @@ class CustomFeesTax extends AbstractTotal
             ->setCode($customOrderFee->getCode())
             ->setQuantity(1)
             ->setUnitPrice($customOrderFee->getValue())
+            ->setDiscountAmount($customOrderFee->getDiscountAmount())
             ->setTaxClassKey($taxClassKey)
             ->setIsTaxIncluded($this->config->isTaxIncluded($storeId));
 
         if ($useBaseCurrency) {
             $quoteDetailsItem->setUnitPrice($customOrderFee->getBaseValue());
+            $quoteDetailsItem->setDiscountAmount($customOrderFee->getBaseDiscountAmount());
         }
 
         return $quoteDetailsItem;

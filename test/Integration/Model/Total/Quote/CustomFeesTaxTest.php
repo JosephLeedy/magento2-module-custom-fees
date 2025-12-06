@@ -24,6 +24,7 @@ use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
 use function array_map;
+use function array_walk;
 use function round;
 
 final class CustomFeesTaxTest extends TestCase
@@ -39,7 +40,12 @@ final class CustomFeesTaxTest extends TestCase
         StoreScopeInterface::SCOPE_STORE,
         'default',
     )]
-    #[ConfigFixture('tax/classes/custom_fee_tax_class', '2', StoreScopeInterface::SCOPE_STORE, 'default')]
+    #[ConfigFixture(
+        Config::CONFIG_PATH_TAX_CLASS_CUSTOM_FEE_TAX_CLASS,
+        '2',
+        StoreScopeInterface::SCOPE_STORE,
+        'default',
+    )]
     #[ConfigFixture('shipping/origin/country_id', 'US', StoreScopeInterface::SCOPE_STORE, 'default')]
     #[ConfigFixture('shipping/origin/region_id', '1', StoreScopeInterface::SCOPE_STORE, 'default')]
     #[ConfigFixture('shipping/origin/postcode', '75477', StoreScopeInterface::SCOPE_STORE, 'default')]
@@ -130,6 +136,125 @@ final class CustomFeesTaxTest extends TestCase
         ];
         $actualCustomFees = $quote->getExtensionAttributes()->getCustomFees();
         $expectedTaxAmount = $isTaxIncluded ? 0.31 : 0.34;
+        $actualTaxAmount = (float) $total->getTotalAmount('tax');
+
+        self::assertEquals($expectedCustomFees, $actualCustomFees);
+        self::assertSame($expectedTaxAmount, $actualTaxAmount);
+    }
+
+    #[ConfigFixture(
+        Config::CONFIG_PATH_CUSTOM_FEES,
+        '{"_1727299833817_817":{"code":"test_fee_0","title":"Test Fee","type":"fixed","status":"1","value":"4.00","adva'
+        . 'nced":"{\\"show_percentage\\":\\"0\\"}"},"_1727299843197_197":{"code":"test_fee_1","title":"Another Fee","ty'
+        . 'pe":"percent","status":"1","value":"5.00","advanced":"{\\"show_percentage\\":\\"1\\"}"}}',
+        StoreScopeInterface::SCOPE_STORE,
+        'default',
+    )]
+    #[ConfigFixture(
+        Config::CONFIG_PATH_TAX_CALCULATION_CUSTOM_FEES_INCLUDE_TAX,
+        '0',
+        StoreScopeInterface::SCOPE_STORE,
+        'default',
+    )]
+    #[ConfigFixture(
+        Config::CONFIG_PATH_TAX_CLASS_CUSTOM_FEE_TAX_CLASS,
+        '2',
+        StoreScopeInterface::SCOPE_STORE,
+        'default',
+    )]
+    #[ConfigFixture('shipping/origin/country_id', 'US', StoreScopeInterface::SCOPE_STORE, 'default')]
+    #[ConfigFixture('shipping/origin/region_id', '1', StoreScopeInterface::SCOPE_STORE, 'default')]
+    #[ConfigFixture('shipping/origin/postcode', '75477', StoreScopeInterface::SCOPE_STORE, 'default')]
+    #[DataFixture('Magento/Tax/_files/tax_rule_region_1_al.php')]
+    #[DataFixture('Magento/Checkout/_files/quote_with_taxable_product_and_customer.php')]
+    public function testCollectsCustomFeeTaxTotalsAfterDiscounts(): void
+    {
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Quote $quote */
+        $quote = $objectManager->create(Quote::class);
+        /** @var QuoteResource $quoteResource */
+        $quoteResource = $objectManager->create(QuoteResource::class);
+        /** @var ShippingInterface $shipping */
+        $shipping = $objectManager->create(ShippingInterface::class);
+        /** @var ShippingAssignmentInterface $shippingAssignment */
+        $shippingAssignment = $objectManager->create(ShippingAssignmentInterface::class);
+        /** @var Total $total */
+        $total = $objectManager->create(Total::class);
+        /** @var CustomFeesTax $customFeesTaxTotalCollector */
+        $customFeesTaxTotalCollector = $objectManager->create(CustomFeesTax::class);
+
+        $quoteResource->load($quote, 'test_order_with_taxable_product', 'reserved_order_id');
+
+        $this->setCustomFeesForQuote($quote);
+
+        $customFees = $quote->getExtensionAttributes()->getCustomFees();
+
+        array_walk(
+            $customFees,
+            static function (CustomOrderFeeInterface $customFee) use ($quote): void {
+                $discountRate = 25.0;
+                $discountAmount = round($customFee->getBaseValue() * ($discountRate / 100), 2);
+
+                $customFee->setBaseDiscountAmount($discountAmount);
+                $customFee->setDiscountAmount($discountAmount);
+                $customFee->setDiscountRate($discountRate);
+            },
+        );
+
+        $shipping->setAddress($quote->getShippingAddress());
+
+        $shippingAssignment->setShipping($shipping);
+
+        $customFeesTaxTotalCollector->collect($quote, $shippingAssignment, $total);
+
+        $expectedCustomFees = [
+            'test_fee_0' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 4.00,
+                        'value' => 4.00,
+                        'base_value_with_tax' => 4.30,
+                        'value_with_tax' => 4.30,
+                        'base_tax_amount' => 0.23,
+                        'tax_amount' => 0.23,
+                        'tax_rate' => 7.5,
+                        'base_discount_amount' => 1.00,
+                        'discount_amount' => 1.00,
+                        'discount_rate' => 25.0,
+                    ],
+                ],
+            ),
+            'test_fee_1' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Fee',
+                        'type' => FeeType::Percent,
+                        'percent' => 5.0,
+                        'show_percentage' => true,
+                        'base_value' => 0.50,
+                        'value' => 0.50,
+                        'base_value_with_tax' => 0.54,
+                        'value_with_tax' => 0.54,
+                        'base_tax_amount' => 0.02,
+                        'tax_amount' => 0.02,
+                        'tax_rate' => 7.5,
+                        'base_discount_amount' => 0.13,
+                        'discount_amount' => 0.13,
+                        'discount_rate' => 25.0,
+                    ],
+                ],
+            ),
+        ];
+        $actualCustomFees = $quote->getExtensionAttributes()->getCustomFees();
+        $expectedTaxAmount = 0.25;
         $actualTaxAmount = (float) $total->getTotalAmount('tax');
 
         self::assertEquals($expectedCustomFees, $actualCustomFees);
