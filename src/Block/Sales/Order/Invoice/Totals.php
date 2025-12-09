@@ -19,6 +19,7 @@ use function __;
 use function array_key_exists;
 use function array_key_first;
 use function array_walk;
+use function max;
 
 /**
  * Initializes and renders Custom Fees invoice total columns
@@ -120,6 +121,14 @@ class Totals extends Template
         if ($includeTax) {
             $totalData['base_value'] = $invoicedCustomFee->getBaseValueWithTax();
             $totalData['value'] = $invoicedCustomFee->getValueWithTax();
+        }
+
+        if ($invoicedCustomFee->getBaseDiscountAmount() !== 0.00) {
+            $totalData['base_value'] = max(
+                0.00,
+                $totalData['base_value'] - $invoicedCustomFee->getBaseDiscountAmount(),
+            );
+            $totalData['value'] = max(0.00, $totalData['value'] - $invoicedCustomFee->getDiscountAmount());
         }
 
         return $this->dataObjectFactory->create(['data' => $totalData]);
