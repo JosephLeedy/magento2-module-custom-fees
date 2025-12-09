@@ -120,7 +120,7 @@ class CustomFees extends AbstractTotal
         }
 
         $invoice->setBaseGrandTotal(
-            $invoice->getBaseGrandTotal() + ($baseTotalCustomFees - $baseTotalCustomFeeDiscount)
+            $invoice->getBaseGrandTotal() + ($baseTotalCustomFees - $baseTotalCustomFeeDiscount),
         );
         $invoice->setGrandTotal($invoice->getGrandTotal() + ($totalCustomFees - $totalCustomFeeDiscount));
 
