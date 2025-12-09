@@ -52,6 +52,8 @@ class CustomFees extends AbstractTotal
         $subtotalDelta = (float) $invoice->getSubtotal() / (float) $invoice->getOrder()->getSubtotal();
         $baseTotalCustomFees = 0;
         $totalCustomFees = 0;
+        $baseTotalCustomFeeDiscount = 0;
+        $totalCustomFeeDiscount = 0;
         $baseTotalCustomFeeTax = 0;
         $totalCustomFeeTax = 0;
 
@@ -63,6 +65,8 @@ class CustomFees extends AbstractTotal
                 $subtotalDelta,
                 &$baseTotalCustomFees,
                 &$totalCustomFees,
+                &$baseTotalCustomFeeDiscount,
+                &$totalCustomFeeDiscount,
                 &$baseTotalCustomFeeTax,
                 &$totalCustomFeeTax,
             ): void {
@@ -87,8 +91,21 @@ class CustomFees extends AbstractTotal
                 $invoicedCustomFee->setBaseTaxAmount(round($baseTaxAmount, 2));
                 $invoicedCustomFee->setTaxAmount(round($taxAmount, 2));
 
+                $baseDiscountAmount = 0.00;
+                $discountAmount = 0.00;
+
+                if ($invoicedCustomFee->getDiscountAmount() !== 0.00) {
+                    $baseDiscountAmount = $invoicedCustomFee->getBaseDiscountAmount() * $baseSubtotalDelta;
+                    $discountAmount = $invoicedCustomFee->getDiscountAmount() * $subtotalDelta;
+
+                    $invoicedCustomFee->setBaseDiscountAmount(round($baseDiscountAmount, 2));
+                    $invoicedCustomFee->setDiscountAmount(round($discountAmount, 2));
+                }
+
                 $baseTotalCustomFees += $invoicedCustomFee->getBaseValue();
                 $totalCustomFees += $invoicedCustomFee->getValue();
+                $baseTotalCustomFeeDiscount += $baseDiscountAmount;
+                $totalCustomFeeDiscount += $discountAmount;
                 $baseTotalCustomFeeTax += $invoicedCustomFee->getBaseTaxAmount();
                 $totalCustomFeeTax += $invoicedCustomFee->getTaxAmount();
             },
@@ -102,8 +119,10 @@ class CustomFees extends AbstractTotal
             $totalCustomFees += $totalCustomFeeTax;
         }
 
-        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $baseTotalCustomFees);
-        $invoice->setGrandTotal($invoice->getGrandTotal() + $totalCustomFees);
+        $invoice->setBaseGrandTotal(
+            $invoice->getBaseGrandTotal() + ($baseTotalCustomFees - $baseTotalCustomFeeDiscount)
+        );
+        $invoice->setGrandTotal($invoice->getGrandTotal() + ($totalCustomFees - $totalCustomFeeDiscount));
 
         /** @var InvoiceExtensionInterface $invoiceExtensionAttributes */
         $invoiceExtensionAttributes = $invoice->getExtensionAttributes();
