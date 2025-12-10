@@ -119,6 +119,10 @@ class CustomFees extends AbstractTotal
             $totalCustomFees += $totalCustomFeeTax;
         }
 
+        /* Existing discount amounts are negative, so we need to subtract the custom fee discount amounts rather than
+           add them. */
+        $invoice->setBaseDiscountAmount($invoice->getBaseDiscountAmount() - $baseTotalCustomFeeDiscount);
+        $invoice->setDiscountAmount($invoice->getDiscountAmount() - $totalCustomFeeDiscount);
         $invoice->setBaseGrandTotal(
             $invoice->getBaseGrandTotal() + ($baseTotalCustomFees - $baseTotalCustomFeeDiscount),
         );

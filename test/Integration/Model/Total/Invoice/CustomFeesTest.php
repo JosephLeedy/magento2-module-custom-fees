@@ -226,7 +226,10 @@ final class CustomFeesTest extends TestCase
         ];
         $actualInvoicedCustomFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees();
 
+        self::assertEquals(25.85, $invoice->getBaseGrandTotal());
         self::assertEquals(25.85, $invoice->getGrandTotal());
+        self::assertEquals(-0.65, $invoice->getBaseDiscountAmount());
+        self::assertEquals(-0.65, $invoice->getDiscountAmount());
         self::assertEquals($expectedInvoicedCustomFees, $actualInvoicedCustomFees);
     }
 
