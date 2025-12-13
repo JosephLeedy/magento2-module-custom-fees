@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Test\Integration\Model\Total\Creditmemo;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface as RefundedCustomFee;
 use JosephLeedy\CustomFees\Model\Config;
 use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Sales\Api\CreditmemoRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Creditmemo;
 use Magento\Sales\Model\Order\CreditmemoFactory;
@@ -92,6 +94,9 @@ final class CustomFeesTest extends TestCase
                         'show_percentage' => false,
                         'base_value' => 5.00,
                         'value' => 5.00,
+                        'base_discount_amount' => 0.00,
+                        'discount_amount' => 0.00,
+                        'discount_rate' => 0.00,
                         'base_value_with_tax' => 5.30,
                         'value_with_tax' => 5.30,
                         'base_tax_amount' => 0.30,
@@ -111,6 +116,9 @@ final class CustomFeesTest extends TestCase
                         'show_percentage' => false,
                         'base_value' => 1.50,
                         'value' => 1.50,
+                        'base_discount_amount' => 0.00,
+                        'discount_amount' => 0.00,
+                        'discount_rate' => 0.00,
                         'base_value_with_tax' => 1.59,
                         'value_with_tax' => 1.59,
                         'base_tax_amount' => 0.09,
@@ -126,6 +134,79 @@ final class CustomFeesTest extends TestCase
         self::assertEquals(28.09, $creditmemo->getGrandTotal());
         self::assertEquals(1.59, $creditmemo->getBaseTaxAmount());
         self::assertEquals(1.59, $creditmemo->getTaxAmount());
+        self::assertEquals($expectedRefundedCustomFees, $actualRefundedCustomFees);
+    }
+
+    /**
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/invoice_with_custom_fees_discounted.php
+     */
+    public function testCollectsCustomFeesTotalsWithDiscounts(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var OrderResource $orderResource */
+        $orderResource = $objectManager->create(OrderResource::class);
+
+        $orderResource->load($order, '100000001', 'increment_id');
+
+        /** @var Invoice $invoice */
+        $invoice = $order->getInvoiceCollection()->getFirstItem();
+        $creditmemo = $this->createCreditMemo($invoice);
+
+        $expectedRefundedCustomFees = [
+            'test_fee_0' => $objectManager->create(
+                RefundedCustomFee::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 5.00,
+                        'value' => 5.00,
+                        'base_discount_amount' => 0.50,
+                        'discount_amount' => 0.50,
+                        'discount_rate' => 10.00,
+                        'base_value_with_tax' => 5.00,
+                        'value_with_tax' => 5.00,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.00,
+                    ],
+                ],
+            ),
+            'test_fee_1' => $objectManager->create(
+                RefundedCustomFee::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 1.50,
+                        'value' => 1.50,
+                        'base_discount_amount' => 0.15,
+                        'discount_amount' => 0.15,
+                        'discount_rate' => 10.00,
+                        'base_value_with_tax' => 1.50,
+                        'value_with_tax' => 1.50,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.00,
+                    ],
+                ],
+            ),
+        ];
+        $actualRefundedCustomFees = $creditmemo->getExtensionAttributes()?->getRefundedCustomFees();
+
+        self::assertEquals(25.85, $creditmemo->getBaseGrandTotal());
+        self::assertEquals(25.85, $creditmemo->getGrandTotal());
+        self::assertEquals(-0.65, $creditmemo->getBaseDiscountAmount());
+        self::assertEquals(-0.65, $creditmemo->getDiscountAmount());
         self::assertEquals($expectedRefundedCustomFees, $actualRefundedCustomFees);
     }
 
@@ -198,6 +279,9 @@ final class CustomFeesTest extends TestCase
                             'show_percentage' => false,
                             'base_value' => 2.50,
                             'value' => 2.50,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
                             'base_value_with_tax' => 2.65,
                             'value_with_tax' => 2.65,
                             'base_tax_amount' => 0.15,
@@ -217,10 +301,13 @@ final class CustomFeesTest extends TestCase
                             'show_percentage' => false,
                             'base_value' => 0.75,
                             'value' => 0.75,
-                            'base_value_with_tax' => 0.80,
-                            'value_with_tax' => 0.80,
-                            'base_tax_amount' => 0.05,
-                            'tax_amount' => 0.05,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
+                            'base_value_with_tax' => 0.80 - ($index / 100),
+                            'value_with_tax' => 0.80 - ($index / 100),
+                            'base_tax_amount' => 0.05 - ($index / 100),
+                            'tax_amount' => 0.05 - ($index / 100),
                             'tax_rate' => 6.00,
                         ],
                     ],
@@ -236,6 +323,83 @@ final class CustomFeesTest extends TestCase
         }
 
         self::assertEquals(28.09, $order->getTotalRefunded());
+    }
+
+    /**
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/invoice_with_custom_fees_discounted.php
+     */
+    public function testCollectsCustomFeesTotalsWithDiscountsForMultipleCreditMemos(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var OrderResource $orderResource */
+        $orderResource = $objectManager->create(OrderResource::class);
+
+        $orderResource->load($order, '100000001', 'increment_id');
+
+        /** @var Invoice $invoice */
+        $invoice = $order->getInvoiceCollection()->getFirstItem();
+        $creditmemos = $this->createCreditMemos($invoice);
+
+        foreach ($creditmemos as $index => $creditmemo) {
+            $expectedRefundedCustomFees = [
+                'test_fee_0' => $objectManager->create(
+                    RefundedCustomFee::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_0',
+                            'title' => 'Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 2.50,
+                            'value' => 2.50,
+                            'base_discount_amount' => 0.25,
+                            'discount_amount' => 0.25,
+                            'discount_rate' => 10.00,
+                            'base_value_with_tax' => 2.50,
+                            'value_with_tax' => 2.50,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                        ],
+                    ],
+                ),
+                'test_fee_1' => $objectManager->create(
+                    RefundedCustomFee::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_1',
+                            'title' => 'Another Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 0.75,
+                            'value' => 0.75,
+                            'base_discount_amount' => 0.08 - ($index / 100),
+                            'discount_amount' => 0.08 - ($index / 100),
+                            'discount_rate' => 10.00,
+                            'base_value_with_tax' => 0.75,
+                            'value_with_tax' => 0.75,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                        ],
+                    ],
+                ),
+            ];
+            $actualRefundedCustomFees = $creditmemo->getExtensionAttributes()?->getRefundedCustomFees();
+
+            self::assertEquals($expectedRefundedCustomFees, $actualRefundedCustomFees);
+            self::assertEquals(12.92 + ($index / 100), $creditmemo->getBaseGrandTotal());
+            self::assertEquals(12.92 + ($index / 100), $creditmemo->getGrandTotal());
+            self::assertEquals(-0.33 + ($index / 100), $creditmemo->getBaseDiscountAmount());
+            self::assertEquals(-0.33 + ($index / 100), $creditmemo->getDiscountAmount());
+        }
+
+        self::assertEquals(25.85, $order->getTotalRefunded());
     }
 
     /**
@@ -317,6 +481,21 @@ final class CustomFeesTest extends TestCase
         $creditMemoService = $objectManager->create(CreditmemoService::class);
         /** @var Creditmemo $creditMemo */
         $creditMemo = $creditMemoService->refund($creditmemo);
+        /** @var CreditmemoRepositoryInterface $creditmemoRepository */
+        $creditmemoRepository = $objectManager->create(CreditmemoRepositoryInterface::class);
+        /** @var CustomOrderFeesRepositoryInterface $customOrderFeesRepository */
+        $customOrderFeesRepository = $objectManager->create(CustomOrderFeesRepositoryInterface::class);
+        $customOrderFees = $customOrderFeesRepository->getByOrderId($creditMemo->getOrderId());
+
+        $creditmemoRepository->save($creditMemo);
+
+        $customOrderFees->setCustomFeesRefunded(
+            [
+                $creditMemo->getEntityId() => $creditMemo->getExtensionAttributes()?->getRefundedCustomFees() ?? [],
+            ] + $customOrderFees->getCustomFeesRefunded(),
+        );
+
+        $customOrderFeesRepository->save($customOrderFees);
 
         return $creditMemo;
     }

@@ -8,6 +8,7 @@ use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use JosephLeedy\CustomFees\Block\Adminhtml\Sales\Order\Creditmemo\Create\Totals as CreateCreditMemoTotalsBlock;
 use JosephLeedy\CustomFees\Model\CustomOrderFee\Refunded as RefundedCustomFee;
 use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\App\Area;
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
@@ -44,6 +45,7 @@ final class TotalsTest extends TestCase
                 [
                     'context' => $objectManager->get(Context::class),
                     'dataObjectFactory' => $objectManager->get(DataObjectFactory::class),
+                    'customFeesRetriever' => $objectManager->create(CustomFeesRetriever::class),
                     'data' => [],
                 ],
             )->onlyMethods(

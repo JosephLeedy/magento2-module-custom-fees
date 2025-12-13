@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Model\Total\Creditmemo;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface as RefundedCustomFee;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterfaceFactory as RefundedCustomFeeFactory;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
@@ -32,6 +33,7 @@ class CustomFees extends AbstractTotal
         private readonly PriceCurrencyInterface $priceCurrency,
         private readonly ConfigInterface $config,
         private readonly TaxCalculation $taxCalculation,
+        private readonly CustomOrderFeesRepositoryInterface $customOrderFeesRepository,
         array $data = [],
     ) {
         parent::__construct($data);
@@ -57,6 +59,8 @@ class CustomFees extends AbstractTotal
         $totalCustomFees = 0;
         $baseTotalCustomFeeTaxAmount = 0;
         $totalCustomFeeTaxAmount = 0;
+        $baseCustomFeeDiscountAmount = 0;
+        $totalCustomFeeDiscountAmount = 0;
 
         array_walk(
             $refundedCustomFees,
@@ -65,11 +69,15 @@ class CustomFees extends AbstractTotal
                 &$totalCustomFees,
                 &$baseTotalCustomFeeTaxAmount,
                 &$totalCustomFeeTaxAmount,
+                &$baseCustomFeeDiscountAmount,
+                &$totalCustomFeeDiscountAmount,
             ): void {
                 $baseTotalCustomFees += $refundedCustomFee->getBaseValue();
                 $totalCustomFees += $refundedCustomFee->getValue();
                 $baseTotalCustomFeeTaxAmount += $refundedCustomFee->getBaseTaxAmount();
                 $totalCustomFeeTaxAmount += $refundedCustomFee->getTaxAmount();
+                $baseCustomFeeDiscountAmount += $refundedCustomFee->getBaseDiscountAmount();
+                $totalCustomFeeDiscountAmount += $refundedCustomFee->getDiscountAmount();
             },
         );
 
@@ -77,6 +85,8 @@ class CustomFees extends AbstractTotal
         $totalRefundedCustomFeeAmount = $totalCustomFees;
         $baseRefundedCustomFeeTaxAmount = $baseTotalCustomFeeTaxAmount;
         $totalRefundedCustomFeeTaxAmount = $totalCustomFeeTaxAmount;
+        $baseRefundedCustomFeeDiscountAmount = $baseCustomFeeDiscountAmount;
+        $totalRefundedCustomFeeDiscountAmount = $totalCustomFeeDiscountAmount;
 
         if ($refundedCustomFeeCount === 0) {
             [
@@ -84,6 +94,8 @@ class CustomFees extends AbstractTotal
                 $totalRefundedCustomFeeAmount,
                 $baseRefundedCustomFeeTaxAmount,
                 $totalRefundedCustomFeeTaxAmount,
+                $baseRefundedCustomFeeDiscountAmount,
+                $totalRefundedCustomFeeDiscountAmount,
             ] = $this->calculateRefundedCustomFees($creditmemo, $refundedCustomFees);
         }
 
@@ -95,8 +107,16 @@ class CustomFees extends AbstractTotal
             $totalRefundedCustomFeeAmount += $totalRefundedCustomFeeTaxAmount;
         }
 
-        $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $baseRefundedCustomFeeAmount);
-        $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $totalRefundedCustomFeeAmount);
+        /* Existing discount amounts are negative, so we need to subtract the custom fee discount amounts rather than
+           add them. */
+        $creditmemo->setBaseDiscountAmount($creditmemo->getBaseDiscountAmount() - $baseRefundedCustomFeeDiscountAmount);
+        $creditmemo->setDiscountAmount($creditmemo->getDiscountAmount() - $totalRefundedCustomFeeDiscountAmount);
+        $creditmemo->setBaseGrandTotal(
+            $creditmemo->getBaseGrandTotal() + ($baseRefundedCustomFeeAmount - $baseRefundedCustomFeeDiscountAmount),
+        );
+        $creditmemo->setGrandTotal(
+            $creditmemo->getGrandTotal() + ($totalRefundedCustomFeeAmount - $totalRefundedCustomFeeDiscountAmount),
+        );
         $creditmemo->getExtensionAttributes()?->setRefundedCustomFees($refundedCustomFees);
 
         return $this;
@@ -121,6 +141,8 @@ class CustomFees extends AbstractTotal
             'value_with_tax' => [],
             'base_tax_amount' => [],
             'tax_amount' => [],
+            'base_discount_amount' => [],
+            'discount_amount' => [],
         ];
 
         foreach ($existingRefundedCustomFees as $fees) {
@@ -150,6 +172,15 @@ class CustomFees extends AbstractTotal
                     (float) ($refundedCustomFeeValues['tax_amount'][$feeCode] ?? 0) + $fee->getTaxAmount(),
                     2,
                 );
+                $refundedCustomFeeValues['base_discount_amount'][$feeCode] = round(
+                    (float) ($refundedCustomFeeValues['base_discount_amount'][$feeCode] ?? 0)
+                    + $fee->getBaseDiscountAmount(),
+                    2,
+                );
+                $refundedCustomFeeValues['discount_amount'][$feeCode] = round(
+                    (float) ($refundedCustomFeeValues['discount_amount'][$feeCode] ?? 0) + $fee->getDiscountAmount(),
+                    2,
+                );
             }
         }
 
@@ -165,7 +196,10 @@ class CustomFees extends AbstractTotal
                 $customFeeCode = $refundedCustomFee->getCode();
 
                 if (array_key_exists($customFeeCode, $requestedCustomFeeRefundValues)) {
-                    if ($refundedCustomFee->getBaseValue() === $requestedCustomFeeRefundValues[$customFeeCode]) {
+                    if (
+                        ($refundedCustomFee->getBaseValue() - $refundedCustomFee->getBaseDiscountAmount())
+                            === $requestedCustomFeeRefundValues[$customFeeCode]
+                    ) {
                         return;
                     }
 
@@ -193,6 +227,9 @@ class CustomFees extends AbstractTotal
                     $refundedCustomFee->setValueWithTax(round($refundedCustomFee->getValue() + $taxAmount, 2));
                     $refundedCustomFee->setBaseTaxAmount(round($baseTaxAmount, 2));
                     $refundedCustomFee->setTaxAmount(round($taxAmount, 2));
+                    $refundedCustomFee->setBaseDiscountAmount(0.00);
+                    $refundedCustomFee->setDiscountAmount(0.00);
+                    $refundedCustomFee->setDiscountRate(0.00);
 
                     $refundedCustomFeeCount++;
 
@@ -245,6 +282,20 @@ class CustomFees extends AbstractTotal
                         2,
                     ),
                 );
+                $refundedCustomFee->setBaseDiscountAmount(
+                    round(
+                        $refundedCustomFee->getBaseDiscountAmount()
+                        - (float) ($refundedCustomFeeValues['base_discount_amount'][$customFeeCode] ?? 0),
+                        2,
+                    ),
+                );
+                $refundedCustomFee->setDiscountAmount(
+                    round(
+                        $refundedCustomFee->getDiscountAmount()
+                        - (float) ($refundedCustomFeeValues['discount_amount'][$customFeeCode] ?? 0),
+                        2,
+                    ),
+                );
 
                 $refundedCustomFeeCount++;
             },
@@ -265,6 +316,8 @@ class CustomFees extends AbstractTotal
         $totalRefundedCustomFeeAmount = 0;
         $baseRefundedCustomFeeTaxAmount = 0;
         $totalRefundedCustomFeeTaxAmount = 0;
+        $baseRefundedCustomFeeDiscountAmount = 0;
+        $totalRefundedCustomFeeDiscountAmount = 0;
 
         array_walk(
             $refundedCustomFees,
@@ -276,6 +329,8 @@ class CustomFees extends AbstractTotal
                 &$totalRefundedCustomFeeAmount,
                 &$baseRefundedCustomFeeTaxAmount,
                 &$totalRefundedCustomFeeTaxAmount,
+                &$baseRefundedCustomFeeDiscountAmount,
+                &$totalRefundedCustomFeeDiscountAmount,
             ): void {
                 [
                     $baseValue,
@@ -293,10 +348,23 @@ class CustomFees extends AbstractTotal
                 $refundedCustomFee->setBaseTaxAmount(round($baseTaxAmount, 2));
                 $refundedCustomFee->setTaxAmount(round($taxAmount, 2));
 
+                $baseDiscountAmount = 0.00;
+                $discountAmount = 0.00;
+
+                if ($refundedCustomFee->getDiscountAmount() !== 0.00) {
+                    $baseDiscountAmount = $refundedCustomFee->getBaseDiscountAmount() * $baseDelta;
+                    $discountAmount = $refundedCustomFee->getDiscountAmount() * $delta;
+
+                    $refundedCustomFee->setBaseDiscountAmount(round($baseDiscountAmount, 2));
+                    $refundedCustomFee->setDiscountAmount(round($discountAmount, 2));
+                }
+
                 $baseRefundedCustomFeeAmount += $refundedCustomFee->getBaseValue();
                 $totalRefundedCustomFeeAmount += $refundedCustomFee->getValue();
                 $baseRefundedCustomFeeTaxAmount += $refundedCustomFee->getBaseTaxAmount();
                 $totalRefundedCustomFeeTaxAmount += $refundedCustomFee->getTaxAmount();
+                $baseRefundedCustomFeeDiscountAmount += $refundedCustomFee->getBaseDiscountAmount();
+                $totalRefundedCustomFeeDiscountAmount += $refundedCustomFee->getDiscountAmount();
             },
         );
 
@@ -305,6 +373,8 @@ class CustomFees extends AbstractTotal
             $totalRefundedCustomFeeAmount,
             $baseRefundedCustomFeeTaxAmount,
             $totalRefundedCustomFeeTaxAmount,
+            $baseRefundedCustomFeeDiscountAmount,
+            $totalRefundedCustomFeeDiscountAmount,
         ];
     }
 
