@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Test\Integration\Model\Total\Creditmemo;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface as RefundedCustomFee;
 use JosephLeedy\CustomFees\Model\Config;
 use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Sales\Api\CreditmemoRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Creditmemo;
 use Magento\Sales\Model\Order\CreditmemoFactory;
@@ -229,10 +231,10 @@ final class CustomFeesTest extends TestCase
                             'base_discount_amount' => 0.00,
                             'discount_amount' => 0.00,
                             'discount_rate' => 0.00,
-                            'base_value_with_tax' => 0.80,
-                            'value_with_tax' => 0.80,
-                            'base_tax_amount' => 0.05,
-                            'tax_amount' => 0.05,
+                            'base_value_with_tax' => 0.80 - ($index / 100),
+                            'value_with_tax' => 0.80 - ($index / 100),
+                            'base_tax_amount' => 0.05 - ($index / 100),
+                            'tax_amount' => 0.05 - ($index / 100),
                             'tax_rate' => 6.00,
                         ],
                     ],
@@ -329,6 +331,21 @@ final class CustomFeesTest extends TestCase
         $creditMemoService = $objectManager->create(CreditmemoService::class);
         /** @var Creditmemo $creditMemo */
         $creditMemo = $creditMemoService->refund($creditmemo);
+        /** @var CreditmemoRepositoryInterface $creditmemoRepository */
+        $creditmemoRepository = $objectManager->create(CreditmemoRepositoryInterface::class);
+        /** @var CustomOrderFeesRepositoryInterface $customOrderFeesRepository */
+        $customOrderFeesRepository = $objectManager->create(CustomOrderFeesRepositoryInterface::class);
+        $customOrderFees = $customOrderFeesRepository->getByOrderId($creditMemo->getOrderId());
+
+        $creditmemoRepository->save($creditMemo);
+
+        $customOrderFees->setCustomFeesRefunded(
+            [
+                $creditMemo->getEntityId() => $creditMemo->getExtensionAttributes()?->getRefundedCustomFees() ?? [],
+            ] + $customOrderFees->getCustomFeesRefunded(),
+        );
+
+        $customOrderFeesRepository->save($customOrderFees);
 
         return $creditMemo;
     }
