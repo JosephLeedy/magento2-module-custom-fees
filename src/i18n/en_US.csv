@@ -10,6 +10,8 @@ Total,Total
 Title,Title
 Amount,Amount
 "Amount Paid","Amount Paid"
+Discount,Discount
+"Discount Paid","Discount Paid"
 Tax,Tax
 "Tax Paid","Tax Paid"
 Invoiced,Invoiced
@@ -79,7 +81,6 @@ Subtotal,Subtotal
 "Shipping State/Province","Shipping State/Province"
 "Shipping Country","Shipping Country"
 "Discount (%1)","Discount (%1)"
-Discount,Discount
 "Use for Custom Fee Conditions","Use for Custom Fee Conditions"
 "Custom Fees","Custom Fees"
 "Custom Order Fees","Custom Order Fees"
