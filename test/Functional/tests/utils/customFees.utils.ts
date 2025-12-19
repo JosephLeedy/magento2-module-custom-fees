@@ -55,6 +55,34 @@ class CustomFees
 
         return customFees;
     }
+
+    public async calculateTotal(
+        containerLocator: Locator,
+        inEuro: boolean = false,
+        exclude: string[] = [],
+        useRefundAmount: boolean = false,
+    ): Promise<number> {
+        const customFees = await this.getAll(containerLocator, inEuro, exclude, useRefundAmount);
+        const currencySymbol = inEuro ? '€' : '$';
+
+        return await customFees.reduce(
+            async (asyncTotal: Promise<number>, customFee: Locator): Promise<number> => {
+                const total: number = await asyncTotal;
+                const matches: RegExpMatchArray[] = [
+                    ...(await customFee.textContent() ?? '$0.00')
+                        .matchAll(new RegExp(`\\${currencySymbol}([\\d.]+)`, 'g')),
+                ];
+                let customFeeAmount: number = parseFloat(matches[0]?.[1] ?? '0.00');
+
+                if (isNaN(customFeeAmount)) {
+                    customFeeAmount = 0.00;
+                }
+
+                return total + customFeeAmount;
+            },
+            Promise.resolve<number>(0.00),
+        );
+    }
 }
 
 export default CustomFees;

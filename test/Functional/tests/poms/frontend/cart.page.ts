@@ -1,6 +1,7 @@
 import { expect, Locator } from '@playwright/test';
-import { outcomeMarkersCustomFees, slugs, UIReferenceCustomFees } from '@config';
+import { outcomeMarker, outcomeMarkersCustomFees, slugs, UIReference, UIReferenceCustomFees } from '@config';
 import CustomFees from '@utils/customFees.utils';
+import { requireEnv } from '@utils/env.utils';
 import BaseCartPage from 'base-tests/poms/frontend/cart.page';
 
 class CartPage extends BaseCartPage
@@ -30,6 +31,31 @@ class CartPage extends BaseCartPage
         ).toBeVisible();
     }
 
+    public async applyDiscountCode(code: string, currencySymbol: string = '$'): Promise<void>
+    {
+        if (await this.page.getByPlaceholder(UIReference.cart.discountInputFieldLabel).isHidden()) {
+            // Discount field is not open.
+            await this.showDiscountButton.click();
+        }
+
+        await this.page.getByPlaceholder(UIReference.cart.discountInputFieldLabel).fill(code);
+        await this.page
+            .getByRole('button', { name: UIReference.cart.applyDiscountButtonLabel, exact: true })
+            .click();
+        await this.page.waitForLoadState();
+
+        await expect
+            .soft(
+                this.page.getByText(`${outcomeMarker.cart.discountAppliedNotification} "${code}"`),
+                `Notification that discount code '${code}' has been applied`,
+            ).toBeVisible();
+        await expect(this.page.getByText(`- ${currencySymbol}`),`'- ${currencySymbol}' should be visible on the page`)
+            .toBeVisible();
+
+        // Close message to prevent difficulties with other tests.
+        await this.page.getByLabel(UIReference.general.closeMessageLabel).click();
+    }
+
     public async assertHasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
     {
         const cartSummaryLocator = this.page.locator(UIReferenceCustomFees.cartPage.cartSummaryLocator);
@@ -48,6 +74,24 @@ class CartPage extends BaseCartPage
         for (const customFee of customFees) {
             await expect(customFee).not.toBeVisible();
         }
+    }
+
+    public async assertHasCustomFeeDiscountApplied(inEuro: boolean = false, exclude: string[] = []): Promise<void>
+    {
+        const cartSummaryLocator = this.page.locator(UIReferenceCustomFees.cartPage.cartSummaryLocator);
+        const currencySymbol = inEuro ? '€' : '$';
+        const subtotal = parseFloat(
+            (await cartSummaryLocator.getByText(`Subtotal ${currencySymbol}`).textContent() ?? '0')
+                .replace(/[^\d.]+/, ''),
+        );
+        const totalCustomFeeAmount = await new CustomFees().calculateTotal(cartSummaryLocator, inEuro, exclude);
+        const discountAmount: string = ((subtotal + totalCustomFeeAmount) * 0.1).toFixed(2);
+
+        await expect(
+            cartSummaryLocator.getByText(
+                `Discount (${requireEnv('MAGENTO_COUPON_CODE_CUSTOM_FEES')}) - ${currencySymbol}${discountAmount}`,
+            ),
+        ).toBeVisible();
     }
 }
 
