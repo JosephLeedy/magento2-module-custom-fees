@@ -1,4 +1,7 @@
 {
+  "adminCartPriceRulesPage": {
+    "applyToCustomFeeAmountLabel": "Apply to Custom Fee Amount"
+  },
   "adminSalesOrderCreditMemoNewPage": {
     "itemQuantityInputLocator": ".qty-input",
     "pageTitle": "New Memo",

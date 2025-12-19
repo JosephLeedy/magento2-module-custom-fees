@@ -3,6 +3,7 @@
 import { test as base } from '@playwright/test';
 import { toggles } from '@config';
 import { requireEnv } from '@utils/env.utils';
+import CartPriceRulesPage from '@poms/adminhtml/cartPriceRules.page';
 import CustomFeesConfigurationPage from '@poms/adminhtml/customFeesConfiguration.page';
 
 /**
@@ -12,11 +13,11 @@ import CustomFeesConfigurationPage from '@poms/adminhtml/customFeesConfiguration
  * Else, we check if the 'setup' test toggle in test-toggles.json has been set to true.
  */
 
+const magentoAdminUsername = requireEnv('MAGENTO_ADMIN_USERNAME');
+const magentoAdminPassword = requireEnv('MAGENTO_ADMIN_PASSWORD');
 const runSetupTests = (describeFn: typeof base.describe | typeof base.describe.only) => {
     describeFn('Setting up the testing environment', () => {
         base('Configure custom fees', { tag: '@setup' }, async ({ page, browserName }, testInfo) => {
-            const magentoAdminUsername = requireEnv('MAGENTO_ADMIN_USERNAME');
-            const magentoAdminPassword = requireEnv('MAGENTO_ADMIN_PASSWORD');
             const browserEngine = browserName?.toUpperCase() || 'UNKNOWN';
 
             if (browserEngine === "CHROMIUM") {
@@ -24,6 +25,18 @@ const runSetupTests = (describeFn: typeof base.describe | typeof base.describe.o
 
                 await customFeesConfigurationPage.login(magentoAdminUsername, magentoAdminPassword);
                 await customFeesConfigurationPage.configureCustomFees();
+            } else {
+                testInfo.skip(true, `Skipping because configuration is only needed once.`);
+            }
+        });
+        base('Configure custom fees cart price rule', { tag: '@setup' }, async ({ page, browserName }, testInfo) => {
+            const browserEngine = browserName?.toUpperCase() || 'UNKNOWN';
+
+            if (browserEngine === "CHROMIUM") {
+                const cartPriceRulesPage = new CartPriceRulesPage(page);
+
+                await cartPriceRulesPage.login(magentoAdminUsername, magentoAdminPassword);
+                await cartPriceRulesPage.addCustomFeesCartPriceRule();
             } else {
                 testInfo.skip(true, `Skipping because configuration is only needed once.`);
             }
