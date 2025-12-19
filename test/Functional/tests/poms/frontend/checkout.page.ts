@@ -4,6 +4,7 @@ import { outcomeMarker, slugs, UIReference, UIReferenceCustomFees } from '@confi
 import CustomFees from '@utils/customFees.utils';
 import HyvaUtils from '@utils/hyva.utils';
 import BaseCheckoutPage from 'base-tests/poms/frontend/checkout.page';
+import { requireEnv } from '@utils/env.utils';
 
 class CheckoutPage extends BaseCheckoutPage
 {
@@ -191,6 +192,24 @@ class CheckoutPage extends BaseCheckoutPage
         for (const customFee of customFees) {
             await expect(customFee).not.toBeVisible();
         }
+    }
+
+    public async assertHasCustomFeeDiscountApplied(inEuro: boolean = false, exclude: string[] = []): Promise<void>
+    {
+        const cartSummaryLocator = this.page.locator(UIReferenceCustomFees.checkoutPage.orderSummaryLocator);
+        const currencySymbol = inEuro ? '€' : '$';
+        const subtotal = parseFloat(
+            (await cartSummaryLocator.getByText(`Subtotal ${currencySymbol}`).textContent() ?? '0')
+                .replace(/[^\d.]+/, ''),
+        );
+        const totalCustomFeeAmount = await new CustomFees().calculateTotal(cartSummaryLocator, inEuro, exclude);
+        const discountAmount: string = ((subtotal + totalCustomFeeAmount) * 0.1).toFixed(2);
+
+        await expect(
+            cartSummaryLocator.getByText(
+                `Discount (${requireEnv('MAGENTO_COUPON_CODE_CUSTOM_FEES')}) -${currencySymbol}${discountAmount}`,
+            ),
+        ).toBeVisible();
     }
 
     private generatePhoneNumber(): string
