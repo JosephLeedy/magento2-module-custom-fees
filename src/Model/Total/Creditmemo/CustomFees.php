@@ -195,8 +195,8 @@ class CustomFees extends AbstractTotal
 
                 if (array_key_exists($customFeeCode, $requestedCustomFeeRefundValues)) {
                     if (
-                        ($refundedCustomFee->getBaseValue() - $refundedCustomFee->getBaseDiscountAmount())
-                            === $requestedCustomFeeRefundValues[$customFeeCode]
+                        $refundedCustomFee->getBaseValue() === $requestedCustomFeeRefundValues[$customFeeCode]
+                        || $refundedCustomFee->getBaseValue() - $refundedCustomFee->getBaseDiscountAmount() === 0.00
                     ) {
                         return;
                     }
