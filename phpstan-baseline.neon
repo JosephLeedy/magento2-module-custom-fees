@@ -122,7 +122,7 @@ parameters:
 
 		-
 			message: "#^Cannot cast mixed to float\\.$#"
-			count: 5
+			count: 8
 			path: src/Model/CustomOrderFee.php
 
 		-
@@ -206,6 +206,16 @@ parameters:
 			path: src/Model/ResourceModel/Report/CustomOrderFees.php
 
 		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\CustomFee\\:\\:getValueSelectOptions\\(\\) should return array\\<int, array\\{value\\: string, label\\: Magento\\\\Framework\\\\Phrase\\}\\> but returns mixed\\.$#"
+			count: 2
+			path: src/Model/Rule/Condition/CustomFee.php
+
+		-
+			message: "#^Return type \\(Magento\\\\Framework\\\\Data\\\\Form\\\\Element\\\\AbstractElement\\) of method JosephLeedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\CustomFee\\:\\:getAttributeElement\\(\\) should be compatible with return type \\(\\$this\\(Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\)\\) of method Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\:\\:getAttributeElement\\(\\)$#"
+			count: 1
+			path: src/Model/Rule/Condition/CustomFee.php
+
+		-
 			message: "#^Return type \\(Magento\\\\Framework\\\\Data\\\\Form\\\\Element\\\\AbstractElement\\) of method JosephLeedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\Quote\\:\\:getAttributeElement\\(\\) should be compatible with return type \\(\\$this\\(Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\)\\) of method Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\:\\:getAttributeElement\\(\\)$#"
 			count: 1
 			path: src/Model/Rule/Condition/Quote.php
@@ -246,9 +256,19 @@ parameters:
 			path: src/Service/ConfigUpdater.php
 
 		-
+			message: "#^Call to an undefined method Magento\\\\Rule\\\\Model\\\\Action\\\\Collection\\:\\:validate\\(\\)\\.$#"
+			count: 1
+			path: src/Service/CustomFeeDiscountRulesApplier.php
+
+		-
 			message: "#^Parameter \\#1 \\$string of method Magento\\\\Framework\\\\Serialize\\\\SerializerInterface\\:\\:unserialize\\(\\) expects string, mixed given\\.$#"
 			count: 3
 			path: src/Service/CustomOrderFeeTaxValueAdder.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: src/Service/CustomQuoteFeesRetriever.php
 
 		-
 			message: "#^Cannot cast mixed to int\\.$#"

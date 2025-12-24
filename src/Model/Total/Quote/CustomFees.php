@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Model\Total\Quote;
 
-use JosephLeedy\CustomFees\Api\ConfigInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterfaceFactory;
-use JosephLeedy\CustomFees\Model\FeeStatus;
 use JosephLeedy\CustomFees\Model\FeeType;
-use JosephLeedy\CustomFees\Service\ConditionsApplier;
-use Magento\Framework\Exception\LocalizedException;
+use JosephLeedy\CustomFees\Service\CustomQuoteFeesRetriever;
 use Magento\Framework\Phrase;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
@@ -18,18 +15,7 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
 use Magento\Quote\Model\Quote\Address\Total\CollectorInterface;
-use Magento\Tax\Api\Data\QuoteDetailsInterface;
-use Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory;
-use Magento\Tax\Api\Data\QuoteDetailsItemInterface;
-use Magento\Tax\Api\Data\QuoteDetailsItemInterfaceFactory;
-use Magento\Tax\Api\Data\TaxClassKeyInterface;
-use Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory;
-use Magento\Tax\Api\Data\TaxDetailsItemInterface;
-use Magento\Tax\Api\TaxCalculationInterface;
-use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
-use Psr\Log\LoggerInterface;
 
-use function array_key_exists;
 use function array_map;
 use function array_values;
 use function array_walk;
@@ -41,16 +27,9 @@ class CustomFees extends AbstractTotal
     public const CODE = 'custom_fees';
 
     public function __construct(
-        private readonly ConfigInterface $config,
-        private readonly LoggerInterface $logger,
+        private readonly CustomQuoteFeesRetriever $customQuoteFeesRetriever,
         private readonly CustomOrderFeeInterfaceFactory $customOrderFeeFactory,
-        private readonly ConditionsApplier $conditionsApplier,
         private readonly PriceCurrencyInterface $priceCurrency,
-        private readonly QuoteDetailsItemInterfaceFactory $quoteDetailsItemFactory,
-        private readonly TaxClassKeyInterfaceFactory $taxClassKeyFactory,
-        private readonly QuoteDetailsInterfaceFactory $quoteDetailsFactory,
-        private readonly CommonTaxCollector $commonTaxCollector,
-        private readonly TaxCalculationInterface $taxCalculation,
     ) {
         $this->setCode(self::CODE);
     }
@@ -86,11 +65,6 @@ class CustomFees extends AbstractTotal
      *     code: string,
      *     title: Phrase,
      *     value: float,
-     *     tax_details: array{
-     *         value_with_tax: float,
-     *         tax_amount: float,
-     *         tax_rate: float,
-     *     },
      * }[]
      */
     public function fetch(Quote $quote, Total $total): array
@@ -101,11 +75,6 @@ class CustomFees extends AbstractTotal
                 'code' => $customOrderFee->getCode(),
                 'title' => $customOrderFee->formatLabel(),
                 'value' => $customOrderFee->getValue(),
-                'tax_details' => [
-                    'value_with_tax' => $customOrderFee->getValueWithTax(),
-                    'tax_amount' => $customOrderFee->getTaxAmount(),
-                    'tax_rate' => $customOrderFee->getTaxRate(),
-                ],
             ],
             $customFees,
         );
@@ -120,34 +89,14 @@ class CustomFees extends AbstractTotal
     {
         $store = $quote->getStore();
         $customFees = [];
+        $customQuoteFees = $this->customQuoteFeesRetriever->retrieveApplicableFees($quote);
 
-        try {
-            $configuredCustomFees = $this->config->getCustomFees($store->getId());
-        } catch (LocalizedException $localizedException) {
-            $this->logger->critical($localizedException->getLogMessage(), ['exception' => $localizedException]);
-
+        if ($customQuoteFees === []) {
             return $customFees;
         }
 
-        foreach ($configuredCustomFees as $customFee) {
+        foreach ($customQuoteFees as $customFee) {
             $customFeeCode = $customFee['code'];
-
-            if ($customFeeCode === 'example_fee' || !FeeStatus::Enabled->equals($customFee['status'])) {
-                continue;
-            }
-
-            if (array_key_exists('conditions', $customFee['advanced']) && $customFee['advanced']['conditions'] !== []) {
-                $isApplicable = $this->conditionsApplier->isApplicable(
-                    $quote,
-                    $customFeeCode,
-                    $customFee['advanced']['conditions'],
-                );
-
-                if (!$isApplicable) {
-                    continue;
-                }
-            }
-
             /** @var CustomOrderFeeInterface $customOrderFee */
             $customOrderFee = $this->customOrderFeeFactory->create();
 
@@ -156,10 +105,7 @@ class CustomFees extends AbstractTotal
                 ->setTitle($customFee['title'])
                 ->setType($customFee['type'])
                 ->setPercent(null)
-                ->setShowPercentage((bool) ($customFee['advanced']['show_percentage'] ?? true))
-                ->setBaseTaxAmount(0.00)
-                ->setTaxAmount(0.00)
-                ->setTaxRate(0.00);
+                ->setShowPercentage((bool) ($customFee['advanced']['show_percentage'] ?? true));
 
             if (FeeType::Percent->equals($customFee['type'])) {
                 $customOrderFee->setPercent((float) $customFee['value']);
@@ -171,161 +117,11 @@ class CustomFees extends AbstractTotal
 
             $customOrderFee
                 ->setBaseValue((float) $customFee['value'])
-                ->setValue($convertedValue)
-                ->setBaseValueWithTax((float) $customFee['value'])
-                ->setValueWithTax($convertedValue);
+                ->setValue($convertedValue);
 
             $customFees[$customFeeCode] = $customOrderFee;
         }
 
-        $this->applyTaxToCustomFees($customFees, $quote, $total);
-
         return $customFees;
-    }
-
-    /**
-     * @param array<string, CustomOrderFeeInterface> $customFees
-     */
-    private function applyTaxToCustomFees(array $customFees, Quote $quote, Total $total): void
-    {
-        $storeId = $quote->getStoreId();
-        $baseCustomFeeTaxDataObjects = array_map(
-            fn(CustomOrderFeeInterface $customFee): QuoteDetailsItemInterface => $this->buildCustomFeeTaxDataObject(
-                $customFee,
-                $storeId,
-                true,
-            ),
-            $customFees,
-        );
-        $customFeeTaxDataObjects = array_map(
-            fn(CustomOrderFeeInterface $customFee): QuoteDetailsItemInterface => $this->buildCustomFeeTaxDataObject(
-                $customFee,
-                $storeId,
-                false,
-            ),
-            $customFees,
-        );
-        $baseQuoteTaxDetails = $this->prepareQuoteTaxDetails($baseCustomFeeTaxDataObjects, $quote);
-        $quoteTaxDetails = $this->prepareQuoteTaxDetails($customFeeTaxDataObjects, $quote);
-        $baseTaxDetails = $this->taxCalculation->calculateTax($baseQuoteTaxDetails, (int) $storeId);
-        $taxDetails = $this->taxCalculation->calculateTax($quoteTaxDetails, (int) $storeId);
-
-        $this->processCustomFeeTaxData(
-            $baseTaxDetails->getItems() ?? [],
-            $taxDetails->getItems() ?? [],
-            $customFees,
-            $total,
-        );
-    }
-
-    private function buildCustomFeeTaxDataObject(
-        CustomOrderFeeInterface $customOrderFee,
-        int|string $storeId,
-        bool $useBaseCurrency,
-    ): QuoteDetailsItemInterface {
-        /** @var TaxClassKeyInterface $taxClassKey */
-        $taxClassKey = $this->taxClassKeyFactory->create();
-        /** @var QuoteDetailsItemInterface $quoteDetailsItem */
-        $quoteDetailsItem = $this->quoteDetailsItemFactory->create();
-
-        $taxClassKey
-            ->setType(TaxClassKeyInterface::TYPE_ID)
-            ->setValue((string) $this->config->getTaxClass($storeId));
-
-        $quoteDetailsItem
-            ->setType('custom_fee')
-            ->setCode($customOrderFee->getCode())
-            ->setQuantity(1)
-            ->setUnitPrice($customOrderFee->getValue())
-            ->setTaxClassKey($taxClassKey)
-            ->setIsTaxIncluded($this->config->isTaxIncluded($storeId));
-
-        if ($useBaseCurrency) {
-            $quoteDetailsItem->setUnitPrice($customOrderFee->getBaseValue());
-        }
-
-        return $quoteDetailsItem;
-    }
-
-    /**
-     * @param QuoteDetailsItemInterface[] $customFeeQuoteDataObjects
-     */
-    private function prepareQuoteTaxDetails(array $customFeeQuoteDataObjects, Quote $quote): QuoteDetailsInterface
-    {
-        $shippingAddress = $quote->getShippingAddress();
-        /** @var TaxClassKeyInterface $taxClassKey */
-        $taxClassKey = $this->taxClassKeyFactory->create();
-        /** @var QuoteDetailsInterface $quoteTaxDetails */
-        $quoteTaxDetails = $this->quoteDetailsFactory->create();
-
-        $this->commonTaxCollector->populateAddressData($quoteTaxDetails, $shippingAddress);
-
-        $taxClassKey
-            ->setType(TaxClassKeyInterface::TYPE_ID)
-            ->setValue((string) $quote->getCustomerTaxClassId());
-
-        $quoteTaxDetails
-            ->setItems($customFeeQuoteDataObjects)
-            ->setCustomerTaxClassKey($taxClassKey)
-            ->setCustomerId((int) $quote->getCustomerId());
-
-        return $quoteTaxDetails;
-    }
-
-    /**
-     * @param TaxDetailsItemInterface[] $baseCustomFeeTaxDetails
-     * @param TaxDetailsItemInterface[] $customFeeTaxDetails
-     * @param array<string, CustomOrderFeeInterface> $customFees
-     */
-    private function processCustomFeeTaxData(
-        array $baseCustomFeeTaxDetails,
-        array $customFeeTaxDetails,
-        array $customFees,
-        Total $total,
-    ): void {
-        $baseTaxAmount = 0.00;
-        $taxAmount = 0.00;
-
-        array_walk(
-            $baseCustomFeeTaxDetails,
-            static function (TaxDetailsItemInterface $taxDetailsItem) use ($customFees, &$baseTaxAmount): void {
-                $customFeeCode = $taxDetailsItem->getCode();
-                $customFee = $customFees[$customFeeCode];
-                $rowTax = $taxDetailsItem->getRowTax();
-
-                if ($rowTax === 0.0) {
-                    return;
-                }
-
-                $customFee->setBaseValue(round($taxDetailsItem->getRowTotal(), 2));
-                $customFee->setBaseValueWithTax(round($taxDetailsItem->getRowTotalInclTax(), 2));
-                $customFee->setBaseTaxAmount($rowTax);
-
-                $baseTaxAmount += $rowTax;
-            },
-        );
-
-        array_walk(
-            $customFeeTaxDetails,
-            static function (TaxDetailsItemInterface $taxDetailsItem) use ($customFees, &$taxAmount): void {
-                $customFeeCode = $taxDetailsItem->getCode();
-                $customFee = $customFees[$customFeeCode];
-                $rowTax = $taxDetailsItem->getRowTax();
-
-                if ($rowTax === 0.0) {
-                    return;
-                }
-
-                $customFee->setValue(round($taxDetailsItem->getRowTotal(), 2));
-                $customFee->setValueWithTax(round($taxDetailsItem->getRowTotalInclTax(), 2));
-                $customFee->setTaxAmount($rowTax);
-                $customFee->setTaxRate($taxDetailsItem->getTaxPercent());
-
-                $taxAmount += $rowTax;
-            },
-        );
-
-        $total->addBaseTotalAmount('tax', $baseTaxAmount);
-        $total->addTotalAmount('tax', $taxAmount);
     }
 }

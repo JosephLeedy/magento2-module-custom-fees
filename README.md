@@ -28,6 +28,7 @@ customers when orders are placed.
 frontend and backend
 - Custom fees can be charged and displayed including or excluding tax
 - Custom fees can be refunded via Magento's credit memo functionality
+- Discounts can be applied to custom fees using Cart Price Rules
 - Includes a report detailing all charged custom fees for a given time period
 - Fully compatible with the [Hyvä] theme (Hyvä Default, Hyvä CSP, Hyvä Checkout 
 and Hyvä Checkout CSP)
@@ -135,6 +136,23 @@ Custom Order Fees` in the Magento Admin panel.
 special database functions that are only available in MySQL 8.0.4+ or
 MariaDB 10.6.0+. Errors or unexpected behavior may occur when using incompatible
 database server software versions.
+
+### Applying Discounts to Custom Fees
+
+To apply a discount to a custom fee, go to `Marketing > Promotions > Cart Price 
+Rules` in the Magento Admin panel and follow these instructions:
+
+1. Click on "Add New Rule" _or_ select an existing rule
+2. Expand the "Actions" section and click on the "Apply to Custom Fee Amount" 
+toggle
+
+**Note:** To apply a discount to a specific custom fee, add an action 
+condition by following these instructions:
+
+1. In the "Actions" section, under the "Apply the rule only to cart items 
+matching the following conditions..." heading, click on the green plus icon
+2. Select "Custom Fee" from the condition dropdown
+3. Click on the ellipses button and choose the desired custom fee from the list  
 
 ## Support
 

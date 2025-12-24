@@ -1,6 +1,8 @@
 import { test } from '@playwright/test';
 import { inputValuesCustomFees, slugs, UIReference } from '@config';
+import { requireEnv } from '@utils/env.utils';
 import AddProductToCartStep from '@steps/addProductToCart.step';
+import ApplyDiscountToCartStep from '@steps/applyDiscountToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import CreateCreditMemoStep from '@steps/createCreditMemo.step';
 import CreateInvoiceStep from '@steps/createInvoice.step';
@@ -40,6 +42,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
          * @given The guest has placed an order with custom fees
          * @when They view the order from the Orders and Returns page
          * @then They should see the custom fees in the order totals
+         * @and They should see the custom fee discounts applied in the order totals
          */
         test(
             `for an order${testSuffix}`,
@@ -57,12 +60,16 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                     await new ChangeCurrencyToEuroStep(page).changeCurrency();
                 }
 
+                await new ApplyDiscountToCartStep(page)
+                    .applyDiscountToCart(requireEnv('MAGENTO_COUPON_CODE_CUSTOM_FEES'), !inEuro ? '$' : '€');
+
                 ({ orderNumber, orderEmail, orderLastName } = await new PlaceOrderStep(page, testInfo).placeOrder());
 
                 await guestOrderPage.navigateToOrdersAndReturnsPage();
                 await guestOrderPage.fillOrderDetails(<string>orderNumber, orderEmail, orderLastName);
                 await guestOrderPage.assertOrderIsVisible(<string>orderNumber);
                 await guestOrderPage.assertOrderHasCustomFees(inEuro, excludedFees);
+                await guestOrderPage.assertOrderHasCustomFeeDiscountsApplied(inEuro, excludedFees);
             }
         );
     });
@@ -83,6 +90,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
          * @given The guest has placed an order with custom fees that has been invoiced
          * @when They view the invoice from the Orders and Returns page
          * @then They should see the custom fees in the invoice totals
+         * @and They should see the custom fee discounts applied in the invoice totals
          */
         test(
             `for an invoice${testSuffix}`,
@@ -101,6 +109,9 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                     await new ChangeCurrencyToEuroStep(page).changeCurrency();
                 }
 
+                await new ApplyDiscountToCartStep(page)
+                    .applyDiscountToCart(requireEnv('MAGENTO_COUPON_CODE_CUSTOM_FEES'), !inEuro ? '$' : '€');
+
                 ({ orderNumber, orderEmail, orderLastName } = await new PlaceOrderStep(page, testInfo).placeOrder());
 
                 await new LogInAsAdministratorStep(page).login();
@@ -112,6 +123,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 await guestOrderPage.assertOrderIsVisible(<string>orderNumber);
                 await guestOrderPage.navigateToInvoicesPage();
                 await guestOrderPage.assertInvoiceHasCustomFees(invoiceNumber, inEuro, excludedFees);
+                await guestOrderPage.assertInvoiceHasCustomFeeDiscountsApplied(invoiceNumber, inEuro, excludedFees);
             }
         );
     });
@@ -144,6 +156,7 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
          * @given The guest has placed an order with custom fees that has been invoiced and refunded
          * @when They view the credit memo from the Orders and Returns page
          * @then They should see the refunded custom fees in the credit memo totals
+         * @and They should see the refunded custom fee discounts applied in the credit memo totals
          */
         test(
             `for a${partial ? ' partial' : ''} credit memo${testSuffix}`,
@@ -162,6 +175,9 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                     await new ChangeCurrencyToEuroStep(page).changeCurrency();
                 }
 
+                await new ApplyDiscountToCartStep(page)
+                    .applyDiscountToCart(requireEnv('MAGENTO_COUPON_CODE_CUSTOM_FEES'), !inEuro ? '$' : '€');
+
                 ({ orderNumber, orderEmail, orderLastName } = await new PlaceOrderStep(page, testInfo).placeOrder());
 
                 await new LogInAsAdministratorStep(page).login();
@@ -178,6 +194,12 @@ test.describe('Custom fees are displayed on guest order page', (): void => {
                 await guestOrderPage.assertOrderIsVisible(<string>orderNumber);
                 await guestOrderPage.navigateToCreditMemosPage();
                 await guestOrderPage.assertCreditMemoHasCustomFees(creditMemoNumber, inEuro, excludedFees, partial);
+                await guestOrderPage.assertCreditMemoHasCustomFeeDiscountsApplied(
+                    creditMemoNumber,
+                    inEuro,
+                    excludedFees,
+                    partial,
+                );
             }
         );
     });

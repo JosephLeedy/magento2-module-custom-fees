@@ -193,6 +193,20 @@ class CheckoutPage extends BaseCheckoutPage
         }
     }
 
+    public async assertHasCustomFeeDiscountApplied(inEuro: boolean = false, exclude: string[] = []): Promise<void>
+    {
+        const cartSummaryLocator = this.page.locator(UIReferenceCustomFees.checkoutPage.orderSummaryLocator);
+        const currencySymbol = inEuro ? '€' : '$';
+        const subtotal = parseFloat(
+            (await cartSummaryLocator.getByText(`Subtotal ${currencySymbol}`).textContent() ?? '0')
+                .replace(/[^\d.]+/, ''),
+        );
+        const totalCustomFeeAmount = await new CustomFees().calculateTotal(cartSummaryLocator, inEuro, exclude);
+        const discountAmount: string = ((subtotal + totalCustomFeeAmount) * 0.1).toFixed(2);
+
+        await expect(cartSummaryLocator.getByText(`-${currencySymbol}${discountAmount}`)).toBeVisible();
+    }
+
     private generatePhoneNumber(): string
     {
         let phoneNumber = faker.phone.number();

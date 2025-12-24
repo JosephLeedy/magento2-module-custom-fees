@@ -10,6 +10,8 @@ Total,Total
 Title,Title
 Amount,Amount
 "Amount Paid","Amount Paid"
+Discount,Discount
+"Discount Paid","Discount Paid"
 Tax,Tax
 "Tax Paid","Tax Paid"
 Invoiced,Invoiced
@@ -66,6 +68,9 @@ Percent,Percent
 "Conditions Combination","Conditions Combination"
 "Product Attribute","Product Attribute"
 "Cart Attribute","Cart Attribute"
+"Custom Fee","Custom Fee"
+is,is
+"is not","is not"
 "Total Items Quantity","Total Items Quantity"
 Subtotal,Subtotal
 "Subtotal (Incl. Tax)","Subtotal (Incl. Tax)"
@@ -75,6 +80,7 @@ Subtotal,Subtotal
 "Shipping Region","Shipping Region"
 "Shipping State/Province","Shipping State/Province"
 "Shipping Country","Shipping Country"
+"Discount (%1)","Discount (%1)"
 "Use for Custom Fee Conditions","Use for Custom Fee Conditions"
 "Custom Fees","Custom Fees"
 "Custom Order Fees","Custom Order Fees"
@@ -104,5 +110,9 @@ Done,Done
 "This sets whether custom fee amounts entered from Magento Admin include tax.","This sets whether custom fee amounts entered from Magento Admin include tax."
 "Display Custom Fee Amount","Display Custom Fee Amount"
 "All Websites","All Websites"
+"Discount amount is applied to subtotal only","Discount amount is applied to subtotal only"
+"Discount amount is applied to subtotal and custom fee amount separately","Discount amount is applied to subtotal and custom fee amount separately"
+"Discount amount is distributed among subtotal and custom fee amount. Cases when multiple discounts applied to custom fee amount are not supported.","Discount amount is distributed among subtotal and custom fee amount. Cases when multiple discounts applied to custom fee amount are not supported."
+"Apply to Custom Fee Amount","Apply to Custom Fee Amount"
 "Excl. Tax","Excl. Tax"
 "Incl. Tax","Incl. Tax"

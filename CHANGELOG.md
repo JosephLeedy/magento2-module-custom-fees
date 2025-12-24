@@ -18,6 +18,8 @@ document.
   a chosen schedule
 - Custom fees can now be charged with tax and displayed inclusive or exclusive 
   of tax
+- Cart Price Rules can now be used to apply discounts to custom fees for 
+  orders, invoices and credit memos
 
 ### Changed
 

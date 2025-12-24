@@ -8,6 +8,7 @@ class CustomFees
         inEuro: boolean = false,
         exclude: string[] = [],
         useRefundAmount: boolean = false,
+        withAmount: boolean = true,
     ): Promise<Locator[]> {
         const customFees = [];
         const currencySymbol = inEuro ? '€' : '$';
@@ -48,12 +49,46 @@ class CustomFees
                 amount = ((amount * subtotal) / 100).toFixed(2);
             }
 
-            label += ` ${currencySymbol}${amount}`;
+            if (withAmount) {
+                label += ` ${currencySymbol}${amount}`;
+            }
 
             customFees.push(containerLocator.getByText(label));
         }
 
         return customFees;
+    }
+
+    public async calculateTotal(
+        containerLocator: Locator,
+        inEuro: boolean = false,
+        exclude: string[] = [],
+        useRefundAmount: boolean = false,
+        customFeeAmountLocator: string = '',
+    ): Promise<number> {
+        const withAmount: boolean = customFeeAmountLocator === '';
+        const customFees: Locator[] = await this.getAll(containerLocator, inEuro, exclude, useRefundAmount, withAmount);
+        const currencySymbol: string = inEuro ? '€' : '$';
+
+        return await customFees.reduce(
+            async (asyncTotal: Promise<number>, customFee: Locator): Promise<number> => {
+                const total: number = await asyncTotal;
+                const matches: RegExpMatchArray[] = [
+                    ...(
+                        await (customFeeAmountLocator === '' ? customFee : customFee.locator(customFeeAmountLocator))
+                            .textContent() ?? '$0.00'
+                    ).matchAll(new RegExp(`\\${currencySymbol}([\\d.]+)`, 'g')),
+                ];
+                let customFeeAmount: number = parseFloat(matches[0]?.[1] ?? '0.00');
+
+                if (isNaN(customFeeAmount)) {
+                    customFeeAmount = 0.00;
+                }
+
+                return total + customFeeAmount;
+            },
+            Promise.resolve<number>(0.00),
+        );
     }
 }
 
