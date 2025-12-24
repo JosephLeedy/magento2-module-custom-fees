@@ -33,9 +33,13 @@ class CartPage extends BaseCartPage
 
     public async applyDiscountCode(code: string, currencySymbol: string = '$'): Promise<void>
     {
+        const showDiscountButton: Locator = this.showDiscountButton
+            .or(this.page.getByRole('heading', { name: UIReference.cart.showDiscountFormButtonLabel }));
+        const closeMessageButton: Locator = this.page.getByLabel(UIReference.general.closeMessageLabel);
+
         if (await this.page.getByPlaceholder(UIReference.cart.discountInputFieldLabel).isHidden()) {
             // Discount field is not open.
-            await this.showDiscountButton.click();
+            await showDiscountButton.click();
         }
 
         await this.page.getByPlaceholder(UIReference.cart.discountInputFieldLabel).fill(code);
@@ -49,11 +53,15 @@ class CartPage extends BaseCartPage
                 this.page.getByText(`${outcomeMarker.cart.discountAppliedNotification} "${code}"`),
                 `Notification that discount code '${code}' has been applied`,
             ).toBeVisible();
-        await expect(this.page.getByText(`- ${currencySymbol}`),`'- ${currencySymbol}' should be visible on the page`)
-            .toBeVisible();
+        await expect(
+            this.page.getByText(`- ${currencySymbol}`).or(this.page.getByText(`-${currencySymbol}`)),
+            `'- ${currencySymbol}' should be visible on the page`,
+        ).toBeVisible();
 
-        // Close message to prevent difficulties with other tests.
-        await this.page.getByLabel(UIReference.general.closeMessageLabel).click();
+        if (await closeMessageButton.isVisible()) {
+            // Close message to prevent difficulties with other tests.
+            await closeMessageButton.click();
+        }
     }
 
     public async assertHasCustomFees(inEuro: boolean = false, exclude: string[] = []): Promise<void>
