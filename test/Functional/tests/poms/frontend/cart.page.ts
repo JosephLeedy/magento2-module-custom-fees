@@ -87,6 +87,7 @@ class CartPage extends BaseCartPage
     public async assertHasCustomFeeDiscountApplied(inEuro: boolean = false, exclude: string[] = []): Promise<void>
     {
         const cartSummaryLocator = this.page.locator(UIReferenceCustomFees.cartPage.cartSummaryLocator);
+        const couponCode: string = requireEnv('MAGENTO_COUPON_CODE_CUSTOM_FEES');
         const currencySymbol = inEuro ? '€' : '$';
         const subtotal = parseFloat(
             (await cartSummaryLocator.getByText(`Subtotal ${currencySymbol}`).textContent() ?? '0')
@@ -96,9 +97,9 @@ class CartPage extends BaseCartPage
         const discountAmount: string = ((subtotal + totalCustomFeeAmount) * 0.1).toFixed(2);
 
         await expect(
-            cartSummaryLocator.getByText(
-                `Discount (${requireEnv('MAGENTO_COUPON_CODE_CUSTOM_FEES')}) - ${currencySymbol}${discountAmount}`,
-            ),
+            cartSummaryLocator
+                .getByText(`Discount (${couponCode}) - ${currencySymbol}${discountAmount}`)
+                .or(cartSummaryLocator.getByText(`Discount (${couponCode}) -${currencySymbol}${discountAmount}`)),
         ).toBeVisible();
     }
 }
