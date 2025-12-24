@@ -85,6 +85,7 @@
     "viewOrderLabel": "view order"
   },
   "orderPage": {
+    "adjacentPriceLocator": "+ div .price, + td .price",
     "creditMemoDetailsTitle": "Refund #",
     "creditMemoTotalsContainerLocator": "//following-sibling::div[contains(@class, \"creditmemo\")]/*[contains(@class, \"creditmemo\") or contains(@class, \"border-container\")]/child::*[last()]",
     "creditMemosLinkLabel": "Refunds",
