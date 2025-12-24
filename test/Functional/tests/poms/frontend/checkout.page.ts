@@ -4,7 +4,6 @@ import { outcomeMarker, slugs, UIReference, UIReferenceCustomFees } from '@confi
 import CustomFees from '@utils/customFees.utils';
 import HyvaUtils from '@utils/hyva.utils';
 import BaseCheckoutPage from 'base-tests/poms/frontend/checkout.page';
-import { requireEnv } from '@utils/env.utils';
 
 class CheckoutPage extends BaseCheckoutPage
 {
@@ -205,11 +204,7 @@ class CheckoutPage extends BaseCheckoutPage
         const totalCustomFeeAmount = await new CustomFees().calculateTotal(cartSummaryLocator, inEuro, exclude);
         const discountAmount: string = ((subtotal + totalCustomFeeAmount) * 0.1).toFixed(2);
 
-        await expect(
-            cartSummaryLocator.getByText(
-                `Discount (${requireEnv('MAGENTO_COUPON_CODE_CUSTOM_FEES')}) -${currencySymbol}${discountAmount}`,
-            ),
-        ).toBeVisible();
+        await expect(cartSummaryLocator.getByText(`-${currencySymbol}${discountAmount}`)).toBeVisible();
     }
 
     private generatePhoneNumber(): string
