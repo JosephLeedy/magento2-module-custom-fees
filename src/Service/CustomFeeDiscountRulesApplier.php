@@ -6,12 +6,12 @@ namespace JosephLeedy\CustomFees\Service;
 
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use Magento\Directory\Model\PriceCurrency;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Registry;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address;
-use Magento\SalesRule\Api\Data\DiscountAppliedToInterface as DiscountAppliedTo;
 use Magento\SalesRule\Api\Data\DiscountDataInterfaceFactory;
 use Magento\SalesRule\Api\Data\RuleDiscountInterfaceFactory;
 use Magento\SalesRule\Model\Rule;
@@ -20,6 +20,7 @@ use Magento\SalesRule\Model\Utility;
 use Magento\SalesRule\Model\Validator;
 
 use function array_key_exists;
+use function class_exists;
 use function floor;
 use function is_string;
 use function min;
@@ -29,6 +30,14 @@ use function min;
  */
 class CustomFeeDiscountRulesApplier
 {
+    /**
+     * @var SelectRuleCoupon|null
+     */
+    private $selectRuleCoupon;
+
+    /**
+     * @param SelectRuleCoupon|null $selectRuleCoupon
+     */
     public function __construct(
         private readonly Context $context,
         private readonly Registry $registry,
@@ -37,8 +46,16 @@ class CustomFeeDiscountRulesApplier
         private readonly PriceCurrency $priceCurrency,
         private readonly DiscountDataInterfaceFactory $discountDataFactory,
         private readonly RuleDiscountInterfaceFactory $ruleDiscountFactory,
-        private readonly SelectRuleCoupon $selectRuleCoupon,
-    ) {}
+        $selectRuleCoupon = null,
+    ) {
+        // Work-around for Magento 2.4.5 and 2.4.6, which do not have the `SelectRuleCoupon` class
+        if ($selectRuleCoupon === null && class_exists(SelectRuleCoupon::class)) {
+            /** @var SelectRuleCoupon $selectRuleCoupon */
+            $selectRuleCoupon = ObjectManager::getInstance()->create(SelectRuleCoupon::class);
+        }
+
+        $this->selectRuleCoupon = $selectRuleCoupon;
+    }
 
     /**
      * @param Rule[] $rules
@@ -53,6 +70,7 @@ class CustomFeeDiscountRulesApplier
         }
 
         $appliedRuleIds = [];
+        $couponCodes = $this->getCouponCodes();
 
         foreach ($customFees as $customFee) {
             /* Work-around for the fact that the Custom Order Fee object extends from Abstract Simple Object, but the
@@ -75,13 +93,7 @@ class CustomFeeDiscountRulesApplier
                 $ruleId = $rule->getRuleId();
                 $appliedRuleIds[$ruleId] = $ruleId;
 
-                $this->addDiscountDescription(
-                    $address,
-                    $rule,
-                    $this->validator->getCouponCodes() !== [] && $this->validator->getCouponCode() !== null
-                        ? $this->validator->getCouponCodes()
-                        : [$this->validator->getCouponCode()],
-                );
+                $this->addDiscountDescription($address, $rule, $couponCodes);
 
                 if ((int) $rule->getCouponType() !== Rule::COUPON_TYPE_NO_COUPON) {
                     $address->setCouponCode($address->getQuote()->getCouponCode());
@@ -100,6 +112,25 @@ class CustomFeeDiscountRulesApplier
         $address->setAppliedRuleIds($this->validatorUtility->mergeIds($address->getAppliedRuleIds(), $appliedRuleIds));
 
         $quote->setAppliedRuleIds($this->validatorUtility->mergeIds($quote->getAppliedRuleIds(), $appliedRuleIds));
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getCouponCodes(): array
+    {
+        /** @var string[] $couponCodes */
+        $couponCodes = [];
+
+        if ($this->validator->getCouponCode() !== null) {
+            $couponCodes[] = $this->validator->getCouponCode();
+        }
+
+        if ($this->validator->getCouponCodes() !== null && $this->validator->getCouponCodes() !== []) {
+            $couponCodes = $this->validator->getCouponCodes();
+        }
+
+        return $couponCodes;
     }
 
     private function instantiateValidationModel(): AbstractModel
@@ -246,14 +277,7 @@ class CustomFeeDiscountRulesApplier
                 'amount' => $discountAmount,
             ];
 
-            $this->addCustomFeeDiscountDescription(
-                $address,
-                $rule,
-                $discountData,
-                $this->validator->getCouponCodes() !== [] && $this->validator->getCouponCode() !== null
-                    ? $this->validator->getCouponCodes()
-                    : [$this->validator->getCouponCode()],
-            );
+            $this->addCustomFeeDiscountDescription($address, $rule, $discountData, $this->getCouponCodes());
         }
 
         $baseDiscountAmount = (float) min(
@@ -278,7 +302,7 @@ class CustomFeeDiscountRulesApplier
     ): void {
         $addressDiscounts = $address->getExtensionAttributes()?->getDiscounts() ?? [];
         $ruleLabel = $this->getRuleLabel($address, $rule, $couponCodes);
-        $discount[DiscountAppliedTo::APPLIED_TO] = 'CUSTOM_FEE';
+        $discount['applied_to'] = 'CUSTOM_FEE';
         $discountData = $this->discountDataFactory->create(['data' => $discount]);
         $data = [
             'discount' => $discountData,
@@ -301,13 +325,17 @@ class CustomFeeDiscountRulesApplier
             return $ruleLabel;
         }
 
-        $ruleCoupon = $this->selectRuleCoupon->execute($rule, $couponCodes);
+        $ruleLabel = '';
 
-        if ($ruleCoupon === null) {
-            return '';
+        if ($this->selectRuleCoupon !== null) {
+            $ruleLabel = $this->selectRuleCoupon->execute($rule, $couponCodes) ?? '';
+        } else {
+            if ($address->getCouponCode() !== '') {
+                $ruleLabel = $address->getCouponCode();
+            }
         }
 
-        return $rule->getDescription() ?? $ruleCoupon;
+        return $rule->getDescription() ?: $ruleLabel;
     }
 
     /**
