@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { inputValues, outcomeMarkerCustomFees, UIReference, UIReferenceCustomFees } from '@config';
+import { inputValues, outcomeMarkersCustomFees, UIReference, UIReferenceCustomFees } from '@config';
 import { requireEnv } from '@utils/env.utils';
 import MagentoAdminPage from '@poms/adminhtml/magentoAdmin.page';
 
@@ -68,7 +68,7 @@ class CartPriceRulesPage extends MagentoAdminPage
         await this.page.getByRole('button', { name: 'Save', exact: true }).click();
 
         await expect(
-            this.page.getByText(outcomeMarkerCustomFees.adminCartPriceRulesPage.cartPriceRuleSavedNotificationMessage),
+            this.page.getByText(outcomeMarkersCustomFees.adminCartPriceRulesPage.cartPriceRuleSavedNotificationMessage),
         ).toBeVisible();
     }
 }
