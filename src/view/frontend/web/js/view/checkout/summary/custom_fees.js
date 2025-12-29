@@ -33,7 +33,8 @@ define(
 
                             customFee.formattedPrice = self.getFormattedPrice(customFee.value);
                             customFee.formattedPriceWithTax = self.getFormattedPrice(
-                                customFee.extension_attributes.custom_fee_tax_details?.value_with_tax || customFee.value
+                                customFee.extension_attributes?.custom_fee_tax_details?.value_with_tax
+                                || customFee.value,
                             );
 
                             customFees.push(customFee);

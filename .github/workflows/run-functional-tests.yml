@@ -84,12 +84,14 @@ jobs:
             git@gitlab.hyva.io:hyva-checkout/checkout.git
           # Install Hyvä theme
           if [ "${{ matrix.theme }}" = "Hyvä CSP" ]; then
-            /usr/local/bin/composer require hyva-themes/magento2-default-theme-csp
+            /usr/local/bin/composer require hyva-themes/magento2-default-theme-csp "~1.3.0"
             THEME_NAME="Hyva/default-csp"
           else
-            /usr/local/bin/composer require hyva-themes/magento2-default-theme
+            /usr/local/bin/composer require hyva-themes/magento2-default-theme "~1.3.0"
             THEME_NAME="Hyva/default"
           fi
+          # Downgrade Symfony Foundation library to ensure that the latest version of Hyvä Checkout is installed
+          /usr/local/bin/composer require symfony/http-foundation "^7.4"
           /usr/local/bin/composer require hyva-themes/magento2-hyva-checkout
           php bin/magento setup:upgrade
           # Configure Magento to use the Hyvä theme
