@@ -87,7 +87,7 @@ jobs:
             /usr/local/bin/composer require hyva-themes/magento2-default-theme-csp
             THEME_NAME="Hyva/default-csp"
           else
-            /usr/local/bin/composer require hyva-themes/magento2-default-theme
+            /usr/local/bin/composer require hyva-themes/magento2-default-theme "~1.3.0"
             THEME_NAME="Hyva/default"
           fi
           /usr/local/bin/composer require hyva-themes/magento2-hyva-checkout
