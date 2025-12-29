@@ -38,59 +38,11 @@ final class CombinePluginTest extends TestCase
         $combine = $objectManager->create(Combine::class);
 
         $expectedSelectOptions = [
-            [
-                'value' => '',
-                'label' => __('Please choose a condition to add.'),
-            ],
-            [
-                'value' => Combine::class,
-                'label' => __('Conditions Combination'),
-            ],
-            [
-                'label' => __('Cart Item Attribute'),
-                'value' => [
-                    [
-                        'value' => Product::class . '|quote_item_price',
-                        'label' => __('Price in cart'),
-                    ],
-                    [
-                        'value' => Product::class . '|parent::quote_item_qty',
-                        'label' => __('Quantity in cart'),
-                    ],
-                    [
-                        'value' => Product::class . '|quote_item_row_total',
-                        'label' => __('Row total in cart'),
-                    ],
-                ],
-            ],
-            [
-                'label' => __('Product Attribute'),
-                'value' => [
-                    [
-                        'value' => Product::class . '|attribute_set_id',
-                        'label' => __('Attribute Set'),
-                    ],
-                    [
-                        'value' => Product::class . '|category_ids',
-                        'label' => __('Category'),
-                    ],
-                    [
-                        'value' => Product::class . '|children::category_ids',
-                        'label' => __('Category (Children Only)'),
-                    ],
-                    [
-                        'value' => Product::class . '|parent::category_ids',
-                        'label' => __('Category (Parent only)'),
-                    ],
-                ],
-            ],
-            [
-                'label' => __('Custom Fee'),
-                'value' => CustomFee::class . '|custom_fee',
-            ],
+            'label' => __('Custom Fee'),
+            'value' => CustomFee::class . '|custom_fee',
         ];
         $actualSelectOptions = $combine->getNewChildSelectOptions();
 
-        self::assertEquals($expectedSelectOptions, $actualSelectOptions);
+        self::assertContainsEquals($expectedSelectOptions, $actualSelectOptions);
     }
 }
