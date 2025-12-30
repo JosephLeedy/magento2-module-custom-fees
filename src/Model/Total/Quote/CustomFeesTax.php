@@ -65,7 +65,7 @@ class CustomFeesTax extends CommonTaxCollector
     ): CollectorInterface {
         parent::collect($quote, $shippingAssignment, $total);
 
-        if ($shippingAssignment->getItems() === []) {
+        if ($shippingAssignment->getItems() === null || $shippingAssignment->getItems() === []) {
             return $this;
         }
 
