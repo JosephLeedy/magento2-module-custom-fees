@@ -3,6 +3,8 @@
     <section name="quote">
         <group name="totals">
             <item name="custom_fees" instance="JosephLeedy\CustomFees\Model\Total\Quote\CustomFees" sort_order="500"/>
+            <item name="custom_fees_discount" instance="JosephLeedy\CustomFees\Model\Total\Quote\CustomFeesDiscount" sort_order="501"/>
+            <item name="custom_fees_tax" instance="JosephLeedy\CustomFees\Model\Total\Quote\CustomFeesTax" sort_order="502"/>
         </group>
     </section>
     <section name="order_invoice">

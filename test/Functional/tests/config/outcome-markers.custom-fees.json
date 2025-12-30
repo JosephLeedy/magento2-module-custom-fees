@@ -1,4 +1,7 @@
 {
+  "adminCartPriceRulesPage": {
+    "cartPriceRuleSavedNotificationMessage": "You saved the rule."
+  },
   "adminSalesOrderViewPage": {
     "creditMemoCreatedNotificationMessage": "You created the credit memo.",
     "invoiceCreatedNotificationMessage": "The invoice has been created."

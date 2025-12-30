@@ -48,6 +48,8 @@ final class GridTest extends TestCase
             'fee_title',
             'base_fee_amount',
             'paid_fee_amount',
+            'base_discount_amount',
+            'paid_discount_amount',
             'base_tax_amount',
             'paid_tax_amount',
             'base_invoiced_fee_amount',
@@ -101,6 +103,8 @@ final class GridTest extends TestCase
         $expectedTotalData = [
             'base_fee_amount' => '19.5',
             'paid_fee_amount' => '9.1872, 6.5000',
+            'base_discount_amount' => '0',
+            'paid_discount_amount' => '0.0000, 0.0000',
             'base_tax_amount' => '0',
             'paid_tax_amount' => '0.0000, 0.0000',
             'base_invoiced_fee_amount' => '0.0000, 0.0000',

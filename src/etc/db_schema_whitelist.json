@@ -24,11 +24,17 @@
       "fee_title": true,
       "base_fee_amount": true,
       "paid_fee_amount": true,
+      "base_discount_amount": true,
+      "paid_discount_amount": true,
       "paid_order_currency": true,
       "base_invoiced_fee_amount": true,
       "invoiced_fee_amount": true,
+      "base_invoiced_discount_amount": true,
+      "invoiced_discount_amount": true,
       "base_refunded_fee_amount": true,
       "refunded_fee_amount": true,
+      "base_refunded_discount_amount": true,
+      "refunded_discount_amount": true,
       "base_tax_amount": true,
       "paid_tax_amount": true,
       "base_invoiced_tax_amount": true,
@@ -41,7 +47,8 @@
       "REPORT_CUSTOM_ORDER_FEES_AGGRED_PERIOD_STORE_ID_PAID_FEE_AMOUNT": true,
       "IDX_913FBD51E62C7A7A2399BBDE04A6D7DB": true,
       "IDX_C237AEC5995F4659414FC774CBE2361E": true,
-      "IDX_ABDC4FE32DED6A43C6F67A041C480A0E": true
+      "IDX_ABDC4FE32DED6A43C6F67A041C480A0E": true,
+      "IDX_BA799E028423D719CD0376EDF0EF83AA": true
     },
     "constraint": {
       "PRIMARY": true,
@@ -51,6 +58,11 @@
   "catalog_eav_attribute": {
     "column": {
       "is_used_for_custom_fee_conditions": true
+    }
+  },
+  "salesrule": {
+    "column": {
+      "apply_to_custom_fees": true
     }
   }
 }

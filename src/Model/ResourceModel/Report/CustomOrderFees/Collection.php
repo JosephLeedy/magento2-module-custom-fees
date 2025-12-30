@@ -68,6 +68,8 @@ class Collection extends AbstractCollection
                 'fee_title' => 'fee_title',
                 'base_fee_amount' => 'base_fee_amount',
                 'paid_fee_amount' => 'paid_fee_amount',
+                'base_discount_amount' => 'base_discount_amount',
+                'paid_discount_amount' => 'paid_discount_amount',
                 'base_tax_amount' => 'base_tax_amount',
                 'paid_tax_amount' => 'paid_tax_amount',
                 'paid_order_currency' => 'paid_order_currency',

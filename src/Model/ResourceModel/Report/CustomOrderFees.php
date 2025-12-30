@@ -80,15 +80,23 @@ class CustomOrderFees extends AbstractReport
                     fee.title AS fee_title,
                     SUM(fee.base_value) AS base_fee_amount,
                     SUM(fee.`value`) AS paid_fee_amount,
+                    CAST(IFNULL(SUM(fee.base_discount_amount), 0.00) AS DECIMAL (20,4)) AS base_discount_amount,
+                    CAST(IFNULL(SUM(fee.discount_amount), 0.00) AS DECIMAL (20,4)) AS paid_discount_amount,
                     CAST(IFNULL(SUM(fee.base_tax_amount), 0.00) AS DECIMAL (20,4)) AS base_tax_amount,
                     CAST(IFNULL(SUM(fee.tax_amount), 0.00) AS DECIMAL (20,4)) AS paid_tax_amount,
                     so.order_currency_code AS paid_order_currency,
                     CAST(IFNULL(SUM(invoiced_fee.base_value), 0.00) AS DECIMAL (20,4)) AS base_invoiced_fee_amount,
                     CAST(IFNULL(SUM(invoiced_fee.`value`), 0.00) AS DECIMAL (20,4)) AS invoiced_fee_amount,
+                    CAST(IFNULL(SUM(invoiced_fee.base_discount_amount), 0.00) AS DECIMAL (20,4))
+                        AS base_invoiced_discount_amount,
+                    CAST(IFNULL(SUM(invoiced_fee.discount_amount), 0.00) AS DECIMAL (20,4)) AS invoiced_discount_amount,
                     CAST(IFNULL(SUM(invoiced_fee.base_tax_amount), 0.00) AS DECIMAL (20,4)) AS base_invoiced_tax_amount,
                     CAST(IFNULL(SUM(invoiced_fee.tax_amount), 0.00) AS DECIMAL (20,4)) AS invoiced_tax_amount,
                     CAST(IFNULL(SUM(refunded_fee.base_value), 0.00) AS DECIMAL (20,4)) AS base_refunded_fee_amount,
                     CAST(IFNULL(SUM(refunded_fee.`value`), 0.00) AS DECIMAL (20,4)) AS refunded_fee_amount,
+                    CAST(IFNULL(SUM(refunded_fee.base_discount_amount), 0.00) AS DECIMAL (20,4))
+                        AS base_refunded_discount_amount,
+                    CAST(IFNULL(SUM(refunded_fee.discount_amount), 0.00) AS DECIMAL (20,4)) AS refunded_discount_amount,
                     CAST(IFNULL(SUM(refunded_fee.base_tax_amount), 0.00) AS DECIMAL (20,4)) AS base_refunded_tax_amount,
                     CAST(IFNULL(SUM(refunded_fee.tax_amount), 0.00) AS DECIMAL (20,4)) AS refunded_tax_amount
                 FROM $customOrderFeesTable AS cof
@@ -99,6 +107,8 @@ class CustomOrderFees extends AbstractReport
                             title VARCHAR(255) PATH '$.title',
                             `value` DECIMAL(20, 4) PATH '$.value',
                             base_value DECIMAL(20, 4) PATH '$.base_value',
+                            base_discount_amount DECIMAL(20, 4) PATH '$.base_discount_amount',
+                            discount_amount DECIMAL(20, 4) PATH '$.discount_amount',
                             base_tax_amount DECIMAL(20, 4) PATH '$.base_tax_amount',
                             tax_amount DECIMAL(20, 4) PATH '$.tax_amount'
                         )
@@ -111,6 +121,8 @@ class CustomOrderFees extends AbstractReport
                             title VARCHAR(255) PATH '$.title',
                             `value` DECIMAL(20, 4) PATH '$.value',
                             base_value DECIMAL(20, 4) PATH '$.base_value',
+                            base_discount_amount DECIMAL(20, 4) PATH '$.base_discount_amount',
+                            discount_amount DECIMAL(20, 4) PATH '$.discount_amount',
                             base_tax_amount DECIMAL(20, 4) PATH '$.base_tax_amount',
                             tax_amount DECIMAL(20, 4) PATH '$.tax_amount'
                         )
@@ -123,6 +135,8 @@ class CustomOrderFees extends AbstractReport
                             title VARCHAR(255) PATH '$.title',
                             `value` DECIMAL(20, 4) PATH '$.value',
                             base_value DECIMAL(20, 4) PATH '$.base_value',
+                            base_discount_amount DECIMAL(20, 4) PATH '$.base_discount_amount',
+                            discount_amount DECIMAL(20, 4) PATH '$.discount_amount',
                             base_tax_amount DECIMAL(20, 4) PATH '$.base_tax_amount',
                             tax_amount DECIMAL(20, 4) PATH '$.tax_amount'
                         )

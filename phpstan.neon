@@ -26,6 +26,9 @@ parameters:
 					base_tax_amount: float,
 					tax_amount: float,
 					tax_rate: float,
+					base_discount_amount?: float,
+					discount_amount?: float,
+					discount_rate?: float,
 			}
 		'''
 		CustomInvoiceFeeData: '''
@@ -43,6 +46,9 @@ parameters:
 					base_tax_amount: float,
 					tax_amount: float,
 					tax_rate: float,
+					base_discount_amount?: float,
+					discount_amount?: float,
+					discount_rate?: float,
 			}
 		'''
 		CustomCreditMemoFeeData: '''
@@ -60,5 +66,8 @@ parameters:
 					base_tax_amount: float,
 					tax_amount: float,
 					tax_rate: float,
+					base_discount_amount?: float,
+					discount_amount?: float,
+					discount_rate?: float,
 			}
 		'''

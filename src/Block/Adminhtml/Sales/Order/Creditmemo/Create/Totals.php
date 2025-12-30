@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Block\Adminhtml\Sales\Order\Creditmemo\Create;
 
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface as RefundedCustomFee;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
+use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
 use Magento\Framework\View\Element\Template;
@@ -35,6 +37,7 @@ class Totals extends Template
     public function __construct(
         Context $context,
         private readonly DataObjectFactory $dataObjectFactory,
+        private readonly CustomFeesRetriever $customFeesRetriever,
         array $data = [],
     ) {
         parent::__construct($context, $data);
@@ -72,7 +75,7 @@ class Totals extends Template
         return $this->customFeeTotals;
     }
 
-    public function formatValue(float $value): string
+    public function formatValue(float $value, bool $withContainer = false, bool $withCurrencySymbol = false): string
     {
         $order = $this->getParentBlock()->getSource()->getOrder();
 
@@ -82,9 +85,9 @@ class Totals extends Template
                 $value,
                 2,
                 [
-                    'display' => 1,
+                    'display' => !$withCurrencySymbol ? 1 : 2,
                 ],
-                false,
+                $withContainer,
             );
     }
 
@@ -94,17 +97,23 @@ class Totals extends Template
         $creditmemo = $this->getParentBlock()->getSource();
         /** @var array<string, RefundedCustomFee> $refundedCustomFees */
         $refundedCustomFees = $creditmemo->getExtensionAttributes()?->getRefundedCustomFees() ?? [];
+        /** @var array<string, CustomOrderFeeInterface> $orderedCustomFees */
+        $orderedCustomFees = $this->customFeesRetriever->retrieveOrderedCustomFees($creditmemo->getOrder());
 
         array_walk(
             $refundedCustomFees,
-            function (RefundedCustomFee $refundedCustomFee): void {
+            function (RefundedCustomFee $refundedCustomFee) use ($orderedCustomFees): void {
+                $orderedCustomFee = $orderedCustomFees[$refundedCustomFee->getCode()] ?? null;
+                $isRefundable = $orderedCustomFee !== null
+                    && $orderedCustomFee->getBaseValue() - $orderedCustomFee->getDiscountAmount() > 0.00;
                 $this->customFeeTotals[$refundedCustomFee->getCode()] = $this->dataObjectFactory->create(
                     [
                         'data' => [
                             'code' => $refundedCustomFee->getCode(),
-                            'label' => $refundedCustomFee->formatLabel('Refund'),
+                            'label' => $refundedCustomFee->formatLabel($isRefundable ? 'Refund' : ''),
                             'base_value' => $refundedCustomFee->getBaseValue(),
                             'value' => $refundedCustomFee->getValue(),
+                            'is_refundable' => $isRefundable,
                         ],
                     ],
                 );

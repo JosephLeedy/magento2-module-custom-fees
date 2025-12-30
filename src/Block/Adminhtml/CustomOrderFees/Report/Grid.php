@@ -33,6 +33,8 @@ class Grid extends AbstractGrid
 
         $baseFeeAmount = [];
         $paidFeeAmount = [];
+        $baseDiscountAmount = [];
+        $paidDiscountAmount = [];
         $baseTaxAmount = [];
         $paidTaxAmount = [];
         $paidOrderCurrency = [];
@@ -44,6 +46,8 @@ class Grid extends AbstractGrid
         foreach ($totalsCollection->getItems() as $item) {
             $baseFeeAmount[] = $item->getData('base_fee_amount');
             $paidFeeAmount[] = $item->getData('paid_fee_amount');
+            $baseDiscountAmount[] = $item->getData('base_discount_amount');
+            $paidDiscountAmount[] = $item->getData('paid_discount_amount');
             $baseTaxAmount[] = $item->getData('base_tax_amount');
             $paidTaxAmount[] = $item->getData('paid_tax_amount');
             $paidOrderCurrency[] = $item->getData('paid_order_currency');
@@ -55,6 +59,8 @@ class Grid extends AbstractGrid
 
         $totals->setData('base_fee_amount', (string) array_sum($baseFeeAmount));
         $totals->setData('paid_fee_amount', implode(', ', $paidFeeAmount));
+        $totals->setData('base_discount_amount', (string) array_sum($baseDiscountAmount));
+        $totals->setData('paid_discount_amount', implode(', ', $paidDiscountAmount));
         $totals->setData('base_tax_amount', (string) array_sum($baseTaxAmount));
         $totals->setData('paid_tax_amount', implode(', ', $paidTaxAmount));
         $totals->setData('paid_order_currency', implode(', ', $paidOrderCurrency));
@@ -134,6 +140,37 @@ class Grid extends AbstractGrid
                 'rate' => $rate,
                 'header_css_class' => 'col-paid-fee-amount',
                 'column_css_class' => 'col-paid-fee-amount',
+            ],
+        );
+        $this->addColumn(
+            'base_discount_amount',
+            [
+                'header' => __('Discount'),
+                'type' => 'currency',
+                'index' => 'base_discount_amount',
+                'total' => 'sum',
+                'sortable' => false,
+                'renderer' => Currency::class,
+                'rate' => $rate,
+                'header_css_class' => 'col-base-discount-amount',
+                'column_css_class' => 'col-base-discount-amount',
+                'visibility_filter' => [
+                    'show_base_amount',
+                ],
+            ],
+        );
+        $this->addColumn(
+            'paid_discount_amount',
+            [
+                'header' => __('Discount Paid'),
+                'type' => 'currency',
+                'index' => 'paid_discount_amount',
+                'total' => 'sum',
+                'sortable' => false,
+                'renderer' => LocalizedFeeAmount::class,
+                'rate' => $rate,
+                'header_css_class' => 'col-paid-discount-amount',
+                'column_css_class' => 'col-paid-discount-amount',
             ],
         );
         $this->addColumn(

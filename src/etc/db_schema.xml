@@ -22,11 +22,17 @@
         <column xsi:type="varchar" name="fee_title" length="255" nullable="false" comment="Order Fee Title"/>
         <column xsi:type="decimal" name="base_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Order Fee Amount"/>
         <column xsi:type="decimal" name="paid_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Paid Order Fee Amount"/>
+        <column xsi:type="decimal" name="base_discount_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Order Fee Discount Amount"/>
+        <column xsi:type="decimal" name="paid_discount_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Paid Order Fee Discount Amount"/>
         <column xsi:type="varchar" name="paid_order_currency" length="3" nullable="false" comment="Paid Order Currency Code"/>
         <column xsi:type="decimal" name="base_invoiced_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Invoiced Order Fee Amount"/>
         <column xsi:type="decimal" name="invoiced_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Invoiced Order Fee Amount"/>
+        <column xsi:type="decimal" name="base_invoiced_discount_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Invoiced Fee Discount Amount"/>
+        <column xsi:type="decimal" name="invoiced_discount_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Invoiced Fee Discount Amount"/>
         <column xsi:type="decimal" name="base_refunded_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Refunded Order Fee Amount"/>
         <column xsi:type="decimal" name="refunded_fee_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Refunded Order Fee Amount"/>
+        <column xsi:type="decimal" name="base_refunded_discount_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Refunded Fee Discount Amount"/>
+        <column xsi:type="decimal" name="refunded_discount_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Refunded Fee Discount Amount"/>
         <column xsi:type="decimal" name="base_tax_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Order Fee Tax Amount"/>
         <column xsi:type="decimal" name="paid_tax_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Paid Order Fee Tax Amount"/>
         <column xsi:type="decimal" name="base_invoiced_tax_amount" precision="20" scale="4" nullable="false" default="0.0000" comment="Base Invoiced Order Fee Tax Amount"/>
@@ -41,6 +47,7 @@
             <column name="period"/>
             <column name="store_id"/>
             <column name="paid_fee_amount"/>
+            <column name="paid_discount_amount"/>
             <column name="invoiced_fee_amount"/>
             <column name="refunded_fee_amount"/>
             <column name="paid_tax_amount"/>
@@ -49,5 +56,9 @@
 
     <table name="catalog_eav_attribute">
         <column xsi:type="smallint" name="is_used_for_custom_fee_conditions" unsigned="true" nullable="false" identity="false" default="0" comment="Is Used For Custom Fee Conditions"/>
+    </table>
+
+    <table name="salesrule">
+        <column xsi:type="smallint" name="apply_to_custom_fees" unsigned="true" nullable="false" identity="false" default="0" comment="Apply To Custom Fees"/>
     </table>
 </schema>

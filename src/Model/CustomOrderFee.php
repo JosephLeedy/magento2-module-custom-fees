@@ -237,6 +237,45 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         return (float) $this->_get(static::TAX_RATE);
     }
 
+    #[PropertyType('float')]
+    public function setBaseDiscountAmount(?float $baseDiscountAmount): static
+    {
+        $this->setData(static::BASE_DISCOUNT_AMOUNT, $baseDiscountAmount);
+
+        return $this;
+    }
+
+    public function getBaseDiscountAmount(): float
+    {
+        return (float) $this->_get(static::BASE_DISCOUNT_AMOUNT);
+    }
+
+    #[PropertyType('float')]
+    public function setDiscountAmount(?float $discountAmount): static
+    {
+        $this->setData(static::DISCOUNT_AMOUNT, $discountAmount);
+
+        return $this;
+    }
+
+    public function getDiscountAmount(): float
+    {
+        return (float) $this->_get(static::DISCOUNT_AMOUNT);
+    }
+
+    #[PropertyType('float')]
+    public function setDiscountRate(?float $discountRate): static
+    {
+        $this->setData(static::DISCOUNT_RATE, $discountRate);
+
+        return $this;
+    }
+
+    public function getDiscountRate(): float
+    {
+        return (float) $this->_get(static::DISCOUNT_RATE);
+    }
+
     public function formatLabel(string $prefix = '', string $suffix = ''): Phrase
     {
         $showPercentage = FeeType::Percent->equals($this->getType())

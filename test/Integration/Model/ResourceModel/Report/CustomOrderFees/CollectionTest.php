@@ -59,6 +59,8 @@ final class CollectionTest extends TestCase
                     'fee_title',
                     'base_fee_amount',
                     'paid_fee_amount',
+                    'base_discount_amount',
+                    'paid_discount_amount',
                     'base_tax_amount',
                     'paid_tax_amount',
                     'paid_order_currency',
@@ -77,6 +79,8 @@ final class CollectionTest extends TestCase
                 'aggregatedColumns' => [
                     'base_fee_amount' => 'sum(base_fee_amount)',
                     'paid_fee_amount' => 'sum(paid_fee_amount)',
+                    'base_discount_amount' => 'sum(base_discount_amount)',
+                    'paid_discount_amount' => 'sum(paid_discount_amount)',
                     'base_tax_amount' => 'sum(base_tax_amount)',
                     'paid_tax_amount' => 'sum(paid_tax_amount)',
                     'paid_order_currency' => 'paid_order_currency',
@@ -88,6 +92,8 @@ final class CollectionTest extends TestCase
                 'expectedColumns' => [
                     'base_fee_amount',
                     'paid_fee_amount',
+                    'base_discount_amount',
+                    'paid_discount_amount',
                     'base_tax_amount',
                     'paid_tax_amount',
                     'paid_order_currency',

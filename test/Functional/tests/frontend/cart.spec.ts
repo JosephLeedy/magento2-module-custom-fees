@@ -1,6 +1,8 @@
 import { test } from '@playwright/test';
 import { inputValuesCustomFees, slugs, UIReference } from '@config';
+import { requireEnv } from '@utils/env.utils';
 import AddProductToCartStep from '@steps/addProductToCart.step';
+import ApplyDiscountToCartStep from '@steps/applyDiscountToCart.step';
 import ChangeCurrencyToEuroStep from '@steps/changeCurrencyToEuro.step';
 import EmptyCartStep from '@steps/emptyCart.step';
 import LogInAsCustomerStep from '@steps/logInAsCustomer.step';
@@ -132,4 +134,63 @@ test('Disabled custom fees are not added to cart', async ({ page }): Promise<voi
     );
 
     await cartPage.assertDoesNotHaveCustomFees(false, excludedFees);
+});
+
+test.describe('Custom fee discounts are applied', (): void => {
+    test.beforeEach(async ({ page }): Promise<void> => {
+        await new AddProductToCartStep(page).addSimpleProductToCart(
+            UIReference.productPage.simpleProductTitle,
+            slugs.productpage.simpleProductSlug,
+        );
+    });
+
+    test.afterEach(async ({ page }): Promise<void> => {
+        await new EmptyCartStep(page).emptyCart();
+    });
+
+    [
+        {
+            testTitle: 'for a guest',
+            asCustomer: false,
+            inEuro: false,
+        },
+        {
+            testTitle: 'for a guest, in Euro',
+            asCustomer: false,
+            inEuro: true,
+        },
+        {
+            testTitle: 'for a customer',
+            asCustomer: true,
+            inEuro: false,
+        },
+        {
+            testTitle: 'for a customer, in Euro',
+            asCustomer: true,
+            inEuro: true,
+        },
+    ].forEach(({ testTitle, asCustomer, inEuro }): void => {
+        test(
+            testTitle,
+            { tag: ['@frontend', '@cart', '@discount', '@cold'] },
+            async ({ page, browserName }): Promise<void> => {
+                const excludedFees = Object
+                    .keys(inputValuesCustomFees.customFees)
+                    .filter(key => key.includes('disabled'));
+
+                if (asCustomer) {
+                    await new LogInAsCustomerStep(page, browserName).login(slugs.cart.cartSlug);
+                }
+
+                if (inEuro) {
+                    await new ChangeCurrencyToEuroStep(page).changeCurrency();
+                }
+
+                await new ApplyDiscountToCartStep(page)
+                    .applyDiscountToCart(requireEnv('MAGENTO_COUPON_CODE_CUSTOM_FEES'), !inEuro ? '$' : '€');
+
+                await new CartPage(page).assertHasCustomFeeDiscountApplied(inEuro, excludedFees);
+            },
+        );
+    });
 });

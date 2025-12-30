@@ -8,6 +8,7 @@ use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use JosephLeedy\CustomFees\Block\Adminhtml\Sales\Order\Creditmemo\Create\Totals as CreateCreditMemoTotalsBlock;
 use JosephLeedy\CustomFees\Model\CustomOrderFee\Refunded as RefundedCustomFee;
 use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\App\Area;
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
@@ -44,6 +45,7 @@ final class TotalsTest extends TestCase
                 [
                     'context' => $objectManager->get(Context::class),
                     'dataObjectFactory' => $objectManager->get(DataObjectFactory::class),
+                    'customFeesRetriever' => $objectManager->create(CustomFeesRetriever::class),
                     'data' => [],
                 ],
             )->onlyMethods(
@@ -70,6 +72,9 @@ final class TotalsTest extends TestCase
                                 'show_percentage' => false,
                                 'base_value' => 0.00,
                                 'value' => 0.00,
+                                'base_discount_amount' => 0.00,
+                                'discount_amount' => 0.00,
+                                'discount_rate' => 0.00,
                                 'base_value_with_tax' => 0.00,
                                 'value_with_tax' => 0.00,
                                 'base_tax_amount' => 0.00,
@@ -89,6 +94,9 @@ final class TotalsTest extends TestCase
                                 'show_percentage' => false,
                                 'base_value' => 1.50,
                                 'value' => 1.50,
+                                'base_discount_amount' => 0.00,
+                                'discount_amount' => 0.00,
+                                'discount_rate' => 0.00,
                                 'base_value_with_tax' => 1.50,
                                 'value_with_tax' => 1.50,
                                 'base_tax_amount' => 0.00,
@@ -125,12 +133,133 @@ final class TotalsTest extends TestCase
                 'label' => 'Refund Test Fee',
                 'base_value' => 0.00,
                 'value' => 0.00,
+                'is_refundable' => true,
             ],
             'test_fee_1' => [
                 'code' => 'test_fee_1',
                 'label' => 'Refund Another Test Fee',
                 'base_value' => 1.50,
                 'value' => 1.50,
+                'is_refundable' => true,
+            ],
+        ];
+        $actualCustomFeeTotalData = $this->getCustomFeeTotalData($createCreditMemoTotalsBlock->getCustomFeeTotals());
+
+        self::assertArraySubset($expectedCreditMemoTotalData, $actualCreditMemoTotalData);
+        self::assertEquals($expectedCustomFeeTotalData, $actualCustomFeeTotalData);
+    }
+
+    #[DataFixture('JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees_fully_discounted.php')]
+    public function testInitializesFullyDiscountedCustomFeeTotalsAsNonRefundable(): void
+    {
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var CreditmemoInterface&Creditmemo $creditMemo */
+        $creditMemo = $objectManager->create(CreditmemoInterface::class);
+        /** @var CreditMemoTotalsBlock $creditMemoTotalsBlock */
+        $creditMemoTotalsBlock = $objectManager->create(CreditMemoTotalsBlock::class);
+        $createCreditMemoTotalsBlock = $this->getMockBuilder(CreateCreditMemoTotalsBlock::class)
+            ->setConstructorArgs(
+                [
+                    'context' => $objectManager->get(Context::class),
+                    'dataObjectFactory' => $objectManager->get(DataObjectFactory::class),
+                    'customFeesRetriever' => $objectManager->create(CustomFeesRetriever::class),
+                    'data' => [],
+                ],
+            )->onlyMethods(
+                [
+                    'getParentBlock',
+                ],
+            )->getMock();
+
+        $order->loadByIncrementId('100000001');
+
+        $creditMemo->setOrder($order);
+        $creditMemo
+            ->getExtensionAttributes()
+            ->setRefundedCustomFees(
+                [
+                    'test_fee_0' => $objectManager->create(
+                        RefundedCustomFee::class,
+                        [
+                            'data' => [
+                                'code' => 'test_fee_0',
+                                'title' => 'Test Fee',
+                                'type' => FeeType::Fixed,
+                                'percent' => null,
+                                'show_percentage' => false,
+                                'base_value' => 5.00,
+                                'value' => 5.00,
+                                'base_discount_amount' => 5.00,
+                                'discount_amount' => 5.00,
+                                'discount_rate' => 100.00,
+                                'base_value_with_tax' => 5.00,
+                                'value_with_tax' => 5.00,
+                                'base_tax_amount' => 0.00,
+                                'tax_amount' => 0.00,
+                                'tax_rate' => 0.00,
+                            ],
+                        ],
+                    ),
+                    'test_fee_1' => $objectManager->create(
+                        RefundedCustomFee::class,
+                        [
+                            'data' => [
+                                'code' => 'test_fee_1',
+                                'title' => 'Another Test Fee',
+                                'type' => FeeType::Fixed,
+                                'percent' => null,
+                                'show_percentage' => false,
+                                'base_value' => 1.50,
+                                'value' => 1.50,
+                                'base_discount_amount' => 1.50,
+                                'discount_amount' => 1.50,
+                                'discount_rate' => 100.00,
+                                'base_value_with_tax' => 1.50,
+                                'value_with_tax' => 1.50,
+                                'base_tax_amount' => 0.00,
+                                'tax_amount' => 0.00,
+                                'tax_rate' => 0.00,
+                            ],
+                        ],
+                    ),
+                ],
+            );
+
+        $creditMemoTotalsBlock->setOrder($order);
+        $creditMemoTotalsBlock->setCreditmemo($creditMemo);
+        $creditMemoTotalsBlock->toHtml();
+
+        $createCreditMemoTotalsBlock
+            ->method('getParentBlock')
+            ->willReturn($creditMemoTotalsBlock);
+
+        $createCreditMemoTotalsBlock->initTotals();
+
+        $expectedCreditMemoTotalData = [
+            'custom_fees' => new DataObject(
+                [
+                    'code' => 'custom_fees',
+                    'block_name' => $createCreditMemoTotalsBlock->getNameInLayout(),
+                ],
+            ),
+        ];
+        $actualCreditMemoTotalData = $creditMemoTotalsBlock->getTotals();
+        $expectedCustomFeeTotalData = [
+            'test_fee_0' => [
+                'code' => 'test_fee_0',
+                'label' => 'Test Fee',
+                'base_value' => 5.00,
+                'value' => 5.00,
+                'is_refundable' => false,
+            ],
+            'test_fee_1' => [
+                'code' => 'test_fee_1',
+                'label' => 'Another Test Fee',
+                'base_value' => 1.50,
+                'value' => 1.50,
+                'is_refundable' => false,
             ],
         ];
         $actualCustomFeeTotalData = $this->getCustomFeeTotalData($createCreditMemoTotalsBlock->getCustomFeeTotals());
@@ -154,6 +283,7 @@ final class TotalsTest extends TestCase
                 [
                     'context' => $objectManager->get(Context::class),
                     'dataObjectFactory' => $objectManager->get(DataObjectFactory::class),
+                    'customFeesRetriever' => $objectManager->create(CustomFeesRetriever::class),
                     'data' => [],
                 ],
             )->onlyMethods(

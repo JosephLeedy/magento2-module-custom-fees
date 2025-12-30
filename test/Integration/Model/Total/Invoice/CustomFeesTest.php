@@ -50,6 +50,9 @@ final class CustomFeesTest extends TestCase
                         'show_percentage' => false,
                         'base_value' => 5.00,
                         'value' => 5.00,
+                        'base_discount_amount' => 0.00,
+                        'discount_amount' => 0.00,
+                        'discount_rate' => 0.00,
                         'base_value_with_tax' => 5.00,
                         'value_with_tax' => 5.00,
                         'base_tax_amount' => 0.00,
@@ -69,6 +72,9 @@ final class CustomFeesTest extends TestCase
                         'show_percentage' => false,
                         'base_value' => 1.50,
                         'value' => 1.50,
+                        'base_discount_amount' => 0.00,
+                        'discount_amount' => 0.00,
+                        'discount_rate' => 0.00,
                         'base_value_with_tax' => 1.50,
                         'value_with_tax' => 1.50,
                         'base_tax_amount' => 0.00,
@@ -125,6 +131,9 @@ final class CustomFeesTest extends TestCase
                         'show_percentage' => false,
                         'base_value' => 5.00,
                         'value' => 5.00,
+                        'base_discount_amount' => 0.00,
+                        'discount_amount' => 0.00,
+                        'discount_rate' => 0.00,
                         'base_value_with_tax' => 5.30,
                         'value_with_tax' => 5.30,
                         'base_tax_amount' => 0.30,
@@ -144,6 +153,9 @@ final class CustomFeesTest extends TestCase
                         'show_percentage' => false,
                         'base_value' => 1.50,
                         'value' => 1.50,
+                        'base_discount_amount' => 0.00,
+                        'discount_amount' => 0.00,
+                        'discount_rate' => 0.00,
                         'base_value_with_tax' => 1.59,
                         'value_with_tax' => 1.59,
                         'base_tax_amount' => 0.09,
@@ -159,6 +171,77 @@ final class CustomFeesTest extends TestCase
         self::assertEquals(28.09, $invoice->getGrandTotal());
         self::assertEquals(1.59, $invoice->getBaseTaxAmount());
         self::assertEquals(1.59, $invoice->getTaxAmount());
+        self::assertEquals($expectedInvoicedCustomFees, $actualInvoicedCustomFees);
+    }
+
+    /**
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees_discounted.php
+     */
+    public function testCollectsCustomFeesTotalsWithDiscounts(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var OrderResource $orderResource */
+        $orderResource = $objectManager->create(OrderResource::class);
+
+        $orderResource->load($order, '100000001', 'increment_id');
+
+        $invoice = $this->createInvoice($order);
+
+        $expectedInvoicedCustomFees = [
+            'test_fee_0' => $objectManager->create(
+                InvoicedCustomFee::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 5.00,
+                        'value' => 5.00,
+                        'base_discount_amount' => 0.50,
+                        'discount_amount' => 0.50,
+                        'discount_rate' => 10.00,
+                        'base_value_with_tax' => 5.00,
+                        'value_with_tax' => 5.00,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.00,
+                    ],
+                ],
+            ),
+            'test_fee_1' => $objectManager->create(
+                InvoicedCustomFee::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 1.50,
+                        'value' => 1.50,
+                        'base_discount_amount' => 0.15,
+                        'discount_amount' => 0.15,
+                        'discount_rate' => 10.00,
+                        'base_value_with_tax' => 1.50,
+                        'value_with_tax' => 1.50,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.00,
+                    ],
+                ],
+            ),
+        ];
+        $actualInvoicedCustomFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees();
+
+        self::assertEquals(25.85, $invoice->getBaseGrandTotal());
+        self::assertEquals(25.85, $invoice->getGrandTotal());
+        self::assertEquals(-0.65, $invoice->getBaseDiscountAmount());
+        self::assertEquals(-0.65, $invoice->getDiscountAmount());
         self::assertEquals($expectedInvoicedCustomFees, $actualInvoicedCustomFees);
     }
 
@@ -191,6 +274,9 @@ final class CustomFeesTest extends TestCase
                             'show_percentage' => false,
                             'base_value' => 2.50,
                             'value' => 2.50,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
                             'base_value_with_tax' => 2.50,
                             'value_with_tax' => 2.50,
                             'base_tax_amount' => 0.00,
@@ -210,6 +296,9 @@ final class CustomFeesTest extends TestCase
                             'show_percentage' => false,
                             'base_value' => 0.75,
                             'value' => 0.75,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
                             'base_value_with_tax' => 0.75,
                             'value_with_tax' => 0.75,
                             'base_tax_amount' => 0.00,
@@ -273,6 +362,9 @@ final class CustomFeesTest extends TestCase
                             'show_percentage' => false,
                             'base_value' => 2.50,
                             'value' => 2.50,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
                             'base_value_with_tax' => 2.65,
                             'value_with_tax' => 2.65,
                             'base_tax_amount' => 0.15,
@@ -292,6 +384,9 @@ final class CustomFeesTest extends TestCase
                             'show_percentage' => false,
                             'base_value' => 0.75,
                             'value' => 0.75,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
                             'base_value_with_tax' => 0.80,
                             'value_with_tax' => 0.80,
                             'base_tax_amount' => 0.05,
@@ -311,6 +406,77 @@ final class CustomFeesTest extends TestCase
         }
 
         self::assertEquals(28.09, $order->getTotalPaid());
+    }
+
+    /**
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees_discounted.php
+     */
+    public function testCollectsCustomFeesTotalsWithDiscountsForMultipleInvoices(): void
+    {
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var OrderResource $orderResource */
+        $orderResource = $objectManager->create(OrderResource::class);
+
+        $orderResource->load($order, '100000001', 'increment_id');
+
+        $invoices = $this->createInvoices($order);
+
+        foreach ($invoices as $index => $invoice) {
+            $expectedInvoicedCustomFees = [
+                'test_fee_0' => $objectManager->create(
+                    InvoicedCustomFee::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_0',
+                            'title' => 'Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 2.50,
+                            'value' => 2.50,
+                            'base_discount_amount' => 0.25,
+                            'discount_amount' => 0.25,
+                            'discount_rate' => 10.00,
+                            'base_value_with_tax' => 2.50,
+                            'value_with_tax' => 2.50,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                        ],
+                    ],
+                ),
+                'test_fee_1' => $objectManager->create(
+                    InvoicedCustomFee::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_1',
+                            'title' => 'Another Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 0.75,
+                            'value' => 0.75,
+                            'base_discount_amount' => 0.08,
+                            'discount_amount' => 0.08,
+                            'discount_rate' => 10.00,
+                            'base_value_with_tax' => 0.75,
+                            'value_with_tax' => 0.75,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                        ],
+                    ],
+                ),
+            ];
+            $actualInvoicedCustomFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees();
+
+            self::assertEquals($expectedInvoicedCustomFees, $actualInvoicedCustomFees);
+        }
+
+        self::assertEquals(25.85, $order->getTotalPaid());
     }
 
     /**
