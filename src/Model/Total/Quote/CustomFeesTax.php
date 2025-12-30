@@ -6,35 +6,57 @@ namespace JosephLeedy\CustomFees\Model\Total\Quote;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
+use Magento\Customer\Api\AccountManagementInterface as CustomerAccountManagement;
+use Magento\Customer\Api\Data\AddressInterfaceFactory as CustomerAddressFactory;
+use Magento\Customer\Api\Data\RegionInterfaceFactory as CustomerAddressRegionFactory;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
-use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
 use Magento\Quote\Model\Quote\Address\Total\CollectorInterface;
-use Magento\Tax\Api\Data\QuoteDetailsInterface;
 use Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory;
+use Magento\Tax\Api\Data\QuoteDetailsItemExtensionInterfaceFactory;
 use Magento\Tax\Api\Data\QuoteDetailsItemInterface;
 use Magento\Tax\Api\Data\QuoteDetailsItemInterfaceFactory;
 use Magento\Tax\Api\Data\TaxClassKeyInterface;
 use Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory;
 use Magento\Tax\Api\Data\TaxDetailsItemInterface;
 use Magento\Tax\Api\TaxCalculationInterface;
+use Magento\Tax\Helper\Data as TaxHelper;
+use Magento\Tax\Model\Config as TaxConfig;
 use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
 
 use function array_map;
 use function array_values;
 use function array_walk;
 
-class CustomFeesTax extends AbstractTotal
+class CustomFeesTax extends CommonTaxCollector
 {
     public function __construct(
-        private readonly TaxClassKeyInterfaceFactory $taxClassKeyFactory,
-        private readonly QuoteDetailsItemInterfaceFactory $quoteDetailsItemFactory,
         private readonly ConfigInterface $config,
-        private readonly QuoteDetailsInterfaceFactory $quoteDetailsFactory,
-        private readonly CommonTaxCollector $commonTaxCollector,
-        private readonly TaxCalculationInterface $taxCalculation,
-    ) {}
+        TaxConfig $taxConfig,
+        TaxCalculationInterface $taxCalculationService,
+        QuoteDetailsInterfaceFactory $quoteDetailsDataObjectFactory,
+        QuoteDetailsItemInterfaceFactory $quoteDetailsItemDataObjectFactory,
+        TaxClassKeyInterfaceFactory $taxClassKeyDataObjectFactory,
+        CustomerAddressFactory $customerAddressFactory,
+        CustomerAddressRegionFactory $customerAddressRegionFactory,
+        TaxHelper $taxHelper = null,
+        QuoteDetailsItemExtensionInterfaceFactory $quoteDetailsItemExtensionInterfaceFactory = null,
+        ?CustomerAccountManagement $customerAccountManagement = null,
+    ) {
+        parent::__construct(
+            $taxConfig,
+            $taxCalculationService,
+            $quoteDetailsDataObjectFactory,
+            $quoteDetailsItemDataObjectFactory,
+            $taxClassKeyDataObjectFactory,
+            $customerAddressFactory,
+            $customerAddressRegionFactory,
+            $taxHelper,
+            $quoteDetailsItemExtensionInterfaceFactory,
+            $customerAccountManagement,
+        );
+    }
 
     public function collect(
         Quote $quote,
@@ -65,7 +87,7 @@ class CustomFeesTax extends AbstractTotal
             },
         );
 
-        $this->applyTaxToCustomFees($customFees, $quote, $total);
+        $this->applyTaxToCustomFees($customFees, $shippingAssignment, $total);
 
         array_walk(
             $customFees,
@@ -118,8 +140,13 @@ class CustomFeesTax extends AbstractTotal
     /**
      * @param array<string, CustomOrderFeeInterface> $customFees
      */
-    private function applyTaxToCustomFees(array $customFees, Quote $quote, Total $total): void
-    {
+    private function applyTaxToCustomFees(
+        array $customFees,
+        ShippingAssignmentInterface $shippingAssignment,
+        Total $total,
+    ): void {
+        /** @var Quote $quote */
+        $quote = $shippingAssignment->getShipping()->getAddress()->getQuote();
         $storeId = $quote->getStoreId();
         $baseCustomFeeTaxDataObjects = array_map(
             fn(CustomOrderFeeInterface $customFee): QuoteDetailsItemInterface => $this->buildCustomFeeTaxDataObject(
@@ -137,10 +164,10 @@ class CustomFeesTax extends AbstractTotal
             ),
             $customFees,
         );
-        $baseQuoteTaxDetails = $this->prepareQuoteTaxDetails($baseCustomFeeTaxDataObjects, $quote);
-        $quoteTaxDetails = $this->prepareQuoteTaxDetails($customFeeTaxDataObjects, $quote);
-        $baseTaxDetails = $this->taxCalculation->calculateTax($baseQuoteTaxDetails, (int) $storeId);
-        $taxDetails = $this->taxCalculation->calculateTax($quoteTaxDetails, (int) $storeId);
+        $baseQuoteDetails = $this->prepareQuoteDetails($shippingAssignment, $baseCustomFeeTaxDataObjects);
+        $quoteDetails = $this->prepareQuoteDetails($shippingAssignment, $customFeeTaxDataObjects);
+        $baseTaxDetails = $this->taxCalculationService->calculateTax($baseQuoteDetails, (int) $storeId);
+        $taxDetails = $this->taxCalculationService->calculateTax($quoteDetails, (int) $storeId);
 
         $this->processCustomFeeTaxData(
             $baseTaxDetails->getItems() ?? [],
@@ -156,9 +183,9 @@ class CustomFeesTax extends AbstractTotal
         bool $useBaseCurrency,
     ): QuoteDetailsItemInterface {
         /** @var TaxClassKeyInterface $taxClassKey */
-        $taxClassKey = $this->taxClassKeyFactory->create();
+        $taxClassKey = $this->taxClassKeyDataObjectFactory->create();
         /** @var QuoteDetailsItemInterface $quoteDetailsItem */
-        $quoteDetailsItem = $this->quoteDetailsItemFactory->create();
+        $quoteDetailsItem = $this->quoteDetailsItemDataObjectFactory->create();
 
         $taxClassKey
             ->setType(TaxClassKeyInterface::TYPE_ID)
@@ -179,31 +206,6 @@ class CustomFeesTax extends AbstractTotal
         }
 
         return $quoteDetailsItem;
-    }
-
-    /**
-     * @param QuoteDetailsItemInterface[] $customFeeQuoteDataObjects
-     */
-    private function prepareQuoteTaxDetails(array $customFeeQuoteDataObjects, Quote $quote): QuoteDetailsInterface
-    {
-        $shippingAddress = $quote->getShippingAddress();
-        /** @var TaxClassKeyInterface $taxClassKey */
-        $taxClassKey = $this->taxClassKeyFactory->create();
-        /** @var QuoteDetailsInterface $quoteTaxDetails */
-        $quoteTaxDetails = $this->quoteDetailsFactory->create();
-
-        $this->commonTaxCollector->populateAddressData($quoteTaxDetails, $shippingAddress);
-
-        $taxClassKey
-            ->setType(TaxClassKeyInterface::TYPE_ID)
-            ->setValue((string) $quote->getCustomerTaxClassId());
-
-        $quoteTaxDetails
-            ->setItems($customFeeQuoteDataObjects)
-            ->setCustomerTaxClassKey($taxClassKey)
-            ->setCustomerId((int) $quote->getCustomerId());
-
-        return $quoteTaxDetails;
     }
 
     /**

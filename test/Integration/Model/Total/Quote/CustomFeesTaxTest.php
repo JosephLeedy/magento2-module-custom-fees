@@ -91,6 +91,7 @@ final class CustomFeesTaxTest extends TestCase
         $shipping->setAddress($quote->getShippingAddress());
 
         $shippingAssignment->setShipping($shipping);
+        $shippingAssignment->setItems($quote->getAllItems());
 
         $customFeesTaxTotalCollector->collect($quote, $shippingAssignment, $total);
 
@@ -204,6 +205,7 @@ final class CustomFeesTaxTest extends TestCase
         $shipping->setAddress($quote->getShippingAddress());
 
         $shippingAssignment->setShipping($shipping);
+        $shippingAssignment->setItems($quote->getAllItems());
 
         $customFeesTaxTotalCollector->collect($quote, $shippingAssignment, $total);
 
