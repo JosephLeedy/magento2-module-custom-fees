@@ -26,6 +26,7 @@ use Magento\Tax\Model\Config as TaxConfig;
 use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
 
 use function array_map;
+use function array_reduce;
 use function array_values;
 use function array_walk;
 
@@ -87,22 +88,8 @@ class CustomFeesTax extends CommonTaxCollector
             },
         );
 
-        $this->applyTaxToCustomFees($customFees, $shippingAssignment, $total);
-
-        array_walk(
-            $customFees,
-            static function (CustomOrderFeeInterface $customFee) use ($total): void {
-                if ($customFee->getTaxRate() === 0.0) {
-                    return;
-                }
-
-                $total->setBaseTotalAmount($customFee->getCode(), $customFee->getBaseValue());
-                $total->setTotalAmount($customFee->getCode(), $customFee->getValue());
-
-                $total->setData('base_' . $customFee->getCode() . '_tax_amount', $customFee->getBaseTaxAmount());
-                $total->setData($customFee->getCode() . '_tax_amount', $customFee->getTaxAmount());
-            },
-        );
+        $this->applyTaxToCustomFees($customFees, $shippingAssignment);
+        $this->setTotals($customFees, $total);
 
         return $this;
     }
@@ -140,11 +127,8 @@ class CustomFeesTax extends CommonTaxCollector
     /**
      * @param array<string, CustomOrderFeeInterface> $customFees
      */
-    private function applyTaxToCustomFees(
-        array $customFees,
-        ShippingAssignmentInterface $shippingAssignment,
-        Total $total,
-    ): void {
+    private function applyTaxToCustomFees(array $customFees, ShippingAssignmentInterface $shippingAssignment): void
+    {
         /** @var Quote $quote */
         $quote = $shippingAssignment->getShipping()->getAddress()->getQuote();
         $storeId = $quote->getStoreId();
@@ -169,12 +153,7 @@ class CustomFeesTax extends CommonTaxCollector
         $baseTaxDetails = $this->taxCalculationService->calculateTax($baseQuoteDetails, (int) $storeId);
         $taxDetails = $this->taxCalculationService->calculateTax($quoteDetails, (int) $storeId);
 
-        $this->processCustomFeeTaxData(
-            $baseTaxDetails->getItems() ?? [],
-            $taxDetails->getItems() ?? [],
-            $customFees,
-            $total,
-        );
+        $this->processCustomFeeTaxData($baseTaxDetails->getItems() ?? [], $taxDetails->getItems() ?? [], $customFees);
     }
 
     private function buildCustomFeeTaxDataObject(
@@ -217,14 +196,10 @@ class CustomFeesTax extends CommonTaxCollector
         array $baseCustomFeeTaxDetails,
         array $customFeeTaxDetails,
         array $customFees,
-        Total $total,
     ): void {
-        $baseTaxAmount = 0.00;
-        $taxAmount = 0.00;
-
         array_walk(
             $baseCustomFeeTaxDetails,
-            static function (TaxDetailsItemInterface $taxDetailsItem) use ($customFees, &$baseTaxAmount): void {
+            static function (TaxDetailsItemInterface $taxDetailsItem) use ($customFees): void {
                 $customFeeCode = $taxDetailsItem->getCode();
                 $customFee = $customFees[$customFeeCode];
                 $rowTax = $taxDetailsItem->getRowTax();
@@ -236,14 +211,12 @@ class CustomFeesTax extends CommonTaxCollector
                 $customFee->setBaseValue(round($taxDetailsItem->getRowTotal(), 2));
                 $customFee->setBaseValueWithTax(round($taxDetailsItem->getRowTotalInclTax(), 2));
                 $customFee->setBaseTaxAmount($rowTax);
-
-                $baseTaxAmount += $rowTax;
             },
         );
 
         array_walk(
             $customFeeTaxDetails,
-            static function (TaxDetailsItemInterface $taxDetailsItem) use ($customFees, &$taxAmount): void {
+            static function (TaxDetailsItemInterface $taxDetailsItem) use ($customFees): void {
                 $customFeeCode = $taxDetailsItem->getCode();
                 $customFee = $customFees[$customFeeCode];
                 $rowTax = $taxDetailsItem->getRowTax();
@@ -256,9 +229,41 @@ class CustomFeesTax extends CommonTaxCollector
                 $customFee->setValueWithTax(round($taxDetailsItem->getRowTotalInclTax(), 2));
                 $customFee->setTaxAmount($rowTax);
                 $customFee->setTaxRate($taxDetailsItem->getTaxPercent());
-
-                $taxAmount += $rowTax;
             },
+        );
+    }
+
+    /**
+     * @param array<string, CustomOrderFeeInterface> $customFees
+     */
+    private function setTotals(array $customFees, Total $total): void
+    {
+        array_walk(
+            $customFees,
+            static function (CustomOrderFeeInterface $customFee) use ($total): void {
+                if ($customFee->getTaxRate() === 0.0) {
+                    return;
+                }
+
+                $total->setBaseTotalAmount($customFee->getCode(), $customFee->getBaseValue());
+                $total->setTotalAmount($customFee->getCode(), $customFee->getValue());
+
+                $total->setData('base_' . $customFee->getCode() . '_tax_amount', $customFee->getBaseTaxAmount());
+                $total->setData($customFee->getCode() . '_tax_amount', $customFee->getTaxAmount());
+            },
+        );
+
+        $baseTaxAmount = array_reduce(
+            $customFees,
+            static fn(float $amount, CustomOrderFeeInterface $customFee): float
+                => $amount + $customFee->getBaseTaxAmount(),
+            0.00,
+        );
+        $taxAmount = array_reduce(
+            $customFees,
+            static fn(float $amount, CustomOrderFeeInterface $customFee): float
+                => $amount + $customFee->getTaxAmount(),
+            0.00,
         );
 
         $total->addBaseTotalAmount('tax', $baseTaxAmount);
