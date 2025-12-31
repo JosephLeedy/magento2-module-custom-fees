@@ -77,17 +77,7 @@ class CustomFeesTax extends CommonTaxCollector
             return $this;
         }
 
-        array_walk(
-            $customFees,
-            static function (CustomOrderFeeInterface $customFee): void {
-                $customFee->setBaseValueWithTax($customFee->getBaseValue());
-                $customFee->setValueWithTax($customFee->getValue());
-                $customFee->setBaseTaxAmount(0.00);
-                $customFee->setTaxAmount(0.00);
-                $customFee->setTaxRate(0.0);
-            },
-        );
-
+        $this->initializeCustomFeeTaxData($customFees);
         $this->applyTaxToCustomFees($customFees, $shippingAssignment);
         $this->setTotals($customFees, $total);
 
@@ -122,6 +112,23 @@ class CustomFeesTax extends CommonTaxCollector
         );
 
         return $totals;
+    }
+
+    /**
+     * @param array<string, CustomOrderFeeInterface> $customFees
+     */
+    private function initializeCustomFeeTaxData(array $customFees): void
+    {
+        array_walk(
+            $customFees,
+            static function (CustomOrderFeeInterface $customFee): void {
+                $customFee->setBaseValueWithTax($customFee->getBaseValue());
+                $customFee->setValueWithTax($customFee->getValue());
+                $customFee->setBaseTaxAmount(0.00);
+                $customFee->setTaxAmount(0.00);
+                $customFee->setTaxRate(0.0);
+            },
+        );
     }
 
     /**
