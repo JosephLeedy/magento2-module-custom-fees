@@ -273,6 +273,8 @@ class CustomFeesTax extends CommonTaxCollector
             0.00,
         );
 
+        $total->setData('base_custom_fees_tax_amount', $baseTaxAmount);
+        $total->setData('custom_fees_tax_amount', $taxAmount);
         $total->addBaseTotalAmount('tax', $baseTaxAmount);
         $total->addTotalAmount('tax', $taxAmount);
     }
