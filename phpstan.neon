@@ -29,6 +29,8 @@ parameters:
 					base_discount_amount?: float,
 					discount_amount?: float,
 					discount_rate?: float,
+					base_discount_tax_compensation?: float,
+					discount_tax_compensation?: float,
 			}
 		'''
 		CustomInvoiceFeeData: '''
@@ -49,6 +51,8 @@ parameters:
 					base_discount_amount?: float,
 					discount_amount?: float,
 					discount_rate?: float,
+					base_discount_tax_compensation?: float,
+					discount_tax_compensation?: float,
 			}
 		'''
 		CustomCreditMemoFeeData: '''
@@ -69,5 +73,6 @@ parameters:
 					base_discount_amount?: float,
 					discount_amount?: float,
 					discount_rate?: float,
+					discount_tax_compensation?: float,
 			}
 		'''

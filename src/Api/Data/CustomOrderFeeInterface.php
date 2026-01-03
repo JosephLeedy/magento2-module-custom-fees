@@ -24,6 +24,8 @@ interface CustomOrderFeeInterface
     public const BASE_DISCOUNT_AMOUNT = 'base_discount_amount';
     public const DISCOUNT_AMOUNT = 'discount_amount';
     public const DISCOUNT_RATE = 'discount_rate';
+    public const BASE_DISCOUNT_TAX_COMPENSATION = 'base_discount_tax_compensation';
+    public const DISCOUNT_TAX_COMPENSATION = 'discount_tax_compensation';
 
     /**
      * @param string $code
@@ -193,6 +195,28 @@ interface CustomOrderFeeInterface
      * @return float
      */
     public function getDiscountRate(): float;
+
+    /**
+     * @param float|null $baseDiscountTaxCompensation
+     * @return CustomOrderFeeInterface
+     */
+    public function setBaseDiscountTaxCompensation(?float $baseDiscountTaxCompensation);
+
+    /**
+     * @return float
+     */
+    public function getBaseDiscountTaxCompensation(): float;
+
+    /**
+     * @param float|null $discountTaxCompensation
+     * @return CustomOrderFeeInterface
+     */
+    public function setDiscountTaxCompensation(?float $discountTaxCompensation);
+
+    /**
+     * @return float
+     */
+    public function getDiscountTaxCompensation(): float;
 
     /**
      * @return Phrase
