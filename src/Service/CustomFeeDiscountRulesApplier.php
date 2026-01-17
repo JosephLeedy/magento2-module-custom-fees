@@ -18,6 +18,8 @@ use Magento\SalesRule\Model\Rule;
 use Magento\SalesRule\Model\SelectRuleCoupon;
 use Magento\SalesRule\Model\Utility;
 use Magento\SalesRule\Model\Validator;
+use Psr\Log\LoggerInterface;
+use Zend_Db_Select_Exception;
 
 use function array_key_exists;
 use function class_exists;
@@ -39,6 +41,7 @@ class CustomFeeDiscountRulesApplier
      * @param SelectRuleCoupon|null $selectRuleCoupon
      */
     public function __construct(
+        private readonly LoggerInterface $logger,
         private readonly Context $context,
         private readonly Registry $registry,
         private readonly Validator $validator,
@@ -58,17 +61,21 @@ class CustomFeeDiscountRulesApplier
     }
 
     /**
-     * @param Rule[] $rules
+     * @param array<string, CustomOrderFeeInterface> $customFees
      */
-    public function applyRules(Address $address, array $rules): void
+    public function applyRules(array $customFees, Address $address): void
     {
-        $quote = $address->getQuote();
-        $customFees = $quote->getExtensionAttributes()?->getCustomFees() ?? [];
-
         if ($customFees === []) {
             return;
         }
 
+        $rules = $this->getRules($address);
+
+        if ($rules === []) {
+            return;
+        }
+
+        $quote = $address->getQuote();
         $appliedRuleIds = [];
         $couponCodes = $this->getCouponCodes();
 
@@ -112,6 +119,28 @@ class CustomFeeDiscountRulesApplier
         $address->setAppliedRuleIds($this->validatorUtility->mergeIds($address->getAppliedRuleIds(), $appliedRuleIds));
 
         $quote->setAppliedRuleIds($this->validatorUtility->mergeIds($quote->getAppliedRuleIds(), $appliedRuleIds));
+    }
+
+    /**
+     * @return Rule[]
+     */
+    private function getRules(Address $address): array
+    {
+        try {
+            /** @var Rule[] $rules */
+            $rules = $this->validator->getRules($address)->getItems();
+        } catch (Zend_Db_Select_Exception $databaseSelectException) {
+            $this->logger->critical(
+                'Could not retrieve sales rules to apply to custom fees.',
+                [
+                    'exception' => $databaseSelectException,
+                ],
+            );
+
+            $rules = [];
+        }
+
+        return $rules;
     }
 
     /**
