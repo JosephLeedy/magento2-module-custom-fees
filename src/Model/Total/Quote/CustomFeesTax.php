@@ -26,9 +26,9 @@ use Magento\Tax\Model\Config as TaxConfig;
 use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
 
 use function array_map;
-use function array_reduce;
 use function array_values;
 use function array_walk;
+use function round;
 
 class CustomFeesTax extends CommonTaxCollector
 {
@@ -127,6 +127,8 @@ class CustomFeesTax extends CommonTaxCollector
                 $customFee->setBaseTaxAmount(0.00);
                 $customFee->setTaxAmount(0.00);
                 $customFee->setTaxRate(0.0);
+                $customFee->setBaseDiscountTaxCompensation(0.00);
+                $customFee->setDiscountTaxCompensation(0.00);
             },
         );
     }
@@ -218,6 +220,9 @@ class CustomFeesTax extends CommonTaxCollector
                 $customFee->setBaseValue(round($taxDetailsItem->getRowTotal(), 2));
                 $customFee->setBaseValueWithTax(round($taxDetailsItem->getRowTotalInclTax(), 2));
                 $customFee->setBaseTaxAmount($rowTax);
+                $customFee->setBaseDiscountTaxCompensation(
+                    round($taxDetailsItem->getDiscountTaxCompensationAmount(), 2),
+                );
             },
         );
 
@@ -236,6 +241,7 @@ class CustomFeesTax extends CommonTaxCollector
                 $customFee->setValueWithTax(round($taxDetailsItem->getRowTotalInclTax(), 2));
                 $customFee->setTaxAmount($rowTax);
                 $customFee->setTaxRate($taxDetailsItem->getTaxPercent());
+                $customFee->setDiscountTaxCompensation(round($taxDetailsItem->getDiscountTaxCompensationAmount(), 2));
             },
         );
     }
@@ -257,24 +263,33 @@ class CustomFeesTax extends CommonTaxCollector
 
                 $total->setData('base_' . $customFee->getCode() . '_tax_amount', $customFee->getBaseTaxAmount());
                 $total->setData($customFee->getCode() . '_tax_amount', $customFee->getTaxAmount());
+                $total->setData(
+                    'base_' . $customFee->getCode() . '_discount_tax_compensation_amount',
+                    $customFee->getBaseDiscountTaxCompensation(),
+                );
+                $total->setData(
+                    $customFee->getCode() . '_discount_tax_compensation_amount',
+                    $customFee->getDiscountTaxCompensation(),
+                );
             },
         );
 
-        $baseTaxAmount = array_reduce(
-            $customFees,
-            static fn(float $amount, CustomOrderFeeInterface $customFee): float
-                => $amount + $customFee->getBaseTaxAmount(),
-            0.00,
-        );
-        $taxAmount = array_reduce(
-            $customFees,
-            static fn(float $amount, CustomOrderFeeInterface $customFee): float
-                => $amount + $customFee->getTaxAmount(),
-            0.00,
-        );
+        $baseTaxAmount = 0.00;
+        $taxAmount = 0.00;
+        $baseDiscountTaxCompensation = 0.00;
+        $discountTaxCompensation = 0.00;
+
+        foreach ($customFees as $customFee) {
+            $baseTaxAmount += $customFee->getBaseTaxAmount();
+            $taxAmount += $customFee->getTaxAmount();
+            $baseDiscountTaxCompensation += $customFee->getBaseDiscountTaxCompensation();
+            $discountTaxCompensation += $customFee->getDiscountTaxCompensation();
+        }
 
         $total->setData('base_custom_fees_tax_amount', $baseTaxAmount);
         $total->setData('custom_fees_tax_amount', $taxAmount);
+        $total->setBaseTotalAmount('custom_fees_discount_tax_compensation', $baseDiscountTaxCompensation);
+        $total->setTotalAmount('custom_fees_discount_tax_compensation', $discountTaxCompensation);
         $total->addBaseTotalAmount('tax', $baseTaxAmount);
         $total->addTotalAmount('tax', $taxAmount);
     }
