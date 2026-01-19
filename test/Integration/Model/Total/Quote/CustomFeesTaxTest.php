@@ -39,6 +39,7 @@ final class CustomFeesTaxTest extends TestCase
 {
     /**
      * @dataProvider collectsCustomFeeTaxTotalsExcludingDiscountsDataProvider
+     * @param array<string, CustomOrderFeeInterface> $expectedCustomFees
      */
     #[ConfigFixture(
         Config::CONFIG_PATH_CUSTOM_FEES,
@@ -59,8 +60,11 @@ final class CustomFeesTaxTest extends TestCase
     #[ConfigFixture('shipping/origin/postcode', '75477', StoreScopeInterface::SCOPE_STORE, 'default')]
     #[DataFixture('Magento/Tax/_files/tax_rule_region_1_al.php')]
     #[DataFixture('Magento/Checkout/_files/quote_with_taxable_product_and_customer.php')]
-    public function testCollectsCustomFeeTaxTotalsExcludingDiscounts(bool $isTaxIncluded): void
-    {
+    public function testCollectsCustomFeeTaxTotalsExcludingDiscounts(
+        bool $isTaxIncluded,
+        array $expectedCustomFees,
+        float $expectedTaxAmount,
+    ): void {
         $objectManager = Bootstrap::getObjectManager();
         $configStub = $this
             ->getMockBuilder(Config::class)
@@ -103,52 +107,7 @@ final class CustomFeesTaxTest extends TestCase
 
         $customFeesTaxTotalCollector->collect($quote, $shippingAssignment, $total);
 
-        $expectedCustomFees = [
-            'test_fee_0' => $objectManager->create(
-                CustomOrderFeeInterface::class,
-                [
-                    'data' => [
-                        'code' => 'test_fee_0',
-                        'title' => 'Test Fee',
-                        'type' => FeeType::Fixed,
-                        'percent' => null,
-                        'show_percentage' => false,
-                        'base_value' => $isTaxIncluded ? 3.72 : 4.00,
-                        'value' => $isTaxIncluded ? 3.72 : 4.00,
-                        'base_value_with_tax' => $isTaxIncluded ? 4.00 : 4.30,
-                        'value_with_tax' => $isTaxIncluded ? 4.00 : 4.30,
-                        'base_tax_amount' => $isTaxIncluded ? 0.28 : 0.30,
-                        'tax_amount' => $isTaxIncluded ? 0.28 : 0.30,
-                        'tax_rate' => 7.5,
-                        'base_discount_tax_compensation' => 0.00,
-                        'discount_tax_compensation' => 0.00,
-                    ],
-                ],
-            ),
-            'test_fee_1' => $objectManager->create(
-                CustomOrderFeeInterface::class,
-                [
-                    'data' => [
-                        'code' => 'test_fee_1',
-                        'title' => 'Another Fee',
-                        'type' => FeeType::Percent,
-                        'percent' => 5.0,
-                        'show_percentage' => true,
-                        'base_value' => $isTaxIncluded ? 0.47 : 0.50,
-                        'value' => $isTaxIncluded ? 0.47 : 0.50,
-                        'base_value_with_tax' => $isTaxIncluded ? 0.50 : 0.54,
-                        'value_with_tax' => $isTaxIncluded ? 0.50 : 0.54,
-                        'base_tax_amount' => $isTaxIncluded ? 0.03 : 0.04,
-                        'tax_amount' => $isTaxIncluded ? 0.03 : 0.04,
-                        'tax_rate' => 7.5,
-                        'base_discount_tax_compensation' => 0.00,
-                        'discount_tax_compensation' => 0.00,
-                    ],
-                ],
-            ),
-        ];
         $actualCustomFees = $quote->getExtensionAttributes()->getCustomFees();
-        $expectedTaxAmount = $isTaxIncluded ? 0.31 : 0.34;
         $actualTaxAmount = (float) $total->getTotalAmount('tax');
 
         self::assertEquals($expectedCustomFees, $actualCustomFees);
@@ -305,12 +264,104 @@ final class CustomFeesTaxTest extends TestCase
 
     public static function collectsCustomFeeTaxTotalsExcludingDiscountsDataProvider(): array
     {
+        $objectManager = Bootstrap::getObjectManager();
+
         return [
             'custom fee value excludes tax' => [
                 'isTaxIncluded' => false,
+                'expectedCustomFees' => [
+                    'test_fee_0' => $objectManager->create(
+                        CustomOrderFeeInterface::class,
+                        [
+                            'data' => [
+                                'code' => 'test_fee_0',
+                                'title' => 'Test Fee',
+                                'type' => FeeType::Fixed,
+                                'percent' => null,
+                                'show_percentage' => false,
+                                'base_value' => 4.00,
+                                'value' => 4.00,
+                                'base_value_with_tax' => 4.30,
+                                'value_with_tax' => 4.30,
+                                'base_tax_amount' => 0.30,
+                                'tax_amount' => 0.30,
+                                'tax_rate' => 7.5,
+                                'base_discount_tax_compensation' => 0.00,
+                                'discount_tax_compensation' => 0.00,
+                            ],
+                        ],
+                    ),
+                    'test_fee_1' => $objectManager->create(
+                        CustomOrderFeeInterface::class,
+                        [
+                            'data' => [
+                                'code' => 'test_fee_1',
+                                'title' => 'Another Fee',
+                                'type' => FeeType::Percent,
+                                'percent' => 5.0,
+                                'show_percentage' => true,
+                                'base_value' => 0.50,
+                                'value' => 0.50,
+                                'base_value_with_tax' => 0.54,
+                                'value_with_tax' => 0.54,
+                                'base_tax_amount' => 0.04,
+                                'tax_amount' => 0.04,
+                                'tax_rate' => 7.5,
+                                'base_discount_tax_compensation' => 0.00,
+                                'discount_tax_compensation' => 0.00,
+                            ],
+                        ],
+                    ),
+                ],
+                'expectedTaxAmount' => 0.34,
             ],
             'custom fee value includes tax' => [
                 'isTaxIncluded' => true,
+                'expectedCustomFees' => [
+                    'test_fee_0' => $objectManager->create(
+                        CustomOrderFeeInterface::class,
+                        [
+                            'data' => [
+                                'code' => 'test_fee_0',
+                                'title' => 'Test Fee',
+                                'type' => FeeType::Fixed,
+                                'percent' => null,
+                                'show_percentage' => false,
+                                'base_value' => 3.72,
+                                'value' => 3.72,
+                                'base_value_with_tax' => 4.00,
+                                'value_with_tax' => 4.00,
+                                'base_tax_amount' => 0.28,
+                                'tax_amount' => 0.28,
+                                'tax_rate' => 7.5,
+                                'base_discount_tax_compensation' => 0.00,
+                                'discount_tax_compensation' => 0.00,
+                            ],
+                        ],
+                    ),
+                    'test_fee_1' => $objectManager->create(
+                        CustomOrderFeeInterface::class,
+                        [
+                            'data' => [
+                                'code' => 'test_fee_1',
+                                'title' => 'Another Fee',
+                                'type' => FeeType::Percent,
+                                'percent' => 5.0,
+                                'show_percentage' => true,
+                                'base_value' => 0.47,
+                                'value' => 0.47,
+                                'base_value_with_tax' => 0.50,
+                                'value_with_tax' => 0.50,
+                                'base_tax_amount' => 0.03,
+                                'tax_amount' => 0.03,
+                                'tax_rate' => 7.5,
+                                'base_discount_tax_compensation' => 0.00,
+                                'discount_tax_compensation' => 0.00,
+                            ],
+                        ],
+                    ),
+                ],
+                'expectedTaxAmount' => 0.31,
             ],
         ];
     }
