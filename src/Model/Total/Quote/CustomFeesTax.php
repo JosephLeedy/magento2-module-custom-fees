@@ -6,11 +6,13 @@ namespace JosephLeedy\CustomFees\Model\Total\Quote;
 
 use JosephLeedy\CustomFees\Api\ConfigInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
+use JosephLeedy\CustomFees\Service\CustomFeeDiscountRulesApplier;
 use Magento\Customer\Api\AccountManagementInterface as CustomerAccountManagement;
 use Magento\Customer\Api\Data\AddressInterfaceFactory as CustomerAddressFactory;
 use Magento\Customer\Api\Data\RegionInterfaceFactory as CustomerAddressRegionFactory;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\Quote\Address;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\Quote\Address\Total\CollectorInterface;
 use Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory;
@@ -34,6 +36,7 @@ class CustomFeesTax extends CommonTaxCollector
 {
     public function __construct(
         private readonly ConfigInterface $config,
+        private readonly CustomFeeDiscountRulesApplier $discountRulesApplier,
         TaxConfig $taxConfig,
         TaxCalculationInterface $taxCalculationService,
         QuoteDetailsInterfaceFactory $quoteDetailsDataObjectFactory,
@@ -78,7 +81,17 @@ class CustomFeesTax extends CommonTaxCollector
         }
 
         $this->initializeCustomFeeTaxData($customFees);
-        $this->applyTaxToCustomFees($customFees, $shippingAssignment);
+
+        $appliedTaxAmount = $this->applyTaxToCustomFees($customFees, $shippingAssignment);
+
+        if ($appliedTaxAmount > 0.00 && $this->_config->applyTaxAfterDiscount($quote->getStoreId())) {
+            $this->recalculateCustomFeesTaxesWithDiscounts(
+                $customFees,
+                $shippingAssignment,
+                (int) $quote->getStoreId(),
+            );
+        }
+
         $this->setTotals($customFees, $total);
 
         return $this;
@@ -136,7 +149,7 @@ class CustomFeesTax extends CommonTaxCollector
     /**
      * @param array<string, CustomOrderFeeInterface> $customFees
      */
-    private function applyTaxToCustomFees(array $customFees, ShippingAssignmentInterface $shippingAssignment): void
+    private function applyTaxToCustomFees(array $customFees, ShippingAssignmentInterface $shippingAssignment): float
     {
         /** @var Quote $quote */
         $quote = $shippingAssignment->getShipping()->getAddress()->getQuote();
@@ -163,6 +176,12 @@ class CustomFeesTax extends CommonTaxCollector
         $taxDetails = $this->taxCalculationService->calculateTax($quoteDetails, (int) $storeId);
 
         $this->processCustomFeeTaxData($baseTaxDetails->getItems() ?? [], $taxDetails->getItems() ?? [], $customFees);
+
+        $appliedTaxAmount = array_sum(
+            array_map(static fn(CustomOrderFeeInterface $customFee): float => $customFee->getTaxAmount(), $customFees),
+        );
+
+        return $appliedTaxAmount;
     }
 
     private function buildCustomFeeTaxDataObject(
@@ -292,5 +311,41 @@ class CustomFeesTax extends CommonTaxCollector
         $total->setTotalAmount('custom_fees_discount_tax_compensation', $discountTaxCompensation);
         $total->addBaseTotalAmount('tax', $baseTaxAmount);
         $total->addTotalAmount('tax', $taxAmount);
+    }
+
+    /**
+     * @param array<string, CustomOrderFeeInterface> $customFees
+     */
+    private function recalculateCustomFeesTaxesWithDiscounts(
+        array $customFees,
+        ShippingAssignmentInterface $shippingAssignment,
+        int $storeId,
+    ): void {
+        /** @var Address $address */
+        $address = $shippingAssignment->getShipping()->getAddress();
+
+        $this->discountRulesApplier->applyRules($customFees, $address);
+
+        $appliedRuleIds = $address->getAppliedRuleIds();
+
+        if ($appliedRuleIds === [] || $appliedRuleIds === null) {
+            return;
+        }
+
+        if ($this->config->isTaxIncluded($storeId)) {
+            // Use fee amount including tax to recalculate taxes
+
+            array_walk(
+                $customFees,
+                static function (CustomOrderFeeInterface $customFee): void {
+                    $customFee->setBaseValue($customFee->getBaseValueWithTax());
+                    $customFee->setValue($customFee->getValueWithTax());
+                },
+            );
+        }
+
+        // Reapply taxes after discount rules are applied
+
+        $this->applyTaxToCustomFees($customFees, $shippingAssignment);
     }
 }

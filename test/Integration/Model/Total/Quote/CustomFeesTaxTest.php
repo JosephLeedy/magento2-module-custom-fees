@@ -8,7 +8,9 @@ use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Model\Config;
 use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Model\Total\Quote\CustomFeesTax;
+use JosephLeedy\CustomFees\Service\CustomFeeDiscountRulesApplier;
 use JosephLeedy\CustomFees\Service\CustomQuoteFeesRetriever;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
@@ -16,6 +18,12 @@ use Magento\Quote\Api\Data\ShippingInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\ResourceModel\Quote as QuoteResource;
+use Magento\SalesRule\Api\Data\RuleInterface;
+use Magento\SalesRule\Api\RuleRepositoryInterface;
+use Magento\SalesRule\Model\Converter\ToModel;
+use Magento\SalesRule\Model\ResourceModel\Rule\Collection as RuleCollection;
+use Magento\SalesRule\Model\Rule;
+use Magento\SalesRule\Model\Validator;
 use Magento\Store\Model\ScopeInterface as StoreScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\TestFramework\Fixture\Config as ConfigFixture;
@@ -23,14 +31,14 @@ use Magento\TestFramework\Fixture\DataFixture;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
+use function array_first;
 use function array_map;
-use function array_walk;
 use function round;
 
 final class CustomFeesTaxTest extends TestCase
 {
     /**
-     * @dataProvider collectsCustomFeeTaxTotalsDataProvider
+     * @dataProvider collectsCustomFeeTaxTotalsExcludingDiscountsDataProvider
      */
     #[ConfigFixture(
         Config::CONFIG_PATH_CUSTOM_FEES,
@@ -51,7 +59,7 @@ final class CustomFeesTaxTest extends TestCase
     #[ConfigFixture('shipping/origin/postcode', '75477', StoreScopeInterface::SCOPE_STORE, 'default')]
     #[DataFixture('Magento/Tax/_files/tax_rule_region_1_al.php')]
     #[DataFixture('Magento/Checkout/_files/quote_with_taxable_product_and_customer.php')]
-    public function testCollectsCustomFeeTaxTotals(bool $isTaxIncluded): void
+    public function testCollectsCustomFeeTaxTotalsExcludingDiscounts(bool $isTaxIncluded): void
     {
         $objectManager = Bootstrap::getObjectManager();
         $configStub = $this
@@ -148,7 +156,8 @@ final class CustomFeesTaxTest extends TestCase
     }
 
     /**
-     * @dataProvider collectsCustomFeeTaxTotalsAfterDiscountsDataProvider
+     * @dataProvider collectsCustomFeeTaxTotalsIncludingDiscountsDataProvider
+     * @param array<string, CustomOrderFeeInterface> $expectedCustomFees
      */
     #[ConfigFixture(
         Config::CONFIG_PATH_CUSTOM_FEES,
@@ -163,7 +172,8 @@ final class CustomFeesTaxTest extends TestCase
     #[ConfigFixture('shipping/origin/postcode', '75477', StoreScopeInterface::SCOPE_STORE, 'default')]
     #[DataFixture('Magento/Tax/_files/tax_rule_region_1_al.php')]
     #[DataFixture('Magento/Checkout/_files/quote_with_taxable_product_and_customer.php')]
-    public function testCollectsCustomFeeTaxTotalsAfterDiscounts(
+    #[DataFixture('JosephLeedy_CustomFees::../test/Integration/_files/cart_rule_10_percent_off_custom_fees.php')]
+    public function testCollectsCustomFeeTaxTotalsIncludingDiscounts(
         bool $isTaxIncluded,
         array $expectedCustomFees,
         float $expectedTaxAmount,
@@ -181,11 +191,34 @@ final class CustomFeesTaxTest extends TestCase
         /** @var Total $total */
         $total = $objectManager->create(Total::class);
         $configStub = $this->createStub(Config::class);
+        /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
+        $searchCriteriaBuilder = $objectManager->create(SearchCriteriaBuilder::class);
+        /** @var RuleRepositoryInterface $ruleRepository */
+        $ruleRepository = $objectManager->create(RuleRepositoryInterface::class);
+        $searchCriteria = $searchCriteriaBuilder
+            ->addFilter('name', '10% Off on orders with two items')
+            ->create();
+        /** @var RuleInterface $ruleData */
+        $ruleData = array_first($ruleRepository->getList($searchCriteria)->getItems());
+        /** @var ToModel $ruleDataConverter */
+        $ruleDataConverter = $objectManager->create(ToModel::class);
+        /** @var Rule $rule */
+        $rule = $ruleDataConverter->toModel($ruleData);
+        $ruleCollectionStub = $this->createStub(RuleCollection::class);
+        $validatorStub = $this->createStub(Validator::class);
+        /** @var CustomFeeDiscountRulesApplier $customFeeDiscountRulesApplier */
+        $customFeeDiscountRulesApplier = $objectManager->create(
+            CustomFeeDiscountRulesApplier::class,
+            [
+                'validator' => $validatorStub,
+            ],
+        );
         /** @var CustomFeesTax $customFeesTaxTotalCollector */
         $customFeesTaxTotalCollector = $objectManager->create(
             CustomFeesTax::class,
             [
                 'config' => $configStub,
+                'discountRulesApplier' => $customFeeDiscountRulesApplier,
             ],
         );
 
@@ -193,28 +226,21 @@ final class CustomFeesTaxTest extends TestCase
 
         $this->setCustomFeesForQuote($quote);
 
-        /** @var array<string, CustomOrderFeeInterface> $customFees */
-        $customFees = $quote->getExtensionAttributes()->getCustomFees();
+        $address = $quote->getShippingAddress();
 
-        array_walk(
-            $customFees,
-            static function (CustomOrderFeeInterface $customFee): void {
-                $discountRate = 25.0;
-                $discountAmount = round($customFee->getBaseValue() * ($discountRate / 100), 2);
-
-                $customFee->setBaseDiscountAmount($discountAmount);
-                $customFee->setDiscountAmount($discountAmount);
-                $customFee->setDiscountRate($discountRate);
-            },
-        );
-
-        $shipping->setAddress($quote->getShippingAddress());
+        $shipping->setAddress($address);
 
         $shippingAssignment->setShipping($shipping);
         $shippingAssignment->setItems($quote->getAllItems());
 
         $configStub->method('isTaxIncluded')->willReturn($isTaxIncluded);
         $configStub->method('getTaxClass')->willReturn(2);
+
+        $rule->setIsValidForAddress($address, true);
+
+        $ruleCollectionStub->method('getItems')->willReturn([$rule->getRuleId() => $rule]);
+
+        $validatorStub->method('getRules')->willReturn($ruleCollectionStub);
 
         $customFeesTaxTotalCollector->collect($quote, $shippingAssignment, $total);
 
@@ -277,7 +303,7 @@ final class CustomFeesTaxTest extends TestCase
         self::assertEquals($expectedTotals, $actualTotals);
     }
 
-    public static function collectsCustomFeeTaxTotalsDataProvider(): array
+    public static function collectsCustomFeeTaxTotalsExcludingDiscountsDataProvider(): array
     {
         return [
             'custom fee value excludes tax' => [
@@ -297,7 +323,7 @@ final class CustomFeesTaxTest extends TestCase
      *     expectedDiscountTaxCompensationAmount: float,
      * }>
      */
-    public static function collectsCustomFeeTaxTotalsAfterDiscountsDataProvider(): array
+    public static function collectsCustomFeeTaxTotalsIncludingDiscountsDataProvider(): array
     {
         $objectManager = Bootstrap::getObjectManager();
 
@@ -318,12 +344,12 @@ final class CustomFeesTaxTest extends TestCase
                                 'value' => 4.00,
                                 'base_value_with_tax' => 4.30,
                                 'value_with_tax' => 4.30,
-                                'base_tax_amount' => 0.23,
-                                'tax_amount' => 0.23,
+                                'base_tax_amount' => 0.27,
+                                'tax_amount' => 0.27,
                                 'tax_rate' => 7.5,
-                                'base_discount_amount' => 1.00,
-                                'discount_amount' => 1.00,
-                                'discount_rate' => 25.0,
+                                'base_discount_amount' => 0.40,
+                                'discount_amount' => 0.40,
+                                'discount_rate' => 10.0,
                                 'base_discount_tax_compensation' => 0.00,
                                 'discount_tax_compensation' => 0.00,
                             ],
@@ -342,19 +368,19 @@ final class CustomFeesTaxTest extends TestCase
                                 'value' => 0.50,
                                 'base_value_with_tax' => 0.54,
                                 'value_with_tax' => 0.54,
-                                'base_tax_amount' => 0.02,
-                                'tax_amount' => 0.02,
+                                'base_tax_amount' => 0.03,
+                                'tax_amount' => 0.03,
                                 'tax_rate' => 7.5,
-                                'base_discount_amount' => 0.13,
-                                'discount_amount' => 0.13,
-                                'discount_rate' => 25.0,
+                                'base_discount_amount' => 0.05,
+                                'discount_amount' => 0.05,
+                                'discount_rate' => 10.0,
                                 'base_discount_tax_compensation' => 0.00,
                                 'discount_tax_compensation' => 0.00,
                             ],
                         ],
                     ),
                 ],
-                'expectedTaxAmount' => 0.25,
+                'expectedTaxAmount' => 0.30,
                 'expectedDiscountTaxCompensationAmount' => 0.00,
             ],
             'custom fee value includes tax' => [
@@ -373,14 +399,14 @@ final class CustomFeesTaxTest extends TestCase
                                 'value' => 3.72,
                                 'base_value_with_tax' => 4.00,
                                 'value_with_tax' => 4.00,
-                                'base_tax_amount' => 0.21,
-                                'tax_amount' => 0.21,
+                                'base_tax_amount' => 0.25,
+                                'tax_amount' => 0.25,
                                 'tax_rate' => 7.5,
-                                'base_discount_amount' => 1.00,
-                                'discount_amount' => 1.00,
-                                'discount_rate' => 25.0,
-                                'base_discount_tax_compensation' => 0.07,
-                                'discount_tax_compensation' => 0.07,
+                                'base_discount_amount' => 0.37,
+                                'discount_amount' => 0.37,
+                                'discount_rate' => 10.0,
+                                'base_discount_tax_compensation' => 0.03,
+                                'discount_tax_compensation' => 0.03,
                             ],
                         ],
                     ),
@@ -400,17 +426,17 @@ final class CustomFeesTaxTest extends TestCase
                                 'base_tax_amount' => 0.03,
                                 'tax_amount' => 0.03,
                                 'tax_rate' => 7.5,
-                                'base_discount_amount' => 0.13,
-                                'discount_amount' => 0.13,
-                                'discount_rate' => 25.0,
+                                'base_discount_amount' => 0.05,
+                                'discount_amount' => 0.05,
+                                'discount_rate' => 10.0,
                                 'base_discount_tax_compensation' => 0.00,
                                 'discount_tax_compensation' => 0.00,
                             ],
                         ],
                     ),
                 ],
-                'expectedTaxAmount' => 0.24,
-                'expectedDiscountTaxCompensationAmount' => 0.07,
+                'expectedTaxAmount' => 0.28,
+                'expectedDiscountTaxCompensationAmount' => 0.03,
             ],
         ];
     }
