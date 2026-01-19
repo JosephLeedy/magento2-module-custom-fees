@@ -262,6 +262,13 @@ final class CustomFeesTaxTest extends TestCase
         self::assertEquals($expectedTotals, $actualTotals);
     }
 
+    /**
+     * @return array<string, array{
+     *     isTaxIncluded: bool,
+     *     expectedCustomFees: array<string, CustomOrderFeeInterface>,
+     *     expectedTaxAmount: float,
+     * }>
+     */
     public static function collectsCustomFeeTaxTotalsExcludingDiscountsDataProvider(): array
     {
         $objectManager = Bootstrap::getObjectManager();
