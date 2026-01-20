@@ -17,6 +17,7 @@ use Magento\SalesRule\Model\Validator;
 
 use function __;
 use function array_walk;
+use function round;
 
 class CustomFeesDiscount extends AbstractTotal
 {
@@ -134,9 +135,11 @@ class CustomFeesDiscount extends AbstractTotal
 
         $total->setDiscountDescription($address->getDiscountDescription());
         $total->setBaseSubtotalWithDiscount(
-            $total->getBaseSubtotal() + $baseTotalCustomFeeAmount + $total->getBaseDiscountAmount(),
+            round($total->getBaseSubtotal() + $baseTotalCustomFeeAmount + $total->getBaseDiscountAmount(), 2),
         );
-        $total->setSubtotalWithDiscount($total->getSubtotal() + $totalCustomFeeAmount + $total->getDiscountAmount());
+        $total->setSubtotalWithDiscount(
+            round($total->getSubtotal() + $totalCustomFeeAmount + $total->getDiscountAmount(), 2)
+        );
 
         $address->setBaseDiscountAmount($total->getBaseDiscountAmount());
         $address->setDiscountAmount($total->getDiscountAmount());
