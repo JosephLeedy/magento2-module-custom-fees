@@ -220,6 +220,108 @@ final class CustomFeesTaxTest extends TestCase
         StoreScopeInterface::SCOPE_STORE,
         'default',
     )]
+    #[ConfigFixture(
+        Config::CONFIG_PATH_TAX_CLASS_CUSTOM_FEE_TAX_CLASS,
+        '2',
+        StoreScopeInterface::SCOPE_STORE,
+        'default',
+    )]
+    #[ConfigFixture(
+        Config::CONFIG_PATH_TAX_CALCULATION_CUSTOM_FEES_INCLUDE_TAX,
+        '1',
+        StoreScopeInterface::SCOPE_STORE,
+        'default',
+    )]
+    #[ConfigFixture('shipping/origin/country_id', 'US', StoreScopeInterface::SCOPE_STORE, 'default')]
+    #[ConfigFixture('shipping/origin/region_id', '1', StoreScopeInterface::SCOPE_STORE, 'default')]
+    #[ConfigFixture('shipping/origin/postcode', '75477', StoreScopeInterface::SCOPE_STORE, 'default')]
+    #[DataFixture('Magento/Tax/_files/tax_rule_region_1_al.php')]
+    #[DataFixture('JosephLeedy_CustomFees::../test/Integration/_files/quote_without_address.php')]
+    #[DataFixture('JosephLeedy_CustomFees::../test/Integration/_files/cart_rule_10_percent_off_custom_fees.php')]
+    public function testCollectsCustomFeeTaxTotalsFromStoreTaxIfAddressIsNotSet(): void
+    {
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Quote $quote */
+        $quote = $objectManager->create(Quote::class);
+        /** @var QuoteResource $quoteResource */
+        $quoteResource = $objectManager->create(QuoteResource::class);
+        /** @var ShippingInterface $shipping */
+        $shipping = $objectManager->create(ShippingInterface::class);
+        /** @var ShippingAssignmentInterface $shippingAssignment */
+        $shippingAssignment = $objectManager->create(ShippingAssignmentInterface::class);
+        /** @var Total $total */
+        $total = $objectManager->create(Total::class);
+        /** @var CustomFeesTax $customFeesTaxTotalCollector */
+        $customFeesTaxTotalCollector = $objectManager->create(CustomFeesTax::class);
+
+        $quoteResource->load($quote, 'test_order_1', 'reserved_order_id');
+
+        $this->setCustomFeesForQuote($quote);
+
+        $shipping->setAddress($quote->getShippingAddress());
+
+        $shippingAssignment->setShipping($shipping);
+        $shippingAssignment->setItems($quote->getAllItems());
+
+        $customFeesTaxTotalCollector->collect($quote, $shippingAssignment, $total);
+
+        $expectedCustomFees = [
+            'test_fee_0' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 3.72,
+                        'value' => 3.72,
+                        'base_value_with_tax' => 3.72,
+                        'value_with_tax' => 3.72,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.0,
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
+                ],
+            ),
+            'test_fee_1' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Fee',
+                        'type' => FeeType::Percent,
+                        'percent' => 5.0,
+                        'show_percentage' => true,
+                        'base_value' => 0.93,
+                        'value' => 0.93,
+                        'base_value_with_tax' => 0.93,
+                        'value_with_tax' => 0.93,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.0,
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
+                ],
+            ),
+        ];
+        $actualCustomFees = $quote->getExtensionAttributes()->getCustomFees();
+
+        self::assertEquals($expectedCustomFees, $actualCustomFees);
+    }
+
+    #[ConfigFixture(
+        Config::CONFIG_PATH_CUSTOM_FEES,
+        '{"_1727299833817_817":{"code":"test_fee_0","title":"Test Fee","type":"fixed","status":"1","value":"4.00","adva'
+        . 'nced":"{\\"show_percentage\\":\\"0\\"}"},"_1727299843197_197":{"code":"test_fee_1","title":"Another Fee","ty'
+        . 'pe":"percent","status":"1","value":"5.00","advanced":"{\\"show_percentage\\":\\"1\\"}"}}',
+        StoreScopeInterface::SCOPE_STORE,
+        'default',
+    )]
     #[DataFixture('Magento/Checkout/_files/quote_with_address.php')]
     public function testFetchesCustomFeeTaxTotals(): void
     {

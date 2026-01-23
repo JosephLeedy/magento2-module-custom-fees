@@ -232,10 +232,6 @@ class CustomFeesTax extends CommonTaxCollector
                 $customFee = $customFees[$customFeeCode];
                 $rowTax = $taxDetailsItem->getRowTax();
 
-                if ($rowTax === 0.0) {
-                    return;
-                }
-
                 $customFee->setBaseValue(round($taxDetailsItem->getRowTotal(), 2));
                 $customFee->setBaseValueWithTax(round($taxDetailsItem->getRowTotalInclTax(), 2));
                 $customFee->setBaseTaxAmount($rowTax);
@@ -251,10 +247,6 @@ class CustomFeesTax extends CommonTaxCollector
                 $customFeeCode = $taxDetailsItem->getCode();
                 $customFee = $customFees[$customFeeCode];
                 $rowTax = $taxDetailsItem->getRowTax();
-
-                if ($rowTax === 0.0) {
-                    return;
-                }
 
                 $customFee->setValue(round($taxDetailsItem->getRowTotal(), 2));
                 $customFee->setValueWithTax(round($taxDetailsItem->getRowTotalInclTax(), 2));
@@ -273,10 +265,6 @@ class CustomFeesTax extends CommonTaxCollector
         array_walk(
             $customFees,
             static function (CustomOrderFeeInterface $customFee) use ($total): void {
-                if ($customFee->getTaxRate() === 0.0) {
-                    return;
-                }
-
                 $total->setBaseTotalAmount($customFee->getCode(), $customFee->getBaseValue());
                 $total->setTotalAmount($customFee->getCode(), $customFee->getValue());
 
