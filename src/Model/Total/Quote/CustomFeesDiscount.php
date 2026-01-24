@@ -138,7 +138,7 @@ class CustomFeesDiscount extends AbstractTotal
             round($total->getBaseSubtotal() + $baseTotalCustomFeeAmount + $total->getBaseDiscountAmount(), 2),
         );
         $total->setSubtotalWithDiscount(
-            round($total->getSubtotal() + $totalCustomFeeAmount + $total->getDiscountAmount(), 2)
+            round($total->getSubtotal() + $totalCustomFeeAmount + $total->getDiscountAmount(), 2),
         );
 
         $address->setBaseDiscountAmount($total->getBaseDiscountAmount());
