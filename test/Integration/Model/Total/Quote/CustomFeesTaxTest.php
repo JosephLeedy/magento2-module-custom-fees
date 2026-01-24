@@ -26,6 +26,8 @@ use Magento\SalesRule\Model\Rule;
 use Magento\SalesRule\Model\Validator;
 use Magento\Store\Model\ScopeInterface as StoreScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Tax\Api\Data\AppliedTaxInterface;
+use Magento\Tax\Api\Data\AppliedTaxRateInterface;
 use Magento\TestFramework\Fixture\Config as ConfigFixture;
 use Magento\TestFramework\Fixture\DataFixture;
 use Magento\TestFramework\Helper\Bootstrap;
@@ -39,7 +41,9 @@ final class CustomFeesTaxTest extends TestCase
 {
     /**
      * @dataProvider collectsCustomFeeTaxTotalsExcludingDiscountsDataProvider
-     * @param array<string, CustomOrderFeeInterface> $expectedCustomFees
+     * @param array<string, CustomOrderFeeData> $expectedCustomFees
+     * @param array<string, AppliedTaxData> $expectedAppliedTaxes
+     * @param array{custom_fees: array<string, AppliedTaxData>} $expectedItemsAppliedTaxes
      */
     #[ConfigFixture(
         Config::CONFIG_PATH_CUSTOM_FEES,
@@ -64,6 +68,8 @@ final class CustomFeesTaxTest extends TestCase
         bool $isTaxIncluded,
         array $expectedCustomFees,
         float $expectedTaxAmount,
+        array $expectedAppliedTaxes,
+        array $expectedItemsAppliedTaxes,
     ): void {
         $objectManager = Bootstrap::getObjectManager();
         $configStub = $this
@@ -105,18 +111,28 @@ final class CustomFeesTaxTest extends TestCase
         $shippingAssignment->setShipping($shipping);
         $shippingAssignment->setItems($quote->getAllItems());
 
+        $total->setAppliedTaxes([]);
+
         $customFeesTaxTotalCollector->collect($quote, $shippingAssignment, $total);
 
-        $actualCustomFees = $quote->getExtensionAttributes()->getCustomFees();
+        $actualCustomFees = $this->convertCustomFeesToArray($quote->getExtensionAttributes()?->getCustomFees() ?? []);
         $actualTaxAmount = (float) $total->getTotalAmount('tax');
+        $actualAppliedTaxes = $total->getAppliedTaxes();
+        $actualItemsAppliedTaxes = $total->getItemsAppliedTaxes();
 
         self::assertEquals($expectedCustomFees, $actualCustomFees);
         self::assertSame($expectedTaxAmount, $actualTaxAmount);
+        /* PHPUnit's `assertEquals` assertion sometimes does weird things with floating point numbers, so we need to use
+           a delta to prevent failures */
+        self::assertEqualsWithDelta($expectedAppliedTaxes, $actualAppliedTaxes, 0.0000000000000001);
+        self::assertEquals($expectedItemsAppliedTaxes, $actualItemsAppliedTaxes);
     }
 
     /**
      * @dataProvider collectsCustomFeeTaxTotalsIncludingDiscountsDataProvider
      * @param array<string, CustomOrderFeeInterface> $expectedCustomFees
+     * @param array<string, AppliedTaxData> $expectedAppliedTaxes
+     * @param array{custom_fees: array<string, AppliedTaxData>} $expectedItemsAppliedTaxes
      */
     #[ConfigFixture(
         Config::CONFIG_PATH_CUSTOM_FEES,
@@ -136,6 +152,8 @@ final class CustomFeesTaxTest extends TestCase
         bool $isTaxIncluded,
         array $expectedCustomFees,
         float $expectedTaxAmount,
+        array $expectedAppliedTaxes,
+        array $expectedItemsAppliedTaxes,
         float $expectedDiscountTaxCompensationAmount,
     ): void {
         $objectManager = Bootstrap::getObjectManager();
@@ -201,14 +219,22 @@ final class CustomFeesTaxTest extends TestCase
 
         $validatorStub->method('getRules')->willReturn($ruleCollectionStub);
 
+        $total->setAppliedTaxes([]);
+
         $customFeesTaxTotalCollector->collect($quote, $shippingAssignment, $total);
 
-        $actualCustomFees = $quote->getExtensionAttributes()->getCustomFees();
+        $actualCustomFees = $this->convertCustomFeesToArray($quote->getExtensionAttributes()?->getCustomFees() ?? []);
         $actualTaxAmount = (float) $total->getTotalAmount('tax');
+        $actualAppliedTaxes = $total->getAppliedTaxes();
+        $actualItemsAppliedTaxes = $total->getItemsAppliedTaxes();
         $actualDiscountTaxCompensationAmount = (float) $total->getTotalAmount('custom_fees_discount_tax_compensation');
 
         self::assertEquals($expectedCustomFees, $actualCustomFees);
         self::assertSame($expectedTaxAmount, $actualTaxAmount);
+        /* PHPUnit's `assertEquals` assertion sometimes does weird things with floating point numbers, so we need to use
+           a delta to prevent failures */
+        self::assertEqualsWithDelta($expectedAppliedTaxes, $actualAppliedTaxes, 0.0000000000000001);
+        self::assertEquals($expectedItemsAppliedTaxes, $actualItemsAppliedTaxes);
         self::assertSame($expectedDiscountTaxCompensationAmount, $actualDiscountTaxCompensationAmount);
     }
 
@@ -282,6 +308,8 @@ final class CustomFeesTaxTest extends TestCase
                         'base_tax_amount' => 0.00,
                         'tax_amount' => 0.00,
                         'tax_rate' => 0.0,
+                        'base_applied_taxes' => [],
+                        'applied_taxes' => [],
                         'base_discount_tax_compensation' => 0.00,
                         'discount_tax_compensation' => 0.00,
                     ],
@@ -303,15 +331,24 @@ final class CustomFeesTaxTest extends TestCase
                         'base_tax_amount' => 0.00,
                         'tax_amount' => 0.00,
                         'tax_rate' => 0.0,
+                        'base_applied_taxes' => [],
+                        'applied_taxes' => [],
                         'base_discount_tax_compensation' => 0.00,
                         'discount_tax_compensation' => 0.00,
                     ],
                 ],
             ),
         ];
+        $expectedItemsAppliedTaxes = [
+            'custom_fees' => [],
+        ];
         $actualCustomFees = $quote->getExtensionAttributes()->getCustomFees();
+        $actualAppliedTaxes = $total->getAppliedTaxes();
+        $actualItemsAppliedTaxes = $total->getItemsAppliedTaxes();
 
         self::assertEquals($expectedCustomFees, $actualCustomFees);
+        self::assertEmpty($actualAppliedTaxes);
+        self::assertSame($expectedItemsAppliedTaxes, $actualItemsAppliedTaxes);
     }
 
     #[ConfigFixture(
@@ -367,110 +404,312 @@ final class CustomFeesTaxTest extends TestCase
     /**
      * @return array<string, array{
      *     isTaxIncluded: bool,
-     *     expectedCustomFees: array<string, CustomOrderFeeInterface>,
+     *     expectedCustomFees: array<string, CustomOrderFeeData>,
      *     expectedTaxAmount: float,
+     *     expectedAppliedTaxes: array<string, AppliedTaxData>,
+     *     expectedItemsAppliedTaxes: array{custom_fees: array<string, AppliedTaxData>},
      * }>
      */
     public static function collectsCustomFeeTaxTotalsExcludingDiscountsDataProvider(): array
     {
-        $objectManager = Bootstrap::getObjectManager();
-
         return [
             'custom fee value excludes tax' => [
                 'isTaxIncluded' => false,
                 'expectedCustomFees' => [
-                    'test_fee_0' => $objectManager->create(
-                        CustomOrderFeeInterface::class,
-                        [
-                            'data' => [
-                                'code' => 'test_fee_0',
-                                'title' => 'Test Fee',
-                                'type' => FeeType::Fixed,
-                                'percent' => null,
-                                'show_percentage' => false,
-                                'base_value' => 4.00,
-                                'value' => 4.00,
-                                'base_value_with_tax' => 4.30,
-                                'value_with_tax' => 4.30,
-                                'base_tax_amount' => 0.30,
-                                'tax_amount' => 0.30,
-                                'tax_rate' => 7.5,
-                                'base_discount_tax_compensation' => 0.00,
-                                'discount_tax_compensation' => 0.00,
+                    'test_fee_0' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed->value,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 4.00,
+                        'value' => 4.00,
+                        'base_value_with_tax' => 4.30,
+                        'value_with_tax' => 4.30,
+                        'base_tax_amount' => 0.30,
+                        'tax_amount' => 0.30,
+                        'tax_rate' => 7.5,
+                        'base_applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.30,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
                             ],
                         ],
-                    ),
-                    'test_fee_1' => $objectManager->create(
-                        CustomOrderFeeInterface::class,
-                        [
-                            'data' => [
-                                'code' => 'test_fee_1',
-                                'title' => 'Another Fee',
-                                'type' => FeeType::Percent,
-                                'percent' => 5.0,
-                                'show_percentage' => true,
-                                'base_value' => 0.50,
-                                'value' => 0.50,
-                                'base_value_with_tax' => 0.54,
-                                'value_with_tax' => 0.54,
-                                'base_tax_amount' => 0.04,
-                                'tax_amount' => 0.04,
-                                'tax_rate' => 7.5,
-                                'base_discount_tax_compensation' => 0.00,
-                                'discount_tax_compensation' => 0.00,
+                        'applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.30,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
                             ],
                         ],
-                    ),
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
+                    'test_fee_1' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Fee',
+                        'type' => FeeType::Percent->value,
+                        'percent' => 5.0,
+                        'show_percentage' => true,
+                        'base_value' => 0.50,
+                        'value' => 0.50,
+                        'base_value_with_tax' => 0.54,
+                        'value_with_tax' => 0.54,
+                        'base_tax_amount' => 0.04,
+                        'tax_amount' => 0.04,
+                        'tax_rate' => 7.5,
+                        'base_applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.04,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.04,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
                 ],
                 'expectedTaxAmount' => 0.34,
+                'expectedAppliedTaxes' => [
+                    'US-AL-*-Rate-1' => [
+                        'base_amount' => 0.34,
+                        'amount' => 0.34,
+                        'percent' => 7.5,
+                        'id' => 'US-AL-*-Rate-1',
+                        'rates' => [
+                            [
+                                'percent' => 7.5,
+                                'code' => 'US-AL-*-Rate-1',
+                                'title' => 'US-AL-*-Rate-1',
+                            ],
+                        ],
+                        'item_id' => null,
+                        'associated_item_id' => null,
+                        'item_type' => 'custom_fee',
+                        'process' => 0,
+                    ],
+                ],
+                'expectedItemsAppliedTaxes' => [
+                    'custom_fees' => [
+                        'test_fee_0' => [
+                            'base_amount' => 0.30,
+                            'amount' => 0.30,
+                            'percent' => 7.5,
+                            'id' => 'US-AL-*-Rate-1',
+                            'rates' => [
+                                [
+                                    'percent' => 7.5,
+                                    'code' => 'US-AL-*-Rate-1',
+                                    'title' => 'US-AL-*-Rate-1',
+                                ],
+                            ],
+                            'item_id' => null,
+                            'associated_item_id' => null,
+                            'item_type' => 'custom_fee',
+                        ],
+                        'test_fee_1' => [
+                            'base_amount' => 0.04,
+                            'amount' => 0.04,
+                            'percent' => 7.5,
+                            'id' => 'US-AL-*-Rate-1',
+                            'rates' => [
+                                [
+                                    'percent' => 7.5,
+                                    'code' => 'US-AL-*-Rate-1',
+                                    'title' => 'US-AL-*-Rate-1',
+                                ],
+                            ],
+                            'item_id' => null,
+                            'associated_item_id' => null,
+                            'item_type' => 'custom_fee',
+                        ],
+                    ],
+                ],
             ],
             'custom fee value includes tax' => [
                 'isTaxIncluded' => true,
                 'expectedCustomFees' => [
-                    'test_fee_0' => $objectManager->create(
-                        CustomOrderFeeInterface::class,
-                        [
-                            'data' => [
-                                'code' => 'test_fee_0',
-                                'title' => 'Test Fee',
-                                'type' => FeeType::Fixed,
-                                'percent' => null,
-                                'show_percentage' => false,
-                                'base_value' => 3.72,
-                                'value' => 3.72,
-                                'base_value_with_tax' => 4.00,
-                                'value_with_tax' => 4.00,
-                                'base_tax_amount' => 0.28,
-                                'tax_amount' => 0.28,
-                                'tax_rate' => 7.5,
-                                'base_discount_tax_compensation' => 0.00,
-                                'discount_tax_compensation' => 0.00,
+                    'test_fee_0' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed->value,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 3.72,
+                        'value' => 3.72,
+                        'base_value_with_tax' => 4.00,
+                        'value_with_tax' => 4.00,
+                        'base_tax_amount' => 0.28,
+                        'tax_amount' => 0.28,
+                        'tax_rate' => 7.5,
+                        'base_applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.28,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
                             ],
                         ],
-                    ),
-                    'test_fee_1' => $objectManager->create(
-                        CustomOrderFeeInterface::class,
-                        [
-                            'data' => [
-                                'code' => 'test_fee_1',
-                                'title' => 'Another Fee',
-                                'type' => FeeType::Percent,
-                                'percent' => 5.0,
-                                'show_percentage' => true,
-                                'base_value' => 0.47,
-                                'value' => 0.47,
-                                'base_value_with_tax' => 0.50,
-                                'value_with_tax' => 0.50,
-                                'base_tax_amount' => 0.03,
-                                'tax_amount' => 0.03,
-                                'tax_rate' => 7.5,
-                                'base_discount_tax_compensation' => 0.00,
-                                'discount_tax_compensation' => 0.00,
+                        'applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.28,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
                             ],
                         ],
-                    ),
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
+                    'test_fee_1' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Fee',
+                        'type' => FeeType::Percent->value,
+                        'percent' => 5.0,
+                        'show_percentage' => true,
+                        'base_value' => 0.47,
+                        'value' => 0.47,
+                        'base_value_with_tax' => 0.50,
+                        'value_with_tax' => 0.50,
+                        'base_tax_amount' => 0.03,
+                        'tax_amount' => 0.03,
+                        'tax_rate' => 7.5,
+                        'base_applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.03,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.03,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
                 ],
                 'expectedTaxAmount' => 0.31,
+                'expectedAppliedTaxes' => [
+                    'US-AL-*-Rate-1' => [
+                        'base_amount' => 0.31,
+                        'amount' => 0.31,
+                        'percent' => 7.5,
+                        'id' => 'US-AL-*-Rate-1',
+                        'rates' => [
+                            [
+                                'percent' => 7.5,
+                                'code' => 'US-AL-*-Rate-1',
+                                'title' => 'US-AL-*-Rate-1',
+                            ],
+                        ],
+                        'item_id' => null,
+                        'associated_item_id' => null,
+                        'item_type' => 'custom_fee',
+                        'process' => 0,
+                    ],
+                ],
+                'expectedItemsAppliedTaxes' => [
+                    'custom_fees' => [
+                        'test_fee_0' => [
+                            'base_amount' => 0.28,
+                            'amount' => 0.28,
+                            'percent' => 7.5,
+                            'id' => 'US-AL-*-Rate-1',
+                            'rates' => [
+                                [
+                                    'percent' => 7.5,
+                                    'code' => 'US-AL-*-Rate-1',
+                                    'title' => 'US-AL-*-Rate-1',
+                                ],
+                            ],
+                            'item_id' => null,
+                            'associated_item_id' => null,
+                            'item_type' => 'custom_fee',
+                        ],
+                        'test_fee_1' => [
+                            'base_amount' => 0.03,
+                            'amount' => 0.03,
+                            'percent' => 7.5,
+                            'id' => 'US-AL-*-Rate-1',
+                            'rates' => [
+                                [
+                                    'percent' => 7.5,
+                                    'code' => 'US-AL-*-Rate-1',
+                                    'title' => 'US-AL-*-Rate-1',
+                                ],
+                            ],
+                            'item_id' => null,
+                            'associated_item_id' => null,
+                            'item_type' => 'custom_fee',
+                        ],
+                    ],
+                ],
             ],
         ];
     }
@@ -478,124 +717,326 @@ final class CustomFeesTaxTest extends TestCase
     /**
      * @return array<string, array{
      *     isTaxIncluded: bool,
-     *     expectedCustomFees: array<string, CustomOrderFeeInterface>,
+     *     expectedCustomFees: array<string, CustomOrderFeeData>,
      *     expectedTaxAmount: float,
+     *     expectedAppliedTaxes: array<string, AppliedTaxData>,
+     *     expectedItemsAppliedTaxes: array{custom_fees: array<string, AppliedTaxData>},
      *     expectedDiscountTaxCompensationAmount: float,
      * }>
      */
     public static function collectsCustomFeeTaxTotalsIncludingDiscountsDataProvider(): array
     {
-        $objectManager = Bootstrap::getObjectManager();
-
         return [
             'custom fee value excludes tax' => [
                 'isTaxIncluded' => false,
                 'expectedCustomFees' => [
-                    'test_fee_0' => $objectManager->create(
-                        CustomOrderFeeInterface::class,
-                        [
-                            'data' => [
-                                'code' => 'test_fee_0',
-                                'title' => 'Test Fee',
-                                'type' => FeeType::Fixed,
-                                'percent' => null,
-                                'show_percentage' => false,
-                                'base_value' => 4.00,
-                                'value' => 4.00,
-                                'base_value_with_tax' => 4.30,
-                                'value_with_tax' => 4.30,
-                                'base_tax_amount' => 0.27,
-                                'tax_amount' => 0.27,
-                                'tax_rate' => 7.5,
-                                'base_discount_amount' => 0.40,
-                                'discount_amount' => 0.40,
-                                'discount_rate' => 10.0,
-                                'base_discount_tax_compensation' => 0.00,
-                                'discount_tax_compensation' => 0.00,
+                    'test_fee_0' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed->value,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 4.00,
+                        'value' => 4.00,
+                        'base_value_with_tax' => 4.30,
+                        'value_with_tax' => 4.30,
+                        'base_tax_amount' => 0.27,
+                        'tax_amount' => 0.27,
+                        'tax_rate' => 7.5,
+                        'base_applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.27,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
                             ],
                         ],
-                    ),
-                    'test_fee_1' => $objectManager->create(
-                        CustomOrderFeeInterface::class,
-                        [
-                            'data' => [
-                                'code' => 'test_fee_1',
-                                'title' => 'Another Fee',
-                                'type' => FeeType::Percent,
-                                'percent' => 5.0,
-                                'show_percentage' => true,
-                                'base_value' => 0.50,
-                                'value' => 0.50,
-                                'base_value_with_tax' => 0.54,
-                                'value_with_tax' => 0.54,
-                                'base_tax_amount' => 0.03,
-                                'tax_amount' => 0.03,
-                                'tax_rate' => 7.5,
-                                'base_discount_amount' => 0.05,
-                                'discount_amount' => 0.05,
-                                'discount_rate' => 10.0,
-                                'base_discount_tax_compensation' => 0.00,
-                                'discount_tax_compensation' => 0.00,
+                        'applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.27,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
                             ],
                         ],
-                    ),
+                        'base_discount_amount' => 0.40,
+                        'discount_amount' => 0.40,
+                        'discount_rate' => 10.0,
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
+                    'test_fee_1' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Fee',
+                        'type' => FeeType::Percent->value,
+                        'percent' => 5.0,
+                        'show_percentage' => true,
+                        'base_value' => 0.50,
+                        'value' => 0.50,
+                        'base_value_with_tax' => 0.54,
+                        'value_with_tax' => 0.54,
+                        'base_tax_amount' => 0.03,
+                        'tax_amount' => 0.03,
+                        'tax_rate' => 7.5,
+                        'base_applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.03,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.03,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'base_discount_amount' => 0.05,
+                        'discount_amount' => 0.05,
+                        'discount_rate' => 10.0,
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
                 ],
                 'expectedTaxAmount' => 0.30,
+                'expectedAppliedTaxes' => [
+                    'US-AL-*-Rate-1' => [
+                        'base_amount' => 0.30,
+                        'amount' => 0.30,
+                        'percent' => 7.5,
+                        'id' => 'US-AL-*-Rate-1',
+                        'rates' => [
+                            [
+                                'percent' => 7.5,
+                                'code' => 'US-AL-*-Rate-1',
+                                'title' => 'US-AL-*-Rate-1',
+                            ],
+                        ],
+                        'item_id' => null,
+                        'associated_item_id' => null,
+                        'item_type' => 'custom_fee',
+                        'process' => 0,
+                    ],
+                ],
+                'expectedItemsAppliedTaxes' => [
+                    'custom_fees' => [
+                        'test_fee_0' => [
+                            'base_amount' => 0.27,
+                            'amount' => 0.27,
+                            'percent' => 7.5,
+                            'id' => 'US-AL-*-Rate-1',
+                            'rates' => [
+                                [
+                                    'percent' => 7.5,
+                                    'code' => 'US-AL-*-Rate-1',
+                                    'title' => 'US-AL-*-Rate-1',
+                                ],
+                            ],
+                            'item_id' => null,
+                            'associated_item_id' => null,
+                            'item_type' => 'custom_fee',
+                        ],
+                        'test_fee_1' => [
+                            'base_amount' => 0.03,
+                            'amount' => 0.03,
+                            'percent' => 7.5,
+                            'id' => 'US-AL-*-Rate-1',
+                            'rates' => [
+                                [
+                                    'percent' => 7.5,
+                                    'code' => 'US-AL-*-Rate-1',
+                                    'title' => 'US-AL-*-Rate-1',
+                                ],
+                            ],
+                            'item_id' => null,
+                            'associated_item_id' => null,
+                            'item_type' => 'custom_fee',
+                        ],
+                    ],
+                ],
                 'expectedDiscountTaxCompensationAmount' => 0.00,
             ],
             'custom fee value includes tax' => [
                 'isTaxIncluded' => true,
                 'expectedCustomFees' => [
-                    'test_fee_0' => $objectManager->create(
-                        CustomOrderFeeInterface::class,
-                        [
-                            'data' => [
-                                'code' => 'test_fee_0',
-                                'title' => 'Test Fee',
-                                'type' => FeeType::Fixed,
-                                'percent' => null,
-                                'show_percentage' => false,
-                                'base_value' => 3.72,
-                                'value' => 3.72,
-                                'base_value_with_tax' => 4.00,
-                                'value_with_tax' => 4.00,
-                                'base_tax_amount' => 0.25,
-                                'tax_amount' => 0.25,
-                                'tax_rate' => 7.5,
-                                'base_discount_amount' => 0.37,
-                                'discount_amount' => 0.37,
-                                'discount_rate' => 10.0,
-                                'base_discount_tax_compensation' => 0.03,
-                                'discount_tax_compensation' => 0.03,
+                    'test_fee_0' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed->value,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 3.72,
+                        'value' => 3.72,
+                        'base_value_with_tax' => 4.00,
+                        'value_with_tax' => 4.00,
+                        'base_tax_amount' => 0.25,
+                        'tax_amount' => 0.25,
+                        'tax_rate' => 7.5,
+                        'base_applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.25,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
                             ],
                         ],
-                    ),
-                    'test_fee_1' => $objectManager->create(
-                        CustomOrderFeeInterface::class,
-                        [
-                            'data' => [
-                                'code' => 'test_fee_1',
-                                'title' => 'Another Fee',
-                                'type' => FeeType::Percent,
-                                'percent' => 5.0,
-                                'show_percentage' => true,
-                                'base_value' => 0.47,
-                                'value' => 0.47,
-                                'base_value_with_tax' => 0.50,
-                                'value_with_tax' => 0.50,
-                                'base_tax_amount' => 0.03,
-                                'tax_amount' => 0.03,
-                                'tax_rate' => 7.5,
-                                'base_discount_amount' => 0.05,
-                                'discount_amount' => 0.05,
-                                'discount_rate' => 10.0,
-                                'base_discount_tax_compensation' => 0.00,
-                                'discount_tax_compensation' => 0.00,
+                        'applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.25,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
                             ],
                         ],
-                    ),
+                        'base_discount_amount' => 0.37,
+                        'discount_amount' => 0.37,
+                        'discount_rate' => 10.0,
+                        'base_discount_tax_compensation' => 0.03,
+                        'discount_tax_compensation' => 0.03,
+                    ],
+                    'test_fee_1' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Fee',
+                        'type' => FeeType::Percent->value,
+                        'percent' => 5.0,
+                        'show_percentage' => true,
+                        'base_value' => 0.47,
+                        'value' => 0.47,
+                        'base_value_with_tax' => 0.50,
+                        'value_with_tax' => 0.50,
+                        'base_tax_amount' => 0.03,
+                        'tax_amount' => 0.03,
+                        'tax_rate' => 7.5,
+                        'base_applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.03,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'applied_taxes' => [
+                            'US-AL-*-Rate-1' => [
+                                'amount' => 0.03,
+                                'percent' => 7.5,
+                                'tax_rate_key' => 'US-AL-*-Rate-1',
+                                'rates' => [
+                                    'US-AL-*-Rate-1' => [
+                                        'percent' => 7.5,
+                                        'code' => 'US-AL-*-Rate-1',
+                                        'title' => 'US-AL-*-Rate-1',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'base_discount_amount' => 0.05,
+                        'discount_amount' => 0.05,
+                        'discount_rate' => 10.0,
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
                 ],
                 'expectedTaxAmount' => 0.28,
+                'expectedAppliedTaxes' => [
+                    'US-AL-*-Rate-1' => [
+                        'base_amount' => 0.28,
+                        'amount' => 0.28,
+                        'percent' => 7.5,
+                        'id' => 'US-AL-*-Rate-1',
+                        'rates' => [
+                            [
+                                'percent' => 7.5,
+                                'code' => 'US-AL-*-Rate-1',
+                                'title' => 'US-AL-*-Rate-1',
+                            ],
+                        ],
+                        'item_id' => null,
+                        'associated_item_id' => null,
+                        'item_type' => 'custom_fee',
+                        'process' => 0,
+                    ],
+                ],
+                'expectedItemsAppliedTaxes' => [
+                    'custom_fees' => [
+                        'test_fee_0' => [
+                            'base_amount' => 0.25,
+                            'amount' => 0.25,
+                            'percent' => 7.5,
+                            'id' => 'US-AL-*-Rate-1',
+                            'rates' => [
+                                [
+                                    'percent' => 7.5,
+                                    'code' => 'US-AL-*-Rate-1',
+                                    'title' => 'US-AL-*-Rate-1',
+                                ],
+                            ],
+                            'item_id' => null,
+                            'associated_item_id' => null,
+                            'item_type' => 'custom_fee',
+                        ],
+                        'test_fee_1' => [
+                            'base_amount' => 0.03,
+                            'amount' => 0.03,
+                            'percent' => 7.5,
+                            'id' => 'US-AL-*-Rate-1',
+                            'rates' => [
+                                [
+                                    'percent' => 7.5,
+                                    'code' => 'US-AL-*-Rate-1',
+                                    'title' => 'US-AL-*-Rate-1',
+                                ],
+                            ],
+                            'item_id' => null,
+                            'associated_item_id' => null,
+                            'item_type' => 'custom_fee',
+                        ],
+                    ],
+                ],
                 'expectedDiscountTaxCompensationAmount' => 0.03,
             ],
         ];
@@ -632,6 +1073,56 @@ final class CustomFeesTaxTest extends TestCase
                             'base_tax_amount' => $taxAmount,
                             'tax_amount' => $taxAmount,
                             'tax_rate' => 7.5,
+                            'base_applied_taxes' => [
+                                'US-AL-*-Rate-1' => $objectManager->create(
+                                    AppliedTaxInterface::class,
+                                    [
+                                        'data' => [
+                                            'base_amount' => $taxAmount,
+                                            'amount' => $taxAmount,
+                                            'percent' => 7.5,
+                                            'id' => 'US-AL-*-Rate-1',
+                                            'rates' => [
+                                                'US-AL-*-Rate-1' => $objectManager->create(
+                                                    AppliedTaxRateInterface::class,
+                                                    [
+                                                        'data' => [
+                                                            'percent' => 7.5,
+                                                            'code' => 'US-AL-*-Rate-1',
+                                                            'title' => 'US-AL-*-Rate-1',
+                                                        ],
+                                                    ],
+                                                ),
+                                            ],
+                                        ],
+                                    ],
+                                ),
+                            ],
+                            'applied_taxes' => [
+                                'US-AL-*-Rate-1' => $objectManager->create(
+                                    AppliedTaxInterface::class,
+                                    [
+                                        'data' => [
+                                            'base_amount' => $taxAmount,
+                                            'amount' => $taxAmount,
+                                            'percent' => 7.5,
+                                            'id' => 'US-AL-*-Rate-1',
+                                            'rates' => [
+                                                'US-AL-*-Rate-1' => $objectManager->create(
+                                                    AppliedTaxRateInterface::class,
+                                                    [
+                                                        'data' => [
+                                                            'percent' => 7.5,
+                                                            'code' => 'US-AL-*-Rate-1',
+                                                            'title' => 'US-AL-*-Rate-1',
+                                                        ],
+                                                    ],
+                                                ),
+                                            ],
+                                        ],
+                                    ],
+                                ),
+                            ],
                             'base_discount_tax_compensation' => 0.00,
                             'discount_tax_compensation' => 0.00,
                         ],
@@ -642,5 +1133,62 @@ final class CustomFeesTaxTest extends TestCase
         );
 
         $quote->getExtensionAttributes()?->setCustomFees($customFees);
+    }
+
+    /**
+     * @param array<string, CustomOrderFeeInterface> $customFees
+     * @return array<string, CustomOrderFeeData>
+     */
+    private function convertCustomFeesToArray(array $customFees): array
+    {
+        return array_map(
+            static function (CustomOrderFeeInterface $customFee): array {
+                /* We need to convert the custom fee to an array to prevent PHP from crashing while comparing it with
+                   the expected data */
+                $customFeeData = $customFee->__toArray();
+                $customFeeData['type'] = $customFeeData['type']->value;
+                $customFeeData['base_applied_taxes'] = array_map(
+                    static function (AppliedTaxInterface $appliedTax): array {
+                        /** @var AppliedTaxData $appliedTaxData */
+                        $appliedTaxData = $appliedTax->getData() ?? [];
+
+                        if ($appliedTaxData === []) {
+                            return [];
+                        }
+
+                        $appliedTaxData['rates'] = array_map(
+                            static fn(AppliedTaxRateInterface $appliedTaxRate): array
+                                => $appliedTaxRate->getData() ?? [],
+                            $appliedTaxData['rates'],
+                        );
+
+                        return $appliedTaxData;
+                    },
+                    $customFeeData['base_applied_taxes'],
+                );
+                $customFeeData['applied_taxes'] = array_map(
+                    static function (AppliedTaxInterface $appliedTax): array {
+                        /** @var AppliedTaxData $appliedTaxData */
+                        $appliedTaxData = $appliedTax->getData() ?? [];
+
+                        if ($appliedTaxData === []) {
+                            return [];
+                        }
+
+                        $appliedTaxData['rates'] = array_map(
+                            static fn(AppliedTaxRateInterface $appliedTaxRate): array
+                                => $appliedTaxRate->getData() ?? [],
+                            $appliedTaxData['rates'],
+                        );
+
+                        return $appliedTaxData;
+                    },
+                    $customFeeData['applied_taxes'],
+                );
+
+                return $customFeeData;
+            },
+            $customFees,
+        );
     }
 }

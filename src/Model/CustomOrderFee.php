@@ -15,6 +15,9 @@ use Magento\Framework\App\Area;
 use Magento\Framework\App\State;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
+use Magento\Framework\Serialize\SerializerInterface;
+use Magento\Tax\Api\Data\AppliedTaxInterface;
+use Magento\Tax\Api\Data\AppliedTaxInterfaceFactory;
 
 use function __;
 use function in_array;
@@ -33,6 +36,8 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
     public function __construct(
         DataObjectPropertyTypeConverter $dataObjectPropertyTypeValidator,
         private readonly State $state,
+        private readonly SerializerInterface $serializer,
+        private readonly AppliedTaxInterfaceFactory $appliedTaxFactory,
         array $data = [],
     ) {
         if ($data !== []) {
@@ -235,6 +240,58 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
     public function getTaxRate(): float
     {
         return (float) $this->_get(static::TAX_RATE);
+    }
+
+    #[PropertyType('array')]
+    public function setBaseAppliedTaxes(array|string|null $baseAppliedTaxes): static
+    {
+        if (is_string($baseAppliedTaxes)) {
+            /** @var array<string, AppliedTaxData> $baseAppliedTaxesData */
+            $baseAppliedTaxesData = $this->serializer->unserialize($baseAppliedTaxes) ?: [];
+            /** @var array<string, AppliedTaxInterface> $baseAppliedTaxes */
+            $baseAppliedTaxes = array_map(
+                fn(array $appliedTax): AppliedTaxInterface => $this->appliedTaxFactory->create(['data' => $appliedTax]),
+                $baseAppliedTaxesData,
+            );
+        }
+
+        $this->setData(static::BASE_APPLIED_TAXES, $baseAppliedTaxes ?? []);
+
+        return $this;
+    }
+
+    public function getBaseAppliedTaxes(): array
+    {
+        /** @var array<string, AppliedTaxInterface> $baseAppliedTaxes */
+        $baseAppliedTaxes = $this->_get(static::BASE_APPLIED_TAXES);
+
+        return $baseAppliedTaxes ?? [];
+    }
+
+    #[PropertyType('array')]
+    public function setAppliedTaxes(array|string|null $appliedTaxes): static
+    {
+        if (is_string($appliedTaxes)) {
+            /** @var array<string, AppliedTaxData> $appliedTaxesData */
+            $appliedTaxesData = $this->serializer->unserialize($appliedTaxes) ?: [];
+            /** @var array<string, AppliedTaxInterface> $appliedTaxes */
+            $appliedTaxes = array_map(
+                fn(array $appliedTax): AppliedTaxInterface => $this->appliedTaxFactory->create(['data' => $appliedTax]),
+                $appliedTaxesData,
+            );
+        }
+
+        $this->setData(static::APPLIED_TAXES, $appliedTaxes ?? []);
+
+        return $this;
+    }
+
+    public function getAppliedTaxes(): array
+    {
+        /** @var array<string, AppliedTaxInterface> $appliedTaxes */
+        $appliedTaxes = $this->_get(static::APPLIED_TAXES);
+
+        return $appliedTaxes ?? [];
     }
 
     #[PropertyType('float')]

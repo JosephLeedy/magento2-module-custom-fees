@@ -27,6 +27,7 @@ use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Config as TaxConfig;
 use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
 
+use function array_first;
 use function array_map;
 use function array_values;
 use function array_walk;
@@ -142,6 +143,7 @@ class CustomFeesTax extends CommonTaxCollector
                 $customFee->setTaxRate(0.0);
                 $customFee->setBaseDiscountTaxCompensation(0.00);
                 $customFee->setDiscountTaxCompensation(0.00);
+                $customFee->setAppliedTaxes([]);
             },
         );
     }
@@ -238,6 +240,7 @@ class CustomFeesTax extends CommonTaxCollector
                 $customFee->setBaseDiscountTaxCompensation(
                     round($taxDetailsItem->getDiscountTaxCompensationAmount(), 2),
                 );
+                $customFee->setBaseAppliedTaxes($taxDetailsItem->getAppliedTaxes());
             },
         );
 
@@ -253,6 +256,7 @@ class CustomFeesTax extends CommonTaxCollector
                 $customFee->setTaxAmount($rowTax);
                 $customFee->setTaxRate($taxDetailsItem->getTaxPercent());
                 $customFee->setDiscountTaxCompensation(round($taxDetailsItem->getDiscountTaxCompensationAmount(), 2));
+                $customFee->setAppliedTaxes($taxDetailsItem->getAppliedTaxes());
             },
         );
     }
@@ -335,5 +339,53 @@ class CustomFeesTax extends CommonTaxCollector
         $total->setTotalAmount('custom_fees_discount_tax_compensation', $discountTaxCompensation);
         $total->addBaseTotalAmount('tax', $baseTaxAmount);
         $total->addTotalAmount('tax', $taxAmount);
+
+        $this->processAppliedCustomFeeTaxes($customFees, $total);
+    }
+
+    /**
+     * @param array<string, CustomOrderFeeInterface> $customFees
+     */
+    private function processAppliedCustomFeeTaxes(array $customFees, Total $total): void
+    {
+        /** @var array<string, AppliedTaxData> $allAppliedTaxes */
+        $allAppliedTaxes = [];
+
+        foreach ($customFees as $code => $customFee) {
+            /** @var list<AppliedTaxData> $appliedTaxes */
+            $appliedTaxes = $this->convertAppliedTaxes(
+                $customFee->getAppliedTaxes(),
+                $customFee->getBaseAppliedTaxes(),
+                [
+                    'item_id' => null,
+                    'item_type' => 'custom_fee',
+                    'associated_item_id' => null,
+                ],
+            );
+            /** @var AppliedTaxData|null $appliedTax */
+            $appliedTax = array_first($appliedTaxes);
+
+            if ($appliedTax === null) {
+                continue;
+            }
+
+            $this->_saveAppliedTaxes(
+                $total,
+                [$appliedTax],
+                $appliedTax['amount'],
+                $appliedTax['base_amount'] ?? $appliedTax['amount'],
+                $appliedTax['percent'],
+            );
+
+            $allAppliedTaxes[$code] = $appliedTax;
+        }
+
+        /**
+         * @var array<string, array<string, AppliedTaxData>> $itemsAppliedTaxes
+         */
+        $itemsAppliedTaxes = $total->getItemsAppliedTaxes() ?? [];
+        $itemsAppliedTaxes['custom_fees'] = $allAppliedTaxes;
+
+        $total->setItemsAppliedTaxes($itemsAppliedTaxes);
     }
 }

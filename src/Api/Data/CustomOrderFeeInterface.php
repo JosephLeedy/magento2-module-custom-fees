@@ -21,6 +21,8 @@ interface CustomOrderFeeInterface
     public const BASE_TAX_AMOUNT = 'base_tax_amount';
     public const TAX_AMOUNT = 'tax_amount';
     public const TAX_RATE = 'tax_rate';
+    public const BASE_APPLIED_TAXES = 'base_applied_taxes';
+    public const APPLIED_TAXES = 'applied_taxes';
     public const BASE_DISCOUNT_AMOUNT = 'base_discount_amount';
     public const DISCOUNT_AMOUNT = 'discount_amount';
     public const DISCOUNT_RATE = 'discount_rate';
@@ -162,6 +164,30 @@ interface CustomOrderFeeInterface
      * @return float
      */
     public function getTaxRate(): float;
+
+    /**
+     * @param \Magento\Tax\Api\Data\AppliedTaxInterface[]|string|null $baseAppliedTaxes
+     * @phpstan-param array<string, \Magento\Tax\Api\Data\AppliedTaxInterface>|string|null $baseAppliedTaxes
+     */
+    public function setBaseAppliedTaxes(array|string|null $baseAppliedTaxes): CustomOrderFeeInterface;
+
+    /**
+     * @return \Magento\Tax\Api\Data\AppliedTaxInterface[]
+     * @phpstan-return array<string, \Magento\Tax\Api\Data\AppliedTaxInterface>
+     */
+    public function getBaseAppliedTaxes(): array;
+
+    /**
+     * @param \Magento\Tax\Api\Data\AppliedTaxInterface[]|string|null $appliedTaxes
+     * @phpstan-param array<string, \Magento\Tax\Api\Data\AppliedTaxInterface>|string|null $appliedTaxes
+     */
+    public function setAppliedTaxes(array|string|null $appliedTaxes): CustomOrderFeeInterface;
+
+    /**
+     * @return \Magento\Tax\Api\Data\AppliedTaxInterface[]
+     * @phpstan-return array<string, \Magento\Tax\Api\Data\AppliedTaxInterface>
+     */
+    public function getAppliedTaxes(): array;
 
     /**
      * @param float|null $baseDiscountAmount
