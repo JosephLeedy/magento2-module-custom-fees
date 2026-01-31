@@ -18,11 +18,14 @@ use Magento\Framework\Phrase;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Tax\Api\Data\AppliedTaxInterface;
 use Magento\Tax\Api\Data\AppliedTaxInterfaceFactory;
+use Magento\Tax\Api\Data\AppliedTaxRateInterfaceFactory;
 use Magento\Tax\Model\TaxDetails\AppliedTax;
 use Magento\Tax\Model\TaxDetails\AppliedTaxRate;
 
 use function __;
+use function array_key_exists;
 use function in_array;
+use function is_array;
 use function is_string;
 use function trim;
 
@@ -40,6 +43,7 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         private readonly State $state,
         private readonly SerializerInterface $serializer,
         private readonly AppliedTaxInterfaceFactory $appliedTaxFactory,
+        private readonly AppliedTaxRateInterfaceFactory $appliedTaxRateFactory,
         array $data = [],
     ) {
         if ($data !== []) {
@@ -56,6 +60,14 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         $dataObjectPropertyTypeValidator->convert($data, $this);
 
         parent::__construct($data);
+
+        if (array_key_exists('base_applied_taxes', $data)) {
+            $this->setBaseAppliedTaxes($data['base_applied_taxes']);
+        }
+
+        if (array_key_exists('applied_taxes', $data)) {
+            $this->setAppliedTaxes($data['applied_taxes']);
+        }
     }
 
     #[PropertyType('string')]
@@ -248,13 +260,29 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
     public function setBaseAppliedTaxes(array|string|null $baseAppliedTaxes): static
     {
         if (is_string($baseAppliedTaxes)) {
-            /** @var array<string, AppliedTaxData> $baseAppliedTaxesData */
-            $baseAppliedTaxesData = $this->serializer->unserialize($baseAppliedTaxes) ?: [];
-            /** @var array<string, AppliedTaxInterface> $baseAppliedTaxes */
-            $baseAppliedTaxes = array_map(
-                fn(array $appliedTax): AppliedTaxInterface => $this->appliedTaxFactory->create(['data' => $appliedTax]),
-                $baseAppliedTaxesData,
-            );
+            /** @var array<string, AppliedTaxData> $baseAppliedTaxes */
+            $baseAppliedTaxes = $this->serializer->unserialize($baseAppliedTaxes) ?: [];
+        }
+
+        if (is_array($baseAppliedTaxes)) {
+            foreach ($baseAppliedTaxes as &$baseAppliedTax) {
+                if ($baseAppliedTax instanceof AppliedTax) {
+                    continue;
+                }
+
+                $baseAppliedTax = $this->appliedTaxFactory->create(['data' => $baseAppliedTax]);
+                $baseAppliedTaxRates = $baseAppliedTax->getRates() ?? [];
+
+                foreach ($baseAppliedTaxRates as &$baseAppliedTaxRate) {
+                    if ($baseAppliedTaxRate instanceof AppliedTaxRate) {
+                        continue;
+                    }
+
+                    $baseAppliedTaxRate = $this->appliedTaxRateFactory->create(['data' => $baseAppliedTaxRate]);
+                }
+
+                $baseAppliedTax->setRates($baseAppliedTaxRates);
+            }
         }
 
         $this->setData(static::BASE_APPLIED_TAXES, $baseAppliedTaxes ?? []);
@@ -274,13 +302,29 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
     public function setAppliedTaxes(array|string|null $appliedTaxes): static
     {
         if (is_string($appliedTaxes)) {
-            /** @var array<string, AppliedTaxData> $appliedTaxesData */
-            $appliedTaxesData = $this->serializer->unserialize($appliedTaxes) ?: [];
-            /** @var array<string, AppliedTaxInterface> $appliedTaxes */
-            $appliedTaxes = array_map(
-                fn(array $appliedTax): AppliedTaxInterface => $this->appliedTaxFactory->create(['data' => $appliedTax]),
-                $appliedTaxesData,
-            );
+            /** @var array<string, AppliedTaxData> $appliedTaxes */
+            $appliedTaxes = $this->serializer->unserialize($appliedTaxes) ?: [];
+        }
+
+        if (is_array($appliedTaxes)) {
+            foreach ($appliedTaxes as &$appliedTax) {
+                if ($appliedTax instanceof AppliedTax) {
+                    continue;
+                }
+
+                $appliedTax = $this->appliedTaxFactory->create(['data' => $appliedTax]);
+                $appliedTaxRates = $appliedTax->getRates() ?? [];
+
+                foreach ($appliedTaxRates as &$appliedTaxRate) {
+                    if ($appliedTaxRate instanceof AppliedTaxRate) {
+                        continue;
+                    }
+
+                    $appliedTaxRate = $this->appliedTaxRateFactory->create(['data' => $appliedTaxRate]);
+                }
+
+                $appliedTax->setRates($appliedTaxRates);
+            }
         }
 
         $this->setData(static::APPLIED_TAXES, $appliedTaxes ?? []);
