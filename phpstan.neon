@@ -90,14 +90,17 @@ parameters:
 				percent: float,
 				id?: string,
 				tax_rate_key?: string,
-				rates: array<array{
-					percent: float|null,
-					code: string|null,
-					title: string|null,
-				}>,
+				rates: array<string, AppliedTaxRateData>|array<string, \Magento\Tax\Api\Data\AppliedTaxRateInterface>,
 				item_id?: string|null,
 				associated_item_id?: string|null,
 				item_type?: 'product'|'shipping'|'custom_fee',
 				process?: int,
 			}
+		'''
+		AppliedTaxRateData: '''
+		array{
+			percent: float|null,
+			code: string|null,
+			title: string|null,
+		}
 		'''

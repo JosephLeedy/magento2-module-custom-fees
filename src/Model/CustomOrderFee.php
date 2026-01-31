@@ -18,6 +18,8 @@ use Magento\Framework\Phrase;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Tax\Api\Data\AppliedTaxInterface;
 use Magento\Tax\Api\Data\AppliedTaxInterfaceFactory;
+use Magento\Tax\Model\TaxDetails\AppliedTax;
+use Magento\Tax\Model\TaxDetails\AppliedTaxRate;
 
 use function __;
 use function in_array;
@@ -380,11 +382,60 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
     /**
      * @phpstan-return CustomOrderFeeData
      */
+    // phpcs:ignore PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.MethodDoubleUnderscore
+    public function __toArray(): array
+    {
+        /** @var CustomOrderFeeData $customOrderFeeData */
+        $customOrderFeeData = parent::__toArray();
+
+        foreach ($customOrderFeeData['base_applied_taxes'] ?? [] as $rateCode => $baseAppliedTax) {
+            if (!($baseAppliedTax instanceof AppliedTax)) {
+                continue;
+            }
+
+            /** @var AppliedTaxData $baseAppliedTax */
+            $baseAppliedTax = $baseAppliedTax->getData() ?? [];
+
+            foreach ($baseAppliedTax['rates'] as &$baseAppliedTaxRate) {
+                if (!($baseAppliedTaxRate instanceof AppliedTaxRate)) {
+                    continue;
+                }
+
+                /** @var AppliedTaxRateData $baseAppliedTaxRate */
+                $baseAppliedTaxRate = $baseAppliedTaxRate->getData() ?? [];
+            }
+
+            $customOrderFeeData['base_applied_taxes'][$rateCode] = $baseAppliedTax;
+        }
+
+        foreach ($customOrderFeeData['applied_taxes'] ?? [] as $rateCode => $appliedTax) {
+            if (!($appliedTax instanceof AppliedTax)) {
+                continue;
+            }
+
+            /** @var AppliedTaxData $appliedTax */
+            $appliedTax = $appliedTax->getData() ?? [];
+
+            foreach ($appliedTax['rates'] as &$appliedTaxRate) {
+                if (!($appliedTaxRate instanceof AppliedTaxRate)) {
+                    continue;
+                }
+
+                /** @var AppliedTaxRateData $appliedTaxRate */
+                $appliedTaxRate = $appliedTaxRate->getData() ?? [];
+            }
+
+            $customOrderFeeData['applied_taxes'][$rateCode] = $appliedTax;
+        }
+
+        return $customOrderFeeData;
+    }
+
+    /**
+     * @phpstan-return CustomOrderFeeData
+     */
     public function jsonSerialize(): array
     {
-        /** @phpstan-var CustomOrderFeeData $data */
-        $data = $this->__toArray();
-
-        return $data;
+        return $this->__toArray();
     }
 }

@@ -1147,44 +1147,6 @@ final class CustomFeesTaxTest extends TestCase
                    the expected data */
                 $customFeeData = $customFee->__toArray();
                 $customFeeData['type'] = $customFeeData['type']->value;
-                $customFeeData['base_applied_taxes'] = array_map(
-                    static function (AppliedTaxInterface $appliedTax): array {
-                        /** @var AppliedTaxData $appliedTaxData */
-                        $appliedTaxData = $appliedTax->getData() ?? [];
-
-                        if ($appliedTaxData === []) {
-                            return [];
-                        }
-
-                        $appliedTaxData['rates'] = array_map(
-                            static fn(AppliedTaxRateInterface $appliedTaxRate): array
-                                => $appliedTaxRate->getData() ?? [],
-                            $appliedTaxData['rates'],
-                        );
-
-                        return $appliedTaxData;
-                    },
-                    $customFeeData['base_applied_taxes'],
-                );
-                $customFeeData['applied_taxes'] = array_map(
-                    static function (AppliedTaxInterface $appliedTax): array {
-                        /** @var AppliedTaxData $appliedTaxData */
-                        $appliedTaxData = $appliedTax->getData() ?? [];
-
-                        if ($appliedTaxData === []) {
-                            return [];
-                        }
-
-                        $appliedTaxData['rates'] = array_map(
-                            static fn(AppliedTaxRateInterface $appliedTaxRate): array
-                                => $appliedTaxRate->getData() ?? [],
-                            $appliedTaxData['rates'],
-                        );
-
-                        return $appliedTaxData;
-                    },
-                    $customFeeData['applied_taxes'],
-                );
 
                 return $customFeeData;
             },
