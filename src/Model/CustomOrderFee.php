@@ -285,7 +285,7 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
             }
         }
 
-        $this->setData(static::BASE_APPLIED_TAXES, $baseAppliedTaxes ?? []);
+        $this->setData(static::BASE_APPLIED_TAXES, $baseAppliedTaxes);
 
         return $this;
     }
@@ -327,7 +327,7 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
             }
         }
 
-        $this->setData(static::APPLIED_TAXES, $appliedTaxes ?? []);
+        $this->setData(static::APPLIED_TAXES, $appliedTaxes);
 
         return $this;
     }

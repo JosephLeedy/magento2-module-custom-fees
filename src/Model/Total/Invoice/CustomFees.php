@@ -128,6 +128,9 @@ class CustomFees extends AbstractTotal
                 $invoicedCustomFee->setValueWithTax(round($valueWithTax, 2));
                 $invoicedCustomFee->setBaseTaxAmount(round($baseTaxAmount - $baseDiscountTaxCompensationAmount, 2));
                 $invoicedCustomFee->setTaxAmount(round($taxAmount - $discountTaxCompensationAmount, 2));
+                // Applied taxes are only stored for the ordered custom fees
+                $invoicedCustomFee->setBaseAppliedTaxes(null);
+                $invoicedCustomFee->setAppliedTaxes(null);
 
                 $baseDiscountAmount = 0.00;
                 $discountAmount = 0.00;
