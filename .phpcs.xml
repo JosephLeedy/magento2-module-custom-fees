@@ -22,6 +22,11 @@
         <exclude name="Magento2.Commenting.ClassPropertyPHPDocFormatting.Missing"/>
         <!-- Suppress warning about PSR-12-style control structures -->
         <exclude name="PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace"/>
+        <!-- Disable rules for LESS and CSS stylesheets deprecated in PHP_CodeSniffer version 3.9 -->
+        <exclude name="Magento2.Less"/>
+        <exclude name="Squiz.CSS"/>
+        <!-- Disable rules for GraphQL deprecated in PHP_CodeSniffer version 3.9 -->
+        <exclude name="Magento2.GraphQL"/>
     </rule>
     <rule ref="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine">
         <!-- Suppress warning about single-line PER-CS 2.0-style constructors with promoted properties and empty bodies -->
