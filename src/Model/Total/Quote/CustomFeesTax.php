@@ -45,8 +45,8 @@ class CustomFeesTax extends CommonTaxCollector
         TaxClassKeyInterfaceFactory $taxClassKeyDataObjectFactory,
         CustomerAddressFactory $customerAddressFactory,
         CustomerAddressRegionFactory $customerAddressRegionFactory,
-        TaxHelper $taxHelper = null,
-        QuoteDetailsItemExtensionInterfaceFactory $quoteDetailsItemExtensionInterfaceFactory = null,
+        ?TaxHelper $taxHelper = null,
+        ?QuoteDetailsItemExtensionInterfaceFactory $quoteDetailsItemExtensionInterfaceFactory = null,
         ?CustomerAccountManagement $customerAccountManagement = null,
     ) {
         parent::__construct(
