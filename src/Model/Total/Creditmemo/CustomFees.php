@@ -18,6 +18,7 @@ use Magento\Tax\Model\Calculation as TaxCalculation;
 use function array_key_exists;
 use function array_map;
 use function array_walk;
+use function max;
 use function min;
 use function round;
 
@@ -48,12 +49,19 @@ class CustomFees extends AbstractTotal
             return $this;
         }
 
+        $baseDelta = (float) $creditmemo->getBaseSubtotal() / (float) $creditmemo->getOrder()->getBaseSubtotal();
+        $delta = (float) $creditmemo->getSubtotal() / (float) $creditmemo->getOrder()->getSubtotal();
         $refundedCustomFees = array_map(
             fn(CustomOrderFeeInterface $customOrderFee): RefundedCustomFee
                 => $this->refundedCustomFeeFactory->create(['data' => $customOrderFee->__toArray()]),
             $orderedCustomFees,
         );
-        $refundedCustomFeeCount = $this->processRefundedCustomFees($creditmemo, $refundedCustomFees);
+        $previouslyRefundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($creditmemo->getOrder());
+        $refundedCustomFeeCount = $this->processRefundedCustomFees(
+            $creditmemo,
+            $refundedCustomFees,
+            $previouslyRefundedCustomFees,
+        );
         $baseTotalCustomFees = 0;
         $totalCustomFees = 0;
         $baseTotalCustomFeeTaxAmount = 0;
@@ -105,7 +113,14 @@ class CustomFees extends AbstractTotal
                 $totalRefundedCustomFeeDiscountAmount,
                 $baseRefundedCustomFeeDiscountTaxCompensationAmount,
                 $totalRefundedCustomFeeDiscountTaxCompensationAmount,
-            ] = $this->calculateRefundedCustomFees($creditmemo, $refundedCustomFees);
+            ] = $this->calculateRefundedCustomFees(
+                $creditmemo,
+                $baseDelta,
+                $delta,
+                $refundedCustomFees,
+                $orderedCustomFees,
+                $previouslyRefundedCustomFees,
+            );
         }
 
         if (!$creditmemo->isLast()) {
@@ -125,16 +140,21 @@ class CustomFees extends AbstractTotal
                 + $totalRefundedCustomFeeDiscountTaxCompensationAmount;
         }
 
+        $baseTotalGrandTotal = $creditmemo->getBaseGrandTotal()
+            + ($baseRefundedCustomFeeAmount - $baseRefundedCustomFeeDiscountAmount);
+        $totalGrandTotal = $creditmemo->getGrandTotal()
+            + ($totalRefundedCustomFeeAmount - $totalRefundedCustomFeeDiscountAmount);
+        $allowedBaseGrandTotal = (float) $creditmemo->getOrder()->getBaseTotalPaid()
+            - (float) $creditmemo->getOrder()->getBaseTotalRefunded();
+        $allowedTotalGrandTotal = (float) $creditmemo->getOrder()->getTotalPaid()
+            - (float) $creditmemo->getOrder()->getTotalRefunded();
+
         /* Existing discount amounts are negative, so we need to subtract the custom fee discount amounts rather than
            add them. */
         $creditmemo->setBaseDiscountAmount($creditmemo->getBaseDiscountAmount() - $baseRefundedCustomFeeDiscountAmount);
         $creditmemo->setDiscountAmount($creditmemo->getDiscountAmount() - $totalRefundedCustomFeeDiscountAmount);
-        $creditmemo->setBaseGrandTotal(
-            $creditmemo->getBaseGrandTotal() + ($baseRefundedCustomFeeAmount - $baseRefundedCustomFeeDiscountAmount),
-        );
-        $creditmemo->setGrandTotal(
-            $creditmemo->getGrandTotal() + ($totalRefundedCustomFeeAmount - $totalRefundedCustomFeeDiscountAmount),
-        );
+        $creditmemo->setBaseGrandTotal(min($baseTotalGrandTotal, $allowedBaseGrandTotal));
+        $creditmemo->setGrandTotal(min($totalGrandTotal, $allowedTotalGrandTotal));
         $creditmemo->getExtensionAttributes()?->setRefundedCustomFees($refundedCustomFees);
 
         return $this;
@@ -142,16 +162,19 @@ class CustomFees extends AbstractTotal
 
     /**
      * @param array<string, RefundedCustomFee> $refundedCustomFees
+     * @param array<int, array<string, RefundedCustomFee>> $existingRefundedCustomFees
      */
-    private function processRefundedCustomFees(Creditmemo $creditmemo, array &$refundedCustomFees): int
-    {
+    private function processRefundedCustomFees(
+        Creditmemo $creditmemo,
+        array &$refundedCustomFees,
+        array $existingRefundedCustomFees,
+    ): int {
         $refundedCustomFeeCount = 0;
         /** @var array{custom_fees?: array<string, float>} $creditMemoRequestData */
         $creditMemoRequestData = $this->request->getParam('creditmemo', []);
         /** @var array<string, float> $requestedCustomFeeRefundValues */
         $requestedCustomFeeRefundValues = array_map('\floatval', $creditMemoRequestData['custom_fees'] ?? []);
         $store = $creditmemo->getStore();
-        $existingRefundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($creditmemo->getOrder());
         $refundedCustomFeeValues = [
             'base_value' => [],
             'value' => [],
@@ -360,12 +383,18 @@ class CustomFees extends AbstractTotal
 
     /**
      * @param array<string, RefundedCustomFee> $refundedCustomFees
+     * @param array<string, CustomOrderFeeInterface> $orderedCustomFees
+     * @param array<int, array<string, RefundedCustomFee>> $previouslyRefundedCustomFees
      * @return float[]
      */
-    private function calculateRefundedCustomFees(Creditmemo $creditmemo, array &$refundedCustomFees): array
-    {
-        $baseDelta = (float) $creditmemo->getBaseSubtotal() / (float) $creditmemo->getOrder()->getBaseSubtotal();
-        $delta = (float) $creditmemo->getSubtotal() / (float) $creditmemo->getOrder()->getSubtotal();
+    private function calculateRefundedCustomFees(
+        Creditmemo $creditmemo,
+        float $baseDelta,
+        float $delta,
+        array &$refundedCustomFees,
+        array $orderedCustomFees,
+        array $previouslyRefundedCustomFees,
+    ): array {
         $baseRefundedCustomFeeAmount = 0;
         $totalRefundedCustomFeeAmount = 0;
         $baseRefundedCustomFeeTaxAmount = 0;
@@ -379,6 +408,8 @@ class CustomFees extends AbstractTotal
             $refundedCustomFees,
             function (RefundedCustomFee $refundedCustomFee) use (
                 $creditmemo,
+                $orderedCustomFees,
+                $previouslyRefundedCustomFees,
                 $baseDelta,
                 $delta,
                 &$baseRefundedCustomFeeAmount,
@@ -391,6 +422,16 @@ class CustomFees extends AbstractTotal
                 &$totalRefundedCustomFeeDiscountTaxCompensationAmount,
             ): void {
                 [
+                    $baseAllowedCustomFeeTaxAmount,
+                    $allowedCustomFeeTaxAmount,
+                    $baseAllowedCustomFeeDiscountTaxCompensationAmount,
+                    $allowedCustomFeeDiscountTaxCompensationAmount,
+                ] = $this->calculateAllowedAmounts(
+                    $refundedCustomFee->getCode(),
+                    $orderedCustomFees,
+                    $previouslyRefundedCustomFees,
+                );
+                [
                     $baseValue,
                     $value,
                     $baseValueWithTax,
@@ -400,6 +441,9 @@ class CustomFees extends AbstractTotal
                 ] = $this->calculateTotalAmounts($creditmemo->getStoreId(), $refundedCustomFee, $baseDelta, $delta);
                 $baseDiscountTaxCompensationAmount = 0.00;
                 $discountTaxCompensationAmount = 0.00;
+                $baseTaxAmount = min($baseTaxAmount, $baseAllowedCustomFeeTaxAmount);
+                $taxAmount = min($taxAmount, $allowedCustomFeeTaxAmount);
+
                 if ($refundedCustomFee->getDiscountTaxCompensation() !== 0.00) {
                     $baseDiscountTaxCompensationAmount = min(
                         $refundedCustomFee->getBaseDiscountTaxCompensation() * $baseDelta,
@@ -430,8 +474,8 @@ class CustomFees extends AbstractTotal
 
                 $baseRefundedCustomFeeAmount += $refundedCustomFee->getBaseValue();
                 $totalRefundedCustomFeeAmount += $refundedCustomFee->getValue();
-                $baseRefundedCustomFeeTaxAmount += $refundedCustomFee->getBaseTaxAmount();
-                $totalRefundedCustomFeeTaxAmount += $refundedCustomFee->getTaxAmount();
+                $baseRefundedCustomFeeTaxAmount += $baseTaxAmount;
+                $totalRefundedCustomFeeTaxAmount += $taxAmount;
                 $baseRefundedCustomFeeDiscountAmount += $refundedCustomFee->getBaseDiscountAmount();
                 $totalRefundedCustomFeeDiscountAmount += $refundedCustomFee->getDiscountAmount();
                 $baseRefundedCustomFeeDiscountTaxCompensationAmount += $baseDiscountTaxCompensationAmount;
@@ -448,6 +492,70 @@ class CustomFees extends AbstractTotal
             $totalRefundedCustomFeeDiscountAmount,
             $baseRefundedCustomFeeDiscountTaxCompensationAmount,
             $totalRefundedCustomFeeDiscountTaxCompensationAmount,
+        ];
+    }
+
+    /**
+     * @phpstan-param array<string, CustomOrderFeeInterface> $orderedCustomFees
+     * @phpstan-param array<int, array<string, RefundedCustomFee>> $previouslyRefundedCustomFeesByCreditMemo
+     * @return list<float>
+     */
+    private function calculateAllowedAmounts(
+        string $customFeeCode,
+        array $orderedCustomFees,
+        array $previouslyRefundedCustomFeesByCreditMemo,
+    ): array {
+        $baseOrderedCustomFeeTaxAmount = $orderedCustomFees[$customFeeCode]->getBaseTaxAmount();
+        $orderedCustomFeeTaxAmount = $orderedCustomFees[$customFeeCode]->getTaxAmount();
+        $baseOrderedCustomFeeDiscountTaxCompensationAmount = $orderedCustomFees[$customFeeCode]
+            ->getBaseDiscountTaxCompensation();
+        $orderedCustomFeeDiscountTaxCompensationAmount = $orderedCustomFees[$customFeeCode]
+            ->getDiscountTaxCompensation();
+        $baseRefundedCustomFeeTaxAmount = 0.00;
+        $refundedCustomFeeTaxAmount = 0.00;
+        $baseRefundedCustomFeeDiscountTaxCompensationAmount = 0.00;
+        $refundedCustomFeeDiscountTaxCompensationAmount = 0.00;
+
+        foreach ($previouslyRefundedCustomFeesByCreditMemo as $previouslyRefundedCustomFees) {
+            foreach ($previouslyRefundedCustomFees as $refundedCustomFeeCode => $previouslyRefundedCustomFee) {
+                if ($refundedCustomFeeCode !== $customFeeCode) {
+                    continue;
+                }
+
+                $baseRefundedCustomFeeTaxAmount += $previouslyRefundedCustomFee->getBaseTaxAmount();
+                $refundedCustomFeeTaxAmount += $previouslyRefundedCustomFee->getTaxAmount();
+                $baseRefundedCustomFeeDiscountTaxCompensationAmount += $previouslyRefundedCustomFee
+                    ->getBaseDiscountTaxCompensation();
+                $refundedCustomFeeDiscountTaxCompensationAmount += $previouslyRefundedCustomFee
+                    ->getDiscountTaxCompensation();
+
+                break;
+            }
+        }
+
+        $baseAllowedCustomFeeDiscountTaxCompensationAmount = max(
+            $baseOrderedCustomFeeDiscountTaxCompensationAmount - $baseRefundedCustomFeeDiscountTaxCompensationAmount,
+            0.00,
+        );
+        $allowedCustomFeeDiscountTaxCompensationAmount = max(
+            $orderedCustomFeeDiscountTaxCompensationAmount - $refundedCustomFeeDiscountTaxCompensationAmount,
+            0.00,
+        );
+        $baseAllowedCustomFeeTaxAmount = max(
+            ($baseOrderedCustomFeeTaxAmount - $baseRefundedCustomFeeTaxAmount)
+            + $baseAllowedCustomFeeDiscountTaxCompensationAmount,
+            0.00,
+        );
+        $allowedCustomFeeTaxAmount = max(
+            ($orderedCustomFeeTaxAmount - $refundedCustomFeeTaxAmount) + $allowedCustomFeeDiscountTaxCompensationAmount,
+            0.00,
+        );
+
+        return [
+            $baseAllowedCustomFeeTaxAmount,
+            $allowedCustomFeeTaxAmount,
+            $baseAllowedCustomFeeDiscountTaxCompensationAmount,
+            $allowedCustomFeeDiscountTaxCompensationAmount,
         ];
     }
 
