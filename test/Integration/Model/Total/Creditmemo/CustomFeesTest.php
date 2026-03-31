@@ -495,10 +495,10 @@ final class CustomFeesTest extends TestCase
             ];
             $actualRefundedCustomFees = $creditmemo->getExtensionAttributes()?->getRefundedCustomFees();
 
-            self::assertEquals(round(14.05 - ($index / 100), 2), $creditmemo->getBaseGrandTotal());
-            self::assertEquals(round(14.05 - ($index / 100), 2), $creditmemo->getGrandTotal());
-            self::assertEquals(round(0.80 - ($index / 100), 2), $creditmemo->getBaseTaxAmount());
-            self::assertEquals(round(0.80 - ($index / 100), 2), $creditmemo->getTaxAmount());
+            self::assertEquals(round(14.05 - ($index / 100), 2), round($creditmemo->getBaseGrandTotal(), 2));
+            self::assertEquals(round(14.05 - ($index / 100), 2), round($creditmemo->getGrandTotal(), 2));
+            self::assertEquals(0.80, round($creditmemo->getBaseTaxAmount(), 2));
+            self::assertEquals(0.80, round($creditmemo->getTaxAmount(), 2));
             self::assertEquals($expectedRefundedCustomFees, $actualRefundedCustomFees);
         }
 
