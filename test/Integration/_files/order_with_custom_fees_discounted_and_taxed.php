@@ -88,8 +88,8 @@ $customOrderFees->setCustomFeesOrdered($testCustomFees);
 $customOrderFeesRepository->save($customOrderFees);
 
 $order
-    ->setBaseDiscountAmount($order->getBaseDiscountAmount() + 0.70)
-    ->setDiscountAmount($order->getDiscountAmount() + 0.70)
+    ->setBaseDiscountAmount((float) $order->getBaseDiscountAmount() - 0.70)
+    ->setDiscountAmount((float) $order->getDiscountAmount() - 0.70)
     ->setBaseTaxAmount($order->getBaseTaxAmount() + 0.38)
     ->setTaxAmount($order->getTaxAmount() + 0.38)
     ->setBaseGrandTotal($order->getBaseGrandTotal() + 4.77)
