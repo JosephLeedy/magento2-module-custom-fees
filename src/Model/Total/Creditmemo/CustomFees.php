@@ -59,6 +59,7 @@ class CustomFees extends AbstractTotal
         $previouslyRefundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($creditmemo->getOrder());
         $refundedCustomFeeCount = $this->processRefundedCustomFees(
             $creditmemo,
+            $baseDelta,
             $refundedCustomFees,
             $previouslyRefundedCustomFees,
         );
@@ -166,6 +167,7 @@ class CustomFees extends AbstractTotal
      */
     private function processRefundedCustomFees(
         Creditmemo $creditmemo,
+        float $baseDelta,
         array &$refundedCustomFees,
         array $existingRefundedCustomFees,
     ): int {
@@ -243,15 +245,20 @@ class CustomFees extends AbstractTotal
                 $requestedCustomFeeRefundValues,
                 $store,
                 $creditmemo,
+                $baseDelta,
                 &$refundedCustomFeeCount,
                 $refundedCustomFeeValues,
             ): void {
                 $customFeeCode = $refundedCustomFee->getCode();
 
                 if (array_key_exists($customFeeCode, $requestedCustomFeeRefundValues)) {
+                    $baseValue = $refundedCustomFee->getBaseValue();
+                    $baseValueWithDelta = $baseValue * $baseDelta;
+
                     if (
-                        $refundedCustomFee->getBaseValue() === $requestedCustomFeeRefundValues[$customFeeCode]
-                        || $refundedCustomFee->getBaseValue() - $refundedCustomFee->getBaseDiscountAmount() === 0.00
+                        $baseValue === $requestedCustomFeeRefundValues[$customFeeCode]
+                        || $baseValueWithDelta === $requestedCustomFeeRefundValues[$customFeeCode]
+                        || $baseValue - $refundedCustomFee->getBaseDiscountAmount() === 0.00
                     ) {
                         return;
                     }
