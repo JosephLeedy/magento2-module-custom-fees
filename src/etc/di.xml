@@ -20,4 +20,7 @@
         <plugin name="add_custom_fees_to_order" type="JosephLeedy\CustomFees\Plugin\Sales\Api\OrderRepositoryInterfacePlugin"/>
         <plugin name="save_custom_order_fees" type="JosephLeedy\CustomFees\Plugin\Sales\Api\OrderRepositoryInterfacePlugin"/>
     </type>
+    <type name="Magento\SalesRule\Model\Rule\Condition\Product">
+        <plugin name="prevent_custom_fee_validation" type="JosephLeedy\CustomFees\Plugin\SalesRule\Model\Rule\Condition\ProductPlugin" sortOrder="-1"/>
+    </type>
 </config>
