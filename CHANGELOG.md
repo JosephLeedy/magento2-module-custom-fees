@@ -10,7 +10,7 @@ document.
 
 ## [Unreleased]
 
-## [1.4.0]
+## [1.5.0]
 
 ### Added
 - A product attribute that can be used to determine whether or not a custom fee 
@@ -37,6 +37,10 @@ document.
   data has been removed
 - The plug-in used to temporarily store the refunded custom fee amounts entered 
   in the Admin panel during credit memo creation has been removed
+
+## 1.4.0
+
+- This version was skipped due to an issue with creating the tag for it
 
 ## [1.3.2]
 
@@ -178,8 +182,8 @@ document.
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [README]: ./README.md
-[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.4.0...HEAD
-[1.4.0]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.4.0
+[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.5.0...HEAD
+[1.5.0]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.5.0
 [1.3.2]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.3.2
 [1.3.1]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.3.1
 [1.3.0]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.3.0
