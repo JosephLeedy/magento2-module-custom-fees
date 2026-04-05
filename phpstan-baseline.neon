@@ -6,6 +6,11 @@ parameters:
 			path: src/Block/Adminhtml/CustomOrderFees/Report/Grid.php
 
 		-
+			message: "#^Parameter \\#2 \\$array of function implode expects array\\<string\\>, list\\<mixed\\> given\\.$#"
+			count: 8
+			path: src/Block/Adminhtml/CustomOrderFees/Report/Grid.php
+
+		-
 			message: "#^Setter methods like \\$this\\(JosephLeedy\\\\CustomFees\\\\Block\\\\Sales\\\\Cart\\\\Totals\\\\CustomFees\\)\\:\\:setTemplate\\(\\) are deprecated in Block classes, use constructor arguments instead$#"
 			count: 1
 			path: src/Block/Sales/Cart/Totals/CustomFees.php
