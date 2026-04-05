@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Service;
 
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface as InvoicedCustomFee;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface as RefundedCustomFee;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -55,24 +58,54 @@ final class CustomFeesRetrieverTest extends TestCase
         }
 
         $expectedCustomFees = [
-            '_1727299833817_817' => [
-                'code' => 'test_fee_0',
-                'title' => 'Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 5.00,
-                'value' => 5.00,
-            ],
-            '_1727299843197_197' => [
-                'code' => 'test_fee_1',
-                'title' => 'Another Test Fee',
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 1.50,
-                'value' => 1.50,
-            ],
+            'test_fee_0' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 5.00,
+                        'value' => 5.00,
+                        'base_discount_amount' => 0.00,
+                        'discount_amount' => 0.00,
+                        'discount_rate' => 0.00,
+                        'base_value_with_tax' => 5.00,
+                        'value_with_tax' => 5.00,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.00,
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
+                ],
+            ),
+            'test_fee_1' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 1.50,
+                        'value' => 1.50,
+                        'base_discount_amount' => 0.00,
+                        'discount_amount' => 0.00,
+                        'discount_rate' => 0.00,
+                        'base_value_with_tax' => 1.50,
+                        'value_with_tax' => 1.50,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.00,
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
+                ],
+            ),
         ];
         $actualCustomFees = $customFeesRetriever->retrieveOrderedCustomFees($order);
 
@@ -144,26 +177,60 @@ final class CustomFeesRetrieverTest extends TestCase
 
         $expectedCustomFees = [
             $invoiceId => [
-                'test_fee_0' => [
-                    'invoice_id' => $invoiceId,
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 5.00,
-                    'value' => 5.00,
-                ],
-                'test_fee_1' => [
-                    'invoice_id' => $invoiceId,
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 1.50,
-                    'value' => 1.50,
-                ],
+                'test_fee_0' => $objectManager->create(
+                    InvoicedCustomFee::class,
+                    [
+                        'data' => [
+                            'invoice_id' => $invoiceId,
+                            'code' => 'test_fee_0',
+                            'title' => 'Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 5.00,
+                            'value' => 5.00,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
+                            'base_value_with_tax' => 5.00,
+                            'value_with_tax' => 5.00,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                            'base_applied_taxes' => null,
+                            'applied_taxes' => null,
+                            'base_discount_tax_compensation' => 0.00,
+                            'discount_tax_compensation' => 0.00,
+                        ],
+                    ],
+                ),
+                'test_fee_1' => $objectManager->create(
+                    InvoicedCustomFee::class,
+                    [
+                        'data' => [
+                            'invoice_id' => $invoiceId,
+                            'code' => 'test_fee_1',
+                            'title' => 'Another Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 1.50,
+                            'value' => 1.50,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
+                            'base_value_with_tax' => 1.50,
+                            'value_with_tax' => 1.50,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                            'base_applied_taxes' => null,
+                            'applied_taxes' => null,
+                            'base_discount_tax_compensation' => 0.00,
+                            'discount_tax_compensation' => 0.00,
+                        ],
+                    ],
+                ),
             ],
         ];
         $actualCustomFees = $customFeesRetriever->retrieveInvoicedCustomFees($order);
@@ -204,29 +271,64 @@ final class CustomFeesRetrieverTest extends TestCase
 
         /** @var Creditmemo $creditMemo */
         $creditMemo = $order->getCreditmemosCollection()->getFirstItem();
+        $creditMemoId = $creditMemo->getEntityId();
 
         $expectedCustomFees = [
-            $creditMemo->getId() => [
-                'test_fee_0' => [
-                    'credit_memo_id' => $creditMemo->getId(),
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 5.00,
-                    'value' => 5.00,
-                ],
-                'test_fee_1' => [
-                    'credit_memo_id' => $creditMemo->getId(),
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 0.00,
-                    'value' => 0.00,
-                ],
+            $creditMemoId => [
+                'test_fee_0' => $objectManager->create(
+                    RefundedCustomFee::class,
+                    [
+                        'data' => [
+                            'credit_memo_id' => $creditMemoId,
+                            'code' => 'test_fee_0',
+                            'title' => 'Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 5.00,
+                            'value' => 5.00,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
+                            'base_value_with_tax' => 5.00,
+                            'value_with_tax' => 5.00,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                            'base_applied_taxes' => null,
+                            'applied_taxes' => null,
+                            'base_discount_tax_compensation' => 0.00,
+                            'discount_tax_compensation' => 0.00,
+                        ],
+                    ],
+                ),
+                'test_fee_1' => $objectManager->create(
+                    RefundedCustomFee::class,
+                    [
+                        'data' => [
+                            'credit_memo_id' => $creditMemoId,
+                            'code' => 'test_fee_1',
+                            'title' => 'Another Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 0.00,
+                            'value' => 0.00,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
+                            'base_value_with_tax' => 0.00,
+                            'value_with_tax' => 0.00,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                            'base_applied_taxes' => null,
+                            'applied_taxes' => null,
+                            'base_discount_tax_compensation' => 0.00,
+                            'discount_tax_compensation' => 0.00,
+                        ],
+                    ],
+                ),
             ],
         ];
         $actualCustomFees = $customFeesRetriever->retrieveRefundedCustomFees($order);

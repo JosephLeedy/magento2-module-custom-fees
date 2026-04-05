@@ -6,7 +6,9 @@ namespace JosephLeedy\CustomFees\Test\Integration\Plugin\Sales\Api;
 
 use ColinODell\PsrTestLogger\TestLogger;
 use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
+use JosephLeedy\CustomFees\Model\CustomOrderFee\Refunded as RefundedCustomFee;
 use JosephLeedy\CustomFees\Model\CustomOrderFees;
+use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Model\ResourceModel\CustomOrderFees as CustomOrderFeesResourceModel;
 use JosephLeedy\CustomFees\Plugin\Sales\Api\CreditmemoRepositoryInterfacePlugin;
 use Magento\Framework\App\Area;
@@ -89,30 +91,64 @@ final class CreditmemoRepositoryInterfacePluginTest extends TestCase
 
         $creditMemoManagement->refund($creditMemo, true);
 
-        $creditMemoId = $creditMemo->getId();
+        $creditMemoId = $creditMemo->getEntityId();
         $customOrderFees = $customOrderFeesRepository->getByOrderId($order->getId());
         $expectedRefundedCustomFees = [
             $creditMemoId => [
-                'test_fee_0' => [
-                    'credit_memo_id' => $creditMemoId,
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => 'fixed',
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 5.00,
-                    'value' => 5.00,
-                ],
-                'test_fee_1' => [
-                    'credit_memo_id' => $creditMemoId,
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => 'fixed',
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 0.00,
-                    'value' => 0.00,
-                ],
+                'test_fee_0' => $objectManager->create(
+                    RefundedCustomFee::class,
+                    [
+                        'data' => [
+                            'credit_memo_id' => $creditMemoId,
+                            'code' => 'test_fee_0',
+                            'title' => 'Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 5.00,
+                            'value' => 5.00,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
+                            'base_value_with_tax' => 5.00,
+                            'value_with_tax' => 5.00,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                            'base_applied_taxes' => null,
+                            'applied_taxes' => null,
+                            'base_discount_tax_compensation' => 0.00,
+                            'discount_tax_compensation' => 0.00,
+                        ],
+                    ],
+                ),
+                'test_fee_1' => $objectManager->create(
+                    RefundedCustomFee::class,
+                    [
+                        'data' => [
+                            'credit_memo_id' => $creditMemoId,
+                            'code' => 'test_fee_1',
+                            'title' => 'Another Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 0.00,
+                            'value' => 0.00,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
+                            'base_value_with_tax' => 0.00,
+                            'value_with_tax' => 0.00,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                            'base_applied_taxes' => null,
+                            'applied_taxes' => null,
+                            'base_discount_tax_compensation' => 0.00,
+                            'discount_tax_compensation' => 0.00,
+                        ],
+                    ],
+                ),
             ],
         ];
         $actualRefundedCustomFees = $customOrderFees->getCustomFeesRefunded();

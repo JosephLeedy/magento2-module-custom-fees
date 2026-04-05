@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Block\Sales\Order\Creditmemo;
 
-use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface as RefundedCustomFee;
+use JosephLeedy\CustomFees\Model\DisplayType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
@@ -34,6 +36,7 @@ class Totals extends Template
     public function __construct(
         Context $context,
         private readonly CustomFeesRetriever $customFeesRetriever,
+        private readonly ConfigInterface $config,
         private readonly DataObjectFactory $dataObjectFactory,
         array $data = [],
     ) {
@@ -47,56 +50,81 @@ class Totals extends Template
 
     public function initTotals(): self
     {
-        $customFees = $this->customFeesRetriever->retrieveRefundedCustomFees($this->getSource()->getOrder());
+        $refundedCustomFees = $this->customFeesRetriever->retrieveRefundedCustomFees($this->getSource()->getOrder());
         /** @var int|string $creditMemoId */
         $creditMemoId = $this->getSource()->getId();
 
-        if (!array_key_exists($creditMemoId, $customFees)) {
+        if (!array_key_exists($creditMemoId, $refundedCustomFees)) {
             return $this;
         }
 
-        $customFees = $customFees[$creditMemoId];
-        $firstFeeKey = array_key_first($customFees);
-        $previousFeeCode = '';
+        /** @var array<string, RefundedCustomFee> $refundedCustomFees */
+        $refundedCustomFees = $refundedCustomFees[$creditMemoId];
+        /** @var string $firstRefundedFeeKey */
+        $firstRefundedFeeKey = array_key_first($refundedCustomFees) ?? '';
 
         array_walk(
-            $customFees,
-            function (array $customFee, string|int $key) use ($firstFeeKey, &$previousFeeCode): void {
-                $customFee['label'] = FeeType::Percent->equals($customFee['type'])
-                    && $customFee['percent'] !== null
-                    && $customFee['show_percentage']
-                    ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
-                    : __($customFee['title']);
+            $refundedCustomFees,
+            function (RefundedCustomFee $refundedCustomFee) use ($firstRefundedFeeKey): void {
+                $displayType = $this->config->getSalesDisplayType($this->getParentBlock()->getOrder()->getStoreId());
+                $totalExcludingTax = null;
+                $totalIncludingTax = null;
 
-                unset(
-                    $customFee['credit_memo_id'],
-                    $customFee['title'],
-                    $customFee['type'],
-                    $customFee['percent'],
-                    $customFee['show_percentage'],
-                );
-
-                /** @var DataObject $total */
-                $total = $this->dataObjectFactory->create(
-                    [
-                        'data' => $customFee,
-                    ],
-                );
-
-                if ($key === $firstFeeKey) {
-                    if ($this->getBeforeCondition() !== null) {
-                        $this->getParentBlock()->addTotalBefore($total, $this->getBeforeCondition());
-                    } else {
-                        $this->getParentBlock()->addTotal($total, $this->getAfterCondition());
-                    }
-                } else {
-                    $this->getParentBlock()->addTotal($total, $previousFeeCode);
+                if ($displayType === DisplayType::ExcludingTax || $displayType === DisplayType::Both) {
+                    $totalExcludingTax = $this->buildTotal($refundedCustomFee, false);
                 }
 
-                $previousFeeCode = $customFee['code'];
+                if ($displayType === DisplayType::IncludingTax || $displayType === DisplayType::Both) {
+                    $totalIncludingTax = $this->buildTotal($refundedCustomFee, true);
+                }
+
+                if ($displayType === DisplayType::Both) {
+                    $totalExcludingTax->setLabel(__('%1 Excl. Tax', $totalExcludingTax->getLabel()));
+
+                    $totalIncludingTax->setLabel(__('%1 Incl. Tax', $totalIncludingTax->getLabel()));
+                    $totalIncludingTax->setCode($totalIncludingTax->getCode() . '_with_tax');
+                }
+
+                if ($totalExcludingTax !== null) {
+                    $this->addTotal($totalExcludingTax, $firstRefundedFeeKey);
+                }
+
+                if ($totalIncludingTax !== null) {
+                    $this->addTotal($totalIncludingTax, $firstRefundedFeeKey);
+                }
             },
         );
 
         return $this;
+    }
+
+    private function buildTotal(RefundedCustomFee $refundedCustomFee, bool $includeTax): DataObject
+    {
+        $totalData = [
+            'code' => $refundedCustomFee->getCode(),
+            'label' => $refundedCustomFee->formatLabel(),
+            'base_value' => $refundedCustomFee->getBaseValue(),
+            'value' => $refundedCustomFee->getValue(),
+        ];
+
+        if ($includeTax) {
+            $totalData['base_value'] = $refundedCustomFee->getBaseValueWithTax();
+            $totalData['value'] = $refundedCustomFee->getValueWithTax();
+        }
+
+        return $this->dataObjectFactory->create(['data' => $totalData]);
+    }
+
+    private function addTotal(DataObject $total, string $firstTotalKey): void
+    {
+        if ($total->getCode() === $firstTotalKey) {
+            if ($this->getBeforeCondition() !== null) {
+                $this->getParentBlock()->addTotalBefore($total, $this->getBeforeCondition());
+            } else {
+                $this->getParentBlock()->addTotal($total, $this->getAfterCondition());
+            }
+        } else {
+            $this->getParentBlock()->addTotal($total);
+        }
     }
 }

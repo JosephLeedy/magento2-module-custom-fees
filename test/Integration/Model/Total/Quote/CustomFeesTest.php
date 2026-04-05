@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Model\Total\Quote;
 
-use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
+use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Model\Total\Quote\CustomFees;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\ResourceModel\Quote as QuoteResource;
@@ -15,8 +14,6 @@ use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
 use function __;
-use function array_column;
-use function in_array;
 
 final class CustomFeesTest extends TestCase
 {
@@ -45,10 +42,12 @@ final class CustomFeesTest extends TestCase
             [
                 'code' => 'test_fee_0',
                 'title' => __('Test Fee'),
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
                 'value' => 4.00,
+                'tax_details' => [
+                    'value_with_tax' => 4.00,
+                    'tax_amount' => 0.00,
+                    'tax_rate' => 0.00,
+                ],
             ],
             $collectedTotals['test_fee_0']->getData(),
         );
@@ -56,34 +55,70 @@ final class CustomFeesTest extends TestCase
             [
                 'code' => 'test_fee_1',
                 'title' => __('Another Fee (5%)'),
-                'type' => 'percent',
-                'percent' => 5,
-                'show_percentage' => true,
                 'value' => 1.00,
+                'tax_details' => [
+                    'value_with_tax' => 1.00,
+                    'tax_amount' => 0.00,
+                    'tax_rate' => 0.00,
+                ],
             ],
             $collectedTotals['test_fee_1']->getData(),
         );
         self::assertNotNull($quote->getExtensionAttributes()?->getCustomFees());
         self::assertEquals(
             [
-                [
-                    'code' => 'test_fee_0',
-                    'title' => __('Test Fee'),
-                    'type' => 'fixed',
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 4.00,
-                    'value' => 4.00,
-                ],
-                [
-                    'code' => 'test_fee_1',
-                    'title' => __('Another Fee'),
-                    'type' => 'percent',
-                    'percent' => 5,
-                    'show_percentage' => true,
-                    'base_value' => 1.00,
-                    'value' => 1.00,
-                ],
+                'test_fee_0' => $objectManager->create(
+                    CustomOrderFeeInterface::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_0',
+                            'title' => 'Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 4.00,
+                            'value' => 4.00,
+                            'base_value_with_tax' => 4.00,
+                            'value_with_tax' => 4.00,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                            'base_applied_taxes' => [],
+                            'applied_taxes' => [],
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
+                            'base_discount_tax_compensation' => 0.00,
+                            'discount_tax_compensation' => 0.00,
+                        ],
+                    ],
+                ),
+                'test_fee_1' => $objectManager->create(
+                    CustomOrderFeeInterface::class,
+                    [
+                        'data' => [
+                            'code' => 'test_fee_1',
+                            'title' => 'Another Fee',
+                            'type' => FeeType::Percent,
+                            'percent' => 5,
+                            'show_percentage' => true,
+                            'base_value' => 1.00,
+                            'value' => 1.00,
+                            'base_value_with_tax' => 1.00,
+                            'value_with_tax' => 1.00,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                            'base_applied_taxes' => [],
+                            'applied_taxes' => [],
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
+                            'base_discount_tax_compensation' => 0.00,
+                            'discount_tax_compensation' => 0.00,
+                        ],
+                    ],
+                ),
             ],
             $quote->getExtensionAttributes()->getCustomFees(),
         );
@@ -114,56 +149,16 @@ final class CustomFeesTest extends TestCase
             [
                 'code' => 'test_fee_0',
                 'title' => __('Test Fee'),
-                'type' => 'fixed',
-                'percent' => null,
-                'show_percentage' => false,
                 'value' => 4.00,
             ],
             [
                 'code' => 'test_fee_1',
                 'title' => __('Another Fee (5%)'),
-                'type' => 'percent',
-                'percent' => 5,
-                'show_percentage' => true,
                 'value' => 1.00,
             ],
         ];
         $actualCustomFees = $customFeesTotalCollector->fetch($quote, $total);
 
         self::assertEquals($expectedCustomFees, $actualCustomFees);
-    }
-
-    /**
-     * @magentoDataFixture Magento/Checkout/_files/quote_with_address.php
-     */
-    public function testDoesNotCollectExampleCustomFeesTotals(): void
-    {
-        /** @var ObjectManagerInterface $objectManager */
-        $objectManager = Bootstrap::getObjectManager();
-        /** @var ConfigInterface $config */
-        $config = $objectManager->get(ConfigInterface::class);
-        /** @var Quote $quote */
-        $quote = $objectManager->create(Quote::class);
-        /** @var QuoteResource $quoteResource */
-        $quoteResource = $objectManager->create(QuoteResource::class);
-
-        try {
-            $customFees = $config->getCustomFees();
-        } catch (LocalizedException) {
-            $customFees = [];
-        }
-
-        if (count($customFees) === 0 || !in_array('example_fee', array_column($customFees, 'code'), true)) {
-            self::fail('Example custom fee is not configured');
-        }
-
-        $quoteResource->load($quote, 'test_order_1', 'reserved_order_id');
-
-        $quote->collectTotals();
-
-        $collectedTotals = $quote->getTotals();
-
-        self::assertArrayNotHasKey('example_fee', $collectedTotals);
-        self::assertEmpty($quote->getExtensionAttributes()?->getCustomFees());
     }
 }

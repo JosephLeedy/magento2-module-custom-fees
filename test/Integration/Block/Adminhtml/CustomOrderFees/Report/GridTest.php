@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Block\Adminhtml\CustomOrderFees\Report;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use JosephLeedy\CustomFees\Block\Adminhtml\CustomOrderFees\Report\Grid;
 use Magento\Framework\App\Area;
 use Magento\Framework\DataObject;
@@ -48,6 +50,10 @@ final class GridTest extends TestCase
             'fee_title',
             'base_fee_amount',
             'paid_fee_amount',
+            'base_discount_amount',
+            'paid_discount_amount',
+            'base_tax_amount',
+            'paid_tax_amount',
             'base_invoiced_fee_amount',
             'invoiced_fee_amount',
             'base_refunded_fee_amount',
@@ -75,6 +81,8 @@ final class GridTest extends TestCase
         $grid = $objectManger->create(Grid::class);
         /** @var LayoutInterface $layout */
         $layout = $objectManger->get(LayoutInterface::class);
+        $fromDate = (new DateTimeImmutable('first day of January this year', new DateTimeZone('UTC')))->format('Y-m-d');
+        $toDate = (new DateTimeImmutable('last day of December this year', new DateTimeZone('UTC')))->format('Y-m-d');
         /** @var DataObject $filterData */
         $filterData = $objectManger->create(
             DataObject::class,
@@ -84,8 +92,8 @@ final class GridTest extends TestCase
                     'show_base_invoiced_amount' => 1,
                     'show_base_refunded_amount' => 1,
                     'period_type' => 'day',
-                    'from' => '2025-01-01',
-                    'to' => '2025-12-31',
+                    'from' => $fromDate,
+                    'to' => $toDate,
                 ],
             ],
         );
@@ -99,6 +107,10 @@ final class GridTest extends TestCase
         $expectedTotalData = [
             'base_fee_amount' => '19.5',
             'paid_fee_amount' => '9.1872, 6.5000',
+            'base_discount_amount' => '0',
+            'paid_discount_amount' => '0.0000, 0.0000',
+            'base_tax_amount' => '0',
+            'paid_tax_amount' => '0.0000, 0.0000',
             'base_invoiced_fee_amount' => '0.0000, 0.0000',
             'invoiced_fee_amount' => '0.0000, 0.0000',
             'base_refunded_fee_amount' => '0.0000, 0.0000',

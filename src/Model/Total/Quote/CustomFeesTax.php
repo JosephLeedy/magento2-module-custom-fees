@@ -1,0 +1,391 @@
+<?php
+
+declare(strict_types=1);
+
+namespace JosephLeedy\CustomFees\Model\Total\Quote;
+
+use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
+use JosephLeedy\CustomFees\Service\CustomFeeDiscountRulesApplier;
+use Magento\Customer\Api\AccountManagementInterface as CustomerAccountManagement;
+use Magento\Customer\Api\Data\AddressInterfaceFactory as CustomerAddressFactory;
+use Magento\Customer\Api\Data\RegionInterfaceFactory as CustomerAddressRegionFactory;
+use Magento\Quote\Api\Data\ShippingAssignmentInterface;
+use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\Quote\Address;
+use Magento\Quote\Model\Quote\Address\Total;
+use Magento\Quote\Model\Quote\Address\Total\CollectorInterface;
+use Magento\Tax\Api\Data\QuoteDetailsInterfaceFactory;
+use Magento\Tax\Api\Data\QuoteDetailsItemExtensionInterfaceFactory;
+use Magento\Tax\Api\Data\QuoteDetailsItemInterface;
+use Magento\Tax\Api\Data\QuoteDetailsItemInterfaceFactory;
+use Magento\Tax\Api\Data\TaxClassKeyInterface;
+use Magento\Tax\Api\Data\TaxClassKeyInterfaceFactory;
+use Magento\Tax\Api\Data\TaxDetailsItemInterface;
+use Magento\Tax\Api\TaxCalculationInterface;
+use Magento\Tax\Helper\Data as TaxHelper;
+use Magento\Tax\Model\Config as TaxConfig;
+use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
+
+use function array_first;
+use function array_map;
+use function array_values;
+use function array_walk;
+use function round;
+
+class CustomFeesTax extends CommonTaxCollector
+{
+    public function __construct(
+        private readonly ConfigInterface $config,
+        private readonly CustomFeeDiscountRulesApplier $discountRulesApplier,
+        TaxConfig $taxConfig,
+        TaxCalculationInterface $taxCalculationService,
+        QuoteDetailsInterfaceFactory $quoteDetailsDataObjectFactory,
+        QuoteDetailsItemInterfaceFactory $quoteDetailsItemDataObjectFactory,
+        TaxClassKeyInterfaceFactory $taxClassKeyDataObjectFactory,
+        CustomerAddressFactory $customerAddressFactory,
+        CustomerAddressRegionFactory $customerAddressRegionFactory,
+        ?TaxHelper $taxHelper = null,
+        ?QuoteDetailsItemExtensionInterfaceFactory $quoteDetailsItemExtensionInterfaceFactory = null,
+        ?CustomerAccountManagement $customerAccountManagement = null,
+    ) {
+        parent::__construct(
+            $taxConfig,
+            $taxCalculationService,
+            $quoteDetailsDataObjectFactory,
+            $quoteDetailsItemDataObjectFactory,
+            $taxClassKeyDataObjectFactory,
+            $customerAddressFactory,
+            $customerAddressRegionFactory,
+            $taxHelper,
+            $quoteDetailsItemExtensionInterfaceFactory,
+            $customerAccountManagement,
+        );
+    }
+
+    public function collect(
+        Quote $quote,
+        ShippingAssignmentInterface $shippingAssignment,
+        Total $total,
+    ): CollectorInterface {
+        parent::collect($quote, $shippingAssignment, $total);
+
+        if ($shippingAssignment->getItems() === null || $shippingAssignment->getItems() === []) {
+            return $this;
+        }
+
+        /** @var array<string, CustomOrderFeeInterface> $customFees */
+        $customFees = $quote->getExtensionAttributes()?->getCustomFees() ?? [];
+
+        if ($customFees === []) {
+            return $this;
+        }
+
+        $this->initializeCustomFeeTaxData($customFees);
+
+        $appliedTaxAmount = $this->applyTaxToCustomFees($customFees, $shippingAssignment);
+
+        if ($appliedTaxAmount > 0.00 && $this->_config->applyTaxAfterDiscount($quote->getStoreId())) {
+            $this->recalculateCustomFeesTaxesWithDiscounts(
+                $customFees,
+                $shippingAssignment,
+                (int) $quote->getStoreId(),
+            );
+        }
+
+        $this->setTotals($customFees, $total);
+
+        return $this;
+    }
+
+    /**
+     * @return array{
+     *     code: string,
+     *     value: float,
+     *     tax_details: array{
+     *         value_with_tax: float,
+     *         tax_amount: float,
+     *         tax_rate: float,
+     *     },
+     * }[]
+     */
+    public function fetch(Quote $quote, Total $total): array
+    {
+        $customFees = array_values($quote->getExtensionAttributes()?->getCustomFees() ?? []);
+        $totals = array_map(
+            static fn(CustomOrderFeeInterface $customOrderFee): array => [
+                'code' => $customOrderFee->getCode(),
+                'value' => $customOrderFee->getValue(),
+                'tax_details' => [
+                    'value_with_tax' => $customOrderFee->getValueWithTax(),
+                    'tax_amount' => $customOrderFee->getTaxAmount(),
+                    'tax_rate' => $customOrderFee->getTaxRate(),
+                ],
+            ],
+            $customFees,
+        );
+
+        return $totals;
+    }
+
+    /**
+     * @param array<string, CustomOrderFeeInterface> $customFees
+     */
+    private function initializeCustomFeeTaxData(array $customFees): void
+    {
+        array_walk(
+            $customFees,
+            static function (CustomOrderFeeInterface $customFee): void {
+                $customFee->setBaseValueWithTax($customFee->getBaseValue());
+                $customFee->setValueWithTax($customFee->getValue());
+                $customFee->setBaseTaxAmount(0.00);
+                $customFee->setTaxAmount(0.00);
+                $customFee->setTaxRate(0.0);
+                $customFee->setBaseDiscountTaxCompensation(0.00);
+                $customFee->setDiscountTaxCompensation(0.00);
+                $customFee->setAppliedTaxes([]);
+            },
+        );
+    }
+
+    /**
+     * @param array<string, CustomOrderFeeInterface> $customFees
+     */
+    private function applyTaxToCustomFees(array $customFees, ShippingAssignmentInterface $shippingAssignment): float
+    {
+        /** @var Quote $quote */
+        $quote = $shippingAssignment->getShipping()->getAddress()->getQuote();
+        $storeId = $quote->getStoreId();
+        $baseCustomFeeTaxDataObjects = array_map(
+            fn(CustomOrderFeeInterface $customFee): QuoteDetailsItemInterface => $this->buildCustomFeeTaxDataObject(
+                $customFee,
+                $storeId,
+                true,
+            ),
+            $customFees,
+        );
+        $customFeeTaxDataObjects = array_map(
+            fn(CustomOrderFeeInterface $customFee): QuoteDetailsItemInterface => $this->buildCustomFeeTaxDataObject(
+                $customFee,
+                $storeId,
+                false,
+            ),
+            $customFees,
+        );
+        $baseQuoteDetails = $this->prepareQuoteDetails($shippingAssignment, $baseCustomFeeTaxDataObjects);
+        $quoteDetails = $this->prepareQuoteDetails($shippingAssignment, $customFeeTaxDataObjects);
+        $baseTaxDetails = $this->taxCalculationService->calculateTax($baseQuoteDetails, (int) $storeId);
+        $taxDetails = $this->taxCalculationService->calculateTax($quoteDetails, (int) $storeId);
+
+        $this->processCustomFeeTaxData($baseTaxDetails->getItems() ?? [], $taxDetails->getItems() ?? [], $customFees);
+
+        $appliedTaxAmount = array_sum(
+            array_map(static fn(CustomOrderFeeInterface $customFee): float => $customFee->getTaxAmount(), $customFees),
+        );
+
+        return $appliedTaxAmount;
+    }
+
+    private function buildCustomFeeTaxDataObject(
+        CustomOrderFeeInterface $customOrderFee,
+        int|string $storeId,
+        bool $useBaseCurrency,
+    ): QuoteDetailsItemInterface {
+        /** @var TaxClassKeyInterface $taxClassKey */
+        $taxClassKey = $this->taxClassKeyDataObjectFactory->create();
+        /** @var QuoteDetailsItemInterface $quoteDetailsItem */
+        $quoteDetailsItem = $this->quoteDetailsItemDataObjectFactory->create();
+
+        $taxClassKey
+            ->setType(TaxClassKeyInterface::TYPE_ID)
+            ->setValue((string) $this->config->getTaxClass($storeId));
+
+        $quoteDetailsItem
+            ->setType('custom_fee')
+            ->setCode($customOrderFee->getCode())
+            ->setQuantity(1)
+            ->setUnitPrice($customOrderFee->getValue())
+            ->setDiscountAmount($customOrderFee->getDiscountAmount())
+            ->setTaxClassKey($taxClassKey)
+            ->setIsTaxIncluded($this->config->isTaxIncluded($storeId));
+
+        if ($useBaseCurrency) {
+            $quoteDetailsItem->setUnitPrice($customOrderFee->getBaseValue());
+            $quoteDetailsItem->setDiscountAmount($customOrderFee->getBaseDiscountAmount());
+        }
+
+        return $quoteDetailsItem;
+    }
+
+    /**
+     * @param TaxDetailsItemInterface[] $baseCustomFeeTaxDetails
+     * @param TaxDetailsItemInterface[] $customFeeTaxDetails
+     * @param array<string, CustomOrderFeeInterface> $customFees
+     */
+    private function processCustomFeeTaxData(
+        array $baseCustomFeeTaxDetails,
+        array $customFeeTaxDetails,
+        array $customFees,
+    ): void {
+        array_walk(
+            $baseCustomFeeTaxDetails,
+            static function (TaxDetailsItemInterface $taxDetailsItem) use ($customFees): void {
+                $customFeeCode = $taxDetailsItem->getCode();
+                $customFee = $customFees[$customFeeCode];
+                $rowTax = $taxDetailsItem->getRowTax();
+
+                $customFee->setBaseValue(round($taxDetailsItem->getRowTotal(), 2));
+                $customFee->setBaseValueWithTax(round($taxDetailsItem->getRowTotalInclTax(), 2));
+                $customFee->setBaseTaxAmount($rowTax);
+                $customFee->setBaseDiscountTaxCompensation(
+                    round($taxDetailsItem->getDiscountTaxCompensationAmount(), 2),
+                );
+                $customFee->setBaseAppliedTaxes($taxDetailsItem->getAppliedTaxes());
+            },
+        );
+
+        array_walk(
+            $customFeeTaxDetails,
+            static function (TaxDetailsItemInterface $taxDetailsItem) use ($customFees): void {
+                $customFeeCode = $taxDetailsItem->getCode();
+                $customFee = $customFees[$customFeeCode];
+                $rowTax = $taxDetailsItem->getRowTax();
+
+                $customFee->setValue(round($taxDetailsItem->getRowTotal(), 2));
+                $customFee->setValueWithTax(round($taxDetailsItem->getRowTotalInclTax(), 2));
+                $customFee->setTaxAmount($rowTax);
+                $customFee->setTaxRate($taxDetailsItem->getTaxPercent());
+                $customFee->setDiscountTaxCompensation(round($taxDetailsItem->getDiscountTaxCompensationAmount(), 2));
+                $customFee->setAppliedTaxes($taxDetailsItem->getAppliedTaxes());
+            },
+        );
+    }
+
+    /**
+     * @param array<string, CustomOrderFeeInterface> $customFees
+     */
+    private function recalculateCustomFeesTaxesWithDiscounts(
+        array $customFees,
+        ShippingAssignmentInterface $shippingAssignment,
+        int $storeId,
+    ): void {
+        /** @var Address $address */
+        $address = $shippingAssignment->getShipping()->getAddress();
+
+        $this->discountRulesApplier->applyRules($customFees, $address);
+
+        $appliedRuleIds = $address->getAppliedRuleIds();
+
+        if ($appliedRuleIds === [] || $appliedRuleIds === null) {
+            return;
+        }
+
+        if ($this->config->isTaxIncluded($storeId)) {
+            // Use fee amount including tax to recalculate taxes
+
+            array_walk(
+                $customFees,
+                static function (CustomOrderFeeInterface $customFee): void {
+                    $customFee->setBaseValue($customFee->getBaseValueWithTax());
+                    $customFee->setValue($customFee->getValueWithTax());
+                },
+            );
+        }
+
+        // Reapply taxes after discount rules are applied
+
+        $this->applyTaxToCustomFees($customFees, $shippingAssignment);
+    }
+
+    /**
+     * @param array<string, CustomOrderFeeInterface> $customFees
+     */
+    private function setTotals(array $customFees, Total $total): void
+    {
+        array_walk(
+            $customFees,
+            static function (CustomOrderFeeInterface $customFee) use ($total): void {
+                $total->setBaseTotalAmount($customFee->getCode(), $customFee->getBaseValue());
+                $total->setTotalAmount($customFee->getCode(), $customFee->getValue());
+
+                $total->setData('base_' . $customFee->getCode() . '_tax_amount', $customFee->getBaseTaxAmount());
+                $total->setData($customFee->getCode() . '_tax_amount', $customFee->getTaxAmount());
+                $total->setData(
+                    'base_' . $customFee->getCode() . '_discount_tax_compensation_amount',
+                    $customFee->getBaseDiscountTaxCompensation(),
+                );
+                $total->setData(
+                    $customFee->getCode() . '_discount_tax_compensation_amount',
+                    $customFee->getDiscountTaxCompensation(),
+                );
+            },
+        );
+
+        $baseTaxAmount = 0.00;
+        $taxAmount = 0.00;
+        $baseDiscountTaxCompensation = 0.00;
+        $discountTaxCompensation = 0.00;
+
+        foreach ($customFees as $customFee) {
+            $baseTaxAmount += $customFee->getBaseTaxAmount();
+            $taxAmount += $customFee->getTaxAmount();
+            $baseDiscountTaxCompensation += $customFee->getBaseDiscountTaxCompensation();
+            $discountTaxCompensation += $customFee->getDiscountTaxCompensation();
+        }
+
+        $total->setData('base_custom_fees_tax_amount', $baseTaxAmount);
+        $total->setData('custom_fees_tax_amount', $taxAmount);
+        $total->setBaseTotalAmount('custom_fees_discount_tax_compensation', $baseDiscountTaxCompensation);
+        $total->setTotalAmount('custom_fees_discount_tax_compensation', $discountTaxCompensation);
+        $total->addBaseTotalAmount('tax', $baseTaxAmount);
+        $total->addTotalAmount('tax', $taxAmount);
+
+        $this->processAppliedCustomFeeTaxes($customFees, $total);
+    }
+
+    /**
+     * @param array<string, CustomOrderFeeInterface> $customFees
+     */
+    private function processAppliedCustomFeeTaxes(array $customFees, Total $total): void
+    {
+        /** @var array<string, AppliedTaxData> $allAppliedTaxes */
+        $allAppliedTaxes = [];
+
+        foreach ($customFees as $code => $customFee) {
+            /** @var list<AppliedTaxData> $appliedTaxes */
+            $appliedTaxes = $this->convertAppliedTaxes(
+                $customFee->getAppliedTaxes(),
+                $customFee->getBaseAppliedTaxes(),
+                [
+                    'item_id' => null,
+                    'item_type' => 'custom_fee',
+                    'associated_item_id' => null,
+                ],
+            );
+            /** @var AppliedTaxData|null $appliedTax */
+            $appliedTax = array_first($appliedTaxes);
+
+            if ($appliedTax === null) {
+                continue;
+            }
+
+            $this->_saveAppliedTaxes(
+                $total,
+                [$appliedTax],
+                $appliedTax['amount'],
+                $appliedTax['base_amount'] ?? $appliedTax['amount'],
+                $appliedTax['percent'],
+            );
+
+            $allAppliedTaxes[$code] = $appliedTax;
+        }
+
+        /**
+         * @var array<string, array<string, AppliedTaxData>> $itemsAppliedTaxes
+         */
+        $itemsAppliedTaxes = $total->getItemsAppliedTaxes() ?? [];
+        $itemsAppliedTaxes['custom_fees'] = $allAppliedTaxes;
+
+        $total->setItemsAppliedTaxes($itemsAppliedTaxes);
+    }
+}

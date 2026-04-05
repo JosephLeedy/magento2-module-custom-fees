@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace JosephLeedy\CustomFees\Plugin\Sales\Model\Order;
 
 use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
-use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface as InvoicedCustomFeeInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -15,6 +15,7 @@ use Psr\Log\LoggerInterface;
 
 use function __;
 use function array_key_exists;
+use function array_walk;
 
 class InvoicePlugin
 {
@@ -25,17 +26,7 @@ class InvoicePlugin
 
     public function afterSave(Invoice $subject, Invoice $result): InvoiceInterface
     {
-        /**
-         * @var array{
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float,
-         * }[] $invoicedCustomFees
-         */
+        /** @var array<string, InvoicedCustomFeeInterface> $invoicedCustomFees */
         $invoicedCustomFees = $result->getExtensionAttributes()?->getInvoicedCustomFees() ?? [];
 
         if ($invoicedCustomFees === []) {
@@ -55,12 +46,14 @@ class InvoicePlugin
             return $result;
         }
 
-        $customFeesInvoiced[$invoiceId] = [];
+        $customFeesInvoiced[$invoiceId] = $invoicedCustomFees;
 
-        foreach ($invoicedCustomFees as $invoicedCustomFee) {
-            $invoicedCustomFee['invoice_id'] = $invoiceId;
-            $customFeesInvoiced[$invoiceId][$invoicedCustomFee['code']] = $invoicedCustomFee;
-        }
+        array_walk(
+            $customFeesInvoiced[$invoiceId],
+            static function (InvoicedCustomFeeInterface $invoicedCustomFee) use ($invoiceId): void {
+                $invoicedCustomFee->setInvoiceId($invoiceId);
+            },
+        );
 
         $customOrderFees->setCustomFeesInvoiced($customFeesInvoiced);
 

@@ -1,5 +1,7 @@
 <?php
 
+// phpcs:disable Generic.Files.LineLength.TooLong
+
 declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
@@ -18,7 +20,19 @@ $customFeesViewModel = $viewModels->require(CustomFeesViewModel::class);
              */
             customFees: <?= /* @noEscape */ $customFeesViewModel->getCustomFeesAsJson() ?>,
             /**
-             * @param {{code: string, title: string, value: number}} segment
+             * @param {
+             *     {
+             *         code: string,
+             *         title: string,
+             *         value: number,
+             *         extension_attributes?: {
+             *             custom_fee_tax_details?: {
+             *                 value_with_tax: number,
+             *                 tax_amount: number
+             *             }
+             *         }
+             *     }
+             * } segment
              * @returns {boolean}
              */
             canDisplay(segment) {
@@ -29,9 +43,32 @@ $customFeesViewModel = $viewModels->require(CustomFeesViewModel::class);
         };
     }
 </script>
-<template x-data="initCustomFeesTotals()" x-if="canDisplay(segment)">
-    <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
-        <div class="w-7/12 text-left md:w-auto" x-html="segment.title"></div>
-        <div class="w-5/12 text-right md:w-auto" x-text="hyva.formatPrice(segment.value)"></div>
-    </div>
-</template>
+<div x-data="initCustomFeesTotals()">
+    <!-- display custom fee without tax -->
+    <template x-if="canDisplay(segment) && checkoutConfig.customFees.cartDisplayType === 'excluding_tax'">
+        <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+            <div class="w-7/12 text-left md:w-auto" x-html="segment.title"></div>
+            <div class="w-5/12 text-right md:w-auto" x-text="hyva.formatPrice(segment.value)"></div>
+        </div>
+    </template>
+    <!-- display custom fee with tax -->
+    <template x-if="canDisplay(segment) && checkoutConfig.customFees.cartDisplayType === 'including_tax'">
+        <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+            <div class="w-7/12 text-left md:w-auto" x-html="segment.title"></div>
+            <div class="w-5/12 text-right md:w-auto" x-text="hyva.formatPrice(segment.extension_attributes.custom_fee_tax_details?.value_with_tax || segment.value)"></div>
+        </div>
+    </template>
+    <!-- display custom fee without and with tax -->
+    <template x-if="canDisplay(segment) && checkoutConfig.customFees.cartDisplayType === 'both'">
+        <div>
+            <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+                <div class="w-7/12 text-left md:w-auto" x-html="`${segment.title} ${excludingTaxMessage}`"></div>
+                <div class="w-5/12 text-right md:w-auto" x-text="hyva.formatPrice(segment.value)"></div>
+            </div>
+            <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+                <div class="w-7/12 text-left md:w-auto" x-html="`${segment.title} ${includingTaxMessage}`"></div>
+                <div class="w-5/12 text-right md:w-auto" x-text="hyva.formatPrice(segment.extension_attributes.custom_fee_tax_details?.value_with_tax || segment.value)"></div>
+            </div>
+        </div>
+    </template>
+</div>

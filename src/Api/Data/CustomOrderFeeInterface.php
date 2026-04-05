@@ -1,0 +1,258 @@
+<?php
+
+declare(strict_types=1);
+
+namespace JosephLeedy\CustomFees\Api\Data;
+
+use InvalidArgumentException;
+use Magento\Framework\Phrase;
+
+interface CustomOrderFeeInterface
+{
+    public const CODE = 'code';
+    public const TITLE = 'title';
+    public const TYPE = 'type';
+    public const PERCENT = 'percent';
+    public const SHOW_PERCENTAGE = 'show_percentage';
+    public const BASE_VALUE = 'base_value';
+    public const VALUE = 'value';
+    public const BASE_VALUE_WITH_TAX = 'base_value_with_tax';
+    public const VALUE_WITH_TAX = 'value_with_tax';
+    public const BASE_TAX_AMOUNT = 'base_tax_amount';
+    public const TAX_AMOUNT = 'tax_amount';
+    public const TAX_RATE = 'tax_rate';
+    public const BASE_APPLIED_TAXES = 'base_applied_taxes';
+    public const APPLIED_TAXES = 'applied_taxes';
+    public const BASE_DISCOUNT_AMOUNT = 'base_discount_amount';
+    public const DISCOUNT_AMOUNT = 'discount_amount';
+    public const DISCOUNT_RATE = 'discount_rate';
+    public const BASE_DISCOUNT_TAX_COMPENSATION = 'base_discount_tax_compensation';
+    public const DISCOUNT_TAX_COMPENSATION = 'discount_tax_compensation';
+
+    /**
+     * @param string $code
+     * @return CustomOrderFeeInterface
+     */
+    public function setCode(string $code): CustomOrderFeeInterface;
+
+    /**
+     * @return string
+     */
+    public function getCode(): string;
+
+    /**
+     * @param string $title
+     * @return CustomOrderFeeInterface
+     */
+    public function setTitle(string $title): CustomOrderFeeInterface;
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string;
+
+    /**
+     * @param string $type
+     * @phpstan-param \JosephLeedy\CustomFees\Api\Data\FeeTypeInterface|string $type
+     * @return CustomOrderFeeInterface
+     * @throws InvalidArgumentException
+     */
+    public function setType(FeeTypeInterface|string $type): CustomOrderFeeInterface;
+
+    /**
+     * @return string
+     * @phpstan-return \JosephLeedy\CustomFees\Api\Data\FeeTypeInterface|string Returns a string when called from the
+     * REST, SOAP or GraphQL API; otherwise returns an instance of `FeeTypeInterface`.
+     */
+    public function getType(): FeeTypeInterface|string;
+
+    /**
+     * @param float|null $percent
+     * @return CustomOrderFeeInterface
+     */
+    public function setPercent(?float $percent): CustomOrderFeeInterface;
+
+    /**
+     * @return float|null
+     */
+    public function getPercent(): ?float;
+
+    /**
+     * @param bool $showPercentage
+     * @return CustomOrderFeeInterface
+     */
+    public function setShowPercentage(bool|int $showPercentage): CustomOrderFeeInterface;
+
+    /**
+     * @return bool
+     */
+    public function getShowPercentage(): bool;
+
+    /**
+     * @param float $baseValue
+     * @return CustomOrderFeeInterface
+     */
+    public function setBaseValue(float $baseValue): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getBaseValue(): float;
+
+    /**
+     * @param float $value
+     * @return CustomOrderFeeInterface
+     */
+    public function setValue(float $value): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getValue(): float;
+
+    /**
+     * @param float $baseValueWithTax
+     * @return CustomOrderFeeInterface
+     */
+    public function setBaseValueWithTax(float $baseValueWithTax): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getBaseValueWithTax(): float;
+
+    /**
+     * @param float $valueWithTax
+     * @return CustomOrderFeeInterface
+     */
+    public function setValueWithTax(float $valueWithTax): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getValueWithTax(): float;
+
+    /**
+     * @param float $baseTaxAmount
+     * @return CustomOrderFeeInterface
+     */
+    public function setBaseTaxAmount(float $baseTaxAmount): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getBaseTaxAmount(): float;
+
+    /**
+     * @param float $taxAmount
+     * @return CustomOrderFeeInterface
+     */
+    public function setTaxAmount(float $taxAmount): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getTaxAmount(): float;
+
+    /**
+     * @param float $taxRate
+     * @return CustomOrderFeeInterface
+     */
+    public function setTaxRate(float $taxRate): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getTaxRate(): float;
+
+    /**
+     * @param \Magento\Tax\Api\Data\AppliedTaxInterface[]|string|null $baseAppliedTaxes
+     * @phpstan-param array<string, \Magento\Tax\Api\Data\AppliedTaxInterface>|string|null $baseAppliedTaxes
+     */
+    public function setBaseAppliedTaxes(array|string|null $baseAppliedTaxes): CustomOrderFeeInterface;
+
+    /**
+     * @return \Magento\Tax\Api\Data\AppliedTaxInterface[]
+     * @phpstan-return array<string, \Magento\Tax\Api\Data\AppliedTaxInterface>
+     */
+    public function getBaseAppliedTaxes(): array;
+
+    /**
+     * @param \Magento\Tax\Api\Data\AppliedTaxInterface[]|string|null $appliedTaxes
+     * @phpstan-param array<string, \Magento\Tax\Api\Data\AppliedTaxInterface>|string|null $appliedTaxes
+     */
+    public function setAppliedTaxes(array|string|null $appliedTaxes): CustomOrderFeeInterface;
+
+    /**
+     * @return \Magento\Tax\Api\Data\AppliedTaxInterface[]
+     * @phpstan-return array<string, \Magento\Tax\Api\Data\AppliedTaxInterface>
+     */
+    public function getAppliedTaxes(): array;
+
+    /**
+     * @param float|null $baseDiscountAmount
+     * @return CustomOrderFeeInterface
+     */
+    public function setBaseDiscountAmount(?float $baseDiscountAmount): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getBaseDiscountAmount(): float;
+
+    /**
+     * @param float|null $discountAmount
+     * @return CustomOrderFeeInterface
+     */
+    public function setDiscountAmount(?float $discountAmount): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getDiscountAmount(): float;
+
+    /**
+     * @param float|null $discountRate
+     * @return CustomOrderFeeInterface
+     */
+    public function setDiscountRate(?float $discountRate): CustomOrderFeeInterface;
+
+    /**
+     * @return float
+     */
+    public function getDiscountRate(): float;
+
+    /**
+     * @param float|null $baseDiscountTaxCompensation
+     * @return CustomOrderFeeInterface
+     */
+    public function setBaseDiscountTaxCompensation(?float $baseDiscountTaxCompensation);
+
+    /**
+     * @return float
+     */
+    public function getBaseDiscountTaxCompensation(): float;
+
+    /**
+     * @param float|null $discountTaxCompensation
+     * @return CustomOrderFeeInterface
+     */
+    public function setDiscountTaxCompensation(?float $discountTaxCompensation);
+
+    /**
+     * @return float
+     */
+    public function getDiscountTaxCompensation(): float;
+
+    /**
+     * @return Phrase
+     */
+    public function formatLabel(string $prefix = '', string $suffix = ''): Phrase;
+
+    /**
+     * @return array
+     * @phpstan-return CustomOrderFeeData
+     */
+    // phpcs:ignore PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.MethodDoubleUnderscore
+    public function __toArray();
+}

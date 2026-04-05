@@ -10,6 +10,34 @@ document.
 
 ## [Unreleased]
 
+## [1.4.0]
+
+### Added
+- A product attribute that can be used to determine whether or not a custom fee 
+  should be applied to an order is now created automatically when the extension 
+  is installed
+- Data for the Custom Order Fees Report can now be aggregated automatically on 
+  a chosen schedule
+- Custom fees can now be charged with tax and displayed inclusive or exclusive 
+  of tax
+- Cart Price Rules can now be used to apply discounts to custom fees for 
+  orders, invoices and credit memos
+
+### Changed
+
+- Ordered custom fees are now indexed by their corresponding fee code
+- Data for ordered, invoiced and refunded custom fees is now represented by 
+  models with corresponding interfaces instead of arrays
+- Usages of the `mixed[]` type for extension attributes have been replaced with 
+  the new interfaces for ordered, invoiced and refunded custom fees
+- All total models, blocks and other logic now use the new interfaces and models
+
+### Removed
+- The data patch used to add missing fields to the existing custom order fees 
+  data has been removed
+- The plug-in used to temporarily store the refunded custom fee amounts entered 
+  in the Admin panel during credit memo creation has been removed
+
 ## [1.3.2]
 
 ### Fixed
@@ -150,7 +178,8 @@ document.
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 [README]: ./README.md
-[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.3.2...HEAD
+[Unreleased]: https://github.com/JosephLeedy/magento2-module-custom-fees/compare/1.4.0...HEAD
+[1.4.0]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.4.0
 [1.3.2]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.3.2
 [1.3.1]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.3.1
 [1.3.0]: https://github.com/JosephLeedy/magento2-module-custom-fees/releases/tag/1.3.0

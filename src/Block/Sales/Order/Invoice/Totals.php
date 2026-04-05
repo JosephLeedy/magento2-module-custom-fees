@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Block\Sales\Order\Invoice;
 
-use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\InvoicedInterface as InvoicedCustomFee;
+use JosephLeedy\CustomFees\Model\DisplayType;
 use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
@@ -34,6 +36,7 @@ class Totals extends Template
     public function __construct(
         Context $context,
         private readonly CustomFeesRetriever $customFeesRetriever,
+        private readonly ConfigInterface $config,
         private readonly DataObjectFactory $dataObjectFactory,
         array $data = [],
     ) {
@@ -52,72 +55,86 @@ class Totals extends Template
     {
         $invoice = $this->getSource();
         $order = $invoice->getOrder();
-        /**
-         * @var array{}|array<string, array{
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float,
-         * }> $customFees
-         */
-        $customFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees() ?? [];
+        /** @var array<string, InvoicedCustomFee> $invoicedCustomFees */
+        $invoicedCustomFees = $invoice->getExtensionAttributes()?->getInvoicedCustomFees() ?? [];
         /** @var int|string|null $invoiceId */
         $invoiceId = $invoice->getId();
 
-        if ($customFees === [] && $invoiceId !== null) {
-            $invoicedCustomFees = $this->customFeesRetriever->retrieveInvoicedCustomFees($order);
+        if ($invoicedCustomFees === [] && $invoiceId !== null) {
+            $existingInvoicedCustomFees = $this->customFeesRetriever->retrieveInvoicedCustomFees($order);
 
-            if (array_key_exists($invoiceId, $invoicedCustomFees)) {
-                $customFees = $invoicedCustomFees[$invoiceId];
+            if (array_key_exists($invoiceId, $existingInvoicedCustomFees)) {
+                $invoicedCustomFees = $existingInvoicedCustomFees[$invoiceId];
             } else {
                 return $this;
             }
         }
 
-        $firstFeeKey = array_key_first($customFees);
-        $previousFeeCode = '';
+        /** @var string $firstInvoicedFeeKey */
+        $firstInvoicedFeeKey = array_key_first($invoicedCustomFees) ?? '';
 
         array_walk(
-            $customFees,
-            function (array $customFee, string|int $key) use ($firstFeeKey, &$previousFeeCode): void {
-                $customFee['label'] = FeeType::Percent->equals($customFee['type'])
-                    && $customFee['percent'] !== null
-                    && $customFee['show_percentage']
-                    ? __($customFee['title'] . ' (%1%)', $customFee['percent'])
-                    : __($customFee['title']);
+            $invoicedCustomFees,
+            function (InvoicedCustomFee $invoicedCustomFee) use ($firstInvoicedFeeKey): void {
+                $displayType = $this->config->getSalesDisplayType($this->getParentBlock()->getOrder()->getStoreId());
+                $totalExcludingTax = null;
+                $totalIncludingTax = null;
 
-                unset(
-                    $customFee['invoice_id'],
-                    $customFee['title'],
-                    $customFee['type'],
-                    $customFee['percent'],
-                    $customFee['show_percentage'],
-                );
-
-                /** @var DataObject $total */
-                $total = $this->dataObjectFactory->create(
-                    [
-                        'data' => $customFee,
-                    ],
-                );
-
-                if ($key === $firstFeeKey) {
-                    if ($this->getBeforeCondition() !== null) {
-                        $this->getParentBlock()->addTotalBefore($total, $this->getBeforeCondition());
-                    } else {
-                        $this->getParentBlock()->addTotal($total, $this->getAfterCondition());
-                    }
-                } else {
-                    $this->getParentBlock()->addTotal($total, $previousFeeCode);
+                if ($displayType === DisplayType::ExcludingTax || $displayType === DisplayType::Both) {
+                    $totalExcludingTax = $this->buildTotal($invoicedCustomFee, false);
                 }
 
-                $previousFeeCode = $customFee['code'];
+                if ($displayType === DisplayType::IncludingTax || $displayType === DisplayType::Both) {
+                    $totalIncludingTax = $this->buildTotal($invoicedCustomFee, true);
+                }
+
+                if ($displayType === DisplayType::Both) {
+                    $totalExcludingTax->setLabel(__('%1 Excl. Tax', $totalExcludingTax->getLabel()));
+
+                    $totalIncludingTax->setLabel(__('%1 Incl. Tax', $totalIncludingTax->getLabel()));
+                    $totalIncludingTax->setCode($totalIncludingTax->getCode() . '_with_tax');
+                }
+
+                if ($totalExcludingTax !== null) {
+                    $this->addTotal($totalExcludingTax, $firstInvoicedFeeKey);
+                }
+
+                if ($totalIncludingTax !== null) {
+                    $this->addTotal($totalIncludingTax, $firstInvoicedFeeKey);
+                }
             },
         );
 
         return $this;
+    }
+
+    private function buildTotal(InvoicedCustomFee $invoicedCustomFee, bool $includeTax): DataObject
+    {
+        $totalData = [
+            'code' => $invoicedCustomFee->getCode(),
+            'label' => $invoicedCustomFee->formatLabel(),
+            'base_value' => $invoicedCustomFee->getBaseValue(),
+            'value' => $invoicedCustomFee->getValue(),
+        ];
+
+        if ($includeTax) {
+            $totalData['base_value'] = $invoicedCustomFee->getBaseValueWithTax();
+            $totalData['value'] = $invoicedCustomFee->getValueWithTax();
+        }
+
+        return $this->dataObjectFactory->create(['data' => $totalData]);
+    }
+
+    private function addTotal(DataObject $total, string $firstTotalKey): void
+    {
+        if ($total->getCode() === $firstTotalKey) {
+            if ($this->getBeforeCondition() !== null) {
+                $this->getParentBlock()->addTotalBefore($total, $this->getBeforeCondition());
+            } else {
+                $this->getParentBlock()->addTotal($total, $this->getAfterCondition());
+            }
+        } else {
+            $this->getParentBlock()->addTotal($total);
+        }
     }
 }

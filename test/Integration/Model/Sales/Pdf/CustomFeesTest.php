@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Model\Sales\Pdf;
 
+use JosephLeedy\CustomFees\Api\ConfigInterface;
+use JosephLeedy\CustomFees\Model\DisplayType;
 use JosephLeedy\CustomFees\Model\Sales\Pdf\CustomFees;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Sales\Model\Order;
@@ -15,18 +17,10 @@ use PHPUnit\Framework\TestCase;
 final class CustomFeesTest extends TestCase
 {
     /**
-     * @dataProvider getsTotalsForDisplayDataProvider
-     * @param 'order'|'invoice'|'creditmemo' $sourceType
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees.php
      */
-    public function testGetTotalsForDisplayGetsTotals(string $sourceType): void
+    public function testGetTotalsForDisplayGetsTotals(): void
     {
-        $resolver = Resolver::getInstance();
-
-        $resolver->setCurrentFixtureType(DataFixture::ANNOTATION);
-        $resolver->requireDataFixture(
-            "JosephLeedy_CustomFees::../test/Integration/_files/{$sourceType}_with_custom_fees.php",
-        );
-
         /** @var ObjectManagerInterface $objectManager */
         $objectManager = Bootstrap::getObjectManager();
         /** @var Order $order */
@@ -36,37 +30,84 @@ final class CustomFeesTest extends TestCase
 
         $order->loadByIncrementId('100000001');
 
-        $source = match ($sourceType) {
-            'invoice' => $order->getInvoiceCollection()->getFirstItem(),
-            'creditmemo' => $order->getCreditmemosCollection()->getFirstItem(),
-            default => null,
-        };
+        $customFeesOrderPdfModel->setOrder($order);
+
+        $expectedCustomFeesTotals = [
+            [
+                'amount' => '$5.00',
+                'label' => 'Test Fee:',
+                'font_size' => 7,
+            ],
+            [
+                'amount' => '$1.50',
+                'label' => 'Another Test Fee:',
+                'font_size' => 7,
+            ],
+        ];
+        $actualCustomFeesTotals = $customFeesOrderPdfModel->getTotalsForDisplay();
+
+        self::assertEquals($expectedCustomFeesTotals, $actualCustomFeesTotals);
+    }
+
+    /**
+     * @dataProvider displayTypeDataProvider
+     * @magentoDataFixture JosephLeedy_CustomFees::../test/Integration/_files/order_with_custom_fees_taxed.php
+     */
+    public function testGetTotalsForDisplayGetsTotalsByDisplayType(DisplayType $displayType): void
+    {
+        $configStub = $this->createStub(ConfigInterface::class);
+        /** @var ObjectManagerInterface $objectManager */
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Order $order */
+        $order = $objectManager->create(Order::class);
+        /** @var CustomFees $customFeesOrderPdfModel */
+        $customFeesOrderPdfModel = $objectManager->create(
+            CustomFees::class,
+            [
+                'config' => $configStub,
+            ],
+        );
+
+        $configStub
+            ->method('getSalesDisplayType')
+            ->willReturn($displayType);
+
+        $order->loadByIncrementId('100000001');
 
         $customFeesOrderPdfModel->setOrder($order);
-        $customFeesOrderPdfModel->setSource($source);
 
-        $expectedCustomFeesTotals = match ($sourceType) {
-            'invoice', 'creditmemo' => [
-                'test_fee_0' => [
-                    'amount' => '$5.00',
+        $expectedCustomFeesTotals = match ($displayType) {
+            DisplayType::IncludingTax => [
+                [
+                    'amount' => '$5.30',
                     'label' => 'Test Fee:',
                     'font_size' => 7,
                 ],
-                'test_fee_1' => [
-                    'amount' => '$1.50',
+                [
+                    'amount' => '$1.59',
                     'label' => 'Another Test Fee:',
                     'font_size' => 7,
                 ],
             ],
-            default => [
-                '_1727299833817_817' => [
+            DisplayType::Both => [
+                [
                     'amount' => '$5.00',
-                    'label' => 'Test Fee:',
+                    'label' => 'Test Fee (Excl. Tax):',
                     'font_size' => 7,
                 ],
-                '_1727299843197_197' => [
+                [
+                    'amount' => '$5.30',
+                    'label' => 'Test Fee (Incl. Tax):',
+                    'font_size' => 7,
+                ],
+                [
                     'amount' => '$1.50',
-                    'label' => 'Another Test Fee:',
+                    'label' => 'Another Test Fee (Excl. Tax):',
+                    'font_size' => 7,
+                ],
+                [
+                    'amount' => '$1.59',
+                    'label' => 'Another Test Fee (Incl. Tax):',
                     'font_size' => 7,
                 ],
             ],
@@ -153,19 +194,16 @@ final class CustomFeesTest extends TestCase
     }
 
     /**
-     * @return array<string, array<string, string>>
+     * @return array<string, array{'displayType': DisplayType}>
      */
-    public static function getsTotalsForDisplayDataProvider(): array
+    public static function displayTypeDataProvider(): array
     {
         return [
-            'for an order' => [
-                'sourceType' => 'order',
+            'including tax' => [
+                'displayType' => DisplayType::IncludingTax,
             ],
-            'for an invoice' => [
-                'sourceType' => 'invoice',
-            ],
-            'for a credit memo' => [
-                'sourceType' => 'creditmemo',
+            'including and excluding tax' => [
+                'displayType' => DisplayType::Both,
             ],
         ];
     }

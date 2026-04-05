@@ -33,6 +33,30 @@ $customFeesViewModel = $viewModels->require(CustomFeesViewModel::class);
                 return isCustomFee && this.segment.value > 0;
             },
             /**
+             * @returns {boolean}
+             */
+            isCustomFeesTotalSegmentAndDisplayExcludingTax() {
+                return this.isCustomFeesTotalSegment() && this.getCartDisplayType() === 'excluding_tax';
+            },
+            /**
+             * @returns {boolean}
+             */
+            isCustomFeesTotalSegmentAndDisplayIncludingTax() {
+                return this.isCustomFeesTotalSegment() && this.getCartDisplayType() === 'including_tax';
+            },
+            /**
+             * @returns {boolean}
+             */
+            isCustomFeesTotalSegmentAndDisplayBoth() {
+                return this.isCustomFeesTotalSegment() && this.getCartDisplayType() === 'both';
+            },
+            /**
+             * @returns {string}
+             */
+            getCartDisplayType() {
+                return window.checkoutConfig.customFees.cartDisplayType;
+            },
+            /**
              * @returns {string}
              */
             getCustomFeeTitle()
@@ -42,9 +66,32 @@ $customFeesViewModel = $viewModels->require(CustomFeesViewModel::class);
             /**
              * @returns {string}
              */
+            getCustomFeeTitleWithoutTax()
+            {
+                return `${this.segment.title} ${this.excludingTaxMessage}`;
+            },
+            /**
+             * @returns {string}
+             */
+            getCustomFeeTitleWithTax()
+            {
+                return `${this.segment.title} ${this.includingTaxMessage}`;
+            },
+            /**
+             * @returns {string}
+             */
             getFormattedCustomFeeValue()
             {
                 return hyva.formatPrice(this.segment.value);
+            },
+            /**
+             * @returns {string}
+             */
+            getFormattedCustomFeeValueWithTax()
+            {
+                return hyva.formatPrice(
+                    this.segment.extension_attributes.custom_fee_tax_details?.value_with_tax || this.segment.value,
+                );
             },
         };
     }

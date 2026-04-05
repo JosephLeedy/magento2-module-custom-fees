@@ -30,6 +30,7 @@ class CustomFees implements ConfigProviderInterface
         return [
             'customFees' => [
                 'codes' => $codes,
+                'cartDisplayType' => $this->config->getCartDisplayType()->name(),
             ],
         ];
     }

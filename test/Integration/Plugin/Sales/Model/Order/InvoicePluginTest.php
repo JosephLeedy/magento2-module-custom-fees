@@ -7,6 +7,8 @@ namespace JosephLeedy\CustomFees\Test\Integration\Plugin\Sales\Model\Order;
 use ColinODell\PsrTestLogger\TestLogger;
 use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface;
+use JosephLeedy\CustomFees\Model\CustomOrderFee;
+use JosephLeedy\CustomFees\Model\CustomOrderFee\Invoiced as InvoicedCustomFee;
 use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Plugin\Sales\Model\Order\InvoicePlugin;
 use Magento\Framework\App\Area;
@@ -26,6 +28,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
 use function __;
+use function array_map;
 
 #[AppArea(Area::AREA_ADMINHTML)]
 final class InvoicePluginTest extends TestCase
@@ -81,26 +84,60 @@ final class InvoicePluginTest extends TestCase
 
         $expectedInvoicedCustomFees = [
             $invoiceId => [
-                'test_fee_0' => [
-                    'invoice_id' => $invoiceId,
-                    'code' => 'test_fee_0',
-                    'title' => 'Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 5.00,
-                    'value' => 5.00,
-                ],
-                'test_fee_1' => [
-                    'invoice_id' => $invoiceId,
-                    'code' => 'test_fee_1',
-                    'title' => 'Another Test Fee',
-                    'type' => FeeType::Fixed->value,
-                    'percent' => null,
-                    'show_percentage' => false,
-                    'base_value' => 1.50,
-                    'value' => 1.50,
-                ],
+                'test_fee_0' => $objectManager->create(
+                    InvoicedCustomFee::class,
+                    [
+                        'data' => [
+                            'invoice_id' => $invoiceId,
+                            'code' => 'test_fee_0',
+                            'title' => 'Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 5.00,
+                            'value' => 5.00,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
+                            'base_value_with_tax' => 5.00,
+                            'value_with_tax' => 5.00,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                            'base_applied_taxes' => null,
+                            'applied_taxes' => null,
+                            'base_discount_tax_compensation' => 0.00,
+                            'discount_tax_compensation' => 0.00,
+                        ],
+                    ],
+                ),
+                'test_fee_1' => $objectManager->create(
+                    InvoicedCustomFee::class,
+                    [
+                        'data' => [
+                            'invoice_id' => $invoiceId,
+                            'code' => 'test_fee_1',
+                            'title' => 'Another Test Fee',
+                            'type' => FeeType::Fixed,
+                            'percent' => null,
+                            'show_percentage' => false,
+                            'base_value' => 1.50,
+                            'value' => 1.50,
+                            'base_discount_amount' => 0.00,
+                            'discount_amount' => 0.00,
+                            'discount_rate' => 0.00,
+                            'base_value_with_tax' => 1.50,
+                            'value_with_tax' => 1.50,
+                            'base_tax_amount' => 0.00,
+                            'tax_amount' => 0.00,
+                            'tax_rate' => 0.00,
+                            'base_applied_taxes' => null,
+                            'applied_taxes' => null,
+                            'base_discount_tax_compensation' => 0.00,
+                            'discount_tax_compensation' => 0.00,
+                        ],
+                    ],
+                ),
             ],
         ];
         $actualInvoicedCustomFees = $customOrderFees->getCustomFeesInvoiced();
@@ -120,25 +157,50 @@ final class InvoicePluginTest extends TestCase
         $objectManager = Bootstrap::getObjectManager();
         /** @var Order $order */
         $order = $objectManager->create(Order::class);
-        $customFees = [
-            '_1727299833817_817' => [
-                'code' => 'test_fee_0',
-                'title' => 'Test Fee',
-                'type' => FeeType::Fixed->value,
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 5.00,
-                'value' => 5.00,
-            ],
-            '_1727299843197_197' => [
-                'code' => 'test_fee_1',
-                'title' => 'Another Test Fee',
-                'type' => FeeType::Fixed->value,
-                'percent' => null,
-                'show_percentage' => false,
-                'base_value' => 1.50,
-                'value' => 1.50,
-            ],
+        /** @var array<string, CustomOrderFee> $orderedCustomFees */
+        $orderedCustomFees = [
+            'test_fee_0' => $objectManager->create(
+                CustomOrderFee::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 5.00,
+                        'value' => 5.00,
+                        'base_value_with_tax' => 5.00,
+                        'value_with_tax' => 5.00,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.00,
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
+                ],
+            ),
+            'test_fee_1' => $objectManager->create(
+                CustomOrderFee::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 1.50,
+                        'value' => 1.50,
+                        'base_value_with_tax' => 1.50,
+                        'value_with_tax' => 1.50,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.00,
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
+                ],
+            ),
         ];
         /** @var OrderRepositoryInterface $orderRepository */
         $orderRepository = $objectManager->create(OrderRepositoryInterface::class);
@@ -157,7 +219,7 @@ final class InvoicePluginTest extends TestCase
             $customOrderFees = $objectManager->create(CustomOrderFeesInterface::class);
 
             $customOrderFees->setOrderId((int) $order->getEntityId());
-            $customOrderFees->setCustomFeesOrdered($customFees);
+            $customOrderFees->setCustomFeesOrdered($orderedCustomFees);
 
             $order
                 ->getExtensionAttributes()
@@ -173,9 +235,38 @@ final class InvoicePluginTest extends TestCase
         $invoice->register();
 
         if ($invoiceHasCustomFees && ($invoice->getExtensionAttributes()?->getInvoicedCustomFees() ?? []) === []) {
+            $invoicedCustomFees = array_map(
+                static function (CustomOrderFee $customOrderFee) use ($objectManager, $invoice): InvoicedCustomFee {
+                    /** @var InvoicedCustomFee $invoicedCustomFee */
+                    $invoicedCustomFee = $objectManager->create(
+                        InvoicedCustomFee::class,
+                        [
+                            'data' => [
+                                'invoice_id' => $invoice->getEntityId(),
+                                'code' => $customOrderFee->getCode(),
+                                'title' => $customOrderFee->getTitle(),
+                                'type' => $customOrderFee->getType(),
+                                'percent' => $customOrderFee->getPercent(),
+                                'show_percentage' => $customOrderFee->getShowPercentage(),
+                                'base_value' => $customOrderFee->getBaseValue(),
+                                'value' => $customOrderFee->getValue(),
+                                'base_value_with_tax' => $customOrderFee->getBaseValueWithTax(),
+                                'value_with_tax' => $customOrderFee->getValueWithTax(),
+                                'base_tax_amount' => $customOrderFee->getBaseTaxAmount(),
+                                'tax_amount' => $customOrderFee->getTaxAmount(),
+                                'tax_rate' => $customOrderFee->getTaxRate(),
+                            ],
+                        ],
+                    );
+
+                    return $invoicedCustomFee;
+                },
+                $orderedCustomFees,
+            );
+
             $invoice
                 ->getExtensionAttributes()
-                ?->setInvoicedCustomFees($customFees);
+                ?->setInvoicedCustomFees($invoicedCustomFees);
         }
 
         if (!$invoiceHasCustomFees) {

@@ -1,6 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { UIReferenceCustomFees } from '@config';
 import CustomFees from '@utils/customFees.utils';
+import { requireEnv } from '@utils/env.utils';
 
 class OrderPage
 {
@@ -31,12 +32,33 @@ class OrderPage
         );
     }
 
+    public async assertOrderHasCustomFeeDiscountsApplied(inEuro: boolean = false, exclude: string[] = []): Promise<void>
+    {
+        await this.assertHasCustomFeeDiscountsApplied(
+            this.page.locator(UIReferenceCustomFees.orderPage.orderTotalsContainerLocator),
+            inEuro,
+            exclude,
+        );
+    }
+
     public async assertInvoiceHasCustomFees(
         invoiceIncrementId: string = '',
         inEuro: boolean = false,
         exclude: string[] = []
     ): Promise<void> {
         await this.assertHasCustomFees((await this.getInvoiceItemsContainer(invoiceIncrementId)), inEuro, exclude);
+    }
+
+    public async assertInvoiceHasCustomFeeDiscountsApplied(
+        invoiceIncrementId: string = '',
+        inEuro: boolean = false,
+        exclude: string[] = [],
+    ): Promise<void> {
+        await this.assertHasCustomFeeDiscountsApplied(
+            (await this.getInvoiceItemsContainer(invoiceIncrementId)),
+            inEuro,
+            exclude,
+        );
     }
 
     public async assertCreditMemoHasCustomFees(
@@ -46,6 +68,20 @@ class OrderPage
         useRefundAmount: boolean = false,
     ): Promise<void> {
         await this.assertHasCustomFees(
+            (await this.getCreditMemoItemsContainer(creditMemoIncrementId)),
+            inEuro,
+            exclude,
+            useRefundAmount,
+        );
+    }
+
+    public async assertCreditMemoHasCustomFeeDiscountsApplied(
+        creditMemoIncrementId: string = '',
+        inEuro: boolean = false,
+        exclude: string[] = [],
+        useRefundAmount: boolean = false,
+    ): Promise<void> {
+        await this.assertHasCustomFeeDiscountsApplied(
             (await this.getCreditMemoItemsContainer(creditMemoIncrementId)),
             inEuro,
             exclude,
@@ -114,6 +150,34 @@ class OrderPage
         for (customFee of customFees) {
             await expect(customFee).not.toBeVisible();
         }
+    }
+
+    public async assertHasCustomFeeDiscountsApplied(
+        containerLocator: Locator,
+        inEuro: boolean = false,
+        exclude: string[] = [],
+        useRefundAmount: boolean = false,
+    ): Promise<void> {
+        const currencySymbol: string = inEuro ? '€' : '$';
+        const subtotal: number = parseFloat(
+            (await containerLocator.getByText(`Subtotal ${currencySymbol}`).textContent() ?? '0')
+                .replace(/[^\d.]+/, ''),
+        );
+        const totalCustomFeeAmount: number = await new CustomFees()
+            .calculateTotal(
+                containerLocator,
+                inEuro,
+                exclude,
+                useRefundAmount,
+                UIReferenceCustomFees.orderPage.adjacentPriceLocator,
+            );
+        const discountAmount: string = ((subtotal + totalCustomFeeAmount) * 0.1).toFixed(2);
+
+        await expect(
+            containerLocator.getByText(
+                `Discount (${requireEnv('MAGENTO_COUPON_CODE_CUSTOM_FEES')}) -${currencySymbol}${discountAmount}`,
+            ),
+        ).toBeVisible();
     }
 
     private async getInvoiceItemsContainer(invoiceIncrementId: string = ''): Promise<Locator>

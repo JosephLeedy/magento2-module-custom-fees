@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Model\Checkout\ConfigProvider;
 
+use JosephLeedy\CustomFees\Model\DisplayType;
 use Magento\Checkout\Model\CompositeConfigProvider;
 use Magento\Checkout\Model\DefaultConfigProvider;
 use Magento\TestFramework\Helper\Bootstrap;
@@ -42,6 +43,7 @@ final class CustomFeesTest extends TestCase
                     'test_fee_0',
                     'test_fee_1',
                 ],
+                'cartDisplayType' => DisplayType::ExcludingTax->name(),
             ],
             $providedConfig['customFees'],
         );

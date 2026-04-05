@@ -6,6 +6,11 @@ parameters:
 			path: src/Block/Adminhtml/CustomOrderFees/Report/Grid.php
 
 		-
+			message: "#^Parameter \\#2 \\$array of function implode expects array\\<string\\>, list\\<mixed\\> given\\.$#"
+			count: 8
+			path: src/Block/Adminhtml/CustomOrderFees/Report/Grid.php
+
+		-
 			message: "#^Setter methods like \\$this\\(JosephLeedy\\\\CustomFees\\\\Block\\\\Sales\\\\Cart\\\\Totals\\\\CustomFees\\)\\:\\:setTemplate\\(\\) are deprecated in Block classes, use constructor arguments instead$#"
 			count: 1
 			path: src/Block/Sales/Cart/Totals/CustomFees.php
@@ -14,6 +19,21 @@ parameters:
 			message: "#^Setter methods like Magento\\\\Framework\\\\View\\\\Element\\\\Template\\:\\:setTemplate\\(\\) are deprecated in Block classes, use constructor arguments instead$#"
 			count: 1
 			path: src/Block/Sales/Cart/Totals/CustomFees.php
+
+		-
+			message: "#^Cannot call method (g|s)et(Code|Label)\\(\\) on Magento\\\\Framework\\\\DataObject\\|null\\.$#"
+			count: 6
+			path: src/Block/Sales/Order/Creditmemo/Totals.php
+
+		-
+			message: "#^Cannot call method (g|s)et(Code|Label)\\(\\) on Magento\\\\Framework\\\\DataObject\\|null\\.$#"
+			count: 6
+			path: src/Block/Sales/Order/Invoice/Totals.php
+
+		-
+			message: "#^Cannot call method (g|s)et(Code|Label)\\(\\) on Magento\\\\Framework\\\\DataObject\\|null\\.$#"
+			count: 6
+			path: src/Block/Sales/Order/Totals.php
 
 		-
 			message: "#^Call to an undefined method Magento\\\\Store\\\\Api\\\\Data\\\\StoreInterface\\:\\:getBaseCurrency\\(\\)\\.$#"
@@ -66,6 +86,36 @@ parameters:
 			path: src/Controller/Adminhtml/System/Config/CustomFees/Advanced/NewConditionHtml.php
 
 		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 4
+			path: src/Model/Config.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: src/Model/Config.php
+
+		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\Config\\:\\:getCustomOrderFeesReportAggregationFrequency\\(\\) should return 'D'\\|'M'\\|'W' but returns string\\.$#"
+			count: 1
+			path: src/Model/Config.php
+
+		-
+			message: "#^Use service contracts to persist entities in favour of Magento\\\\Framework\\\\App\\\\Config\\\\Value\\:\\:load\\(\\) method$#"
+			count: 1
+			path: src/Model/Config/Backend/CustomOrderFeesReport/AggregationCron.php
+
+		-
+			message: "#^Use service contracts to persist entities in favour of Magento\\\\Framework\\\\App\\\\Config\\\\Value\\:\\:save\\(\\) method$#"
+			count: 1
+			path: src/Model/Config/Backend/CustomOrderFeesReport/AggregationCron.php
+
+		-
+			message: "#^Parameter \\#1 \\$modelId of method Magento\\\\Framework\\\\Model\\\\AbstractModel\\:\\:load\\(\\) expects int, string given\\.$#"
+			count: 1
+			path: src/Model/Config/Backend/CustomOrderFeesReport/AggregationCron.php
+
+		-
 			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: src/Model/Config/Backend/File/ImportCustomFees.php
@@ -74,6 +124,51 @@ parameters:
 			message: "#^Call to an undefined method Magento\\\\Store\\\\Api\\\\Data\\\\WebsiteInterface\\:\\:getDefaultStore\\(\\)\\.$#"
 			count: 1
 			path: src/Model/Config/Backend/File/ImportCustomFees.php
+
+		-
+			message: "#^Cannot cast mixed to float\\.$#"
+			count: 10
+			path: src/Model/CustomOrderFee.php
+
+		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFee\\:\\:getCode\\(\\) should return string but returns mixed\\.$#"
+			count: 1
+			path: src/Model/CustomOrderFee.php
+
+		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFee\\:\\:getTitle\\(\\) should return string but returns mixed\\.$#"
+			count: 1
+			path: src/Model/CustomOrderFee.php
+
+		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFee\\:\\:getPercent\\(\\) should return float\\|null but returns mixed\\.$#"
+			count: 1
+			path: src/Model/CustomOrderFee.php
+
+		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFee\\:\\:getShowPercentage\\(\\) should return bool but returns mixed\\.$#"
+			count: 1
+			path: src/Model/CustomOrderFee.php
+
+		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFee\\:\\:getBaseValue\\(\\) should return float but returns mixed\\.$#"
+			count: 1
+			path: src/Model/CustomOrderFee.php
+
+		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFee\\:\\:getValue\\(\\) should return float but returns mixed\\.$#"
+			count: 1
+			path: src/Model/CustomOrderFee.php
+
+		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFee\\\\Invoiced\\:\\:getInvoiceId\\(\\) should return int\\|null but returns mixed\\.$#"
+			count: 1
+			path: src/Model/CustomOrderFee/Invoiced.php
+
+		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFee\\\\Refunded\\:\\:getCreditMemoId\\(\\) should return int\\|null but returns mixed\\.$#"
+			count: 1
+			path: src/Model/CustomOrderFee/Refunded.php
 
 		-
 			message: "#^Parameter \\#1 \\$items of method Magento\\\\Framework\\\\Api\\\\SearchResultsInterface\\:\\:setItems\\(\\) expects array\\<Magento\\\\Framework\\\\Api\\\\ExtensibleDataInterface\\>, array\\<Magento\\\\Framework\\\\DataObject\\> given\\.$#"
@@ -96,6 +191,11 @@ parameters:
 			path: src/Model/CustomOrderFeesRepository.php
 
 		-
+			message: "#^Cannot cast mixed to float\\.$#"
+			count: 2
+			path: src/Model/Quote/Tax/CustomFeeTaxDetails.php
+
+		-
 			message: "#^PHPDoc tag @var with type string is not subtype of native type mixed\\.$#"
 			count: 1
 			path: src/Model/ResourceModel/Report/CustomOrderFees.php
@@ -109,6 +209,16 @@ parameters:
 			message: "#^Parameter \\#3 \\$to of method Magento\\\\Reports\\\\Model\\\\ResourceModel\\\\Report\\\\AbstractReport\\:\\:_clearTableByDateRange\\(\\) expects string\\|null, DateTimeInterface\\|string\\|null given\\.$#"
 			count: 1
 			path: src/Model/ResourceModel/Report/CustomOrderFees.php
+
+		-
+			message: "#^Method JosephLeedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\CustomFee\\:\\:getValueSelectOptions\\(\\) should return array\\<int, array\\{value\\: string, label\\: Magento\\\\Framework\\\\Phrase\\}\\> but returns mixed\\.$#"
+			count: 2
+			path: src/Model/Rule/Condition/CustomFee.php
+
+		-
+			message: "#^Return type \\(Magento\\\\Framework\\\\Data\\\\Form\\\\Element\\\\AbstractElement\\) of method JosephLeedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\CustomFee\\:\\:getAttributeElement\\(\\) should be compatible with return type \\(\\$this\\(Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\)\\) of method Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\:\\:getAttributeElement\\(\\)$#"
+			count: 1
+			path: src/Model/Rule/Condition/CustomFee.php
 
 		-
 			message: "#^Return type \\(Magento\\\\Framework\\\\Data\\\\Form\\\\Element\\\\AbstractElement\\) of method JosephLeedy\\\\CustomFees\\\\Model\\\\Rule\\\\Condition\\\\Quote\\:\\:getAttributeElement\\(\\) should be compatible with return type \\(\\$this\\(Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\)\\) of method Magento\\\\Rule\\\\Model\\\\Condition\\\\AbstractCondition\\:\\:getAttributeElement\\(\\)$#"
@@ -126,19 +236,14 @@ parameters:
 			path: src/Model/Rule/Condition/QuoteAddress.php
 
 		-
-			message: "#^Parameter \\#1 \\$invoicedCustomFees of method Magento\\\\Sales\\\\Api\\\\Data\\\\InvoiceExtensionInterface\\:\\:setInvoicedCustomFees\\(\\) expects array\\<mixed\\>, array\\<string, array\\<string, bool\\|float\\|string\\|null\\>\\> given\\.$#"
-			count: 1
-			path: src/Model/Total/Invoice/CustomFees.php
-
-		-
-			message: "#^Parameter \\#1 \\$customFees of method Magento\\\\Quote\\\\Api\\\\Data\\\\CartExtensionInterface\\:\\:setCustomFees\\(\\) expects array\\<mixed\\>, array\\<array\\<string, bool\\|float\\|Magento\\\\Framework\\\\Phrase\\|string\\|null\\>\\> given\\.$#"
-			count: 1
-			path: src/Model/Total/Quote/CustomFees.php
-
-		-
 			message: "#^Parameter \\#2 \\$scope of method Magento\\\\Framework\\\\Pricing\\\\PriceCurrencyInterface\\:\\:convert\\(\\) expects bool\\|int\\|Magento\\\\Framework\\\\App\\\\ScopeInterface\\|string\\|null, Magento\\\\Store\\\\Api\\\\Data\\\\StoreInterface given\\.$#"
 			count: 1
 			path: src/Model/Total/Quote/CustomFees.php
+
+		-
+			message: "#^Call to an undefined method Magento\\\\Quote\\\\Api\\\\Data\\\\AddressInterface\\:\\:getQuote\\(\\)\\.$#"
+			count: 1
+			path: src/Model/Total/Quote/CustomFeesTax.php
 
 		-
 			message: "#^Parameter \\#4 \\$after of method Magento\\\\Framework\\\\Data\\\\Form\\\\Element\\\\Fieldset\\:\\:addField\\(\\) expects bool, string given\\.$#"
@@ -151,11 +256,6 @@ parameters:
 			path: src/Plugin/Sales/Api/CreditmemoRepositoryInterfacePlugin.php
 
 		-
-			message: "#^Parameter \\#1 \\$refundedCustomFees of method Magento\\\\Sales\\\\Api\\\\Data\\\\CreditmemoExtensionInterface\\:\\:setRefundedCustomFees\\(\\) expects array\\<mixed\\>, array\\<string, array\\<string, array\\<string, bool\\|float\\|string\\|null\\>\\>\\|float\\> given\\.$#"
-			count: 1
-			path: src/Plugin/Sales/Model/Convert/OrderPlugin.php
-
-		-
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
 			path: src/Plugin/Sales/Model/Order/InvoicePlugin.php
@@ -166,6 +266,21 @@ parameters:
 			path: src/Service/ConfigUpdater.php
 
 		-
+			message: "#^Call to an undefined method Magento\\\\Rule\\\\Model\\\\Action\\\\Collection\\:\\:validate\\(\\)\\.$#"
+			count: 1
+			path: src/Service/CustomFeeDiscountRulesApplier.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of method Magento\\\\Framework\\\\Serialize\\\\SerializerInterface\\:\\:unserialize\\(\\) expects string, mixed given\\.$#"
+			count: 3
+			path: src/Service/CustomOrderFeeTaxValueAdder.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: src/Service/CustomQuoteFeesRetriever.php
+
+		-
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
 			path: src/Service/InvoicedCustomFeesRecorder.php
@@ -174,11 +289,6 @@ parameters:
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
 			path: src/Service/RefundedCustomFeesRecorder.php
-
-		-
-			message: "#^Use service contracts to persist entities in favour of JosephLeedy\\\\CustomFees\\\\Model\\\\CustomOrderFees\\:\\:save\\(\\) method$#"
-			count: 1
-			path: src/Setup/Patch/Data/AddFieldsToCustomOrderFeesPatch.php
 
 		-
 			message: "#^Parameter \\#1 \\(array\\|string\\) of echo cannot be converted to string\\.$#"
@@ -192,7 +302,7 @@ parameters:
 
 		-
 			message: "#^Call to method require\\(\\) on an unknown class Hyva\\\\Theme\\\\Model\\\\ViewModelRegistry\\.$#"
-			count: 1
+			count: 2
 			path: src/view/frontend/templates/hyva/checkout/price-summary/total-segments/custom_fees.phtml
 
 		-
@@ -207,7 +317,12 @@ parameters:
 
 		-
 			message: "#^Call to method currency\\(\\) on an unknown class Hyva\\\\Checkout\\\\ViewModel\\\\Checkout\\\\Formatter\\.$#"
-			count: 1
+			count: 4
+			path: src/view/frontend/templates/hyva/checkout/price-summary/total-segments/custom_fees.phtml
+
+		-
+			message: "#^Parameter \\#1 \\$data of method Magento\\\\Framework\\\\Escaper\\:\\:escapeHtml\\(\\) expects array\\|string, Magento\\\\Framework\\\\Phrase given\\.$#"
+			count: 2
 			path: src/view/frontend/templates/hyva/checkout/price-summary/total-segments/custom_fees.phtml
 
 		-

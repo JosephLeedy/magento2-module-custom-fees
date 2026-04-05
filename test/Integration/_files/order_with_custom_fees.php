@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 use JosephLeedy\CustomFees\Api\CustomOrderFeesRepositoryInterface;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeesInterfaceFactory;
 use JosephLeedy\CustomFees\Model\CustomOrderFeesRepository;
+use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\ResourceModel\Order as OrderResource;
 use Magento\TestFramework\Helper\Bootstrap;
@@ -25,24 +27,54 @@ $customOrderFees = $customOrderFeesFactory->create();
 /** @var CustomOrderFeesRepository $customOrderFeesRepository */
 $customOrderFeesRepository = $objectManager->create(CustomOrderFeesRepositoryInterface::class);
 $testCustomFees = [
-    '_1727299833817_817' => [
-        'code' => 'test_fee_0',
-        'title' => 'Test Fee',
-        'type' => 'fixed',
-        'percent' => null,
-        'show_percentage' => false,
-        'base_value' => 5.00,
-        'value' => 5.00,
-    ],
-    '_1727299843197_197' => [
-        'code' => 'test_fee_1',
-        'title' => 'Another Test Fee',
-        'type' => 'fixed',
-        'percent' => null,
-        'show_percentage' => false,
-        'base_value' => 1.50,
-        'value' => 1.50,
-    ],
+    'test_fee_0' => $objectManager->create(
+        CustomOrderFeeInterface::class,
+        [
+            'data' => [
+                'code' => 'test_fee_0',
+                'title' => 'Test Fee',
+                'type' => FeeType::Fixed,
+                'percent' => null,
+                'show_percentage' => false,
+                'base_value' => 5.00,
+                'value' => 5.00,
+                'base_discount_amount' => 0.00,
+                'discount_amount' => 0.00,
+                'discount_rate' => 0.00,
+                'base_value_with_tax' => 5.00,
+                'value_with_tax' => 5.00,
+                'base_tax_amount' => 0.00,
+                'tax_amount' => 0.00,
+                'tax_rate' => 0.00,
+                'base_discount_tax_compensation' => 0.00,
+                'discount_tax_compensation' => 0.00,
+            ],
+        ],
+    ),
+    'test_fee_1' => $objectManager->create(
+        CustomOrderFeeInterface::class,
+        [
+            'data' => [
+                'code' => 'test_fee_1',
+                'title' => 'Another Test Fee',
+                'type' => FeeType::Fixed,
+                'percent' => null,
+                'show_percentage' => false,
+                'base_value' => 1.50,
+                'value' => 1.50,
+                'base_discount_amount' => 0.00,
+                'discount_amount' => 0.00,
+                'discount_rate' => 0.00,
+                'base_value_with_tax' => 1.50,
+                'value_with_tax' => 1.50,
+                'base_tax_amount' => 0.00,
+                'tax_amount' => 0.00,
+                'tax_rate' => 0.00,
+                'base_discount_tax_compensation' => 0.00,
+                'discount_tax_compensation' => 0.00,
+            ],
+        ],
+    ),
 ];
 
 $orderResource->load($order, '100000001', 'increment_id');
@@ -55,5 +87,6 @@ $customOrderFees->setCustomFeesOrdered($testCustomFees);
 
 $customOrderFeesRepository->save($customOrderFees);
 
-$order->getExtensionAttributes()
+$order
+    ->getExtensionAttributes()
     ?->setCustomOrderFees($customOrderFees);

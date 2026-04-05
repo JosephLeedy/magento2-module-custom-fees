@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Block\Adminhtml\Sales\Order\Creditmemo\Create;
 
-use JosephLeedy\CustomFees\Model\FeeType;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface as RefundedCustomFee;
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
+use JosephLeedy\CustomFees\Service\CustomFeesRetriever;
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
 use Magento\Framework\View\Element\Template;
@@ -12,7 +14,6 @@ use Magento\Framework\View\Element\Template\Context;
 use Magento\Sales\Block\Order\Creditmemo\Totals as CreditmemoTotals;
 use Magento\Sales\Model\Order\Creditmemo;
 
-use function __;
 use function array_walk;
 
 /**
@@ -36,6 +37,7 @@ class Totals extends Template
     public function __construct(
         Context $context,
         private readonly DataObjectFactory $dataObjectFactory,
+        private readonly CustomFeesRetriever $customFeesRetriever,
         array $data = [],
     ) {
         parent::__construct($context, $data);
@@ -73,7 +75,7 @@ class Totals extends Template
         return $this->customFeeTotals;
     }
 
-    public function formatValue(float $value): string
+    public function formatValue(float $value, bool $withContainer = false, bool $withCurrencySymbol = false): string
     {
         $order = $this->getParentBlock()->getSource()->getOrder();
 
@@ -83,9 +85,9 @@ class Totals extends Template
                 $value,
                 2,
                 [
-                    'display' => 1,
+                    'display' => !$withCurrencySymbol ? 1 : 2,
                 ],
-                false,
+                $withContainer,
             );
     }
 
@@ -93,38 +95,25 @@ class Totals extends Template
     {
         /** @var Creditmemo $creditmemo */
         $creditmemo = $this->getParentBlock()->getSource();
-        /**
-         * @var array<string, array{
-         *     code: string,
-         *     title: string,
-         *     type: value-of<FeeType>,
-         *     percent: float|null,
-         *     show_percentage: bool,
-         *     base_value: float,
-         *     value: float,
-         * }> $refundedCustomFees
-         */
+        /** @var array<string, RefundedCustomFee> $refundedCustomFees */
         $refundedCustomFees = $creditmemo->getExtensionAttributes()?->getRefundedCustomFees() ?? [];
+        /** @var array<string, CustomOrderFeeInterface> $orderedCustomFees */
+        $orderedCustomFees = $this->customFeesRetriever->retrieveOrderedCustomFees($creditmemo->getOrder());
 
         array_walk(
             $refundedCustomFees,
-            function (array $customFee): void {
-                $customFeeCode = $customFee['code'];
-                $baseValue = (float) $customFee['base_value'];
-                $value = (float) $customFee['value'];
-                $label = FeeType::Percent->equals($customFee['type'])
-                    && $customFee['percent'] !== null
-                    && $customFee['show_percentage']
-                    ? __('Refund %1 (%2%)', $customFee['title'], $customFee['percent'])
-                    : __('Refund %1', $customFee['title']);
-
-                $this->customFeeTotals[$customFeeCode] = $this->dataObjectFactory->create(
+            function (RefundedCustomFee $refundedCustomFee) use ($orderedCustomFees): void {
+                $orderedCustomFee = $orderedCustomFees[$refundedCustomFee->getCode()] ?? null;
+                $isRefundable = $orderedCustomFee !== null
+                    && $orderedCustomFee->getBaseValue() - $orderedCustomFee->getDiscountAmount() > 0.00;
+                $this->customFeeTotals[$refundedCustomFee->getCode()] = $this->dataObjectFactory->create(
                     [
                         'data' => [
-                            'code' => $customFeeCode,
-                            'label' => $label,
-                            'base_value' => $baseValue,
-                            'value' => $value,
+                            'code' => $refundedCustomFee->getCode(),
+                            'label' => $refundedCustomFee->formatLabel($isRefundable ? 'Refund' : ''),
+                            'base_value' => $refundedCustomFee->getBaseValue(),
+                            'value' => $refundedCustomFee->getValue(),
+                            'is_refundable' => $isRefundable,
                         ],
                     ],
                 );

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use JosephLeedy\CustomFees\Api\Data\CustomOrderFee\RefundedInterface as RefundedCustomFee;
 use JosephLeedy\CustomFees\Model\FeeType;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\DB\Transaction;
@@ -42,7 +43,7 @@ $orderCollection = $orderRepository->getList($orderSearchResults);
 $transaction = $objectManager->create(Transaction::class);
 
 $orderCollection->walk(
-    static function (Order $order) use ($transaction): void {
+    static function (Order $order) use ($objectManager, $transaction): void {
         $customOrderFees = $order->getExtensionAttributes()?->getCustomOrderFees();
         $refundedCustomFees = [];
 
@@ -53,30 +54,60 @@ $orderCollection->walk(
         $order
             ->getCreditmemosCollection()
             ->walk(
-                static function (Creditmemo $creditmemo) use (&$refundedCustomFees): void {
+                static function (Creditmemo $creditmemo) use (&$refundedCustomFees, $objectManager): void {
                     $creditmemoId = (int) $creditmemo->getEntityId();
 
                     $refundedCustomFees[$creditmemoId] = [
-                        'test_fee_0' => [
-                            'credit_memo_id' => $creditmemoId,
-                            'code' => 'test_fee_0',
-                            'title' => 'Test Fee',
-                            'type' => FeeType::Fixed->value,
-                            'percent' => null,
-                            'show_percentage' => false,
-                            'base_value' => 5.00,
-                            'value' => 5.00,
-                        ],
-                        'test_fee_1' => [
-                            'credit_memo_id' => $creditmemoId,
-                            'code' => 'test_fee_1',
-                            'title' => 'Another Test Fee',
-                            'type' => FeeType::Fixed->value,
-                            'percent' => null,
-                            'show_percentage' => false,
-                            'base_value' => 1.50,
-                            'value' => 1.50,
-                        ],
+                        'test_fee_0' => $objectManager->create(
+                            RefundedCustomFee::class,
+                            [
+                                'data' => [
+                                    'credit_memo_id' => $creditmemoId,
+                                    'code' => 'test_fee_0',
+                                    'title' => 'Test Fee',
+                                    'type' => FeeType::Fixed,
+                                    'percent' => null,
+                                    'show_percentage' => false,
+                                    'base_value' => 5.00,
+                                    'value' => 5.00,
+                                    'base_discount_amount' => 0.00,
+                                    'discount_amount' => 0.00,
+                                    'discount_rate' => 0.00,
+                                    'base_value_with_tax' => 5.00,
+                                    'value_with_tax' => 5.00,
+                                    'base_tax_amount' => 0.00,
+                                    'tax_amount' => 0.00,
+                                    'tax_rate' => 0.00,
+                                    'base_discount_tax_compensation' => 0.00,
+                                    'discount_tax_compensation' => 0.00,
+                                ],
+                            ],
+                        ),
+                        'test_fee_1' => $objectManager->create(
+                            RefundedCustomFee::class,
+                            [
+                                'data' => [
+                                    'credit_memo_id' => $creditmemoId,
+                                    'code' => 'test_fee_1',
+                                    'title' => 'Another Test Fee',
+                                    'type' => FeeType::Fixed,
+                                    'percent' => null,
+                                    'show_percentage' => false,
+                                    'base_value' => 1.50,
+                                    'value' => 1.50,
+                                    'base_discount_amount' => 0.00,
+                                    'discount_amount' => 0.00,
+                                    'discount_rate' => 0.00,
+                                    'base_value_with_tax' => 1.50,
+                                    'value_with_tax' => 1.50,
+                                    'base_tax_amount' => 0.00,
+                                    'tax_amount' => 0.00,
+                                    'tax_rate' => 0.00,
+                                    'base_discount_tax_compensation' => 0.00,
+                                    'discount_tax_compensation' => 0.00,
+                                ],
+                            ],
+                        ),
                     ];
                 },
             );

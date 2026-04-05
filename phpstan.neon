@@ -11,3 +11,96 @@ parameters:
 	treatPhpDocTypesAsCertain: false
 	reportUnmatchedIgnoredErrors: false
 	tmpDir: .tmp/phpstan
+	typeAliases:
+		CustomOrderFeeData: '''
+			array{
+					code: string,
+					title: string,
+					type: \JosephLeedy\CustomFees\Model\FeeType|value-of<\JosephLeedy\CustomFees\Model\FeeType>,
+					percent: float|null,
+					show_percentage: bool,
+					base_value: float,
+					value: float,
+					base_value_with_tax: float,
+					value_with_tax: float,
+					base_tax_amount: float,
+					tax_amount: float,
+					tax_rate: float,
+					base_applied_taxes: array<string, \Magento\Tax\Api\Data\AppliedTaxInterface>|array<string, AppliedTaxData>|null,
+					applied_taxes: array<string, \Magento\Tax\Api\Data\AppliedTaxInterface>|array<string, AppliedTaxData>|null,
+					base_discount_amount?: float,
+					discount_amount?: float,
+					discount_rate?: float,
+					base_discount_tax_compensation?: float,
+					discount_tax_compensation?: float,
+			}
+		'''
+		CustomInvoiceFeeData: '''
+			array{
+					invoice_id?: int,
+					code: string,
+					title: string,
+					type: \JosephLeedy\CustomFees\Model\FeeType|value-of<\JosephLeedy\CustomFees\Model\FeeType>,
+					percent: float|null,
+					show_percentage: bool,
+					base_value: float,
+					value: float,
+					base_value_with_tax: float,
+					value_with_tax: float,
+					base_tax_amount: float,
+					tax_amount: float,
+					tax_rate: float,
+					base_applied_taxes: null,
+					applied_taxes: null,
+					base_discount_amount?: float,
+					discount_amount?: float,
+					discount_rate?: float,
+					base_discount_tax_compensation?: float,
+					discount_tax_compensation?: float,
+			}
+		'''
+		CustomCreditMemoFeeData: '''
+			array{
+					credit_memo_id?: int,
+					code: string,
+					title: string,
+					type: \JosephLeedy\CustomFees\Model\FeeType|value-of<\JosephLeedy\CustomFees\Model\FeeType>,
+					percent: float|null,
+					show_percentage: bool,
+					base_value: float,
+					value: float,
+					base_value_with_tax: float,
+					value_with_tax: float,
+					base_tax_amount: float,
+					tax_amount: float,
+					tax_rate: float,
+					base_applied_taxes: null,
+					applied_taxes: null,
+					base_discount_amount?: float,
+					discount_amount?: float,
+					discount_rate?: float,
+					base_discount_tax_compensation?: float,
+					discount_tax_compensation?: float,
+			}
+		'''
+		AppliedTaxData: '''
+			array{
+				base_amount?: float,
+				amount: float,
+				percent: float,
+				id?: string,
+				tax_rate_key?: string,
+				rates: array<string, AppliedTaxRateData>|array<string, \Magento\Tax\Api\Data\AppliedTaxRateInterface>,
+				item_id?: string|null,
+				associated_item_id?: string|null,
+				item_type?: 'product'|'shipping'|'custom_fee',
+				process?: int,
+			}
+		'''
+		AppliedTaxRateData: '''
+		array{
+			percent: float|null,
+			code: string|null,
+			title: string|null,
+		}
+		'''

@@ -1,4 +1,5 @@
-#sales_custom_order_fees {
+#sales_custom_order_fees #row_sales_custom_order_fees_custom_fees,
+#sales_custom_order_fees #row_sales_custom_order_fees_import_custom_fees {
     .label {
         display: none;
     }
@@ -10,7 +11,9 @@
     .use-default {
         padding-right: 0;
     }
+}
 
+#sales_custom_order_fees #row_sales_custom_order_fees_import_custom_fees {
     label.import-fees-label {
         display: block;
         padding-bottom: 6px;
