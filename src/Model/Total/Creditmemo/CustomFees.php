@@ -249,6 +249,10 @@ class CustomFees extends AbstractTotal
                 &$refundedCustomFeeCount,
                 $refundedCustomFeeValues,
             ): void {
+                // Applied taxes are only stored for the ordered custom fees
+                $refundedCustomFee->setBaseAppliedTaxes(null);
+                $refundedCustomFee->setAppliedTaxes(null);
+
                 $customFeeCode = $refundedCustomFee->getCode();
 
                 if (array_key_exists($customFeeCode, $requestedCustomFeeRefundValues)) {
@@ -292,9 +296,6 @@ class CustomFees extends AbstractTotal
                     $refundedCustomFee->setDiscountRate(0.00);
                     $refundedCustomFee->setBaseDiscountTaxCompensation(0.00);
                     $refundedCustomFee->setDiscountTaxCompensation(0.00);
-                    // Applied taxes are only stored for the ordered custom fees
-                    $refundedCustomFee->setBaseAppliedTaxes(null);
-                    $refundedCustomFee->setAppliedTaxes(null);
 
                     $refundedCustomFeeCount++;
 
@@ -377,9 +378,6 @@ class CustomFees extends AbstractTotal
                         2,
                     ),
                 );
-                // Applied taxes are only stored for the ordered custom fees
-                $refundedCustomFee->setBaseAppliedTaxes(null);
-                $refundedCustomFee->setAppliedTaxes(null);
 
                 $refundedCustomFeeCount++;
             },
