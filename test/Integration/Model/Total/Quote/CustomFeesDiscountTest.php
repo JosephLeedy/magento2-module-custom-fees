@@ -19,6 +19,7 @@ use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\ResourceModel\Quote as QuoteResource;
 use Magento\SalesRule\Model\Validator;
 use Magento\Store\Model\ScopeInterface as StoreScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\TestFramework\Fixture\Config as ConfigFixture;
 use Magento\TestFramework\Fixture\DataFixture;
 use Magento\TestFramework\Helper\Bootstrap;
@@ -52,6 +53,8 @@ final class CustomFeesDiscountTest extends TestCase
         $quote = $objectManager->create(Quote::class);
         /** @var QuoteResource $quoteResource */
         $quoteResource = $objectManager->create(QuoteResource::class);
+        /** @var StoreManagerInterface $storeManager */
+        $storeManager = $objectManager->get(StoreManagerInterface::class);
         /** @var Validator $validator */
         $validator = $objectManager->create(Validator::class);
         /** @var CustomFeeDiscountRulesApplier $customFeeDiscountRulesApplier */
@@ -82,7 +85,11 @@ final class CustomFeesDiscountTest extends TestCase
 
         $this->setCustomFeesForQuote($quote, $withTax);
 
-        $validator->initFromQuote($quote);
+        $validator->init(
+            $storeManager->getStore($quote->getStoreId())->getWebsiteId(),
+            $quote->getCustomerGroupId(),
+            $quote->getCouponCode(),
+        );
 
         $address = $quote->getShippingAddress();
 

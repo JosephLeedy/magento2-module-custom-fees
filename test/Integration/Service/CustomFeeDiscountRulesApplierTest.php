@@ -20,6 +20,7 @@ use Magento\SalesRule\Model\ResourceModel\Rule\Collection as RuleCollection;
 use Magento\SalesRule\Model\Rule;
 use Magento\SalesRule\Model\Validator;
 use Magento\Store\Model\ScopeInterface as StoreScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\TestFramework\Fixture\Config as ConfigFixture;
 use Magento\TestFramework\Fixture\DataFixture;
 use Magento\TestFramework\Helper\Bootstrap;
@@ -110,6 +111,8 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
                 ],
             ),
         ];
+        /** @var StoreManagerInterface $storeManager */
+        $storeManager = $objectManager->get(StoreManagerInterface::class);
         /** @var Validator $validator */
         $validator = $objectManager->create(Validator::class);
         /** @var CustomFeeDiscountRulesApplier $customFeesDiscountApplier */
@@ -139,7 +142,11 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
             $rule->save();
         }
 
-        $validator->initFromQuote($quote);
+        $validator->init(
+            $storeManager->getStore($quote->getStoreId())->getWebsiteId(),
+            $quote->getCustomerGroupId(),
+            $quote->getCouponCode(),
+        );
 
         $address = $quote->getShippingAddress();
 
