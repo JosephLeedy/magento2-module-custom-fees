@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Service;
 
+use ColinODell\PsrTestLogger\TestLogger;
 use JosephLeedy\CustomFees\Api\ConfigInterface;
 use JosephLeedy\CustomFees\Api\Data\CustomOrderFeeInterface;
 use JosephLeedy\CustomFees\Model\FeeType;
@@ -15,12 +16,17 @@ use Magento\Quote\Model\ResourceModel\Quote as QuoteResource;
 use Magento\SalesRule\Api\Data\RuleInterface;
 use Magento\SalesRule\Api\RuleRepositoryInterface;
 use Magento\SalesRule\Model\Converter\ToModel;
+use Magento\SalesRule\Model\ResourceModel\Rule\Collection as RuleCollection;
 use Magento\SalesRule\Model\Rule;
+use Magento\SalesRule\Model\Validator;
 use Magento\Store\Model\ScopeInterface as StoreScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\TestFramework\Fixture\Config as ConfigFixture;
 use Magento\TestFramework\Fixture\DataFixture;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel;
+use Zend_Db_Select_Exception;
 
 use function array_first;
 use function array_walk;
@@ -61,42 +67,7 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
         $ruleDataConverter = $objectManager->create(ToModel::class);
         /** @var Rule $rule */
         $rule = $ruleDataConverter->toModel($ruleData);
-        /** @var CustomFeeDiscountRulesApplier $customFeesDiscountApplier */
-        $customFeesDiscountApplier = $objectManager->create(CustomFeeDiscountRulesApplier::class);
-
-        $quoteResource->load($quote, 'test_order_1', 'reserved_order_id');
-
-        $quote->setItems($quote->getAllVisibleItems()); // Fix empty items array
-        $quote->collectTotals();
-
-        $customFees = $quote->getExtensionAttributes()?->getCustomFees() ?? [];
-
-        array_walk(
-            $customFees,
-            static function (CustomOrderFeeInterface $customFee): void {
-                $customFee->setBaseDiscountAmount(0.00);
-                $customFee->setDiscountAmount(0.00);
-                $customFee->setDiscountRate(0.00);
-            },
-        );
-
-        if ($rule->getSimpleAction() !== $simpleAction) {
-            $rule->setSimpleAction($simpleAction);
-
-            if ($simpleAction === Rule::BY_FIXED_ACTION || $simpleAction === Rule::BUY_X_GET_Y_ACTION) {
-                $rule->setDiscountAmount(1.00);
-            }
-
-            if ($simpleAction === Rule::BUY_X_GET_Y_ACTION) {
-                $rule->setDiscountStep(1);
-            }
-
-            $rule->save();
-        }
-
-        $customFeesDiscountApplier->applyRules($quote->getShippingAddress(), [$rule]);
-
-        $expectedCustomFees = [
+        $customFees = [
             'test_fee_0' => $objectManager->create(
                 CustomOrderFeeInterface::class,
                 [
@@ -113,7 +84,9 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
                         'base_tax_amount' => 0.00,
                         'tax_amount' => 0.00,
                         'tax_rate' => 0.00,
-                    ] + $expectedDiscountAmounts['test_fee_0'],
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
                 ],
             ),
             'test_fee_1' => $objectManager->create(
@@ -132,30 +105,86 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
                         'base_tax_amount' => 0.00,
                         'tax_amount' => 0.00,
                         'tax_rate' => 0.00,
-                    ] + $expectedDiscountAmounts['test_fee_1'],
+                        'base_discount_tax_compensation' => 0.00,
+                        'discount_tax_compensation' => 0.00,
+                    ],
                 ],
             ),
         ];
-        $actualCustomFees = $quote->getExtensionAttributes()?->getCustomFees();
+        /** @var StoreManagerInterface $storeManager */
+        $storeManager = $objectManager->get(StoreManagerInterface::class);
+        /** @var Validator $validator */
+        $validator = $objectManager->create(Validator::class);
+        /** @var CustomFeeDiscountRulesApplier $customFeesDiscountApplier */
+        $customFeesDiscountApplier = $objectManager->create(
+            CustomFeeDiscountRulesApplier::class,
+            [
+                'validator' => $validator,
+            ],
+        );
+
+        $quoteResource->load($quote, 'test_order_1', 'reserved_order_id');
+
+        $quote->setItems($quote->getAllVisibleItems()); // Fix empty items array
+        $quote->setItemsQty(2); // Fix empty items quantity
+
+        if ($rule->getSimpleAction() !== $simpleAction) {
+            $rule->setSimpleAction($simpleAction);
+
+            if ($simpleAction === Rule::BY_FIXED_ACTION || $simpleAction === Rule::BUY_X_GET_Y_ACTION) {
+                $rule->setDiscountAmount(1.00);
+            }
+
+            if ($simpleAction === Rule::BUY_X_GET_Y_ACTION) {
+                $rule->setDiscountStep(1);
+            }
+
+            $rule->save();
+        }
+
+        $validator->init(
+            $storeManager->getStore($quote->getStoreId())->getWebsiteId(),
+            $quote->getCustomerGroupId(),
+            $quote->getCouponCode(),
+        );
+
+        $address = $quote->getShippingAddress();
+
+        $customFeesDiscountApplier->applyRules($customFees, $address);
+
+        $expectedCustomFees = [
+            'test_fee_0' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => $customFees['test_fee_0']->__toArray() + $expectedDiscountAmounts['test_fee_0'],
+                ],
+            ),
+            'test_fee_1' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => $customFees['test_fee_1']->__toArray() + $expectedDiscountAmounts['test_fee_1'],
+                ],
+            ),
+        ];
         $expectedDiscountDescription = [
             $rule->getRuleId() => $rule->getName(),
         ];
-        $actualDiscountDescription = $quote->getShippingAddress()->getDiscountDescriptionArray();
+        $actualDiscountDescription = $address->getDiscountDescriptionArray();
         $expectedAppliedAddressRuleIds = $rule->getRuleId();
-        $actualAppliedAddressRuleIds = $quote->getShippingAddress()->getAppliedRuleIds();
+        $actualAppliedAddressRuleIds = $address->getAppliedRuleIds();
         $expectedAppliedQuoteRuleIds = $rule->getRuleId();
         $actualAppliedQuoteRuleIds = $quote->getAppliedRuleIds();
 
-        self::assertEquals($expectedCustomFees, $actualCustomFees);
+        self::assertEquals($expectedCustomFees, $customFees);
         self::assertEquals($expectedDiscountDescription, $actualDiscountDescription);
         self::assertEquals($expectedAppliedAddressRuleIds, $actualAppliedAddressRuleIds);
         self::assertEquals($expectedAppliedQuoteRuleIds, $actualAppliedQuoteRuleIds);
 
         if ($simpleAction === Rule::CART_FIXED_ACTION) {
             $expectedCartRules = [
-                $rule->getRuleId() => 8.234323432343235,
+                $rule->getRuleId() => 0.00,
             ];
-            $actualCartRules = $quote->getShippingAddress()->getCartFixedRules();
+            $actualCartRules = $address->getCartFixedRules();
 
             self::assertEquals($expectedCartRules, $actualCartRules);
         }
@@ -164,26 +193,28 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
     #[ConfigFixture(ConfigInterface::CONFIG_PATH_CUSTOM_FEES, '{}', StoreScopeInterface::SCOPE_STORE, 'default')]
     #[DataFixture('Magento/Checkout/_files/quote_with_address.php')]
     #[DataFixture('JosephLeedy_CustomFees::../test/Integration/_files/cart_rule_10_percent_off_custom_fees.php')]
-    public function testDoesNotApplyDiscountRulesIfQuoteDoesNotHaveCustomFees(): void
+    public function testDoesNotApplyDiscountRulesIfCustomFeesAreEmpty(): void
     {
         $objectManager = Bootstrap::getObjectManager();
         /** @var Quote $quote */
         $quote = $objectManager->create(Quote::class);
         /** @var QuoteResource $quoteResource */
         $quoteResource = $objectManager->create(QuoteResource::class);
+        $customFees = [];
         /** @var CustomFeeDiscountRulesApplier $customFeesDiscountApplier */
         $customFeesDiscountApplier = $objectManager->create(CustomFeeDiscountRulesApplier::class);
 
         $quoteResource->load($quote, 'test_order_1', 'reserved_order_id');
 
-        $customFeesDiscountApplier->applyRules($quote->getShippingAddress(), []);
+        $address = $quote->getShippingAddress();
 
-        $actualCustomFees = $quote->getExtensionAttributes()?->getCustomFees();
-        $actualDiscountDescription = $quote->getShippingAddress()->getDiscountDescriptionArray();
-        $actualAppliedAddressRuleIds = $quote->getShippingAddress()->getAppliedRuleIds();
+        $customFeesDiscountApplier->applyRules($customFees, $address);
+
+        $actualDiscountDescription = $address->getDiscountDescriptionArray();
+        $actualAppliedAddressRuleIds = $address->getAppliedRuleIds();
         $actualAppliedQuoteRuleIds = $quote->getAppliedRuleIds();
 
-        self::assertEmpty($actualCustomFees);
+        self::assertEmpty($customFees);
         self::assertEmpty($actualDiscountDescription);
         self::assertEmpty($actualAppliedAddressRuleIds);
         self::assertEmpty($actualAppliedQuoteRuleIds);
@@ -262,12 +293,19 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
         $ruleDataConverter = $objectManager->create(ToModel::class);
         /** @var Rule $rule */
         $rule = $ruleDataConverter->toModel($ruleData);
+        $validatorStub = $this->createStub(Validator::class);
+        $ruleCollectionStub = $this->createStub(RuleCollection::class);
         /** @var CustomFeeDiscountRulesApplier $customFeesDiscountApplier */
-        $customFeesDiscountApplier = $objectManager->create(CustomFeeDiscountRulesApplier::class);
+        $customFeesDiscountApplier = $objectManager->create(
+            CustomFeeDiscountRulesApplier::class,
+            [
+                'validator' => $validatorStub,
+            ],
+        );
 
         $quoteResource->load($quote, 'test_order_1', 'reserved_order_id');
 
-        $quote->getExtensionAttributes()?->setCustomFees($customFees);
+        $address = $quote->getShippingAddress();
 
         switch ($condition) {
             case 'does not apply to custom fees':
@@ -275,7 +313,7 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
 
                 break;
             case 'is not valid for address':
-                $rule->setIsValidForAddress($quote->getShippingAddress(), false);
+                $rule->setIsValidForAddress($address, false);
 
                 break;
             case 'is not valid for custom fee':
@@ -294,15 +332,18 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
                 break;
         }
 
-        $customFeesDiscountApplier->applyRules($quote->getShippingAddress(), [$rule]);
+        $validatorStub->method('getRules')->willReturn($ruleCollectionStub);
 
-        $actualCustomFees = $quote->getExtensionAttributes()?->getCustomFees() ?? [];
-        $actualDiscountDescription = $quote->getShippingAddress()->getDiscountDescriptionArray();
-        $actualAppliedAddressRuleIds = $quote->getShippingAddress()->getAppliedRuleIds();
+        $ruleCollectionStub->method('getItems')->willReturn([$rule]);
+
+        $customFeesDiscountApplier->applyRules($customFees, $address);
+
+        $actualDiscountDescription = $address->getDiscountDescriptionArray();
+        $actualAppliedAddressRuleIds = $address->getAppliedRuleIds();
         $actualAppliedQuoteRuleIds = $quote->getAppliedRuleIds();
 
         array_walk(
-            $actualCustomFees,
+            $customFees,
             static function (CustomOrderFeeInterface $actualCustomFee): void {
                 self::assertSame(0.00, $actualCustomFee->getDiscountAmount());
             },
@@ -311,6 +352,93 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
         self::assertEmpty($actualDiscountDescription);
         self::assertEmpty($actualAppliedAddressRuleIds);
         self::assertEmpty($actualAppliedQuoteRuleIds);
+    }
+
+    #[ConfigFixture(
+        ConfigInterface::CONFIG_PATH_CUSTOM_FEES,
+        '{"_1727299833817_817":{"code":"test_fee_0","title":"Test Fee","type":"fixed","status":"1","value":"4.00","adva'
+        . 'nced":"{\\"show_percentage\\":\\"0\\"}"},"_1727299843197_197":{"code":"test_fee_1","title":"Another Fee","ty'
+        . 'pe":"fixed","status":"1","value":"1.00","advanced":"{\\"show_percentage\\":\\"0\\"}"}}',
+        StoreScopeInterface::SCOPE_STORE,
+        'default',
+    )]
+    #[DataFixture('Magento/Checkout/_files/quote_with_address.php')]
+    public function testLogsErrorIfDiscountRulesCannotBeRetrievedDuringApplication(): void
+    {
+        $dbSelectException = new Zend_Db_Select_Exception();
+        $testLogger = new TestLogger();
+        $objectManager = Bootstrap::getObjectManager();
+        /** @var Quote $quote */
+        $quote = $objectManager->create(Quote::class);
+        /** @var QuoteResource $quoteResource */
+        $quoteResource = $objectManager->create(QuoteResource::class);
+        $customFees = [
+            'test_fee_0' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_0',
+                        'title' => 'Test Fee',
+                        'type' => FeeType::Fixed,
+                        'percent' => null,
+                        'show_percentage' => false,
+                        'base_value' => 4.00,
+                        'value' => 4.00,
+                        'base_value_with_tax' => 4.00,
+                        'value_with_tax' => 4.00,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.00,
+                    ],
+                ],
+            ),
+            'test_fee_1' => $objectManager->create(
+                CustomOrderFeeInterface::class,
+                [
+                    'data' => [
+                        'code' => 'test_fee_1',
+                        'title' => 'Another Fee',
+                        'type' => FeeType::Percent,
+                        'percent' => 1.00,
+                        'show_percentage' => true,
+                        'base_value' => 0.20,
+                        'value' => 0.20,
+                        'base_value_with_tax' => 0.20,
+                        'value_with_tax' => 0.20,
+                        'base_tax_amount' => 0.00,
+                        'tax_amount' => 0.00,
+                        'tax_rate' => 0.00,
+                    ],
+                ],
+            ),
+        ];
+        $ruleValidatorStub = $this->createStub(Validator::class);
+        /** @var CustomFeeDiscountRulesApplier $customFeeDiscountRulesApplier */
+        $customFeeDiscountRulesApplier = $objectManager->create(
+            CustomFeeDiscountRulesApplier::class,
+            [
+                'logger' => $testLogger,
+                'validator' => $ruleValidatorStub,
+            ],
+        );
+
+        $quoteResource->load($quote, 'test_order_1', 'reserved_order_id');
+
+        $ruleValidatorStub->method('getRules')->willThrowException($dbSelectException);
+
+        $customFeeDiscountRulesApplier->applyRules($customFees, $quote->getShippingAddress());
+
+        self::assertTrue(
+            $testLogger->hasRecord(
+                [
+                    'message' => 'Could not retrieve sales rules to apply to custom fees.',
+                    'context' => [
+                        'exception' => $dbSelectException,
+                    ],
+                ],
+                LogLevel::CRITICAL,
+            ),
+        );
     }
 
     /**
@@ -340,12 +468,10 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
                     'test_fee_0' => [
                         'base_discount_amount' => 1.00,
                         'discount_amount' => 1.00,
-                        'discount_rate' => 0.00,
                     ],
                     'test_fee_1' => [
                         'base_discount_amount' => 0.20,
                         'discount_amount' => 0.20,
-                        'discount_rate' => 0.00,
                     ],
                 ],
             ],
@@ -355,12 +481,10 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
                     'test_fee_0' => [
                         'base_discount_amount' => 1.67,
                         'discount_amount' => 1.67,
-                        'discount_rate' => 0.00,
                     ],
                     'test_fee_1' => [
                         'base_discount_amount' => 0.10,
                         'discount_amount' => 0.10,
-                        'discount_rate' => 0.00,
                     ],
                 ],
             ],
@@ -370,12 +494,10 @@ final class CustomFeeDiscountRulesApplierTest extends TestCase
                     'test_fee_0' => [
                         'base_discount_amount' => 2.00,
                         'discount_amount' => 2.00,
-                        'discount_rate' => 0.00,
                     ],
                     'test_fee_1' => [
                         'base_discount_amount' => 0.10,
                         'discount_amount' => 0.10,
-                        'discount_rate' => 0.00,
                     ],
                 ],
             ],

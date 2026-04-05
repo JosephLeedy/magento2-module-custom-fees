@@ -46,6 +46,8 @@ $customFees = [
                 'base_tax_amount' => 0.00,
                 'tax_amount' => 0.00,
                 'tax_rate' => 0.00,
+                'base_discount_tax_compensation' => 0.00,
+                'discount_tax_compensation' => 0.00,
             ],
         ],
     ),

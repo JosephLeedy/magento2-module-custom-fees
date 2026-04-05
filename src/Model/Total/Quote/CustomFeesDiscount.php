@@ -13,19 +13,16 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\Total;
 use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
 use Magento\SalesRule\Model\Quote\Discount;
-use Magento\SalesRule\Model\Rule;
 use Magento\SalesRule\Model\Validator;
-use Psr\Log\LoggerInterface;
-use Zend_Db_Select_Exception;
 
 use function __;
 use function array_walk;
+use function round;
 
 class CustomFeesDiscount extends AbstractTotal
 {
     public function __construct(
         private readonly Validator $validator,
-        private readonly LoggerInterface $logger,
         private readonly CustomFeeDiscountRulesApplier $discountRulesApplier,
     ) {}
 
@@ -61,25 +58,7 @@ class CustomFeesDiscount extends AbstractTotal
 
         $this->validator->reset($address);
 
-        try {
-            /** @var Rule[] $rules */
-            $rules = $this->validator->getRules($address)->getItems();
-        } catch (Zend_Db_Select_Exception $databaseSelectException) {
-            $this->logger->critical(
-                'Could not retrieve sales rules to apply to custom fees.',
-                [
-                    'exception' => $databaseSelectException,
-                ],
-            );
-
-            $rules = [];
-        }
-
-        if ($rules === []) {
-            return $this;
-        }
-
-        $this->discountRulesApplier->applyRules($address, $rules);
+        $this->discountRulesApplier->applyRules($customFees, $address);
 
         $this->processDiscounts($customFees, $total);
 
@@ -156,9 +135,11 @@ class CustomFeesDiscount extends AbstractTotal
 
         $total->setDiscountDescription($address->getDiscountDescription());
         $total->setBaseSubtotalWithDiscount(
-            $total->getBaseSubtotal() + $baseTotalCustomFeeAmount + $total->getBaseDiscountAmount(),
+            round($total->getBaseSubtotal() + $baseTotalCustomFeeAmount + $total->getBaseDiscountAmount(), 2),
         );
-        $total->setSubtotalWithDiscount($total->getSubtotal() + $totalCustomFeeAmount + $total->getDiscountAmount());
+        $total->setSubtotalWithDiscount(
+            round($total->getSubtotal() + $totalCustomFeeAmount + $total->getDiscountAmount(), 2),
+        );
 
         $address->setBaseDiscountAmount($total->getBaseDiscountAmount());
         $address->setDiscountAmount($total->getDiscountAmount());

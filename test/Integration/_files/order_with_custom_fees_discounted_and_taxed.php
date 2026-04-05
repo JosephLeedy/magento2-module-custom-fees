@@ -13,7 +13,7 @@ use Magento\Sales\Model\ResourceModel\Order as OrderResource;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\TestFramework\Workaround\Override\Fixture\Resolver;
 
-Resolver::getInstance()->requireDataFixture('JosephLeedy_CustomFees::../test/Integration/_files/order.php');
+Resolver::getInstance()->requireDataFixture('JosephLeedy_CustomFees::../test/Integration/_files/order_with_tax.php');
 
 $objectManager = Bootstrap::getObjectManager();
 /** @var Order $order */
@@ -38,14 +38,14 @@ $testCustomFees = [
                 'show_percentage' => false,
                 'base_value' => 5.00,
                 'value' => 5.00,
-                'base_discount_amount' => 5.00,
-                'discount_amount' => 5.00,
-                'discount_rate' => 100.00,
-                'base_value_with_tax' => 5.00,
-                'value_with_tax' => 5.00,
-                'base_tax_amount' => 0.00,
-                'tax_amount' => 0.00,
-                'tax_rate' => 0.00,
+                'base_discount_amount' => 0.50,
+                'discount_amount' => 0.50,
+                'discount_rate' => 10.00,
+                'base_value_with_tax' => 5.30,
+                'value_with_tax' => 5.30,
+                'base_tax_amount' => 0.30,
+                'tax_amount' => 0.30,
+                'tax_rate' => 6.0,
                 'base_discount_tax_compensation' => 0.00,
                 'discount_tax_compensation' => 0.00,
             ],
@@ -57,19 +57,19 @@ $testCustomFees = [
             'data' => [
                 'code' => 'test_fee_1',
                 'title' => 'Another Test Fee',
-                'type' => FeeType::Fixed,
-                'percent' => null,
+                'type' => FeeType::Percent,
+                'percent' => 10,
                 'show_percentage' => false,
-                'base_value' => 1.50,
-                'value' => 1.50,
-                'base_discount_amount' => 1.50,
-                'discount_amount' => 1.50,
-                'discount_rate' => 100.00,
-                'base_value_with_tax' => 1.50,
-                'value_with_tax' => 1.50,
-                'base_tax_amount' => 0.00,
-                'tax_amount' => 0.00,
-                'tax_rate' => 0.00,
+                'base_value' => 2.00,
+                'value' => 2.00,
+                'base_discount_amount' => 0.20,
+                'discount_amount' => 0.20,
+                'discount_rate' => 10.00,
+                'base_value_with_tax' => 2.12,
+                'value_with_tax' => 2.12,
+                'base_tax_amount' => 0.12,
+                'tax_amount' => 0.12,
+                'tax_rate' => 6.0,
                 'base_discount_tax_compensation' => 0.00,
                 'discount_tax_compensation' => 0.00,
             ],
@@ -88,8 +88,12 @@ $customOrderFees->setCustomFeesOrdered($testCustomFees);
 $customOrderFeesRepository->save($customOrderFees);
 
 $order
-    ->setBaseDiscountAmount($order->getBaseDiscountAmount() - 6.50)
-    ->setDiscountAmount($order->getDiscountAmount() - 6.50)
+    ->setBaseDiscountAmount((float) $order->getBaseDiscountAmount() - 0.70)
+    ->setDiscountAmount((float) $order->getDiscountAmount() - 0.70)
+    ->setBaseTaxAmount($order->getBaseTaxAmount() + 0.38)
+    ->setTaxAmount($order->getTaxAmount() + 0.38)
+    ->setBaseGrandTotal($order->getBaseGrandTotal() + 4.77)
+    ->setGrandTotal($order->getGrandTotal() + 4.77)
     ->getExtensionAttributes()
     ?->setCustomOrderFees($customOrderFees);
 

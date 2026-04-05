@@ -10,6 +10,11 @@ use JosephLeedy\CustomFees\Model\CustomOrderFee;
 use JosephLeedy\CustomFees\Model\FeeType;
 use JosephLeedy\CustomFees\Service\DataObjectPropertyTypeConverter;
 use Magento\Framework\App\State;
+use Magento\Framework\Serialize\Serializer\Json as JsonSerializer;
+use Magento\Tax\Api\Data\AppliedTaxInterfaceFactory;
+use Magento\Tax\Api\Data\AppliedTaxRateInterfaceFactory;
+use Magento\Tax\Model\TaxDetails\AppliedTax;
+use Magento\Tax\Model\TaxDetails\AppliedTaxRate;
 use PHPUnit\Framework\TestCase;
 
 use function __;
@@ -100,6 +105,43 @@ final class CustomOrderFeeTest extends TestCase
     }
 
     /**
+     * @dataProvider setAppliedTaxesConvertsDataToModelsDataProvider
+     * @param string|array<string, AppliedTaxData> $appliedTaxesData
+     */
+    public function testSetAppliedTaxesConvertsDataToModels(string|array $appliedTaxesData): void
+    {
+        $appliedTaxRateStub = $this->createStub(AppliedTaxRate::class);
+        $appliedTaxStub = $this->createStub(AppliedTax::class);
+        $appliedTaxFactoryStub = $this->createStub(AppliedTaxInterfaceFactory::class);
+        $appliedTaxRateFactoryStub = $this->createStub(AppliedTaxRateInterfaceFactory::class);
+        $dataObjectPropertyTypeConverterStub = $this->createStub(DataObjectPropertyTypeConverter::class);
+        $stateStub = $this->createStub(State::class);
+        $jsonSerializer = new JsonSerializer();
+        $customOrderFee = new CustomOrderFee(
+            $dataObjectPropertyTypeConverterStub,
+            $stateStub,
+            $jsonSerializer,
+            $appliedTaxFactoryStub,
+            $appliedTaxRateFactoryStub,
+        );
+
+        $appliedTaxStub->method('getRates')->willReturn([$appliedTaxRateStub]);
+
+        $appliedTaxFactoryStub->method('create')->willReturn($appliedTaxStub);
+
+        $appliedTaxRateFactoryStub->method('create')->willReturn($appliedTaxRateStub);
+
+        $customOrderFee->setAppliedTaxes($appliedTaxesData);
+
+        $expectedAppliedTaxes = [
+            'US-*-*' => $appliedTaxStub,
+        ];
+        $actualAppliedTaxes = $customOrderFee->getAppliedTaxes();
+
+        self::assertEquals($expectedAppliedTaxes, $actualAppliedTaxes);
+    }
+
+    /**
      * @dataProvider getLabelReturnsLabelDataProvider
      */
     public function testGetLabelReturnsLabel(string $prefix, FeeType $feeType): void
@@ -124,6 +166,105 @@ final class CustomOrderFeeTest extends TestCase
         $actualLabel = $customOrderFee->formatLabel($prefix);
 
         self::assertEquals($expectedLabel, $actualLabel);
+    }
+
+    public function testToArrayConvertsAppliedTaxesToArray(): void
+    {
+        $baseAppliedTax = $this->createStub(AppliedTax::class);
+        $baseAppliedTaxRate = $this->createStub(AppliedTaxRate::class);
+        $baseAppliedTaxData = [
+            'amount' => 1.50,
+            'percent' => 5.0,
+            'tax_rate_key' => 'US-*-*',
+            'rates' => [
+                'US-*-*' => $baseAppliedTaxRate,
+            ],
+        ];
+        $baseAppliedTaxRateData = [
+            'percent' => 5.0,
+            'code' => 'US-*-*',
+            'title' => 'US-*-*',
+        ];
+        $appliedTax = $this->createStub(AppliedTax::class);
+        $appliedTaxRate = $this->createStub(AppliedTaxRate::class);
+        $appliedTaxData = [
+            'amount' => 1.50,
+            'percent' => 5.0,
+            'tax_rate_key' => 'US-*-*',
+            'rates' => [
+                'US-*-*' => $appliedTaxRate,
+            ],
+        ];
+        $appliedTaxRateData = [
+            'percent' => 5.0,
+            'code' => 'US-*-*',
+            'title' => 'US-*-*',
+        ];
+        $dataObjectPropertyTypeConverterStub = $this->createStub(DataObjectPropertyTypeConverter::class);
+        $stateStub = $this->createStub(State::class);
+        $jsonSerializer = new JsonSerializer();
+        $appliedTaxFactoryStub = $this->createStub(AppliedTaxInterfaceFactory::class);
+        $appliedTaxRateFactoryStub = $this->createStub(AppliedTaxRateInterfaceFactory::class);
+        $customOrderFee = new CustomOrderFee(
+            $dataObjectPropertyTypeConverterStub,
+            $stateStub,
+            $jsonSerializer,
+            $appliedTaxFactoryStub,
+            $appliedTaxRateFactoryStub,
+        );
+
+        $baseAppliedTax->method('getData')->willReturn($baseAppliedTaxData);
+
+        $baseAppliedTaxRate->method('getData')->willReturn($baseAppliedTaxRateData);
+
+        $appliedTax->method('getData')->willReturn($appliedTaxData);
+
+        $appliedTaxRate->method('getData')->willReturn($appliedTaxRateData);
+
+        $customOrderFee->setBaseAppliedTaxes(
+            [
+                'US-*-*' => $baseAppliedTax,
+            ],
+        );
+        $customOrderFee->setAppliedTaxes(
+            [
+                'US-*-*' => $appliedTax,
+            ],
+        );
+
+        $expectedCustomFeeData = [
+            'base_applied_taxes' => [
+                'US-*-*' => [
+                    'amount' => 1.50,
+                    'percent' => 5.0,
+                    'tax_rate_key' => 'US-*-*',
+                    'rates' => [
+                        'US-*-*' => [
+                            'percent' => 5.0,
+                            'code' => 'US-*-*',
+                            'title' => 'US-*-*',
+                        ],
+                    ],
+                ],
+            ],
+            'applied_taxes' => [
+                'US-*-*' => [
+                    'amount' => 1.50,
+                    'percent' => 5.0,
+                    'tax_rate_key' => 'US-*-*',
+                    'rates' => [
+                        'US-*-*' => [
+                            'percent' => 5.0,
+                            'code' => 'US-*-*',
+                            'title' => 'US-*-*',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $actualCustomFeeData = $customOrderFee->__toArray();
+
+        self::assertEquals($expectedCustomFeeData, $actualCustomFeeData);
     }
 
     /**
@@ -151,6 +292,46 @@ final class CustomOrderFeeTest extends TestCase
             'for GraphQL API' => [
                 'area' => 'graphql',
                 'expectedType' => FeeType::Fixed->value,
+            ],
+        ];
+    }
+
+    public function setAppliedTaxesConvertsDataToModelsDataProvider(): array
+    {
+        return [
+            'from serialized string' => [
+                'appliedTaxesData' => <<<'JSON'
+                    {
+                        "US-*-*": {
+                            "amount": 1.50,
+                            "percent": 5.0,
+                            "tax_rate_key": "US-*-*",
+                            "rates": {
+                                "US-*-*": {
+                                    "percent": 5.0,
+                                    "code": "US-*-*",
+                                    "title": "US-*-*"
+                                }
+                            }
+                        }
+                    }
+                    JSON,
+            ],
+            'from plain array' => [
+                'appliedTaxesData' => [
+                    'US-*-*' => [
+                        'amount' => 1.50,
+                        'percent' => 5.0,
+                        'tax_rate_key' => 'US-*-*',
+                        'rates' => [
+                            'US-*-*' => [
+                                'percent' => 5.0,
+                                'code' => 'US-*-*',
+                                'title' => 'US-*-*',
+                            ],
+                        ],
+                    ],
+                ],
             ],
         ];
     }

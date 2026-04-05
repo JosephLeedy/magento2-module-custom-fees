@@ -15,9 +15,17 @@ use Magento\Framework\App\Area;
 use Magento\Framework\App\State;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
+use Magento\Framework\Serialize\SerializerInterface;
+use Magento\Tax\Api\Data\AppliedTaxInterface;
+use Magento\Tax\Api\Data\AppliedTaxInterfaceFactory;
+use Magento\Tax\Api\Data\AppliedTaxRateInterfaceFactory;
+use Magento\Tax\Model\TaxDetails\AppliedTax;
+use Magento\Tax\Model\TaxDetails\AppliedTaxRate;
 
 use function __;
+use function array_key_exists;
 use function in_array;
+use function is_array;
 use function is_string;
 use function trim;
 
@@ -33,6 +41,9 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
     public function __construct(
         DataObjectPropertyTypeConverter $dataObjectPropertyTypeValidator,
         private readonly State $state,
+        private readonly SerializerInterface $serializer,
+        private readonly AppliedTaxInterfaceFactory $appliedTaxFactory,
+        private readonly AppliedTaxRateInterfaceFactory $appliedTaxRateFactory,
         array $data = [],
     ) {
         if ($data !== []) {
@@ -49,6 +60,14 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         $dataObjectPropertyTypeValidator->convert($data, $this);
 
         parent::__construct($data);
+
+        if (array_key_exists('base_applied_taxes', $data)) {
+            $this->setBaseAppliedTaxes($data['base_applied_taxes']);
+        }
+
+        if (array_key_exists('applied_taxes', $data)) {
+            $this->setAppliedTaxes($data['applied_taxes']);
+        }
     }
 
     #[PropertyType('string')]
@@ -237,6 +256,90 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         return (float) $this->_get(static::TAX_RATE);
     }
 
+    #[PropertyType('array')]
+    public function setBaseAppliedTaxes(array|string|null $baseAppliedTaxes): static
+    {
+        if (is_string($baseAppliedTaxes)) {
+            /** @var array<string, AppliedTaxData> $baseAppliedTaxes */
+            $baseAppliedTaxes = $this->serializer->unserialize($baseAppliedTaxes) ?: [];
+        }
+
+        if (is_array($baseAppliedTaxes)) {
+            foreach ($baseAppliedTaxes as &$baseAppliedTax) {
+                if ($baseAppliedTax instanceof AppliedTax) {
+                    continue;
+                }
+
+                $baseAppliedTax = $this->appliedTaxFactory->create(['data' => $baseAppliedTax]);
+                $baseAppliedTaxRates = $baseAppliedTax->getRates() ?? [];
+
+                foreach ($baseAppliedTaxRates as &$baseAppliedTaxRate) {
+                    if ($baseAppliedTaxRate instanceof AppliedTaxRate) {
+                        continue;
+                    }
+
+                    $baseAppliedTaxRate = $this->appliedTaxRateFactory->create(['data' => $baseAppliedTaxRate]);
+                }
+
+                $baseAppliedTax->setRates($baseAppliedTaxRates);
+            }
+        }
+
+        $this->setData(static::BASE_APPLIED_TAXES, $baseAppliedTaxes);
+
+        return $this;
+    }
+
+    public function getBaseAppliedTaxes(): array
+    {
+        /** @var array<string, AppliedTaxInterface> $baseAppliedTaxes */
+        $baseAppliedTaxes = $this->_get(static::BASE_APPLIED_TAXES);
+
+        return $baseAppliedTaxes ?? [];
+    }
+
+    #[PropertyType('array')]
+    public function setAppliedTaxes(array|string|null $appliedTaxes): static
+    {
+        if (is_string($appliedTaxes)) {
+            /** @var array<string, AppliedTaxData> $appliedTaxes */
+            $appliedTaxes = $this->serializer->unserialize($appliedTaxes) ?: [];
+        }
+
+        if (is_array($appliedTaxes)) {
+            foreach ($appliedTaxes as &$appliedTax) {
+                if ($appliedTax instanceof AppliedTax) {
+                    continue;
+                }
+
+                $appliedTax = $this->appliedTaxFactory->create(['data' => $appliedTax]);
+                $appliedTaxRates = $appliedTax->getRates() ?? [];
+
+                foreach ($appliedTaxRates as &$appliedTaxRate) {
+                    if ($appliedTaxRate instanceof AppliedTaxRate) {
+                        continue;
+                    }
+
+                    $appliedTaxRate = $this->appliedTaxRateFactory->create(['data' => $appliedTaxRate]);
+                }
+
+                $appliedTax->setRates($appliedTaxRates);
+            }
+        }
+
+        $this->setData(static::APPLIED_TAXES, $appliedTaxes);
+
+        return $this;
+    }
+
+    public function getAppliedTaxes(): array
+    {
+        /** @var array<string, AppliedTaxInterface> $appliedTaxes */
+        $appliedTaxes = $this->_get(static::APPLIED_TAXES);
+
+        return $appliedTaxes ?? [];
+    }
+
     #[PropertyType('float')]
     public function setBaseDiscountAmount(?float $baseDiscountAmount): static
     {
@@ -276,6 +379,32 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
         return (float) $this->_get(static::DISCOUNT_RATE);
     }
 
+    #[PropertyType('float')]
+    public function setBaseDiscountTaxCompensation(?float $baseDiscountTaxCompensation): static
+    {
+        $this->setData(static::BASE_DISCOUNT_TAX_COMPENSATION, $baseDiscountTaxCompensation);
+
+        return $this;
+    }
+
+    public function getBaseDiscountTaxCompensation(): float
+    {
+        return (float) $this->_get(static::BASE_DISCOUNT_TAX_COMPENSATION);
+    }
+
+    #[PropertyType('float')]
+    public function setDiscountTaxCompensation(?float $discountTaxCompensation): static
+    {
+        $this->setData(static::DISCOUNT_TAX_COMPENSATION, $discountTaxCompensation);
+
+        return $this;
+    }
+
+    public function getDiscountTaxCompensation(): float
+    {
+        return (float) $this->_get(static::DISCOUNT_TAX_COMPENSATION);
+    }
+
     public function formatLabel(string $prefix = '', string $suffix = ''): Phrase
     {
         $showPercentage = FeeType::Percent->equals($this->getType())
@@ -297,11 +426,60 @@ class CustomOrderFee extends AbstractSimpleObject implements CustomOrderFeeInter
     /**
      * @phpstan-return CustomOrderFeeData
      */
+    // phpcs:ignore PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.MethodDoubleUnderscore
+    public function __toArray(): array
+    {
+        /** @var CustomOrderFeeData $customOrderFeeData */
+        $customOrderFeeData = parent::__toArray();
+
+        foreach ($customOrderFeeData['base_applied_taxes'] ?? [] as $rateCode => $baseAppliedTax) {
+            if (!($baseAppliedTax instanceof AppliedTax)) {
+                continue;
+            }
+
+            /** @var AppliedTaxData $baseAppliedTax */
+            $baseAppliedTax = $baseAppliedTax->getData() ?? [];
+
+            foreach ($baseAppliedTax['rates'] as &$baseAppliedTaxRate) {
+                if (!($baseAppliedTaxRate instanceof AppliedTaxRate)) {
+                    continue;
+                }
+
+                /** @var AppliedTaxRateData $baseAppliedTaxRate */
+                $baseAppliedTaxRate = $baseAppliedTaxRate->getData() ?? [];
+            }
+
+            $customOrderFeeData['base_applied_taxes'][$rateCode] = $baseAppliedTax;
+        }
+
+        foreach ($customOrderFeeData['applied_taxes'] ?? [] as $rateCode => $appliedTax) {
+            if (!($appliedTax instanceof AppliedTax)) {
+                continue;
+            }
+
+            /** @var AppliedTaxData $appliedTax */
+            $appliedTax = $appliedTax->getData() ?? [];
+
+            foreach ($appliedTax['rates'] as &$appliedTaxRate) {
+                if (!($appliedTaxRate instanceof AppliedTaxRate)) {
+                    continue;
+                }
+
+                /** @var AppliedTaxRateData $appliedTaxRate */
+                $appliedTaxRate = $appliedTaxRate->getData() ?? [];
+            }
+
+            $customOrderFeeData['applied_taxes'][$rateCode] = $appliedTax;
+        }
+
+        return $customOrderFeeData;
+    }
+
+    /**
+     * @phpstan-return CustomOrderFeeData
+     */
     public function jsonSerialize(): array
     {
-        /** @phpstan-var CustomOrderFeeData $data */
-        $data = $this->__toArray();
-
-        return $data;
+        return $this->__toArray();
     }
 }

@@ -122,7 +122,7 @@ parameters:
 
 		-
 			message: "#^Cannot cast mixed to float\\.$#"
-			count: 8
+			count: 10
 			path: src/Model/CustomOrderFee.php
 
 		-
@@ -234,6 +234,11 @@ parameters:
 			message: "#^Parameter \\#2 \\$scope of method Magento\\\\Framework\\\\Pricing\\\\PriceCurrencyInterface\\:\\:convert\\(\\) expects bool\\|int\\|Magento\\\\Framework\\\\App\\\\ScopeInterface\\|string\\|null, Magento\\\\Store\\\\Api\\\\Data\\\\StoreInterface given\\.$#"
 			count: 1
 			path: src/Model/Total/Quote/CustomFees.php
+
+		-
+			message: "#^Call to an undefined method Magento\\\\Quote\\\\Api\\\\Data\\\\AddressInterface\\:\\:getQuote\\(\\)\\.$#"
+			count: 1
+			path: src/Model/Total/Quote/CustomFeesTax.php
 
 		-
 			message: "#^Parameter \\#4 \\$after of method Magento\\\\Framework\\\\Data\\\\Form\\\\Element\\\\Fieldset\\:\\:addField\\(\\) expects bool, string given\\.$#"
