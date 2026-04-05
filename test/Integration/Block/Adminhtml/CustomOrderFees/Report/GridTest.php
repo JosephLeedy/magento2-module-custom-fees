@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JosephLeedy\CustomFees\Test\Integration\Block\Adminhtml\CustomOrderFees\Report;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use JosephLeedy\CustomFees\Block\Adminhtml\CustomOrderFees\Report\Grid;
 use Magento\Framework\App\Area;
 use Magento\Framework\DataObject;
@@ -79,6 +81,8 @@ final class GridTest extends TestCase
         $grid = $objectManger->create(Grid::class);
         /** @var LayoutInterface $layout */
         $layout = $objectManger->get(LayoutInterface::class);
+        $fromDate = (new DateTimeImmutable('first day of January this year', new DateTimeZone('UTC')))->format('Y-m-d');
+        $toDate = (new DateTimeImmutable('last day of December this year', new DateTimeZone('UTC')))->format('Y-m-d');
         /** @var DataObject $filterData */
         $filterData = $objectManger->create(
             DataObject::class,
@@ -88,8 +92,8 @@ final class GridTest extends TestCase
                     'show_base_invoiced_amount' => 1,
                     'show_base_refunded_amount' => 1,
                     'period_type' => 'day',
-                    'from' => '2025-01-01',
-                    'to' => '2025-12-31',
+                    'from' => $fromDate,
+                    'to' => $toDate,
                 ],
             ],
         );
