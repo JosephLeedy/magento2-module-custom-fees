@@ -8,7 +8,6 @@ use JosephLeedy\CustomFees\Model\Rule\Condition\CustomFee;
 use JosephLeedy\CustomFees\Plugin\SalesRule\Model\Rule\Condition\Product\CombinePlugin;
 use Magento\Framework\App\Area;
 use Magento\Framework\Interception\PluginList\PluginList;
-use Magento\SalesRule\Model\Rule\Condition\Product;
 use Magento\SalesRule\Model\Rule\Condition\Product\Combine;
 use Magento\TestFramework\Fixture\AppArea;
 use Magento\TestFramework\Helper\Bootstrap;
