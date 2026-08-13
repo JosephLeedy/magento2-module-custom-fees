@@ -32,6 +32,7 @@ frontend and backend
 - Includes a report detailing all charged custom fees for a given time period
 - Fully compatible with the [Hyvä] theme (Hyvä Default, Hyvä CSP, Hyvä Checkout 
 and Hyvä Checkout CSP)
+- Compatibility module for Loki Checkout is available here: [LokiCheckout_JosephLeedyCustomFees](https://github.com/LokiCheckout/LokiCheckout_JosephLeedyCustomFees)
 
 ## Requirements
 
